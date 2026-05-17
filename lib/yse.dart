@@ -28,9 +28,10 @@ export 'src/device.dart' show Device, DeviceSetup;
 export 'src/dsp_buffer.dart' show DspBuffer;
 export 'src/dsp_object.dart' show DspObject;
 export 'src/enums.dart'
-    show ChannelType, DelayTap, LfoType, ReverbPreset, SweepShape;
+    show ChannelType, DelayTap, LfoType, OutType, ReverbPreset, SweepShape;
 export 'src/exception.dart' show YseException;
 export 'src/listener.dart' show Listener;
+export 'src/patcher.dart' show Obj, PHandle, Patcher;
 export 'src/pos.dart' show Pos;
 export 'src/reverb.dart' show Reverb;
 export 'src/sound.dart' show Sound;

@@ -63,6 +63,22 @@ enum SweepShape {
   const SweepShape(this.native);
 }
 
+/// Data type produced by a patcher outlet ([PHandle.outputDataType]).
+///
+/// Values match `YSE::OUT_TYPE`.
+enum OutType {
+  invalid(raw.YseOutType.YSE_OUT_INVALID),
+  bang(raw.YseOutType.YSE_OUT_BANG),
+  float(raw.YseOutType.YSE_OUT_FLOAT),
+  integer(raw.YseOutType.YSE_OUT_INT),
+  buffer(raw.YseOutType.YSE_OUT_BUFFER),
+  list(raw.YseOutType.YSE_OUT_LIST),
+  any(raw.YseOutType.YSE_OUT_ANY);
+
+  final raw.YseOutType native;
+  const OutType(this.native);
+}
+
 /// One of the three delay taps on a [DspObject.basicDelay] (and its
 /// filtered subclasses).
 enum DelayTap {

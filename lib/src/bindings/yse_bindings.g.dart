@@ -786,6 +786,38 @@ class YseBindings {
         )
       >();
 
+  /// Initialize a sound from a patcher graph. The patcher must outlive the
+  /// sound.
+  YseStatus sound_load_patcher(
+    ffi.Pointer<YseSound> s,
+    ffi.Pointer<YsePatcher> patch,
+    ffi.Pointer<YseChannel> ch,
+    double volume,
+  ) {
+    return YseStatus.fromValue(_sound_load_patcher(s, patch, ch, volume));
+  }
+
+  late final _sound_load_patcherPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSound>,
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<YseChannel>,
+            ffi.Float,
+          )
+        >
+      >('yse_sound_load_patcher');
+  late final _sound_load_patcher = _sound_load_patcherPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseSound>,
+          ffi.Pointer<YsePatcher>,
+          ffi.Pointer<YseChannel>,
+          double,
+        )
+      >();
+
   int sound_is_valid(ffi.Pointer<YseSound> s) {
     return _sound_is_valid(s);
   }
@@ -3082,6 +3114,704 @@ class YseBindings {
   late final _dsp_granulator_get_gain = _dsp_granulator_get_gainPtr
       .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
 
+  /// ─── patcher lifecycle ──────────────────────────────────────────────
+  ffi.Pointer<YsePatcher> patcher_create() {
+    return _patcher_create();
+  }
+
+  late final _patcher_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YsePatcher> Function()>>(
+        'yse_patcher_create',
+      );
+  late final _patcher_create = _patcher_createPtr
+      .asFunction<ffi.Pointer<YsePatcher> Function()>();
+
+  void patcher_destroy(ffi.Pointer<YsePatcher> p) {
+    return _patcher_destroy(p);
+  }
+
+  late final _patcher_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePatcher>)>>(
+        'yse_patcher_destroy',
+      );
+  late final _patcher_destroy = _patcher_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YsePatcher>)>();
+
+  void patcher_init(ffi.Pointer<YsePatcher> p, int main_outputs) {
+    return _patcher_init(p, main_outputs);
+  }
+
+  late final _patcher_initPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePatcher>, ffi.Int)>
+      >('yse_patcher_init');
+  late final _patcher_init = _patcher_initPtr
+      .asFunction<void Function(ffi.Pointer<YsePatcher>, int)>();
+
+  /// ─── object management ─────────────────────────────────────────────
+  ffi.Pointer<YsePHandle> patcher_create_object(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<ffi.Char> type,
+    ffi.Pointer<ffi.Char> args,
+  ) {
+    return _patcher_create_object(p, type, args);
+  }
+
+  late final _patcher_create_objectPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YsePHandle> Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('yse_patcher_create_object');
+  late final _patcher_create_object = _patcher_create_objectPtr
+      .asFunction<
+        ffi.Pointer<YsePHandle> Function(
+          ffi.Pointer<YsePatcher>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+        )
+      >();
+
+  void patcher_delete_object(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<YsePHandle> obj,
+  ) {
+    return _patcher_delete_object(p, obj);
+  }
+
+  late final _patcher_delete_objectPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePatcher>, ffi.Pointer<YsePHandle>)
+        >
+      >('yse_patcher_delete_object');
+  late final _patcher_delete_object = _patcher_delete_objectPtr
+      .asFunction<
+        void Function(ffi.Pointer<YsePatcher>, ffi.Pointer<YsePHandle>)
+      >();
+
+  void patcher_clear(ffi.Pointer<YsePatcher> p) {
+    return _patcher_clear(p);
+  }
+
+  late final _patcher_clearPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePatcher>)>>(
+        'yse_patcher_clear',
+      );
+  late final _patcher_clear = _patcher_clearPtr
+      .asFunction<void Function(ffi.Pointer<YsePatcher>)>();
+
+  void patcher_connect(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<YsePHandle> from,
+    int outlet,
+    ffi.Pointer<YsePHandle> to,
+    int inlet,
+  ) {
+    return _patcher_connect(p, from, outlet, to, inlet);
+  }
+
+  late final _patcher_connectPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<YsePHandle>,
+            ffi.Int,
+            ffi.Pointer<YsePHandle>,
+            ffi.Int,
+          )
+        >
+      >('yse_patcher_connect');
+  late final _patcher_connect = _patcher_connectPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YsePatcher>,
+          ffi.Pointer<YsePHandle>,
+          int,
+          ffi.Pointer<YsePHandle>,
+          int,
+        )
+      >();
+
+  void patcher_disconnect(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<YsePHandle> from,
+    int outlet,
+    ffi.Pointer<YsePHandle> to,
+    int inlet,
+  ) {
+    return _patcher_disconnect(p, from, outlet, to, inlet);
+  }
+
+  late final _patcher_disconnectPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<YsePHandle>,
+            ffi.Int,
+            ffi.Pointer<YsePHandle>,
+            ffi.Int,
+          )
+        >
+      >('yse_patcher_disconnect');
+  late final _patcher_disconnect = _patcher_disconnectPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YsePatcher>,
+          ffi.Pointer<YsePHandle>,
+          int,
+          ffi.Pointer<YsePHandle>,
+          int,
+        )
+      >();
+
+  int patcher_is_valid_object(ffi.Pointer<ffi.Char> type) {
+    return _patcher_is_valid_object(type);
+  }
+
+  late final _patcher_is_valid_objectPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
+        'yse_patcher_is_valid_object',
+      );
+  late final _patcher_is_valid_object = _patcher_is_valid_objectPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  /// ─── persistence ───────────────────────────────────────────────────
+  int patcher_dump_json(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _patcher_dump_json(p, buf, cap);
+  }
+
+  late final _patcher_dump_jsonPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_patcher_dump_json');
+  late final _patcher_dump_json = _patcher_dump_jsonPtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  void patcher_parse_json(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<ffi.Char> content,
+  ) {
+    return _patcher_parse_json(p, content);
+  }
+
+  late final _patcher_parse_jsonPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_patcher_parse_json');
+  late final _patcher_parse_json = _patcher_parse_jsonPtr
+      .asFunction<
+        void Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>)
+      >();
+
+  /// ─── enumeration ───────────────────────────────────────────────────
+  int patcher_objects(ffi.Pointer<YsePatcher> p) {
+    return _patcher_objects(p);
+  }
+
+  late final _patcher_objectsPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YsePatcher>)>
+      >('yse_patcher_objects');
+  late final _patcher_objects = _patcher_objectsPtr
+      .asFunction<int Function(ffi.Pointer<YsePatcher>)>();
+
+  ffi.Pointer<YsePHandle> patcher_get_handle_from_list(
+    ffi.Pointer<YsePatcher> p,
+    int idx,
+  ) {
+    return _patcher_get_handle_from_list(p, idx);
+  }
+
+  late final _patcher_get_handle_from_listPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YsePHandle> Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_patcher_get_handle_from_list');
+  late final _patcher_get_handle_from_list = _patcher_get_handle_from_listPtr
+      .asFunction<
+        ffi.Pointer<YsePHandle> Function(ffi.Pointer<YsePatcher>, int)
+      >();
+
+  ffi.Pointer<YsePHandle> patcher_get_handle_from_id(
+    ffi.Pointer<YsePatcher> p,
+    int id,
+  ) {
+    return _patcher_get_handle_from_id(p, id);
+  }
+
+  late final _patcher_get_handle_from_idPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YsePHandle> Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_patcher_get_handle_from_id');
+  late final _patcher_get_handle_from_id = _patcher_get_handle_from_idPtr
+      .asFunction<
+        ffi.Pointer<YsePHandle> Function(ffi.Pointer<YsePatcher>, int)
+      >();
+
+  /// ─── message I/O ───────────────────────────────────────────────────
+  int patcher_pass_bang(ffi.Pointer<YsePatcher> p, ffi.Pointer<ffi.Char> to) {
+    return _patcher_pass_bang(p, to);
+  }
+
+  late final _patcher_pass_bangPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_patcher_pass_bang');
+  late final _patcher_pass_bang = _patcher_pass_bangPtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>)
+      >();
+
+  int patcher_pass_int(
+    ffi.Pointer<YsePatcher> p,
+    int value,
+    ffi.Pointer<ffi.Char> to,
+  ) {
+    return _patcher_pass_int(p, value, to);
+  }
+
+  late final _patcher_pass_intPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Int,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('yse_patcher_pass_int');
+  late final _patcher_pass_int = _patcher_pass_intPtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePatcher>, int, ffi.Pointer<ffi.Char>)
+      >();
+
+  int patcher_pass_float(
+    ffi.Pointer<YsePatcher> p,
+    double value,
+    ffi.Pointer<ffi.Char> to,
+  ) {
+    return _patcher_pass_float(p, value, to);
+  }
+
+  late final _patcher_pass_floatPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Float,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('yse_patcher_pass_float');
+  late final _patcher_pass_float = _patcher_pass_floatPtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePatcher>, double, ffi.Pointer<ffi.Char>)
+      >();
+
+  int patcher_pass_string(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<ffi.Char> value,
+    ffi.Pointer<ffi.Char> to,
+  ) {
+    return _patcher_pass_string(p, value, to);
+  }
+
+  late final _patcher_pass_stringPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('yse_patcher_pass_string');
+  late final _patcher_pass_string = _patcher_pass_stringPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YsePatcher>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+        )
+      >();
+
+  /// ─── handle accessors ─────────────────────────────────────────────
+  int phandle_get_type(
+    ffi.Pointer<YsePHandle> h,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _phandle_get_type(h, buf, cap);
+  }
+
+  late final _phandle_get_typePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_phandle_get_type');
+  late final _phandle_get_type = _phandle_get_typePtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePHandle>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int phandle_get_name(
+    ffi.Pointer<YsePHandle> h,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _phandle_get_name(h, buf, cap);
+  }
+
+  late final _phandle_get_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_phandle_get_name');
+  late final _phandle_get_name = _phandle_get_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePHandle>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int phandle_get_params(
+    ffi.Pointer<YsePHandle> h,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _phandle_get_params(h, buf, cap);
+  }
+
+  late final _phandle_get_paramsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_phandle_get_params');
+  late final _phandle_get_params = _phandle_get_paramsPtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePHandle>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int phandle_get_gui_value(
+    ffi.Pointer<YsePHandle> h,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _phandle_get_gui_value(h, buf, cap);
+  }
+
+  late final _phandle_get_gui_valuePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_phandle_get_gui_value');
+  late final _phandle_get_gui_value = _phandle_get_gui_valuePtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePHandle>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int phandle_get_gui_property(
+    ffi.Pointer<YsePHandle> h,
+    ffi.Pointer<ffi.Char> key,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _phandle_get_gui_property(h, key, buf, cap);
+  }
+
+  late final _phandle_get_gui_propertyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_phandle_get_gui_property');
+  late final _phandle_get_gui_property = _phandle_get_gui_propertyPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YsePHandle>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          int,
+        )
+      >();
+
+  void phandle_set_gui_property(
+    ffi.Pointer<YsePHandle> h,
+    ffi.Pointer<ffi.Char> key,
+    ffi.Pointer<ffi.Char> value,
+  ) {
+    return _phandle_set_gui_property(h, key, value);
+  }
+
+  late final _phandle_set_gui_propertyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('yse_phandle_set_gui_property');
+  late final _phandle_set_gui_property = _phandle_set_gui_propertyPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YsePHandle>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+        )
+      >();
+
+  void phandle_set_bang(ffi.Pointer<YsePHandle> h, int inlet) {
+    return _phandle_set_bang(h, inlet);
+  }
+
+  late final _phandle_set_bangPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePHandle>, ffi.UnsignedInt)
+        >
+      >('yse_phandle_set_bang');
+  late final _phandle_set_bang = _phandle_set_bangPtr
+      .asFunction<void Function(ffi.Pointer<YsePHandle>, int)>();
+
+  void phandle_set_int(ffi.Pointer<YsePHandle> h, int inlet, int value) {
+    return _phandle_set_int(h, inlet, value);
+  }
+
+  late final _phandle_set_intPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePHandle>, ffi.UnsignedInt, ffi.Int)
+        >
+      >('yse_phandle_set_int');
+  late final _phandle_set_int = _phandle_set_intPtr
+      .asFunction<void Function(ffi.Pointer<YsePHandle>, int, int)>();
+
+  void phandle_set_float(ffi.Pointer<YsePHandle> h, int inlet, double value) {
+    return _phandle_set_float(h, inlet, value);
+  }
+
+  late final _phandle_set_floatPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePHandle>, ffi.UnsignedInt, ffi.Float)
+        >
+      >('yse_phandle_set_float');
+  late final _phandle_set_float = _phandle_set_floatPtr
+      .asFunction<void Function(ffi.Pointer<YsePHandle>, int, double)>();
+
+  void phandle_set_list(
+    ffi.Pointer<YsePHandle> h,
+    int inlet,
+    ffi.Pointer<ffi.Char> value,
+  ) {
+    return _phandle_set_list(h, inlet, value);
+  }
+
+  late final _phandle_set_listPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.UnsignedInt,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('yse_phandle_set_list');
+  late final _phandle_set_list = _phandle_set_listPtr
+      .asFunction<
+        void Function(ffi.Pointer<YsePHandle>, int, ffi.Pointer<ffi.Char>)
+      >();
+
+  void phandle_set_params(
+    ffi.Pointer<YsePHandle> h,
+    ffi.Pointer<ffi.Char> args,
+  ) {
+    return _phandle_set_params(h, args);
+  }
+
+  late final _phandle_set_paramsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePHandle>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_phandle_set_params');
+  late final _phandle_set_params = _phandle_set_paramsPtr
+      .asFunction<
+        void Function(ffi.Pointer<YsePHandle>, ffi.Pointer<ffi.Char>)
+      >();
+
+  int phandle_get_inputs(ffi.Pointer<YsePHandle> h) {
+    return _phandle_get_inputs(h);
+  }
+
+  late final _phandle_get_inputsPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YsePHandle>)>>(
+        'yse_phandle_get_inputs',
+      );
+  late final _phandle_get_inputs = _phandle_get_inputsPtr
+      .asFunction<int Function(ffi.Pointer<YsePHandle>)>();
+
+  int phandle_get_outputs(ffi.Pointer<YsePHandle> h) {
+    return _phandle_get_outputs(h);
+  }
+
+  late final _phandle_get_outputsPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YsePHandle>)>>(
+        'yse_phandle_get_outputs',
+      );
+  late final _phandle_get_outputs = _phandle_get_outputsPtr
+      .asFunction<int Function(ffi.Pointer<YsePHandle>)>();
+
+  int phandle_is_dsp_input(ffi.Pointer<YsePHandle> h, int inlet) {
+    return _phandle_is_dsp_input(h, inlet);
+  }
+
+  late final _phandle_is_dsp_inputPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YsePHandle>, ffi.UnsignedInt)
+        >
+      >('yse_phandle_is_dsp_input');
+  late final _phandle_is_dsp_input = _phandle_is_dsp_inputPtr
+      .asFunction<int Function(ffi.Pointer<YsePHandle>, int)>();
+
+  YseOutType phandle_output_data_type(ffi.Pointer<YsePHandle> h, int pin) {
+    return YseOutType.fromValue(_phandle_output_data_type(h, pin));
+  }
+
+  late final _phandle_output_data_typePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YsePHandle>, ffi.UnsignedInt)
+        >
+      >('yse_phandle_output_data_type');
+  late final _phandle_output_data_type = _phandle_output_data_typePtr
+      .asFunction<int Function(ffi.Pointer<YsePHandle>, int)>();
+
+  int phandle_get_id(ffi.Pointer<YsePHandle> h) {
+    return _phandle_get_id(h);
+  }
+
+  late final _phandle_get_idPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YsePHandle>)>
+      >('yse_phandle_get_id');
+  late final _phandle_get_id = _phandle_get_idPtr
+      .asFunction<int Function(ffi.Pointer<YsePHandle>)>();
+
+  int phandle_get_connections(ffi.Pointer<YsePHandle> h, int outlet) {
+    return _phandle_get_connections(h, outlet);
+  }
+
+  late final _phandle_get_connectionsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YsePHandle>, ffi.UnsignedInt)
+        >
+      >('yse_phandle_get_connections');
+  late final _phandle_get_connections = _phandle_get_connectionsPtr
+      .asFunction<int Function(ffi.Pointer<YsePHandle>, int)>();
+
+  int phandle_get_connection_target(
+    ffi.Pointer<YsePHandle> h,
+    int outlet,
+    int connection,
+  ) {
+    return _phandle_get_connection_target(h, outlet, connection);
+  }
+
+  late final _phandle_get_connection_targetPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.UnsignedInt,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_phandle_get_connection_target');
+  late final _phandle_get_connection_target = _phandle_get_connection_targetPtr
+      .asFunction<int Function(ffi.Pointer<YsePHandle>, int, int)>();
+
+  int phandle_get_connection_target_inlet(
+    ffi.Pointer<YsePHandle> h,
+    int outlet,
+    int connection,
+  ) {
+    return _phandle_get_connection_target_inlet(h, outlet, connection);
+  }
+
+  late final _phandle_get_connection_target_inletPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.UnsignedInt,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_phandle_get_connection_target_inlet');
+  late final _phandle_get_connection_target_inlet =
+      _phandle_get_connection_target_inletPtr
+          .asFunction<int Function(ffi.Pointer<YsePHandle>, int, int)>();
+
   late final addresses = _SymbolAddresses(this);
 }
 
@@ -3102,6 +3832,8 @@ class _SymbolAddresses {
   get dsp_buffer_destroy => _library._dsp_buffer_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspObject>)>>
   get dsp_object_destroy => _library._dsp_object_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePatcher>)>>
+  get patcher_destroy => _library._patcher_destroyPtr;
 }
 
 enum YseStatus {
@@ -3169,6 +3901,31 @@ enum YseChannelType {
     7 => YSE_CT_71,
     8 => YSE_CT_CUSTOM,
     _ => throw ArgumentError('Unknown value for YseChannelType: $value'),
+  };
+}
+
+/// Mirrors YSE::OUT_TYPE in headers/enums.hpp (patcher outlet data type).
+enum YseOutType {
+  YSE_OUT_INVALID(0),
+  YSE_OUT_BANG(1),
+  YSE_OUT_FLOAT(2),
+  YSE_OUT_INT(3),
+  YSE_OUT_BUFFER(4),
+  YSE_OUT_LIST(5),
+  YSE_OUT_ANY(6);
+
+  final int value;
+  const YseOutType(this.value);
+
+  static YseOutType fromValue(int value) => switch (value) {
+    0 => YSE_OUT_INVALID,
+    1 => YSE_OUT_BANG,
+    2 => YSE_OUT_FLOAT,
+    3 => YSE_OUT_INT,
+    4 => YSE_OUT_BUFFER,
+    5 => YSE_OUT_LIST,
+    6 => YSE_OUT_ANY,
+    _ => throw ArgumentError('Unknown value for YseOutType: $value'),
   };
 }
 
@@ -3281,3 +4038,7 @@ final class YseSound extends ffi.Opaque {}
 final class YseDspBuffer extends ffi.Opaque {}
 
 final class YseDspObject extends ffi.Opaque {}
+
+final class YsePatcher extends ffi.Opaque {}
+
+final class YsePHandle extends ffi.Opaque {}

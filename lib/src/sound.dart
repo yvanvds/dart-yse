@@ -8,6 +8,7 @@ import 'dsp_buffer.dart';
 import 'dsp_object.dart';
 import 'exception.dart';
 import 'library.dart';
+import 'patcher.dart';
 import 'pos.dart';
 
 /// A playable instance of an audio source.
@@ -65,6 +66,34 @@ class Sound implements Finalizable {
           b,
         );
       });
+      return s;
+    } catch (_) {
+      s.dispose();
+      rethrow;
+    }
+  }
+
+  /// Construct a sound driven by a [Patcher] graph.
+  ///
+  /// The patcher must outlive this sound; the engine reads its `~dac`
+  /// output on every audio callback.
+  factory Sound.fromPatcher(
+    Patcher patcher, {
+    Channel? channel,
+    double volume = 1.0,
+  }) {
+    final b = bindings;
+    final h = b.sound_create();
+    if (h.address == 0) {
+      throw YseException('yse_sound_create returned null');
+    }
+    final s = Sound._(b, h);
+    try {
+      final chHandle = channel?.handle ?? nullptr;
+      checkStatus(
+        b.sound_load_patcher(h, patcher.handle, chHandle, volume),
+        b,
+      );
       return s;
     } catch (_) {
       s.dispose();

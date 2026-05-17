@@ -27,3 +27,9 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# IDE / agent config
+.claude/
+
+# YSE runtime log — written to cwd on engine startup
+YSElog.txt

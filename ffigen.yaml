@@ -1,0 +1,71 @@
+# ffigen — generates low-level FFI bindings from the C ABI header into
+# lib/src/bindings/yse_bindings.g.dart. Hand-written idiomatic wrappers in
+# lib/src/*.dart consume these. Regenerate with:  dart run ffigen
+name: YseBindings
+description: Low-level FFI bindings for libyse_c.dll (do not use directly).
+
+output: 'lib/src/bindings/yse_bindings.g.dart'
+
+# MSYS2 Clang64's libclang. Ffigen needs libclang to parse the C headers.
+llvm-path:
+  - 'C:/msys64/clang64'
+  - 'C:/Program Files/LLVM'
+
+# Clang's builtin include dir holds stddef.h / stdint.h etc. libclang doesn't
+# autodiscover it on Windows, so we pass it explicitly. The MSYS2 Clang64
+# version number changes with package updates — if a future toolchain refresh
+# breaks ffigen, glob C:/msys64/clang64/lib/clang/*/include for the new path.
+compiler-opts:
+  - '-isystem'
+  - 'C:/msys64/clang64/lib/clang/22/include'
+
+headers:
+  entry-points:
+    - 'third_party/yse-soundengine/YseEngine/c_api/include/yse_c/yse_all.h'
+  include-directives:
+    - '**/yse_c/*.h'
+
+preamble: |
+  // GENERATED FILE — DO NOT EDIT.
+  // Regenerate with `dart run ffigen` after the C ABI header changes.
+  // ignore_for_file: type=lint, camel_case_types, non_constant_identifier_names
+
+comments:
+  style: any
+  length: full
+
+# Safe to silence: the C ABI is built with the same MSYS2 Clang64 toolchain
+# that ffigen uses to parse the header, so int sizing for enums matches.
+silence-enum-warning: true
+
+# Surface every yse_* / Yse* symbol; strip the prefix so Dart names read
+# naturally (yse_system_init → systemInit).
+functions:
+  include:
+    - 'yse_.*'
+  rename:
+    'yse_(.*)': '$1'
+  # Surface native function-pointer addresses (bindings.addresses.foo) so
+  # NativeFinalizer can attach to the *_destroy functions.
+  symbol-address:
+    include:
+      - 'yse_.*_destroy'
+
+# Keep Yse* / yse_* names verbatim on the generated bindings (struct,
+# enum, typedef). The bindings layer is internal — only the hand-written
+# wrappers in lib/src/*.dart are publicly exported, and they use natural
+# Dart names (System, Sound, Channel) that would clash with the FFI
+# structs if we stripped the prefix here.
+structs:
+  include:
+    - 'Yse.*'
+    - 'yse_.*'
+
+enums:
+  include:
+    - 'Yse.*'
+
+typedefs:
+  include:
+    - 'Yse.*'
+    - 'yse_.*'

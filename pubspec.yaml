@@ -1,6 +1,6 @@
 name: yse
 description: Dart bindings for the YSE sound engine — 3D audio playback, mixing, DSP, MIDI, and generative music.
-version: 0.0.1
+version: 0.1.0
 repository: https://github.com/yvanvds/dart-yse
 issue_tracker: https://github.com/yvanvds/dart-yse/issues
 

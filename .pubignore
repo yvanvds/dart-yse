@@ -1,0 +1,10 @@
+# The yse-soundengine submodule contains the C++ source tree (~9 MB)
+# and is only consumed at build time. v0.x consumers point YSE_DLL_PATH
+# at a locally-built libyse.dll per the README; the native-assets build
+# hook (which will publish-time pull pre-built DLLs) lands in a later
+# release.
+third_party/
+
+# Local Claude IDE config — never publish.
+.claude/
+YSElog.txt

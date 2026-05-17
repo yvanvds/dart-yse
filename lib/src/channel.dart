@@ -87,6 +87,35 @@ class Channel {
   /// Channel name (the value passed to [Channel.create]).
   String get name => _b.channel_get_name(_handle).cast<Utf8>().toDartString();
 
+  /// Number of output speakers this channel feeds. Index into [peakLinear]
+  /// and [peakDb] with values in `[0, numOutputs)`.
+  int get numOutputs => _b.channel_get_num_outputs(_handle);
+
+  /// Peak amplitude (linear `[0.0, 1.0+]`) measured at the end of dsp(),
+  /// before the channel volume is applied. Useful for input-level meters.
+  ///
+  /// Pass an [output] index in `[0, numOutputs)` for a per-speaker reading;
+  /// out-of-range indices return 0.
+  double peakLinearPre({int? output}) => output == null
+      ? _b.channel_get_peak_linear_pre(_handle)
+      : _b.channel_get_peak_linear_pre_output(_handle, output);
+
+  /// Peak amplitude (linear `[0.0, 1.0+]`) measured immediately after
+  /// the channel volume is applied — what listeners hear.
+  double peakLinearPost({int? output}) => output == null
+      ? _b.channel_get_peak_linear_post(_handle)
+      : _b.channel_get_peak_linear_post_output(_handle, output);
+
+  /// [peakLinearPre] expressed in decibels. Silence reports −120 dB.
+  double peakDbPre({int? output}) => output == null
+      ? _b.channel_get_peak_db_pre(_handle)
+      : _b.channel_get_peak_db_pre_output(_handle, output);
+
+  /// [peakLinearPost] expressed in decibels. Silence reports −120 dB.
+  double peakDbPost({int? output}) => output == null
+      ? _b.channel_get_peak_db_post(_handle)
+      : _b.channel_get_peak_db_post_output(_handle, output);
+
   /// Internal: native handle for cross-wrapper plumbing (sound → channel).
   Pointer<YseChannel> get handle => _handle;
 

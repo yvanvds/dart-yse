@@ -34,6 +34,10 @@ class YseBindings {
   late final _version = _versionPtr
       .asFunction<ffi.Pointer<ffi.Char> Function()>();
 
+  /// Returns the last error message recorded on the calling thread (the
+  /// slot is thread-local). The returned pointer is valid until the next
+  /// yse_* call from the same thread; copy the string if you need to hold
+  /// onto it. Empty string when no error has been recorded.
   ffi.Pointer<ffi.Char> last_error() {
     return _last_error();
   }
@@ -166,6 +170,44 @@ class YseBindings {
       );
   late final _system_cpu_load = _system_cpu_loadPtr
       .asFunction<double Function(ffi.Pointer<YseSystem>)>();
+
+  /// Live state of the currently open audio device. Returns 0 when no device
+  /// is open (pre-init, after close, or initOffline path). Buffer size is the
+  /// device's frames-per-callback, NOT the engine block size. Output latency
+  /// is in samples; convert to ms with (latency / sample_rate) * 1000.
+  double system_get_active_sample_rate(ffi.Pointer<YseSystem> sys) {
+    return _system_get_active_sample_rate(sys);
+  }
+
+  late final _system_get_active_sample_ratePtr =
+      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Pointer<YseSystem>)>>(
+        'yse_system_get_active_sample_rate',
+      );
+  late final _system_get_active_sample_rate = _system_get_active_sample_ratePtr
+      .asFunction<double Function(ffi.Pointer<YseSystem>)>();
+
+  int system_get_active_buffer_size(ffi.Pointer<YseSystem> sys) {
+    return _system_get_active_buffer_size(sys);
+  }
+
+  late final _system_get_active_buffer_sizePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseSystem>)>>(
+        'yse_system_get_active_buffer_size',
+      );
+  late final _system_get_active_buffer_size = _system_get_active_buffer_sizePtr
+      .asFunction<int Function(ffi.Pointer<YseSystem>)>();
+
+  int system_get_active_output_latency(ffi.Pointer<YseSystem> sys) {
+    return _system_get_active_output_latency(sys);
+  }
+
+  late final _system_get_active_output_latencyPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseSystem>)>>(
+        'yse_system_get_active_output_latency',
+      );
+  late final _system_get_active_output_latency =
+      _system_get_active_output_latencyPtr
+          .asFunction<int Function(ffi.Pointer<YseSystem>)>();
 
   /// Convenience.
   void system_sleep(ffi.Pointer<YseSystem> sys, int ms) {
@@ -760,6 +802,129 @@ class YseBindings {
       >('yse_channel_get_name');
   late final _channel_get_name = _channel_get_namePtr
       .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<YseChannel>)>();
+
+  /// Output peak metering — see channelInterface.hpp for semantics.
+  ///
+  /// "Pre" reads the peak measured at the end of dsp() (after reverb/underwater FX,
+  /// before the channel volume is applied); "Post" reads the peak measured
+  /// immediately after adjustVolume() — what listeners hear. Per-output overloads
+  /// take an index in [0, yse_channel_get_num_outputs()); out-of-range indices
+  /// return 0. dB getters convert the linear value on the fly with a -120 dB
+  /// floor for silence. All getters return 0 on a NULL or invalid channel.
+  int channel_get_num_outputs(ffi.Pointer<YseChannel> ch) {
+    return _channel_get_num_outputs(ch);
+  }
+
+  late final _channel_get_num_outputsPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseChannel>)>>(
+        'yse_channel_get_num_outputs',
+      );
+  late final _channel_get_num_outputs = _channel_get_num_outputsPtr
+      .asFunction<int Function(ffi.Pointer<YseChannel>)>();
+
+  double channel_get_peak_linear_pre(ffi.Pointer<YseChannel> ch) {
+    return _channel_get_peak_linear_pre(ch);
+  }
+
+  late final _channel_get_peak_linear_prePtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseChannel>)>>(
+        'yse_channel_get_peak_linear_pre',
+      );
+  late final _channel_get_peak_linear_pre = _channel_get_peak_linear_prePtr
+      .asFunction<double Function(ffi.Pointer<YseChannel>)>();
+
+  double channel_get_peak_linear_post(ffi.Pointer<YseChannel> ch) {
+    return _channel_get_peak_linear_post(ch);
+  }
+
+  late final _channel_get_peak_linear_postPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseChannel>)>>(
+        'yse_channel_get_peak_linear_post',
+      );
+  late final _channel_get_peak_linear_post = _channel_get_peak_linear_postPtr
+      .asFunction<double Function(ffi.Pointer<YseChannel>)>();
+
+  double channel_get_peak_db_pre(ffi.Pointer<YseChannel> ch) {
+    return _channel_get_peak_db_pre(ch);
+  }
+
+  late final _channel_get_peak_db_prePtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseChannel>)>>(
+        'yse_channel_get_peak_db_pre',
+      );
+  late final _channel_get_peak_db_pre = _channel_get_peak_db_prePtr
+      .asFunction<double Function(ffi.Pointer<YseChannel>)>();
+
+  double channel_get_peak_db_post(ffi.Pointer<YseChannel> ch) {
+    return _channel_get_peak_db_post(ch);
+  }
+
+  late final _channel_get_peak_db_postPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseChannel>)>>(
+        'yse_channel_get_peak_db_post',
+      );
+  late final _channel_get_peak_db_post = _channel_get_peak_db_postPtr
+      .asFunction<double Function(ffi.Pointer<YseChannel>)>();
+
+  double channel_get_peak_linear_pre_output(
+    ffi.Pointer<YseChannel> ch,
+    int output_idx,
+  ) {
+    return _channel_get_peak_linear_pre_output(ch, output_idx);
+  }
+
+  late final _channel_get_peak_linear_pre_outputPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseChannel>, ffi.Int)>
+      >('yse_channel_get_peak_linear_pre_output');
+  late final _channel_get_peak_linear_pre_output =
+      _channel_get_peak_linear_pre_outputPtr
+          .asFunction<double Function(ffi.Pointer<YseChannel>, int)>();
+
+  double channel_get_peak_linear_post_output(
+    ffi.Pointer<YseChannel> ch,
+    int output_idx,
+  ) {
+    return _channel_get_peak_linear_post_output(ch, output_idx);
+  }
+
+  late final _channel_get_peak_linear_post_outputPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseChannel>, ffi.Int)>
+      >('yse_channel_get_peak_linear_post_output');
+  late final _channel_get_peak_linear_post_output =
+      _channel_get_peak_linear_post_outputPtr
+          .asFunction<double Function(ffi.Pointer<YseChannel>, int)>();
+
+  double channel_get_peak_db_pre_output(
+    ffi.Pointer<YseChannel> ch,
+    int output_idx,
+  ) {
+    return _channel_get_peak_db_pre_output(ch, output_idx);
+  }
+
+  late final _channel_get_peak_db_pre_outputPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseChannel>, ffi.Int)>
+      >('yse_channel_get_peak_db_pre_output');
+  late final _channel_get_peak_db_pre_output =
+      _channel_get_peak_db_pre_outputPtr
+          .asFunction<double Function(ffi.Pointer<YseChannel>, int)>();
+
+  double channel_get_peak_db_post_output(
+    ffi.Pointer<YseChannel> ch,
+    int output_idx,
+  ) {
+    return _channel_get_peak_db_post_output(ch, output_idx);
+  }
+
+  late final _channel_get_peak_db_post_outputPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseChannel>, ffi.Int)>
+      >('yse_channel_get_peak_db_post_output');
+  late final _channel_get_peak_db_post_output =
+      _channel_get_peak_db_post_outputPtr
+          .asFunction<double Function(ffi.Pointer<YseChannel>, int)>();
 
   ffi.Pointer<YseSound> sound_create() {
     return _sound_create();
@@ -4200,6 +4365,131 @@ class YseBindings {
   late final _midi_out_raw3 = _midi_out_raw3Ptr
       .asFunction<void Function(ffi.Pointer<YseMidiOut>, int, int, int)>();
 
+  ffi.Pointer<YseMidiIn> midi_in_create() {
+    return _midi_in_create();
+  }
+
+  late final _midi_in_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseMidiIn> Function()>>(
+        'yse_midi_in_create',
+      );
+  late final _midi_in_create = _midi_in_createPtr
+      .asFunction<ffi.Pointer<YseMidiIn> Function()>();
+
+  void midi_in_destroy(ffi.Pointer<YseMidiIn> m) {
+    return _midi_in_destroy(m);
+  }
+
+  late final _midi_in_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiIn>)>>(
+        'yse_midi_in_destroy',
+      );
+  late final _midi_in_destroy = _midi_in_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiIn>)>();
+
+  void midi_in_open(ffi.Pointer<YseMidiIn> m, int port) {
+    return _midi_in_open(m, port);
+  }
+
+  late final _midi_in_openPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiIn>, ffi.UnsignedInt)
+        >
+      >('yse_midi_in_open');
+  late final _midi_in_open = _midi_in_openPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiIn>, int)>();
+
+  void midi_in_close(ffi.Pointer<YseMidiIn> m) {
+    return _midi_in_close(m);
+  }
+
+  late final _midi_in_closePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiIn>)>>(
+        'yse_midi_in_close',
+      );
+  late final _midi_in_close = _midi_in_closePtr
+      .asFunction<void Function(ffi.Pointer<YseMidiIn>)>();
+
+  int midi_in_is_open(ffi.Pointer<YseMidiIn> m) {
+    return _midi_in_is_open(m);
+  }
+
+  late final _midi_in_is_openPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseMidiIn>)>>(
+        'yse_midi_in_is_open',
+      );
+  late final _midi_in_is_open = _midi_in_is_openPtr
+      .asFunction<int Function(ffi.Pointer<YseMidiIn>)>();
+
+  /// Register a raw callback. Pass NULL to detach.
+  void midi_in_set_raw_callback(
+    ffi.Pointer<YseMidiIn> m,
+    YseMidiInRawCallback cb,
+    ffi.Pointer<ffi.Void> user_data,
+  ) {
+    return _midi_in_set_raw_callback(m, cb, user_data);
+  }
+
+  late final _midi_in_set_raw_callbackPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseMidiIn>,
+            YseMidiInRawCallback,
+            ffi.Pointer<ffi.Void>,
+          )
+        >
+      >('yse_midi_in_set_raw_callback');
+  late final _midi_in_set_raw_callback = _midi_in_set_raw_callbackPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YseMidiIn>,
+          YseMidiInRawCallback,
+          ffi.Pointer<ffi.Void>,
+        )
+      >();
+
+  /// Register a parsed callback. Pass NULL to detach.
+  void midi_in_set_parsed_callback(
+    ffi.Pointer<YseMidiIn> m,
+    YseMidiInParsedCallback cb,
+    ffi.Pointer<ffi.Void> user_data,
+  ) {
+    return _midi_in_set_parsed_callback(m, cb, user_data);
+  }
+
+  late final _midi_in_set_parsed_callbackPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseMidiIn>,
+            YseMidiInParsedCallback,
+            ffi.Pointer<ffi.Void>,
+          )
+        >
+      >('yse_midi_in_set_parsed_callback');
+  late final _midi_in_set_parsed_callback = _midi_in_set_parsed_callbackPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YseMidiIn>,
+          YseMidiInParsedCallback,
+          ffi.Pointer<ffi.Void>,
+        )
+      >();
+
+  /// Release a byte buffer previously delivered to a YseMidiInRawCallback.
+  void midi_in_free_message(ffi.Pointer<ffi.UnsignedChar> bytes) {
+    return _midi_in_free_message(bytes);
+  }
+
+  late final _midi_in_free_messagePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.UnsignedChar>)>
+      >('yse_midi_in_free_message');
+  late final _midi_in_free_message = _midi_in_free_messagePtr
+      .asFunction<void Function(ffi.Pointer<ffi.UnsignedChar>)>();
+
   /// ─── midiNote convenience value ────────────────────────────────────
   ffi.Pointer<YseMidiNote> midi_note_create(int note, int velocity) {
     return _midi_note_create(note, velocity);
@@ -5387,6 +5677,8 @@ class _SymbolAddresses {
   get midi_file_destroy => _library._midi_file_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>)>>
   get midi_out_destroy => _library._midi_out_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiIn>)>>
+  get midi_in_destroy => _library._midi_in_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiNote>)>>
   get midi_note_destroy => _library._midi_note_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseNote>)>>
@@ -5633,7 +5925,53 @@ final class YseMidiFile extends ffi.Opaque {}
 
 final class YseMidiOut extends ffi.Opaque {}
 
+final class YseMidiIn extends ffi.Opaque {}
+
 final class YseMidiNote extends ffi.Opaque {}
+
+typedef YseMidiInRawCallbackFunction =
+    ffi.Void Function(
+      ffi.Double timestamp_sec,
+      ffi.Pointer<ffi.UnsignedChar> bytes,
+      ffi.Size len,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef DartYseMidiInRawCallbackFunction =
+    void Function(
+      double timestamp_sec,
+      ffi.Pointer<ffi.UnsignedChar> bytes,
+      int len,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+
+/// Raw-bytes callback. `bytes` is malloc'd by the engine; the receiver owns
+/// it and must release with yse_midi_in_free_message. Length is in bytes.
+typedef YseMidiInRawCallback =
+    ffi.Pointer<ffi.NativeFunction<YseMidiInRawCallbackFunction>>;
+typedef YseMidiInParsedCallbackFunction =
+    ffi.Void Function(
+      ffi.Double timestamp_sec,
+      ffi.UnsignedChar status,
+      ffi.UnsignedChar channel,
+      ffi.UnsignedChar data1,
+      ffi.UnsignedChar data2,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef DartYseMidiInParsedCallbackFunction =
+    void Function(
+      double timestamp_sec,
+      int status,
+      int channel,
+      int data1,
+      int data2,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+
+/// Parsed callback. status/channel are pre-split from the first byte; data1
+/// and data2 are zero for messages shorter than 3 bytes. No ownership
+/// transfer.
+typedef YseMidiInParsedCallback =
+    ffi.Pointer<ffi.NativeFunction<YseMidiInParsedCallbackFunction>>;
 
 final class YseNote extends ffi.Opaque {}
 

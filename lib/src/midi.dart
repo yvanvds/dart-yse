@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
@@ -148,6 +150,194 @@ class MidiOut implements Finalizable {
     if (_handle.address == 0) return;
     _finalizer.detach(this);
     _b.midi_out_destroy(_handle);
+    _handle = nullptr;
+  }
+}
+
+/// A raw MIDI message delivered through [MidiIn.rawMessages].
+///
+/// Bytes are copied out of the engine-owned buffer before the underlying
+/// allocation is released, so [bytes] is safe to retain.
+class MidiInRawMessage {
+  /// Timestamp from RtMidi, in seconds (monotonically increasing within
+  /// a single port session).
+  final double timestamp;
+
+  /// Full MIDI message bytes, exactly as RtMidi delivered them.
+  final Uint8List bytes;
+
+  /// Constructor — invoked internally by [MidiIn.rawMessages].
+  MidiInRawMessage(this.timestamp, this.bytes);
+}
+
+/// A pre-decoded channel-voice MIDI message delivered through
+/// [MidiIn.parsedMessages].
+///
+/// [status] is the high nibble of the first byte (`0x80`..`0xF0`),
+/// [channel] is the low nibble (`0`..`15`). [data1] and [data2] are
+/// `0` for messages shorter than 3 bytes.
+class MidiInParsedMessage {
+  /// Timestamp from RtMidi, in seconds.
+  final double timestamp;
+
+  /// Status nibble (`0x80`..`0xF0`) — Note-On, CC, etc.
+  final int status;
+
+  /// MIDI channel (`0`..`15`).
+  final int channel;
+
+  /// First data byte (e.g. pitch for Note-On, controller for CC).
+  final int data1;
+
+  /// Second data byte (e.g. velocity for Note-On, value for CC).
+  /// `0` for 1- or 2-byte messages.
+  final int data2;
+
+  /// Constructor — invoked internally by [MidiIn.parsedMessages].
+  MidiInParsedMessage(
+    this.timestamp,
+    this.status,
+    this.channel,
+    this.data1,
+    this.data2,
+  );
+}
+
+/// MIDI input port (Windows / Linux only; backed by RtMidi upstream).
+///
+/// Enumerate device counts with [System.midiInDeviceCount] and names
+/// with [System.midiInDeviceName], then open one with [MidiIn.open].
+///
+/// Two modes of consumption — subscribe to either or both:
+///   * [rawMessages] — full message bytes as a [Uint8List].
+///   * [parsedMessages] — pre-decoded channel-voice scalars.
+///
+/// Native callbacks fire on RtMidi's internal input thread.
+/// `NativeCallable.listener` posts each event back to the isolate that
+/// created this `MidiIn`, so Dart code only ever sees messages
+/// serialised in the isolate's event queue.
+class MidiIn implements Finalizable {
+  static final _finalizer = NativeFinalizer(
+    bindings.addresses.midi_in_destroy.cast(),
+  );
+
+  final YseBindings _b;
+  Pointer<YseMidiIn> _handle;
+
+  StreamController<MidiInRawMessage>? _rawController;
+  NativeCallable<YseMidiInRawCallbackFunction>? _rawCallable;
+  StreamController<MidiInParsedMessage>? _parsedController;
+  NativeCallable<YseMidiInParsedCallbackFunction>? _parsedCallable;
+
+  MidiIn._(this._b, this._handle) {
+    _finalizer.attach(this, _handle.cast(), detach: this);
+  }
+
+  /// Open the MIDI input device at [port].
+  factory MidiIn.open(int port) {
+    final b = bindings;
+    final h = b.midi_in_create();
+    if (h.address == 0) {
+      throw YseException(
+          'yse_midi_in_create returned null (Windows/Linux only)');
+    }
+    b.midi_in_open(h, port);
+    return MidiIn._(b, h);
+  }
+
+  /// Whether the underlying RtMidi port is currently open.
+  bool get isOpen => _b.midi_in_is_open(_handle) != 0;
+
+  /// Close the port. The instance remains valid but emits no further
+  /// messages until re-created.
+  void close() => _b.midi_in_close(_handle);
+
+  /// Broadcast stream of raw MIDI messages. Lazily installs the native
+  /// callback on first subscription and uninstalls when the last
+  /// subscriber cancels.
+  Stream<MidiInRawMessage> get rawMessages {
+    final existing = _rawController;
+    if (existing != null) return existing.stream;
+    final controller = StreamController<MidiInRawMessage>.broadcast(
+      onCancel: () {
+        if (_rawController?.hasListener ?? false) return;
+        _b.midi_in_set_raw_callback(_handle, nullptr, nullptr);
+        _rawCallable?.close();
+        _rawCallable = null;
+        _rawController?.close();
+        _rawController = null;
+      },
+    );
+    final freeFn = _b.midi_in_free_message;
+    final callable = NativeCallable<YseMidiInRawCallbackFunction>.listener((
+      double ts,
+      Pointer<UnsignedChar> bytes,
+      int len,
+      Pointer<Void> _,
+    ) {
+      try {
+        // Engine transferred ownership of `bytes`. Copy the contents into a
+        // Dart-owned buffer before releasing the malloc'd allocation.
+        final copy = Uint8List.fromList(bytes.cast<Uint8>().asTypedList(len));
+        controller.add(MidiInRawMessage(ts, copy));
+      } finally {
+        freeFn(bytes);
+      }
+    });
+    _b.midi_in_set_raw_callback(_handle, callable.nativeFunction, nullptr);
+    _rawCallable = callable;
+    _rawController = controller;
+    return controller.stream;
+  }
+
+  /// Broadcast stream of pre-decoded MIDI messages. Lazily installs the
+  /// native callback on first subscription and uninstalls when the last
+  /// subscriber cancels.
+  Stream<MidiInParsedMessage> get parsedMessages {
+    final existing = _parsedController;
+    if (existing != null) return existing.stream;
+    final controller = StreamController<MidiInParsedMessage>.broadcast(
+      onCancel: () {
+        if (_parsedController?.hasListener ?? false) return;
+        _b.midi_in_set_parsed_callback(_handle, nullptr, nullptr);
+        _parsedCallable?.close();
+        _parsedCallable = null;
+        _parsedController?.close();
+        _parsedController = null;
+      },
+    );
+    final callable =
+        NativeCallable<YseMidiInParsedCallbackFunction>.listener((
+      double ts,
+      int status,
+      int channel,
+      int data1,
+      int data2,
+      Pointer<Void> _,
+    ) {
+      controller.add(MidiInParsedMessage(ts, status, channel, data1, data2));
+    });
+    _b.midi_in_set_parsed_callback(_handle, callable.nativeFunction, nullptr);
+    _parsedCallable = callable;
+    _parsedController = controller;
+    return controller.stream;
+  }
+
+  /// Destroy the underlying native port and detach the finalizer.
+  void dispose() {
+    if (_handle.address == 0) return;
+    _finalizer.detach(this);
+    _b.midi_in_set_raw_callback(_handle, nullptr, nullptr);
+    _b.midi_in_set_parsed_callback(_handle, nullptr, nullptr);
+    _rawCallable?.close();
+    _rawCallable = null;
+    _parsedCallable?.close();
+    _parsedCallable = null;
+    _rawController?.close();
+    _rawController = null;
+    _parsedController?.close();
+    _parsedController = null;
+    _b.midi_in_destroy(_handle);
     _handle = nullptr;
   }
 }

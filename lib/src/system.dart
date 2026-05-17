@@ -146,6 +146,19 @@ class System {
         (buf, cap) => _b.system_default_host(_handle, buf, cap),
       );
 
+  /// Sample rate of the currently open audio device, or 0 when no device
+  /// is open (pre-init, after close, or [initOffline] path).
+  double get activeSampleRate => _b.system_get_active_sample_rate(_handle);
+
+  /// The currently open device's frames-per-callback (NOT the engine block
+  /// size). Returns 0 when no device is open.
+  int get activeBufferSize => _b.system_get_active_buffer_size(_handle);
+
+  /// Output latency of the currently open device, in samples. Returns 0
+  /// when no device is open. Convert to milliseconds with
+  /// `(activeOutputLatency / activeSampleRate) * 1000`.
+  int get activeOutputLatency => _b.system_get_active_output_latency(_handle);
+
   // ─── MIDI devices ───────────────────────────────────────────────────────
 
   /// Number of MIDI input devices visible to the engine.

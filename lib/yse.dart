@@ -40,7 +40,8 @@ export 'src/enums.dart'
 export 'src/exception.dart' show YseException;
 export 'src/listener.dart' show Listener;
 export 'src/log.dart' show Log;
-export 'src/midi.dart' show MidiFile, MidiOut;
+export 'src/midi.dart'
+    show MidiFile, MidiIn, MidiInParsedMessage, MidiInRawMessage, MidiOut;
 export 'src/music.dart' show Motif, Note, PNote, Player, Scale;
 export 'src/patcher.dart' show Obj, PHandle, Patcher;
 export 'src/pos.dart' show Pos;

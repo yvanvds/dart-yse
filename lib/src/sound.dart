@@ -5,6 +5,7 @@ import 'package:ffi/ffi.dart';
 import 'bindings/yse_bindings.g.dart';
 import 'channel.dart';
 import 'dsp_buffer.dart';
+import 'dsp_object.dart';
 import 'exception.dart';
 import 'library.dart';
 import 'pos.dart';
@@ -204,6 +205,13 @@ class Sound implements Finalizable {
 
   /// Move this sound to a different channel.
   void moveTo(Channel target) => _b.sound_move_to(_handle, target.handle);
+
+  /// Attach a DSP effect chain to this sound.
+  ///
+  /// Pass `null` to clear. The engine holds a borrowed reference to [dsp]
+  /// for as long as the sound is live; [dsp] must outlive this sound and
+  /// the engine's slow-pool delete tick that follows its destruction.
+  set dsp(DspObject? dsp) => _b.sound_set_dsp(_handle, dsp?.handle ?? nullptr);
 
   /// Destroy the underlying native sound and detach the finalizer.
   ///

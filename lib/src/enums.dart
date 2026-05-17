@@ -37,6 +37,43 @@ enum ChannelType {
   const ChannelType(this.native);
 }
 
+/// Low-frequency-oscillator shape used by [DspObject.lfoType].
+///
+/// Values match `YSE::DSP::LFO_TYPE`.
+enum LfoType {
+  none(raw.YseLfoType.YSE_LFO_NONE),
+  saw(raw.YseLfoType.YSE_LFO_SAW),
+  sawReversed(raw.YseLfoType.YSE_LFO_SAW_REVERSED),
+  triangle(raw.YseLfoType.YSE_LFO_TRIANGLE),
+  sine(raw.YseLfoType.YSE_LFO_SINE),
+  square(raw.YseLfoType.YSE_LFO_SQUARE),
+  random(raw.YseLfoType.YSE_LFO_RANDOM);
+
+  final raw.YseLfoType native;
+  const LfoType(this.native);
+}
+
+/// LFO shape used by the [DspObject.sweep] constructor.
+enum SweepShape {
+  triangle(raw.YseDspSweepShape.YSE_SWEEP_TRIANGLE),
+  saw(raw.YseDspSweepShape.YSE_SWEEP_SAW),
+  square(raw.YseDspSweepShape.YSE_SWEEP_SQUARE);
+
+  final raw.YseDspSweepShape native;
+  const SweepShape(this.native);
+}
+
+/// One of the three delay taps on a [DspObject.basicDelay] (and its
+/// filtered subclasses).
+enum DelayTap {
+  first(raw.YseDspDelayTap.YSE_DELAY_TAP_FIRST),
+  second(raw.YseDspDelayTap.YSE_DELAY_TAP_SECOND),
+  third(raw.YseDspDelayTap.YSE_DELAY_TAP_THIRD);
+
+  final raw.YseDspDelayTap native;
+  const DelayTap(this.native);
+}
+
 /// Named reverb-tail presets for [Reverb.preset].
 ///
 /// Values match `YSE::REVERB_PRESET`.

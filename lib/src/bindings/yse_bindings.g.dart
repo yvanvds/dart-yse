@@ -1197,6 +1197,36 @@ class YseBindings {
         void Function(ffi.Pointer<YseSound>, ffi.Pointer<YseChannel>)
       >();
 
+  /// DSP effect chain. The dspObject pointer is borrowed; the engine reads it
+  /// on the audio thread. Must outlive the sound. Pass NULL to clear.
+  void sound_set_dsp(ffi.Pointer<YseSound> s, ffi.Pointer<YseDspObject> dsp) {
+    return _sound_set_dsp(s, dsp);
+  }
+
+  late final _sound_set_dspPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSound>, ffi.Pointer<YseDspObject>)
+        >
+      >('yse_sound_set_dsp');
+  late final _sound_set_dsp = _sound_set_dspPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseSound>, ffi.Pointer<YseDspObject>)
+      >();
+
+  ffi.Pointer<YseDspObject> sound_get_dsp(ffi.Pointer<YseSound> s) {
+    return _sound_get_dsp(s);
+  }
+
+  late final _sound_get_dspPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDspObject> Function(ffi.Pointer<YseSound>)
+        >
+      >('yse_sound_get_dsp');
+  late final _sound_get_dsp = _sound_get_dspPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function(ffi.Pointer<YseSound>)>();
+
   /// Device descriptor — read-only.
   int device_get_name(
     ffi.Pointer<YseDevice> dev,
@@ -2260,6 +2290,798 @@ class YseBindings {
   late final _dsp_wavetable_create_triangle = _dsp_wavetable_create_trianglePtr
       .asFunction<int Function(ffi.Pointer<YseDspBuffer>, int, int)>();
 
+  /// ─── constructors ──────────────────────────────────────────────────────
+  ffi.Pointer<YseDspObject> dsp_lowpass_create() {
+    return _dsp_lowpass_create();
+  }
+
+  late final _dsp_lowpass_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_lowpass_create',
+      );
+  late final _dsp_lowpass_create = _dsp_lowpass_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_highpass_create() {
+    return _dsp_highpass_create();
+  }
+
+  late final _dsp_highpass_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_highpass_create',
+      );
+  late final _dsp_highpass_create = _dsp_highpass_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_bandpass_create() {
+    return _dsp_bandpass_create();
+  }
+
+  late final _dsp_bandpass_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_bandpass_create',
+      );
+  late final _dsp_bandpass_create = _dsp_bandpass_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_sweep_create(YseDspSweepShape shape) {
+    return _dsp_sweep_create(shape.value);
+  }
+
+  late final _dsp_sweep_createPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<YseDspObject> Function(ffi.UnsignedInt)>
+      >('yse_dsp_sweep_create');
+  late final _dsp_sweep_create = _dsp_sweep_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function(int)>();
+
+  ffi.Pointer<YseDspObject> dsp_basic_delay_create() {
+    return _dsp_basic_delay_create();
+  }
+
+  late final _dsp_basic_delay_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_basic_delay_create',
+      );
+  late final _dsp_basic_delay_create = _dsp_basic_delay_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_lowpass_delay_create() {
+    return _dsp_lowpass_delay_create();
+  }
+
+  late final _dsp_lowpass_delay_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_lowpass_delay_create',
+      );
+  late final _dsp_lowpass_delay_create = _dsp_lowpass_delay_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_highpass_delay_create() {
+    return _dsp_highpass_delay_create();
+  }
+
+  late final _dsp_highpass_delay_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_highpass_delay_create',
+      );
+  late final _dsp_highpass_delay_create = _dsp_highpass_delay_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_phaser_create() {
+    return _dsp_phaser_create();
+  }
+
+  late final _dsp_phaser_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_phaser_create',
+      );
+  late final _dsp_phaser_create = _dsp_phaser_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_ring_modulator_create() {
+    return _dsp_ring_modulator_create();
+  }
+
+  late final _dsp_ring_modulator_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_ring_modulator_create',
+      );
+  late final _dsp_ring_modulator_create = _dsp_ring_modulator_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_difference_create() {
+    return _dsp_difference_create();
+  }
+
+  late final _dsp_difference_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_difference_create',
+      );
+  late final _dsp_difference_create = _dsp_difference_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_granulator_create(
+    int pool_size,
+    int max_grains,
+  ) {
+    return _dsp_granulator_create(pool_size, max_grains);
+  }
+
+  late final _dsp_granulator_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDspObject> Function(ffi.UnsignedInt, ffi.UnsignedInt)
+        >
+      >('yse_dsp_granulator_create');
+  late final _dsp_granulator_create = _dsp_granulator_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function(int, int)>();
+
+  void dsp_object_destroy(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_object_destroy(obj);
+  }
+
+  late final _dsp_object_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspObject>)>>(
+        'yse_dsp_object_destroy',
+      );
+  late final _dsp_object_destroy = _dsp_object_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>)>();
+
+  /// ─── inherited dspObject control surface ───────────────────────────────
+  void dsp_object_set_bypass(ffi.Pointer<YseDspObject> obj, int on) {
+    return _dsp_object_set_bypass(obj, on);
+  }
+
+  late final _dsp_object_set_bypassPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Int)
+        >
+      >('yse_dsp_object_set_bypass');
+  late final _dsp_object_set_bypass = _dsp_object_set_bypassPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, int)>();
+
+  int dsp_object_get_bypass(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_object_get_bypass(obj);
+  }
+
+  late final _dsp_object_get_bypassPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDspObject>)>>(
+        'yse_dsp_object_get_bypass',
+      );
+  late final _dsp_object_get_bypass = _dsp_object_get_bypassPtr
+      .asFunction<int Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_object_set_impact(ffi.Pointer<YseDspObject> obj, double value) {
+    return _dsp_object_set_impact(obj, value);
+  }
+
+  late final _dsp_object_set_impactPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_object_set_impact');
+  late final _dsp_object_set_impact = _dsp_object_set_impactPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_object_get_impact(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_object_get_impact(obj);
+  }
+
+  late final _dsp_object_get_impactPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_object_get_impact');
+  late final _dsp_object_get_impact = _dsp_object_get_impactPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_object_set_lfo_type(ffi.Pointer<YseDspObject> obj, YseLfoType type) {
+    return _dsp_object_set_lfo_type(obj, type.value);
+  }
+
+  late final _dsp_object_set_lfo_typePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.UnsignedInt)
+        >
+      >('yse_dsp_object_set_lfo_type');
+  late final _dsp_object_set_lfo_type = _dsp_object_set_lfo_typePtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, int)>();
+
+  YseLfoType dsp_object_get_lfo_type(ffi.Pointer<YseDspObject> obj) {
+    return YseLfoType.fromValue(_dsp_object_get_lfo_type(obj));
+  }
+
+  late final _dsp_object_get_lfo_typePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_object_get_lfo_type');
+  late final _dsp_object_get_lfo_type = _dsp_object_get_lfo_typePtr
+      .asFunction<int Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_object_set_lfo_frequency(
+    ffi.Pointer<YseDspObject> obj,
+    double value,
+  ) {
+    return _dsp_object_set_lfo_frequency(obj, value);
+  }
+
+  late final _dsp_object_set_lfo_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_object_set_lfo_frequency');
+  late final _dsp_object_set_lfo_frequency = _dsp_object_set_lfo_frequencyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_object_get_lfo_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_object_get_lfo_frequency(obj);
+  }
+
+  late final _dsp_object_get_lfo_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_object_get_lfo_frequency');
+  late final _dsp_object_get_lfo_frequency = _dsp_object_get_lfo_frequencyPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_object_link(
+    ffi.Pointer<YseDspObject> head,
+    ffi.Pointer<YseDspObject> next,
+  ) {
+    return _dsp_object_link(head, next);
+  }
+
+  late final _dsp_object_linkPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspObject>,
+            ffi.Pointer<YseDspObject>,
+          )
+        >
+      >('yse_dsp_object_link');
+  late final _dsp_object_link = _dsp_object_linkPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseDspObject>, ffi.Pointer<YseDspObject>)
+      >();
+
+  /// ─── filter modules ───────────────────────────────────────────────────
+  void dsp_lowpass_set_frequency(ffi.Pointer<YseDspObject> obj, double hz) {
+    return _dsp_lowpass_set_frequency(obj, hz);
+  }
+
+  late final _dsp_lowpass_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_lowpass_set_frequency');
+  late final _dsp_lowpass_set_frequency = _dsp_lowpass_set_frequencyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_lowpass_get_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_lowpass_get_frequency(obj);
+  }
+
+  late final _dsp_lowpass_get_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_lowpass_get_frequency');
+  late final _dsp_lowpass_get_frequency = _dsp_lowpass_get_frequencyPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_highpass_set_frequency(ffi.Pointer<YseDspObject> obj, double hz) {
+    return _dsp_highpass_set_frequency(obj, hz);
+  }
+
+  late final _dsp_highpass_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_highpass_set_frequency');
+  late final _dsp_highpass_set_frequency = _dsp_highpass_set_frequencyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_highpass_get_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_highpass_get_frequency(obj);
+  }
+
+  late final _dsp_highpass_get_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_highpass_get_frequency');
+  late final _dsp_highpass_get_frequency = _dsp_highpass_get_frequencyPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_bandpass_set_frequency(ffi.Pointer<YseDspObject> obj, double hz) {
+    return _dsp_bandpass_set_frequency(obj, hz);
+  }
+
+  late final _dsp_bandpass_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_bandpass_set_frequency');
+  late final _dsp_bandpass_set_frequency = _dsp_bandpass_set_frequencyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_bandpass_get_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_bandpass_get_frequency(obj);
+  }
+
+  late final _dsp_bandpass_get_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_bandpass_get_frequency');
+  late final _dsp_bandpass_get_frequency = _dsp_bandpass_get_frequencyPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_bandpass_set_q(ffi.Pointer<YseDspObject> obj, double q) {
+    return _dsp_bandpass_set_q(obj, q);
+  }
+
+  late final _dsp_bandpass_set_qPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_bandpass_set_q');
+  late final _dsp_bandpass_set_q = _dsp_bandpass_set_qPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_bandpass_get_q(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_bandpass_get_q(obj);
+  }
+
+  late final _dsp_bandpass_get_qPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_bandpass_get_q');
+  late final _dsp_bandpass_get_q = _dsp_bandpass_get_qPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_sweep_set_speed(ffi.Pointer<YseDspObject> obj, double hz) {
+    return _dsp_sweep_set_speed(obj, hz);
+  }
+
+  late final _dsp_sweep_set_speedPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_sweep_set_speed');
+  late final _dsp_sweep_set_speed = _dsp_sweep_set_speedPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_sweep_get_speed(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_sweep_get_speed(obj);
+  }
+
+  late final _dsp_sweep_get_speedPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_sweep_get_speed');
+  late final _dsp_sweep_get_speed = _dsp_sweep_get_speedPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_sweep_set_depth(ffi.Pointer<YseDspObject> obj, int v0_to_100) {
+    return _dsp_sweep_set_depth(obj, v0_to_100);
+  }
+
+  late final _dsp_sweep_set_depthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Int)
+        >
+      >('yse_dsp_sweep_set_depth');
+  late final _dsp_sweep_set_depth = _dsp_sweep_set_depthPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, int)>();
+
+  int dsp_sweep_get_depth(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_sweep_get_depth(obj);
+  }
+
+  late final _dsp_sweep_get_depthPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDspObject>)>>(
+        'yse_dsp_sweep_get_depth',
+      );
+  late final _dsp_sweep_get_depth = _dsp_sweep_get_depthPtr
+      .asFunction<int Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_sweep_set_frequency(ffi.Pointer<YseDspObject> obj, int v0_to_100) {
+    return _dsp_sweep_set_frequency(obj, v0_to_100);
+  }
+
+  late final _dsp_sweep_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Int)
+        >
+      >('yse_dsp_sweep_set_frequency');
+  late final _dsp_sweep_set_frequency = _dsp_sweep_set_frequencyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, int)>();
+
+  int dsp_sweep_get_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_sweep_get_frequency(obj);
+  }
+
+  late final _dsp_sweep_get_frequencyPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDspObject>)>>(
+        'yse_dsp_sweep_get_frequency',
+      );
+  late final _dsp_sweep_get_frequency = _dsp_sweep_get_frequencyPtr
+      .asFunction<int Function(ffi.Pointer<YseDspObject>)>();
+
+  /// ─── delay modules ────────────────────────────────────────────────────
+  void dsp_basic_delay_set_tap(
+    ffi.Pointer<YseDspObject> obj,
+    YseDspDelayTap tap,
+    double time_ms,
+    double gain,
+  ) {
+    return _dsp_basic_delay_set_tap(obj, tap.value, time_ms, gain);
+  }
+
+  late final _dsp_basic_delay_set_tapPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspObject>,
+            ffi.UnsignedInt,
+            ffi.Float,
+            ffi.Float,
+          )
+        >
+      >('yse_dsp_basic_delay_set_tap');
+  late final _dsp_basic_delay_set_tap = _dsp_basic_delay_set_tapPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseDspObject>, int, double, double)
+      >();
+
+  double dsp_basic_delay_get_time(
+    ffi.Pointer<YseDspObject> obj,
+    YseDspDelayTap tap,
+  ) {
+    return _dsp_basic_delay_get_time(obj, tap.value);
+  }
+
+  late final _dsp_basic_delay_get_timePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Float Function(ffi.Pointer<YseDspObject>, ffi.UnsignedInt)
+        >
+      >('yse_dsp_basic_delay_get_time');
+  late final _dsp_basic_delay_get_time = _dsp_basic_delay_get_timePtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>, int)>();
+
+  double dsp_basic_delay_get_gain(
+    ffi.Pointer<YseDspObject> obj,
+    YseDspDelayTap tap,
+  ) {
+    return _dsp_basic_delay_get_gain(obj, tap.value);
+  }
+
+  late final _dsp_basic_delay_get_gainPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Float Function(ffi.Pointer<YseDspObject>, ffi.UnsignedInt)
+        >
+      >('yse_dsp_basic_delay_get_gain');
+  late final _dsp_basic_delay_get_gain = _dsp_basic_delay_get_gainPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>, int)>();
+
+  void dsp_lowpass_delay_set_frequency(
+    ffi.Pointer<YseDspObject> obj,
+    double hz,
+  ) {
+    return _dsp_lowpass_delay_set_frequency(obj, hz);
+  }
+
+  late final _dsp_lowpass_delay_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_lowpass_delay_set_frequency');
+  late final _dsp_lowpass_delay_set_frequency =
+      _dsp_lowpass_delay_set_frequencyPtr
+          .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_lowpass_delay_get_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_lowpass_delay_get_frequency(obj);
+  }
+
+  late final _dsp_lowpass_delay_get_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_lowpass_delay_get_frequency');
+  late final _dsp_lowpass_delay_get_frequency =
+      _dsp_lowpass_delay_get_frequencyPtr
+          .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_highpass_delay_set_frequency(
+    ffi.Pointer<YseDspObject> obj,
+    double hz,
+  ) {
+    return _dsp_highpass_delay_set_frequency(obj, hz);
+  }
+
+  late final _dsp_highpass_delay_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_highpass_delay_set_frequency');
+  late final _dsp_highpass_delay_set_frequency =
+      _dsp_highpass_delay_set_frequencyPtr
+          .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_highpass_delay_get_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_highpass_delay_get_frequency(obj);
+  }
+
+  late final _dsp_highpass_delay_get_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_highpass_delay_get_frequency');
+  late final _dsp_highpass_delay_get_frequency =
+      _dsp_highpass_delay_get_frequencyPtr
+          .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  /// ─── modulation modules ───────────────────────────────────────────────
+  void dsp_phaser_set_frequency(ffi.Pointer<YseDspObject> obj, double hz) {
+    return _dsp_phaser_set_frequency(obj, hz);
+  }
+
+  late final _dsp_phaser_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_phaser_set_frequency');
+  late final _dsp_phaser_set_frequency = _dsp_phaser_set_frequencyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_phaser_get_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_phaser_get_frequency(obj);
+  }
+
+  late final _dsp_phaser_get_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_phaser_get_frequency');
+  late final _dsp_phaser_get_frequency = _dsp_phaser_get_frequencyPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_phaser_set_range(ffi.Pointer<YseDspObject> obj, double value) {
+    return _dsp_phaser_set_range(obj, value);
+  }
+
+  late final _dsp_phaser_set_rangePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_phaser_set_range');
+  late final _dsp_phaser_set_range = _dsp_phaser_set_rangePtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_phaser_get_range(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_phaser_get_range(obj);
+  }
+
+  late final _dsp_phaser_get_rangePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_phaser_get_range');
+  late final _dsp_phaser_get_range = _dsp_phaser_get_rangePtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_ring_modulator_set_frequency(
+    ffi.Pointer<YseDspObject> obj,
+    double hz,
+  ) {
+    return _dsp_ring_modulator_set_frequency(obj, hz);
+  }
+
+  late final _dsp_ring_modulator_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_ring_modulator_set_frequency');
+  late final _dsp_ring_modulator_set_frequency =
+      _dsp_ring_modulator_set_frequencyPtr
+          .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_ring_modulator_get_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_ring_modulator_get_frequency(obj);
+  }
+
+  late final _dsp_ring_modulator_get_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_ring_modulator_get_frequency');
+  late final _dsp_ring_modulator_get_frequency =
+      _dsp_ring_modulator_get_frequencyPtr
+          .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_difference_set_frequency(ffi.Pointer<YseDspObject> obj, double hz) {
+    return _dsp_difference_set_frequency(obj, hz);
+  }
+
+  late final _dsp_difference_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_difference_set_frequency');
+  late final _dsp_difference_set_frequency = _dsp_difference_set_frequencyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_difference_get_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_difference_get_frequency(obj);
+  }
+
+  late final _dsp_difference_get_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_difference_get_frequency');
+  late final _dsp_difference_get_frequency = _dsp_difference_get_frequencyPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_difference_set_amplitude(
+    ffi.Pointer<YseDspObject> obj,
+    double value,
+  ) {
+    return _dsp_difference_set_amplitude(obj, value);
+  }
+
+  late final _dsp_difference_set_amplitudePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_difference_set_amplitude');
+  late final _dsp_difference_set_amplitude = _dsp_difference_set_amplitudePtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_difference_get_amplitude(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_difference_get_amplitude(obj);
+  }
+
+  late final _dsp_difference_get_amplitudePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_difference_get_amplitude');
+  late final _dsp_difference_get_amplitude = _dsp_difference_get_amplitudePtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_granulator_set_grain_frequency(
+    ffi.Pointer<YseDspObject> obj,
+    int per_second,
+  ) {
+    return _dsp_granulator_set_grain_frequency(obj, per_second);
+  }
+
+  late final _dsp_granulator_set_grain_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.UnsignedInt)
+        >
+      >('yse_dsp_granulator_set_grain_frequency');
+  late final _dsp_granulator_set_grain_frequency =
+      _dsp_granulator_set_grain_frequencyPtr
+          .asFunction<void Function(ffi.Pointer<YseDspObject>, int)>();
+
+  int dsp_granulator_get_grain_frequency(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_granulator_get_grain_frequency(obj);
+  }
+
+  late final _dsp_granulator_get_grain_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_granulator_get_grain_frequency');
+  late final _dsp_granulator_get_grain_frequency =
+      _dsp_granulator_get_grain_frequencyPtr
+          .asFunction<int Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_granulator_set_grain_length(
+    ffi.Pointer<YseDspObject> obj,
+    int samples,
+    int random_samples,
+  ) {
+    return _dsp_granulator_set_grain_length(obj, samples, random_samples);
+  }
+
+  late final _dsp_granulator_set_grain_lengthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspObject>,
+            ffi.UnsignedInt,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_dsp_granulator_set_grain_length');
+  late final _dsp_granulator_set_grain_length =
+      _dsp_granulator_set_grain_lengthPtr
+          .asFunction<void Function(ffi.Pointer<YseDspObject>, int, int)>();
+
+  int dsp_granulator_get_grain_length(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_granulator_get_grain_length(obj);
+  }
+
+  late final _dsp_granulator_get_grain_lengthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_granulator_get_grain_length');
+  late final _dsp_granulator_get_grain_length =
+      _dsp_granulator_get_grain_lengthPtr
+          .asFunction<int Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_granulator_set_grain_transpose(
+    ffi.Pointer<YseDspObject> obj,
+    double pitch,
+    double random,
+  ) {
+    return _dsp_granulator_set_grain_transpose(obj, pitch, random);
+  }
+
+  late final _dsp_granulator_set_grain_transposePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float, ffi.Float)
+        >
+      >('yse_dsp_granulator_set_grain_transpose');
+  late final _dsp_granulator_set_grain_transpose =
+      _dsp_granulator_set_grain_transposePtr
+          .asFunction<
+            void Function(ffi.Pointer<YseDspObject>, double, double)
+          >();
+
+  double dsp_granulator_get_grain_transpose(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_granulator_get_grain_transpose(obj);
+  }
+
+  late final _dsp_granulator_get_grain_transposePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_granulator_get_grain_transpose');
+  late final _dsp_granulator_get_grain_transpose =
+      _dsp_granulator_get_grain_transposePtr
+          .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_granulator_set_gain(ffi.Pointer<YseDspObject> obj, double value) {
+    return _dsp_granulator_set_gain(obj, value);
+  }
+
+  late final _dsp_granulator_set_gainPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_granulator_set_gain');
+  late final _dsp_granulator_set_gain = _dsp_granulator_set_gainPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_granulator_get_gain(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_granulator_get_gain(obj);
+  }
+
+  late final _dsp_granulator_get_gainPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_granulator_get_gain');
+  late final _dsp_granulator_get_gain = _dsp_granulator_get_gainPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
   late final addresses = _SymbolAddresses(this);
 }
 
@@ -2278,6 +3100,8 @@ class _SymbolAddresses {
   get reverb_destroy => _library._reverb_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspBuffer>)>>
   get dsp_buffer_destroy => _library._dsp_buffer_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspObject>)>>
+  get dsp_object_destroy => _library._dsp_object_destroyPtr;
 }
 
 enum YseStatus {
@@ -2348,6 +3172,65 @@ enum YseChannelType {
   };
 }
 
+/// Mirrors YSE::DSP::LFO_TYPE in dsp/lfo.hpp.
+enum YseLfoType {
+  YSE_LFO_NONE(0),
+  YSE_LFO_SAW(1),
+  YSE_LFO_SAW_REVERSED(2),
+  YSE_LFO_TRIANGLE(3),
+  YSE_LFO_SINE(4),
+  YSE_LFO_SQUARE(5),
+  YSE_LFO_RANDOM(6);
+
+  final int value;
+  const YseLfoType(this.value);
+
+  static YseLfoType fromValue(int value) => switch (value) {
+    0 => YSE_LFO_NONE,
+    1 => YSE_LFO_SAW,
+    2 => YSE_LFO_SAW_REVERSED,
+    3 => YSE_LFO_TRIANGLE,
+    4 => YSE_LFO_SINE,
+    5 => YSE_LFO_SQUARE,
+    6 => YSE_LFO_RANDOM,
+    _ => throw ArgumentError('Unknown value for YseLfoType: $value'),
+  };
+}
+
+/// Mirrors YSE::DSP::MODULES::sweepFilter::SHAPE.
+enum YseDspSweepShape {
+  YSE_SWEEP_TRIANGLE(0),
+  YSE_SWEEP_SAW(1),
+  YSE_SWEEP_SQUARE(2);
+
+  final int value;
+  const YseDspSweepShape(this.value);
+
+  static YseDspSweepShape fromValue(int value) => switch (value) {
+    0 => YSE_SWEEP_TRIANGLE,
+    1 => YSE_SWEEP_SAW,
+    2 => YSE_SWEEP_SQUARE,
+    _ => throw ArgumentError('Unknown value for YseDspSweepShape: $value'),
+  };
+}
+
+/// Mirrors YSE::DSP::MODULES::basicDelay::DELAY_NR.
+enum YseDspDelayTap {
+  YSE_DELAY_TAP_FIRST(0),
+  YSE_DELAY_TAP_SECOND(1),
+  YSE_DELAY_TAP_THIRD(2);
+
+  final int value;
+  const YseDspDelayTap(this.value);
+
+  static YseDspDelayTap fromValue(int value) => switch (value) {
+    0 => YSE_DELAY_TAP_FIRST,
+    1 => YSE_DELAY_TAP_SECOND,
+    2 => YSE_DELAY_TAP_THIRD,
+    _ => throw ArgumentError('Unknown value for YseDspDelayTap: $value'),
+  };
+}
+
 /// Mirrors YSE::REVERB_PRESET in headers/enums.hpp.
 enum YseReverbPreset {
   YSE_REVERB_OFF(0),
@@ -2396,3 +3279,5 @@ final class YseListener extends ffi.Opaque {}
 final class YseSound extends ffi.Opaque {}
 
 final class YseDspBuffer extends ffi.Opaque {}
+
+final class YseDspObject extends ffi.Opaque {}

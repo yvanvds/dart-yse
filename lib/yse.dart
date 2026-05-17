@@ -25,6 +25,7 @@ library;
 
 export 'src/channel.dart' show Channel;
 export 'src/device.dart' show Device, DeviceSetup;
+export 'src/dsp_buffer.dart' show DspBuffer;
 export 'src/enums.dart' show ChannelType, ReverbPreset;
 export 'src/exception.dart' show YseException;
 export 'src/listener.dart' show Listener;

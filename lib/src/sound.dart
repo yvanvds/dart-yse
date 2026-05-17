@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/yse_bindings.g.dart';
 import 'channel.dart';
+import 'dsp_buffer.dart';
 import 'exception.dart';
 import 'library.dart';
 import 'pos.dart';
@@ -63,6 +64,37 @@ class Sound implements Finalizable {
           b,
         );
       });
+      return s;
+    } catch (_) {
+      s.dispose();
+      rethrow;
+    }
+  }
+
+  /// Construct a sound backed by an in-memory [DspBuffer].
+  ///
+  /// **Lifetime contract:** [buffer] must outlive this sound — the audio
+  /// thread reads from it on every callback. Keep a Dart reference to the
+  /// buffer for as long as the sound exists; don't `.dispose()` the
+  /// buffer before disposing the sound.
+  factory Sound.fromBuffer(
+    DspBuffer buffer, {
+    Channel? channel,
+    bool loop = false,
+    double volume = 1.0,
+  }) {
+    final b = bindings;
+    final h = b.sound_create();
+    if (h.address == 0) {
+      throw YseException('yse_sound_create returned null');
+    }
+    final s = Sound._(b, h);
+    try {
+      final chHandle = channel?.handle ?? nullptr;
+      checkStatus(
+        b.sound_load_buffer(h, buffer.handle, chHandle, loop ? 1 : 0, volume),
+        b,
+      );
       return s;
     } catch (_) {
       s.dispose();

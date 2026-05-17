@@ -750,6 +750,42 @@ class YseBindings {
         )
       >();
 
+  /// Initialize a sound from an in-memory DSP buffer. The buffer must outlive
+  /// the sound — the engine keeps a reference to it for as long as the sound
+  /// is live. Same lifetime contract as the C++ overload.
+  YseStatus sound_load_buffer(
+    ffi.Pointer<YseSound> s,
+    ffi.Pointer<YseDspBuffer> buf,
+    ffi.Pointer<YseChannel> ch,
+    int loop,
+    double volume,
+  ) {
+    return YseStatus.fromValue(_sound_load_buffer(s, buf, ch, loop, volume));
+  }
+
+  late final _sound_load_bufferPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSound>,
+            ffi.Pointer<YseDspBuffer>,
+            ffi.Pointer<YseChannel>,
+            ffi.Int,
+            ffi.Float,
+          )
+        >
+      >('yse_sound_load_buffer');
+  late final _sound_load_buffer = _sound_load_bufferPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseSound>,
+          ffi.Pointer<YseDspBuffer>,
+          ffi.Pointer<YseChannel>,
+          int,
+          double,
+        )
+      >();
+
   int sound_is_valid(ffi.Pointer<YseSound> s) {
     return _sound_is_valid(s);
   }
@@ -1781,6 +1817,449 @@ class YseBindings {
   late final _reverb_set_preset = _reverb_set_presetPtr
       .asFunction<void Function(ffi.Pointer<YseReverb>, int)>();
 
+  /// Constructors — one per subclass. The returned handle owns its native
+  /// storage; pair with yse_dsp_buffer_destroy.
+  ffi.Pointer<YseDspBuffer> dsp_buffer_create(int length, int overflow) {
+    return _dsp_buffer_create(length, overflow);
+  }
+
+  late final _dsp_buffer_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDspBuffer> Function(ffi.UnsignedInt, ffi.UnsignedInt)
+        >
+      >('yse_dsp_buffer_create');
+  late final _dsp_buffer_create = _dsp_buffer_createPtr
+      .asFunction<ffi.Pointer<YseDspBuffer> Function(int, int)>();
+
+  ffi.Pointer<YseDspBuffer> dsp_drawable_buffer_create(
+    int length,
+    int overflow,
+  ) {
+    return _dsp_drawable_buffer_create(length, overflow);
+  }
+
+  late final _dsp_drawable_buffer_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDspBuffer> Function(ffi.UnsignedInt, ffi.UnsignedInt)
+        >
+      >('yse_dsp_drawable_buffer_create');
+  late final _dsp_drawable_buffer_create = _dsp_drawable_buffer_createPtr
+      .asFunction<ffi.Pointer<YseDspBuffer> Function(int, int)>();
+
+  ffi.Pointer<YseDspBuffer> dsp_file_buffer_create(int length, int overflow) {
+    return _dsp_file_buffer_create(length, overflow);
+  }
+
+  late final _dsp_file_buffer_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDspBuffer> Function(ffi.UnsignedInt, ffi.UnsignedInt)
+        >
+      >('yse_dsp_file_buffer_create');
+  late final _dsp_file_buffer_create = _dsp_file_buffer_createPtr
+      .asFunction<ffi.Pointer<YseDspBuffer> Function(int, int)>();
+
+  ffi.Pointer<YseDspBuffer> dsp_wavetable_create(int length) {
+    return _dsp_wavetable_create(length);
+  }
+
+  late final _dsp_wavetable_createPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<YseDspBuffer> Function(ffi.UnsignedInt)>
+      >('yse_dsp_wavetable_create');
+  late final _dsp_wavetable_create = _dsp_wavetable_createPtr
+      .asFunction<ffi.Pointer<YseDspBuffer> Function(int)>();
+
+  void dsp_buffer_destroy(ffi.Pointer<YseDspBuffer> buf) {
+    return _dsp_buffer_destroy(buf);
+  }
+
+  late final _dsp_buffer_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspBuffer>)>>(
+        'yse_dsp_buffer_destroy',
+      );
+  late final _dsp_buffer_destroy = _dsp_buffer_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspBuffer>)>();
+
+  /// Common buffer accessors.
+  int dsp_buffer_length(ffi.Pointer<YseDspBuffer> buf) {
+    return _dsp_buffer_length(buf);
+  }
+
+  late final _dsp_buffer_lengthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDspBuffer>)>
+      >('yse_dsp_buffer_length');
+  late final _dsp_buffer_length = _dsp_buffer_lengthPtr
+      .asFunction<int Function(ffi.Pointer<YseDspBuffer>)>();
+
+  int dsp_buffer_length_ms(ffi.Pointer<YseDspBuffer> buf) {
+    return _dsp_buffer_length_ms(buf);
+  }
+
+  late final _dsp_buffer_length_msPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDspBuffer>)>
+      >('yse_dsp_buffer_length_ms');
+  late final _dsp_buffer_length_ms = _dsp_buffer_length_msPtr
+      .asFunction<int Function(ffi.Pointer<YseDspBuffer>)>();
+
+  double dsp_buffer_length_sec(ffi.Pointer<YseDspBuffer> buf) {
+    return _dsp_buffer_length_sec(buf);
+  }
+
+  late final _dsp_buffer_length_secPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspBuffer>)>
+      >('yse_dsp_buffer_length_sec');
+  late final _dsp_buffer_length_sec = _dsp_buffer_length_secPtr
+      .asFunction<double Function(ffi.Pointer<YseDspBuffer>)>();
+
+  int dsp_buffer_is_silent(ffi.Pointer<YseDspBuffer> buf) {
+    return _dsp_buffer_is_silent(buf);
+  }
+
+  late final _dsp_buffer_is_silentPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDspBuffer>)>>(
+        'yse_dsp_buffer_is_silent',
+      );
+  late final _dsp_buffer_is_silent = _dsp_buffer_is_silentPtr
+      .asFunction<int Function(ffi.Pointer<YseDspBuffer>)>();
+
+  double dsp_buffer_max_value(ffi.Pointer<YseDspBuffer> buf) {
+    return _dsp_buffer_max_value(buf);
+  }
+
+  late final _dsp_buffer_max_valuePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspBuffer>)>
+      >('yse_dsp_buffer_max_value');
+  late final _dsp_buffer_max_value = _dsp_buffer_max_valuePtr
+      .asFunction<double Function(ffi.Pointer<YseDspBuffer>)>();
+
+  double dsp_buffer_get_back(ffi.Pointer<YseDspBuffer> buf) {
+    return _dsp_buffer_get_back(buf);
+  }
+
+  late final _dsp_buffer_get_backPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspBuffer>)>
+      >('yse_dsp_buffer_get_back');
+  late final _dsp_buffer_get_back = _dsp_buffer_get_backPtr
+      .asFunction<double Function(ffi.Pointer<YseDspBuffer>)>();
+
+  double dsp_buffer_sample_rate_adjustment(ffi.Pointer<YseDspBuffer> buf) {
+    return _dsp_buffer_sample_rate_adjustment(buf);
+  }
+
+  late final _dsp_buffer_sample_rate_adjustmentPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspBuffer>)>
+      >('yse_dsp_buffer_sample_rate_adjustment');
+  late final _dsp_buffer_sample_rate_adjustment =
+      _dsp_buffer_sample_rate_adjustmentPtr
+          .asFunction<double Function(ffi.Pointer<YseDspBuffer>)>();
+
+  void dsp_buffer_set_sample_rate_adjustment(
+    ffi.Pointer<YseDspBuffer> buf,
+    double v,
+  ) {
+    return _dsp_buffer_set_sample_rate_adjustment(buf, v);
+  }
+
+  late final _dsp_buffer_set_sample_rate_adjustmentPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspBuffer>, ffi.Float)
+        >
+      >('yse_dsp_buffer_set_sample_rate_adjustment');
+  late final _dsp_buffer_set_sample_rate_adjustment =
+      _dsp_buffer_set_sample_rate_adjustmentPtr
+          .asFunction<void Function(ffi.Pointer<YseDspBuffer>, double)>();
+
+  /// Resize. value is used to initialise newly added samples.
+  void dsp_buffer_resize(
+    ffi.Pointer<YseDspBuffer> buf,
+    int length,
+    double value,
+  ) {
+    return _dsp_buffer_resize(buf, length, value);
+  }
+
+  late final _dsp_buffer_resizePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.UnsignedInt,
+            ffi.Float,
+          )
+        >
+      >('yse_dsp_buffer_resize');
+  late final _dsp_buffer_resize = _dsp_buffer_resizePtr
+      .asFunction<void Function(ffi.Pointer<YseDspBuffer>, int, double)>();
+
+  /// Bulk sample I/O. Copies count samples between the host array and the
+  /// buffer storage starting at offset. Returns the actual number of samples
+  /// copied (clamped to the buffer length).
+  int dsp_buffer_read(
+    ffi.Pointer<YseDspBuffer> buf,
+    int offset,
+    ffi.Pointer<ffi.Float> out,
+    int count,
+  ) {
+    return _dsp_buffer_read(buf, offset, out, count);
+  }
+
+  late final _dsp_buffer_readPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.UnsignedInt,
+            ffi.Pointer<ffi.Float>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_dsp_buffer_read');
+  late final _dsp_buffer_read = _dsp_buffer_readPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseDspBuffer>,
+          int,
+          ffi.Pointer<ffi.Float>,
+          int,
+        )
+      >();
+
+  int dsp_buffer_write(
+    ffi.Pointer<YseDspBuffer> buf,
+    int offset,
+    ffi.Pointer<ffi.Float> in$,
+    int count,
+  ) {
+    return _dsp_buffer_write(buf, offset, in$, count);
+  }
+
+  late final _dsp_buffer_writePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.UnsignedInt,
+            ffi.Pointer<ffi.Float>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_dsp_buffer_write');
+  late final _dsp_buffer_write = _dsp_buffer_writePtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseDspBuffer>,
+          int,
+          ffi.Pointer<ffi.Float>,
+          int,
+        )
+      >();
+
+  /// Scalar fill / scalar math (operator= and operator+= et al on Flt).
+  void dsp_buffer_fill(ffi.Pointer<YseDspBuffer> buf, double value) {
+    return _dsp_buffer_fill(buf, value);
+  }
+
+  late final _dsp_buffer_fillPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspBuffer>, ffi.Float)
+        >
+      >('yse_dsp_buffer_fill');
+  late final _dsp_buffer_fill = _dsp_buffer_fillPtr
+      .asFunction<void Function(ffi.Pointer<YseDspBuffer>, double)>();
+
+  void dsp_buffer_add_scalar(ffi.Pointer<YseDspBuffer> buf, double value) {
+    return _dsp_buffer_add_scalar(buf, value);
+  }
+
+  late final _dsp_buffer_add_scalarPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspBuffer>, ffi.Float)
+        >
+      >('yse_dsp_buffer_add_scalar');
+  late final _dsp_buffer_add_scalar = _dsp_buffer_add_scalarPtr
+      .asFunction<void Function(ffi.Pointer<YseDspBuffer>, double)>();
+
+  void dsp_buffer_mul_scalar(ffi.Pointer<YseDspBuffer> buf, double value) {
+    return _dsp_buffer_mul_scalar(buf, value);
+  }
+
+  late final _dsp_buffer_mul_scalarPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspBuffer>, ffi.Float)
+        >
+      >('yse_dsp_buffer_mul_scalar');
+  late final _dsp_buffer_mul_scalar = _dsp_buffer_mul_scalarPtr
+      .asFunction<void Function(ffi.Pointer<YseDspBuffer>, double)>();
+
+  /// drawableBuffer-only.
+  YseStatus dsp_buffer_draw_line(
+    ffi.Pointer<YseDspBuffer> buf,
+    int start,
+    int stop,
+    double start_value,
+    double stop_value,
+  ) {
+    return YseStatus.fromValue(
+      _dsp_buffer_draw_line(buf, start, stop, start_value, stop_value),
+    );
+  }
+
+  late final _dsp_buffer_draw_linePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.UnsignedInt,
+            ffi.UnsignedInt,
+            ffi.Float,
+            ffi.Float,
+          )
+        >
+      >('yse_dsp_buffer_draw_line');
+  late final _dsp_buffer_draw_line = _dsp_buffer_draw_linePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseDspBuffer>, int, int, double, double)
+      >();
+
+  YseStatus dsp_buffer_draw_flat(
+    ffi.Pointer<YseDspBuffer> buf,
+    int start,
+    int stop,
+    double value,
+  ) {
+    return YseStatus.fromValue(_dsp_buffer_draw_flat(buf, start, stop, value));
+  }
+
+  late final _dsp_buffer_draw_flatPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.UnsignedInt,
+            ffi.UnsignedInt,
+            ffi.Float,
+          )
+        >
+      >('yse_dsp_buffer_draw_flat');
+  late final _dsp_buffer_draw_flat = _dsp_buffer_draw_flatPtr
+      .asFunction<int Function(ffi.Pointer<YseDspBuffer>, int, int, double)>();
+
+  /// fileBuffer-only.
+  YseStatus dsp_buffer_load_file(
+    ffi.Pointer<YseDspBuffer> buf,
+    ffi.Pointer<ffi.Char> filename,
+    int channel,
+  ) {
+    return YseStatus.fromValue(_dsp_buffer_load_file(buf, filename, channel));
+  }
+
+  late final _dsp_buffer_load_filePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.Pointer<ffi.Char>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_dsp_buffer_load_file');
+  late final _dsp_buffer_load_file = _dsp_buffer_load_filePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseDspBuffer>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  YseStatus dsp_buffer_save_file(
+    ffi.Pointer<YseDspBuffer> buf,
+    ffi.Pointer<ffi.Char> filename,
+  ) {
+    return YseStatus.fromValue(_dsp_buffer_save_file(buf, filename));
+  }
+
+  late final _dsp_buffer_save_filePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('yse_dsp_buffer_save_file');
+  late final _dsp_buffer_save_file = _dsp_buffer_save_filePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseDspBuffer>, ffi.Pointer<ffi.Char>)
+      >();
+
+  /// wavetable-only.
+  YseStatus dsp_wavetable_create_saw(
+    ffi.Pointer<YseDspBuffer> buf,
+    int harmonics,
+    int length,
+  ) {
+    return YseStatus.fromValue(
+      _dsp_wavetable_create_saw(buf, harmonics, length),
+    );
+  }
+
+  late final _dsp_wavetable_create_sawPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YseDspBuffer>, ffi.Int, ffi.Int)
+        >
+      >('yse_dsp_wavetable_create_saw');
+  late final _dsp_wavetable_create_saw = _dsp_wavetable_create_sawPtr
+      .asFunction<int Function(ffi.Pointer<YseDspBuffer>, int, int)>();
+
+  YseStatus dsp_wavetable_create_square(
+    ffi.Pointer<YseDspBuffer> buf,
+    int harmonics,
+    int length,
+  ) {
+    return YseStatus.fromValue(
+      _dsp_wavetable_create_square(buf, harmonics, length),
+    );
+  }
+
+  late final _dsp_wavetable_create_squarePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YseDspBuffer>, ffi.Int, ffi.Int)
+        >
+      >('yse_dsp_wavetable_create_square');
+  late final _dsp_wavetable_create_square = _dsp_wavetable_create_squarePtr
+      .asFunction<int Function(ffi.Pointer<YseDspBuffer>, int, int)>();
+
+  YseStatus dsp_wavetable_create_triangle(
+    ffi.Pointer<YseDspBuffer> buf,
+    int harmonics,
+    int length,
+  ) {
+    return YseStatus.fromValue(
+      _dsp_wavetable_create_triangle(buf, harmonics, length),
+    );
+  }
+
+  late final _dsp_wavetable_create_trianglePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YseDspBuffer>, ffi.Int, ffi.Int)
+        >
+      >('yse_dsp_wavetable_create_triangle');
+  late final _dsp_wavetable_create_triangle = _dsp_wavetable_create_trianglePtr
+      .asFunction<int Function(ffi.Pointer<YseDspBuffer>, int, int)>();
+
   late final addresses = _SymbolAddresses(this);
 }
 
@@ -1797,6 +2276,8 @@ class _SymbolAddresses {
   get device_setup_destroy => _library._device_setup_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseReverb>)>>
   get reverb_destroy => _library._reverb_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspBuffer>)>>
+  get dsp_buffer_destroy => _library._dsp_buffer_destroyPtr;
 }
 
 enum YseStatus {
@@ -1913,3 +2394,5 @@ final class YseDeviceSetup extends ffi.Opaque {}
 final class YseListener extends ffi.Opaque {}
 
 final class YseSound extends ffi.Opaque {}
+
+final class YseDspBuffer extends ffi.Opaque {}

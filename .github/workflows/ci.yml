@@ -45,10 +45,16 @@ jobs:
       - name: dart analyze
         run: dart analyze
 
-      # No tests under test/ today — exits 0 — but keep the step so the
-      # gate exists when the suite lands.
+      # `dart test` exits 65 when test/ is missing, so guard the call.
+      # The step stays wired so it starts running the suite the day it
+      # lands without needing a workflow edit.
       - name: dart test
-        run: dart test
+        run: |
+          if [ -d test ]; then
+            dart test
+          else
+            echo "No test/ directory — skipping (will run once the suite lands)."
+          fi
 
       # Headless FFI smoke — exercises library load + initOffline +
       # renderOffline. No real audio device required.

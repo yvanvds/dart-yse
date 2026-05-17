@@ -63,6 +63,19 @@ enum SweepShape {
   const SweepShape(this.native);
 }
 
+/// Log-level filter for [Log].
+///
+/// Values match `YSE::ERROR_LEVEL`.
+enum LogLevel {
+  none(raw.YseErrorLevel.YSE_EL_NONE),
+  error(raw.YseErrorLevel.YSE_EL_ERROR),
+  warning(raw.YseErrorLevel.YSE_EL_WARNING),
+  debug(raw.YseErrorLevel.YSE_EL_DEBUG);
+
+  final raw.YseErrorLevel native;
+  const LogLevel(this.native);
+}
+
 /// Data type produced by a patcher outlet ([PHandle.outputDataType]).
 ///
 /// Values match `YSE::OUT_TYPE`.

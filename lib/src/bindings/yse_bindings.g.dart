@@ -5124,6 +5124,243 @@ class YseBindings {
   late final _player_fit_motifs_to_scale = _player_fit_motifs_to_scalePtr
       .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
 
+  ffi.Pointer<YseLog> log_get() {
+    return _log_get();
+  }
+
+  late final _log_getPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseLog> Function()>>(
+        'yse_log_get',
+      );
+  late final _log_get = _log_getPtr
+      .asFunction<ffi.Pointer<YseLog> Function()>();
+
+  void log_send_message(ffi.Pointer<YseLog> log, ffi.Pointer<ffi.Char> msg) {
+    return _log_send_message(log, msg);
+  }
+
+  late final _log_send_messagePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseLog>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_log_send_message');
+  late final _log_send_message = _log_send_messagePtr
+      .asFunction<void Function(ffi.Pointer<YseLog>, ffi.Pointer<ffi.Char>)>();
+
+  void log_set_level(ffi.Pointer<YseLog> log, YseErrorLevel level) {
+    return _log_set_level(log, level.value);
+  }
+
+  late final _log_set_levelPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseLog>, ffi.UnsignedInt)
+        >
+      >('yse_log_set_level');
+  late final _log_set_level = _log_set_levelPtr
+      .asFunction<void Function(ffi.Pointer<YseLog>, int)>();
+
+  YseErrorLevel log_get_level(ffi.Pointer<YseLog> log) {
+    return YseErrorLevel.fromValue(_log_get_level(log));
+  }
+
+  late final _log_get_levelPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseLog>)>
+      >('yse_log_get_level');
+  late final _log_get_level = _log_get_levelPtr
+      .asFunction<int Function(ffi.Pointer<YseLog>)>();
+
+  void log_set_logfile(ffi.Pointer<YseLog> log, ffi.Pointer<ffi.Char> path) {
+    return _log_set_logfile(log, path);
+  }
+
+  late final _log_set_logfilePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseLog>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_log_set_logfile');
+  late final _log_set_logfile = _log_set_logfilePtr
+      .asFunction<void Function(ffi.Pointer<YseLog>, ffi.Pointer<ffi.Char>)>();
+
+  int log_get_logfile(
+    ffi.Pointer<YseLog> log,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _log_get_logfile(log, buf, cap);
+  }
+
+  late final _log_get_logfilePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseLog>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_log_get_logfile');
+  late final _log_get_logfile = _log_get_logfilePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseLog>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  /// Replaces the default file sink. Pass NULL for cb to restore the default.
+  /// user_data is opaque — forwarded to every callback invocation.
+  void log_set_callback(
+    ffi.Pointer<YseLog> log,
+    YseLogCallback cb,
+    ffi.Pointer<ffi.Void> user_data,
+  ) {
+    return _log_set_callback(log, cb, user_data);
+  }
+
+  late final _log_set_callbackPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseLog>,
+            YseLogCallback,
+            ffi.Pointer<ffi.Void>,
+          )
+        >
+      >('yse_log_set_callback');
+  late final _log_set_callback = _log_set_callbackPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YseLog>,
+          YseLogCallback,
+          ffi.Pointer<ffi.Void>,
+        )
+      >();
+
+  /// Release a message string previously delivered to a YseLogCallback.
+  void log_free_message(ffi.Pointer<ffi.Char> msg) {
+    return _log_free_message(msg);
+  }
+
+  late final _log_free_messagePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+        'yse_log_free_message',
+      );
+  late final _log_free_message = _log_free_messagePtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  /// store_copy=1 copies the supplied bytes; store_copy=0 keeps a pointer
+  /// to the caller's buffer (which must outlive the registration).
+  ffi.Pointer<YseBufferIO> buffer_io_create(int store_copy) {
+    return _buffer_io_create(store_copy);
+  }
+
+  late final _buffer_io_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseBufferIO> Function(ffi.Int)>>(
+        'yse_buffer_io_create',
+      );
+  late final _buffer_io_create = _buffer_io_createPtr
+      .asFunction<ffi.Pointer<YseBufferIO> Function(int)>();
+
+  void buffer_io_destroy(ffi.Pointer<YseBufferIO> io) {
+    return _buffer_io_destroy(io);
+  }
+
+  late final _buffer_io_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseBufferIO>)>>(
+        'yse_buffer_io_destroy',
+      );
+  late final _buffer_io_destroy = _buffer_io_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseBufferIO>)>();
+
+  void buffer_io_set_active(ffi.Pointer<YseBufferIO> io, int on) {
+    return _buffer_io_set_active(io, on);
+  }
+
+  late final _buffer_io_set_activePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseBufferIO>, ffi.Int)>
+      >('yse_buffer_io_set_active');
+  late final _buffer_io_set_active = _buffer_io_set_activePtr
+      .asFunction<void Function(ffi.Pointer<YseBufferIO>, int)>();
+
+  int buffer_io_get_active(ffi.Pointer<YseBufferIO> io) {
+    return _buffer_io_get_active(io);
+  }
+
+  late final _buffer_io_get_activePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseBufferIO>)>>(
+        'yse_buffer_io_get_active',
+      );
+  late final _buffer_io_get_active = _buffer_io_get_activePtr
+      .asFunction<int Function(ffi.Pointer<YseBufferIO>)>();
+
+  int buffer_io_name_exists(
+    ffi.Pointer<YseBufferIO> io,
+    ffi.Pointer<ffi.Char> id,
+  ) {
+    return _buffer_io_name_exists(io, id);
+  }
+
+  late final _buffer_io_name_existsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YseBufferIO>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_buffer_io_name_exists');
+  late final _buffer_io_name_exists = _buffer_io_name_existsPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseBufferIO>, ffi.Pointer<ffi.Char>)
+      >();
+
+  int buffer_io_add(
+    ffi.Pointer<YseBufferIO> io,
+    ffi.Pointer<ffi.Char> id,
+    ffi.Pointer<ffi.Char> buffer,
+    int length,
+  ) {
+    return _buffer_io_add(io, id, buffer, length);
+  }
+
+  late final _buffer_io_addPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(
+            ffi.Pointer<YseBufferIO>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Int,
+          )
+        >
+      >('yse_buffer_io_add');
+  late final _buffer_io_add = _buffer_io_addPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseBufferIO>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          int,
+        )
+      >();
+
+  int buffer_io_remove_by_name(
+    ffi.Pointer<YseBufferIO> io,
+    ffi.Pointer<ffi.Char> id,
+  ) {
+    return _buffer_io_remove_by_name(io, id);
+  }
+
+  late final _buffer_io_remove_by_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YseBufferIO>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_buffer_io_remove_by_name');
+  late final _buffer_io_remove_by_name = _buffer_io_remove_by_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseBufferIO>, ffi.Pointer<ffi.Char>)
+      >();
+
   late final addresses = _SymbolAddresses(this);
 }
 
@@ -5162,6 +5399,8 @@ class _SymbolAddresses {
   get motif_destroy => _library._motif_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePlayer>)>>
   get player_destroy => _library._player_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseBufferIO>)>>
+  get buffer_io_destroy => _library._buffer_io_destroyPtr;
 }
 
 enum YseStatus {
@@ -5229,6 +5468,25 @@ enum YseChannelType {
     7 => YSE_CT_71,
     8 => YSE_CT_CUSTOM,
     _ => throw ArgumentError('Unknown value for YseChannelType: $value'),
+  };
+}
+
+/// Mirrors YSE::ERROR_LEVEL in headers/enums.hpp.
+enum YseErrorLevel {
+  YSE_EL_NONE(0),
+  YSE_EL_ERROR(1),
+  YSE_EL_WARNING(2),
+  YSE_EL_DEBUG(3);
+
+  final int value;
+  const YseErrorLevel(this.value);
+
+  static YseErrorLevel fromValue(int value) => switch (value) {
+    0 => YSE_EL_NONE,
+    1 => YSE_EL_ERROR,
+    2 => YSE_EL_WARNING,
+    3 => YSE_EL_DEBUG,
+    _ => throw ArgumentError('Unknown value for YseErrorLevel: $value'),
   };
 }
 
@@ -5386,3 +5644,21 @@ final class YseScale extends ffi.Opaque {}
 final class YseMotif extends ffi.Opaque {}
 
 final class YsePlayer extends ffi.Opaque {}
+
+final class YseLog extends ffi.Opaque {}
+
+typedef YseLogCallbackFunction =
+    ffi.Void Function(
+      ffi.Pointer<ffi.Char> msg,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef DartYseLogCallbackFunction =
+    void Function(ffi.Pointer<ffi.Char> msg, ffi.Pointer<ffi.Void> user_data);
+
+/// The receiver OWNS msg and must release it with yse_log_free_message
+/// when finished. The pointer is allocated with malloc by the bridge so
+/// any C client can free() it directly if preferred.
+typedef YseLogCallback =
+    ffi.Pointer<ffi.NativeFunction<YseLogCallbackFunction>>;
+
+final class YseBufferIO extends ffi.Opaque {}

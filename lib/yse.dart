@@ -23,14 +23,23 @@
 /// ```
 library;
 
+export 'src/buffer_io.dart' show BufferIO;
 export 'src/channel.dart' show Channel;
 export 'src/device.dart' show Device, DeviceSetup;
 export 'src/dsp_buffer.dart' show DspBuffer;
 export 'src/dsp_object.dart' show DspObject;
 export 'src/enums.dart'
-    show ChannelType, DelayTap, LfoType, OutType, ReverbPreset, SweepShape;
+    show
+        ChannelType,
+        DelayTap,
+        LfoType,
+        LogLevel,
+        OutType,
+        ReverbPreset,
+        SweepShape;
 export 'src/exception.dart' show YseException;
 export 'src/listener.dart' show Listener;
+export 'src/log.dart' show Log;
 export 'src/midi.dart' show MidiFile, MidiOut;
 export 'src/music.dart' show Motif, Note, PNote, Player, Scale;
 export 'src/patcher.dart' show Obj, PHandle, Patcher;

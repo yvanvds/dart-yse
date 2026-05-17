@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  linux:
+    name: Linux (Ubuntu 24.04)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          submodules: recursive
+
+      - name: Install engine build deps
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            cmake \
+            ninja-build \
+            pkg-config \
+            portaudio19-dev \
+            libsndfile1-dev \
+            librtmidi-dev
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: stable
+
+      - name: Build libyse.so
+        run: |
+          cmake -S third_party/yse-soundengine -B third_party/yse-soundengine/build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build third_party/yse-soundengine/build --target yse
+
+      - name: dart pub get
+        run: dart pub get
+
+      - name: dart analyze
+        run: dart analyze
+
+      # No tests under test/ today — exits 0 — but keep the step so the
+      # gate exists when the suite lands.
+      - name: dart test
+        run: dart test
+
+      # Headless FFI smoke — exercises library load + initOffline +
+      # renderOffline. No real audio device required.
+      #
+      # Note: example/hello_sound.dart opens a real audio device, which the
+      # GitHub Actions runner cannot provide reliably (snd-aloop, PulseAudio
+      # null sink, and JACK dummy backends all fail on the runner kernel,
+      # per the upstream engine's own CI notes). Headless validation is the
+      # most we can do on CI; on a real Linux box `dart run example/hello_sound.dart`
+      # is the recommended manual check.
+      - name: Smoke (FFI load + initOffline)
+        env:
+          YSE_DLL_PATH: ${{ github.workspace }}/third_party/yse-soundengine/build/bin
+        run: dart run tool/linux_smoke.dart

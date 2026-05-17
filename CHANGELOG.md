@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+- **Linux support.** `library.dart` resolves `libyse.so` on Linux in
+  addition to `libyse.dll` on Windows. RPATH is `$ORIGIN`, so sibling
+  shared libs are discovered without `LD_LIBRARY_PATH`. Tested against
+  Ubuntu 24.04 (the GitHub-Actions runner baseline).
+- README has parallel Windows / Linux build sections.
+- `tools/ci-linux/Dockerfile` builds an image with the engine deps
+  plus the Dart SDK so Windows contributors can reproduce a Linux
+  build locally without rebooting.
+- `tool/linux_smoke.dart` exercises FFI load + `initOffline` /
+  `renderOffline` for headless validation in Docker and CI.
+- GitHub Actions CI job (Ubuntu 24.04) builds the engine and runs
+  `dart analyze` / `dart test` / the headless smoke on every push and
+  PR.
+
 ## 0.1.0 — initial Windows release
 
 First public release. Wraps the YSE sound engine
@@ -34,7 +50,8 @@ wrappers in this package.
 
 **Known limitations:**
 
-- Windows only. Linux + Android are next.
+- Android support is still pending (Linux landed in the next release —
+  see Unreleased above).
 - `Player` is wrapped but its upstream `player::create(synth&)` factory
   is commented out (synth subsystem deferred upstream) — every method
   call crashes the process. Don't use until YSE restores the synth.

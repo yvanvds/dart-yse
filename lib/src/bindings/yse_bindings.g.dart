@@ -228,6 +228,166 @@ class YseBindings {
   late final _system_auto_reconnect = _system_auto_reconnectPtr
       .asFunction<void Function(ffi.Pointer<YseSystem>, int, int)>();
 
+  /// Devices. Returned YseDevice* pointers are borrowed from the engine and
+  /// must not be destroyed. See yse_device.h for the descriptor accessors.
+  int system_num_devices(ffi.Pointer<YseSystem> sys) {
+    return _system_num_devices(sys);
+  }
+
+  late final _system_num_devicesPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseSystem>)>
+      >('yse_system_num_devices');
+  late final _system_num_devices = _system_num_devicesPtr
+      .asFunction<int Function(ffi.Pointer<YseSystem>)>();
+
+  ffi.Pointer<YseDevice> system_get_device(
+    ffi.Pointer<YseSystem> sys,
+    int idx,
+  ) {
+    return _system_get_device(sys, idx);
+  }
+
+  late final _system_get_devicePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDevice> Function(
+            ffi.Pointer<YseSystem>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_system_get_device');
+  late final _system_get_device = _system_get_devicePtr
+      .asFunction<
+        ffi.Pointer<YseDevice> Function(ffi.Pointer<YseSystem>, int)
+      >();
+
+  YseStatus system_open_device(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<YseDeviceSetup> setup,
+    YseChannelType layout,
+  ) {
+    return YseStatus.fromValue(_system_open_device(sys, setup, layout.value));
+  }
+
+  late final _system_open_devicePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSystem>,
+            ffi.Pointer<YseDeviceSetup>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_system_open_device');
+  late final _system_open_device = _system_open_devicePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSystem>, ffi.Pointer<YseDeviceSetup>, int)
+      >();
+
+  void system_close_current_device(ffi.Pointer<YseSystem> sys) {
+    return _system_close_current_device(sys);
+  }
+
+  late final _system_close_current_devicePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSystem>)>>(
+        'yse_system_close_current_device',
+      );
+  late final _system_close_current_device = _system_close_current_devicePtr
+      .asFunction<void Function(ffi.Pointer<YseSystem>)>();
+
+  int system_default_device(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _system_default_device(sys, buf, cap);
+  }
+
+  late final _system_default_devicePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseSystem>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_system_default_device');
+  late final _system_default_device = _system_default_devicePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int system_default_host(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _system_default_host(sys, buf, cap);
+  }
+
+  late final _system_default_hostPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseSystem>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_system_default_host');
+  late final _system_default_host = _system_default_hostPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  /// Global reverb — fallback wherever no positioned reverb zone reaches.
+  /// Returned pointer is borrowed; never destroy.
+  ffi.Pointer<YseReverb> system_get_global_reverb(ffi.Pointer<YseSystem> sys) {
+    return _system_get_global_reverb(sys);
+  }
+
+  late final _system_get_global_reverbPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseReverb> Function(ffi.Pointer<YseSystem>)
+        >
+      >('yse_system_get_global_reverb');
+  late final _system_get_global_reverb = _system_get_global_reverbPtr
+      .asFunction<ffi.Pointer<YseReverb> Function(ffi.Pointer<YseSystem>)>();
+
+  /// Underwater effect: routes a channel through the built-in low-pass /
+  /// pitch-shift "underwater" filter. Depth is in [0.0, 1.0].
+  void system_underwater_fx(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<YseChannel> target,
+  ) {
+    return _system_underwater_fx(sys, target);
+  }
+
+  late final _system_underwater_fxPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSystem>, ffi.Pointer<YseChannel>)
+        >
+      >('yse_system_underwater_fx');
+  late final _system_underwater_fx = _system_underwater_fxPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseSystem>, ffi.Pointer<YseChannel>)
+      >();
+
+  void system_set_underwater_depth(ffi.Pointer<YseSystem> sys, double depth) {
+    return _system_set_underwater_depth(sys, depth);
+  }
+
+  late final _system_set_underwater_depthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSystem>, ffi.Float)>
+      >('yse_system_set_underwater_depth');
+  late final _system_set_underwater_depth = _system_set_underwater_depthPtr
+      .asFunction<void Function(ffi.Pointer<YseSystem>, double)>();
+
   /// Borrowed singleton pointer — never destroy.
   ffi.Pointer<YseListener> listener_get() {
     return _listener_get();
@@ -1001,6 +1161,626 @@ class YseBindings {
         void Function(ffi.Pointer<YseSound>, ffi.Pointer<YseChannel>)
       >();
 
+  /// Device descriptor — read-only.
+  int device_get_name(
+    ffi.Pointer<YseDevice> dev,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _device_get_name(dev, buf, cap);
+  }
+
+  late final _device_get_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseDevice>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_device_get_name');
+  late final _device_get_name = _device_get_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseDevice>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int device_get_type_name(
+    ffi.Pointer<YseDevice> dev,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _device_get_type_name(dev, buf, cap);
+  }
+
+  late final _device_get_type_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseDevice>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_device_get_type_name');
+  late final _device_get_type_name = _device_get_type_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseDevice>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int device_num_output_channels(ffi.Pointer<YseDevice> dev) {
+    return _device_num_output_channels(dev);
+  }
+
+  late final _device_num_output_channelsPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDevice>)>
+      >('yse_device_num_output_channels');
+  late final _device_num_output_channels = _device_num_output_channelsPtr
+      .asFunction<int Function(ffi.Pointer<YseDevice>)>();
+
+  int device_get_output_channel_name(
+    ffi.Pointer<YseDevice> dev,
+    int idx,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _device_get_output_channel_name(dev, idx, buf, cap);
+  }
+
+  late final _device_get_output_channel_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseDevice>,
+            ffi.UnsignedInt,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_device_get_output_channel_name');
+  late final _device_get_output_channel_name =
+      _device_get_output_channel_namePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<YseDevice>,
+              int,
+              ffi.Pointer<ffi.Char>,
+              int,
+            )
+          >();
+
+  int device_num_input_channels(ffi.Pointer<YseDevice> dev) {
+    return _device_num_input_channels(dev);
+  }
+
+  late final _device_num_input_channelsPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDevice>)>
+      >('yse_device_num_input_channels');
+  late final _device_num_input_channels = _device_num_input_channelsPtr
+      .asFunction<int Function(ffi.Pointer<YseDevice>)>();
+
+  int device_get_input_channel_name(
+    ffi.Pointer<YseDevice> dev,
+    int idx,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _device_get_input_channel_name(dev, idx, buf, cap);
+  }
+
+  late final _device_get_input_channel_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseDevice>,
+            ffi.UnsignedInt,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_device_get_input_channel_name');
+  late final _device_get_input_channel_name = _device_get_input_channel_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseDevice>, int, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int device_num_sample_rates(ffi.Pointer<YseDevice> dev) {
+    return _device_num_sample_rates(dev);
+  }
+
+  late final _device_num_sample_ratesPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDevice>)>
+      >('yse_device_num_sample_rates');
+  late final _device_num_sample_rates = _device_num_sample_ratesPtr
+      .asFunction<int Function(ffi.Pointer<YseDevice>)>();
+
+  double device_get_sample_rate(ffi.Pointer<YseDevice> dev, int idx) {
+    return _device_get_sample_rate(dev, idx);
+  }
+
+  late final _device_get_sample_ratePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Double Function(ffi.Pointer<YseDevice>, ffi.UnsignedInt)
+        >
+      >('yse_device_get_sample_rate');
+  late final _device_get_sample_rate = _device_get_sample_ratePtr
+      .asFunction<double Function(ffi.Pointer<YseDevice>, int)>();
+
+  int device_num_buffer_sizes(ffi.Pointer<YseDevice> dev) {
+    return _device_num_buffer_sizes(dev);
+  }
+
+  late final _device_num_buffer_sizesPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDevice>)>
+      >('yse_device_num_buffer_sizes');
+  late final _device_num_buffer_sizes = _device_num_buffer_sizesPtr
+      .asFunction<int Function(ffi.Pointer<YseDevice>)>();
+
+  int device_get_buffer_size(ffi.Pointer<YseDevice> dev, int idx) {
+    return _device_get_buffer_size(dev, idx);
+  }
+
+  late final _device_get_buffer_sizePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YseDevice>, ffi.UnsignedInt)
+        >
+      >('yse_device_get_buffer_size');
+  late final _device_get_buffer_size = _device_get_buffer_sizePtr
+      .asFunction<int Function(ffi.Pointer<YseDevice>, int)>();
+
+  int device_default_buffer_size(ffi.Pointer<YseDevice> dev) {
+    return _device_default_buffer_size(dev);
+  }
+
+  late final _device_default_buffer_sizePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDevice>)>>(
+        'yse_device_default_buffer_size',
+      );
+  late final _device_default_buffer_size = _device_default_buffer_sizePtr
+      .asFunction<int Function(ffi.Pointer<YseDevice>)>();
+
+  int device_output_latency(ffi.Pointer<YseDevice> dev) {
+    return _device_output_latency(dev);
+  }
+
+  late final _device_output_latencyPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDevice>)>>(
+        'yse_device_output_latency',
+      );
+  late final _device_output_latency = _device_output_latencyPtr
+      .asFunction<int Function(ffi.Pointer<YseDevice>)>();
+
+  int device_input_latency(ffi.Pointer<YseDevice> dev) {
+    return _device_input_latency(dev);
+  }
+
+  late final _device_input_latencyPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDevice>)>>(
+        'yse_device_input_latency',
+      );
+  late final _device_input_latency = _device_input_latencyPtr
+      .asFunction<int Function(ffi.Pointer<YseDevice>)>();
+
+  int device_get_id(ffi.Pointer<YseDevice> dev) {
+    return _device_get_id(dev);
+  }
+
+  late final _device_get_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDevice>)>>(
+        'yse_device_get_id',
+      );
+  late final _device_get_id = _device_get_idPtr
+      .asFunction<int Function(ffi.Pointer<YseDevice>)>();
+
+  /// deviceSetup — owned configuration object passed to yse_system_open_device.
+  ffi.Pointer<YseDeviceSetup> device_setup_create() {
+    return _device_setup_create();
+  }
+
+  late final _device_setup_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDeviceSetup> Function()>>(
+        'yse_device_setup_create',
+      );
+  late final _device_setup_create = _device_setup_createPtr
+      .asFunction<ffi.Pointer<YseDeviceSetup> Function()>();
+
+  void device_setup_destroy(ffi.Pointer<YseDeviceSetup> setup) {
+    return _device_setup_destroy(setup);
+  }
+
+  late final _device_setup_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDeviceSetup>)>
+      >('yse_device_setup_destroy');
+  late final _device_setup_destroy = _device_setup_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseDeviceSetup>)>();
+
+  void device_setup_set_input(
+    ffi.Pointer<YseDeviceSetup> setup,
+    ffi.Pointer<YseDevice> dev,
+  ) {
+    return _device_setup_set_input(setup, dev);
+  }
+
+  late final _device_setup_set_inputPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDeviceSetup>, ffi.Pointer<YseDevice>)
+        >
+      >('yse_device_setup_set_input');
+  late final _device_setup_set_input = _device_setup_set_inputPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseDeviceSetup>, ffi.Pointer<YseDevice>)
+      >();
+
+  void device_setup_set_output(
+    ffi.Pointer<YseDeviceSetup> setup,
+    ffi.Pointer<YseDevice> dev,
+  ) {
+    return _device_setup_set_output(setup, dev);
+  }
+
+  late final _device_setup_set_outputPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDeviceSetup>, ffi.Pointer<YseDevice>)
+        >
+      >('yse_device_setup_set_output');
+  late final _device_setup_set_output = _device_setup_set_outputPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseDeviceSetup>, ffi.Pointer<YseDevice>)
+      >();
+
+  void device_setup_set_sample_rate(
+    ffi.Pointer<YseDeviceSetup> setup,
+    double value,
+  ) {
+    return _device_setup_set_sample_rate(setup, value);
+  }
+
+  late final _device_setup_set_sample_ratePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDeviceSetup>, ffi.Double)
+        >
+      >('yse_device_setup_set_sample_rate');
+  late final _device_setup_set_sample_rate = _device_setup_set_sample_ratePtr
+      .asFunction<void Function(ffi.Pointer<YseDeviceSetup>, double)>();
+
+  void device_setup_set_buffer_size(
+    ffi.Pointer<YseDeviceSetup> setup,
+    int value,
+  ) {
+    return _device_setup_set_buffer_size(setup, value);
+  }
+
+  late final _device_setup_set_buffer_sizePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDeviceSetup>, ffi.Int)
+        >
+      >('yse_device_setup_set_buffer_size');
+  late final _device_setup_set_buffer_size = _device_setup_set_buffer_sizePtr
+      .asFunction<void Function(ffi.Pointer<YseDeviceSetup>, int)>();
+
+  /// Owned reverb zone — yse_reverb_create() runs both the C++ constructor
+  /// and reverb::create() so the handle is ready to configure immediately.
+  ffi.Pointer<YseReverb> reverb_create() {
+    return _reverb_create();
+  }
+
+  late final _reverb_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseReverb> Function()>>(
+        'yse_reverb_create',
+      );
+  late final _reverb_create = _reverb_createPtr
+      .asFunction<ffi.Pointer<YseReverb> Function()>();
+
+  void reverb_destroy(ffi.Pointer<YseReverb> rev) {
+    return _reverb_destroy(rev);
+  }
+
+  late final _reverb_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_destroy',
+      );
+  late final _reverb_destroy = _reverb_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>)>();
+
+  int reverb_is_valid(ffi.Pointer<YseReverb> rev) {
+    return _reverb_is_valid(rev);
+  }
+
+  late final _reverb_is_validPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_is_valid',
+      );
+  late final _reverb_is_valid = _reverb_is_validPtr
+      .asFunction<int Function(ffi.Pointer<YseReverb>)>();
+
+  /// Position + audible footprint.
+  void reverb_set_position(
+    ffi.Pointer<YseReverb> rev,
+    ffi.Pointer<yse_pos_t> p,
+  ) {
+    return _reverb_set_position(rev, p);
+  }
+
+  late final _reverb_set_positionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseReverb>, ffi.Pointer<yse_pos_t>)
+        >
+      >('yse_reverb_set_position');
+  late final _reverb_set_position = _reverb_set_positionPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseReverb>, ffi.Pointer<yse_pos_t>)
+      >();
+
+  yse_pos_t reverb_get_position(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_position(rev);
+  }
+
+  late final _reverb_get_positionPtr =
+      _lookup<ffi.NativeFunction<yse_pos_t Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_position',
+      );
+  late final _reverb_get_position = _reverb_get_positionPtr
+      .asFunction<yse_pos_t Function(ffi.Pointer<YseReverb>)>();
+
+  void reverb_set_size(ffi.Pointer<YseReverb> rev, double v) {
+    return _reverb_set_size(rev, v);
+  }
+
+  late final _reverb_set_sizePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseReverb>, ffi.Float)>
+      >('yse_reverb_set_size');
+  late final _reverb_set_size = _reverb_set_sizePtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>, double)>();
+
+  double reverb_get_size(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_size(rev);
+  }
+
+  late final _reverb_get_sizePtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_size',
+      );
+  late final _reverb_get_size = _reverb_get_sizePtr
+      .asFunction<double Function(ffi.Pointer<YseReverb>)>();
+
+  void reverb_set_roll_off(ffi.Pointer<YseReverb> rev, double v) {
+    return _reverb_set_roll_off(rev, v);
+  }
+
+  late final _reverb_set_roll_offPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseReverb>, ffi.Float)>
+      >('yse_reverb_set_roll_off');
+  late final _reverb_set_roll_off = _reverb_set_roll_offPtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>, double)>();
+
+  double reverb_get_roll_off(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_roll_off(rev);
+  }
+
+  late final _reverb_get_roll_offPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_roll_off',
+      );
+  late final _reverb_get_roll_off = _reverb_get_roll_offPtr
+      .asFunction<double Function(ffi.Pointer<YseReverb>)>();
+
+  void reverb_set_active(ffi.Pointer<YseReverb> rev, int on) {
+    return _reverb_set_active(rev, on);
+  }
+
+  late final _reverb_set_activePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseReverb>, ffi.Int)>
+      >('yse_reverb_set_active');
+  late final _reverb_set_active = _reverb_set_activePtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>, int)>();
+
+  int reverb_get_active(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_active(rev);
+  }
+
+  late final _reverb_get_activePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_active',
+      );
+  late final _reverb_get_active = _reverb_get_activePtr
+      .asFunction<int Function(ffi.Pointer<YseReverb>)>();
+
+  /// Tail shape.
+  void reverb_set_room_size(ffi.Pointer<YseReverb> rev, double v) {
+    return _reverb_set_room_size(rev, v);
+  }
+
+  late final _reverb_set_room_sizePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseReverb>, ffi.Float)>
+      >('yse_reverb_set_room_size');
+  late final _reverb_set_room_size = _reverb_set_room_sizePtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>, double)>();
+
+  double reverb_get_room_size(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_room_size(rev);
+  }
+
+  late final _reverb_get_room_sizePtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_room_size',
+      );
+  late final _reverb_get_room_size = _reverb_get_room_sizePtr
+      .asFunction<double Function(ffi.Pointer<YseReverb>)>();
+
+  void reverb_set_damping(ffi.Pointer<YseReverb> rev, double v) {
+    return _reverb_set_damping(rev, v);
+  }
+
+  late final _reverb_set_dampingPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseReverb>, ffi.Float)>
+      >('yse_reverb_set_damping');
+  late final _reverb_set_damping = _reverb_set_dampingPtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>, double)>();
+
+  double reverb_get_damping(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_damping(rev);
+  }
+
+  late final _reverb_get_dampingPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_damping',
+      );
+  late final _reverb_get_damping = _reverb_get_dampingPtr
+      .asFunction<double Function(ffi.Pointer<YseReverb>)>();
+
+  void reverb_set_dry_wet_balance(
+    ffi.Pointer<YseReverb> rev,
+    double dry,
+    double wet,
+  ) {
+    return _reverb_set_dry_wet_balance(rev, dry, wet);
+  }
+
+  late final _reverb_set_dry_wet_balancePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseReverb>, ffi.Float, ffi.Float)
+        >
+      >('yse_reverb_set_dry_wet_balance');
+  late final _reverb_set_dry_wet_balance = _reverb_set_dry_wet_balancePtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>, double, double)>();
+
+  double reverb_get_dry(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_dry(rev);
+  }
+
+  late final _reverb_get_dryPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_dry',
+      );
+  late final _reverb_get_dry = _reverb_get_dryPtr
+      .asFunction<double Function(ffi.Pointer<YseReverb>)>();
+
+  double reverb_get_wet(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_wet(rev);
+  }
+
+  late final _reverb_get_wetPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_wet',
+      );
+  late final _reverb_get_wet = _reverb_get_wetPtr
+      .asFunction<double Function(ffi.Pointer<YseReverb>)>();
+
+  void reverb_set_modulation(
+    ffi.Pointer<YseReverb> rev,
+    double frequency,
+    double width,
+  ) {
+    return _reverb_set_modulation(rev, frequency, width);
+  }
+
+  late final _reverb_set_modulationPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseReverb>, ffi.Float, ffi.Float)
+        >
+      >('yse_reverb_set_modulation');
+  late final _reverb_set_modulation = _reverb_set_modulationPtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>, double, double)>();
+
+  double reverb_get_modulation_frequency(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_modulation_frequency(rev);
+  }
+
+  late final _reverb_get_modulation_frequencyPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_modulation_frequency',
+      );
+  late final _reverb_get_modulation_frequency =
+      _reverb_get_modulation_frequencyPtr
+          .asFunction<double Function(ffi.Pointer<YseReverb>)>();
+
+  double reverb_get_modulation_width(ffi.Pointer<YseReverb> rev) {
+    return _reverb_get_modulation_width(rev);
+  }
+
+  late final _reverb_get_modulation_widthPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseReverb>)>>(
+        'yse_reverb_get_modulation_width',
+      );
+  late final _reverb_get_modulation_width = _reverb_get_modulation_widthPtr
+      .asFunction<double Function(ffi.Pointer<YseReverb>)>();
+
+  /// Early reflections (4 slots, index 0..3).
+  void reverb_set_reflection(
+    ffi.Pointer<YseReverb> rev,
+    int reflection,
+    int time,
+    double gain,
+  ) {
+    return _reverb_set_reflection(rev, reflection, time, gain);
+  }
+
+  late final _reverb_set_reflectionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseReverb>, ffi.Int, ffi.Int, ffi.Float)
+        >
+      >('yse_reverb_set_reflection');
+  late final _reverb_set_reflection = _reverb_set_reflectionPtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>, int, int, double)>();
+
+  int reverb_get_reflection_time(ffi.Pointer<YseReverb> rev, int reflection) {
+    return _reverb_get_reflection_time(rev, reflection);
+  }
+
+  late final _reverb_get_reflection_timePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseReverb>, ffi.Int)>
+      >('yse_reverb_get_reflection_time');
+  late final _reverb_get_reflection_time = _reverb_get_reflection_timePtr
+      .asFunction<int Function(ffi.Pointer<YseReverb>, int)>();
+
+  double reverb_get_reflection_gain(
+    ffi.Pointer<YseReverb> rev,
+    int reflection,
+  ) {
+    return _reverb_get_reflection_gain(rev, reflection);
+  }
+
+  late final _reverb_get_reflection_gainPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseReverb>, ffi.Int)>
+      >('yse_reverb_get_reflection_gain');
+  late final _reverb_get_reflection_gain = _reverb_get_reflection_gainPtr
+      .asFunction<double Function(ffi.Pointer<YseReverb>, int)>();
+
+  void reverb_set_preset(ffi.Pointer<YseReverb> rev, YseReverbPreset preset) {
+    return _reverb_set_preset(rev, preset.value);
+  }
+
+  late final _reverb_set_presetPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseReverb>, ffi.UnsignedInt)
+        >
+      >('yse_reverb_set_preset');
+  late final _reverb_set_preset = _reverb_set_presetPtr
+      .asFunction<void Function(ffi.Pointer<YseReverb>, int)>();
+
   late final addresses = _SymbolAddresses(this);
 }
 
@@ -1011,6 +1791,12 @@ class _SymbolAddresses {
   get channel_destroy => _library._channel_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSound>)>>
   get sound_destroy => _library._sound_destroyPtr;
+  ffi.Pointer<
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDeviceSetup>)>
+  >
+  get device_setup_destroy => _library._device_setup_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseReverb>)>>
+  get reverb_destroy => _library._reverb_destroyPtr;
 }
 
 enum YseStatus {
@@ -1081,10 +1867,49 @@ enum YseChannelType {
   };
 }
 
+/// Mirrors YSE::REVERB_PRESET in headers/enums.hpp.
+enum YseReverbPreset {
+  YSE_REVERB_OFF(0),
+  YSE_REVERB_GENERIC(1),
+  YSE_REVERB_PADDED(2),
+  YSE_REVERB_ROOM(3),
+  YSE_REVERB_BATHROOM(4),
+  YSE_REVERB_STONEROOM(5),
+  YSE_REVERB_LARGEROOM(6),
+  YSE_REVERB_HALL(7),
+  YSE_REVERB_CAVE(8),
+  YSE_REVERB_SEWERPIPE(9),
+  YSE_REVERB_UNDERWATER(10);
+
+  final int value;
+  const YseReverbPreset(this.value);
+
+  static YseReverbPreset fromValue(int value) => switch (value) {
+    0 => YSE_REVERB_OFF,
+    1 => YSE_REVERB_GENERIC,
+    2 => YSE_REVERB_PADDED,
+    3 => YSE_REVERB_ROOM,
+    4 => YSE_REVERB_BATHROOM,
+    5 => YSE_REVERB_STONEROOM,
+    6 => YSE_REVERB_LARGEROOM,
+    7 => YSE_REVERB_HALL,
+    8 => YSE_REVERB_CAVE,
+    9 => YSE_REVERB_SEWERPIPE,
+    10 => YSE_REVERB_UNDERWATER,
+    _ => throw ArgumentError('Unknown value for YseReverbPreset: $value'),
+  };
+}
+
 final class YseSystem extends ffi.Opaque {}
 
-final class YseListener extends ffi.Opaque {}
-
 final class YseChannel extends ffi.Opaque {}
+
+final class YseReverb extends ffi.Opaque {}
+
+final class YseDevice extends ffi.Opaque {}
+
+final class YseDeviceSetup extends ffi.Opaque {}
+
+final class YseListener extends ffi.Opaque {}
 
 final class YseSound extends ffi.Opaque {}

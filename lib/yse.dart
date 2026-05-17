@@ -24,8 +24,11 @@
 library;
 
 export 'src/channel.dart' show Channel;
+export 'src/device.dart' show Device, DeviceSetup;
+export 'src/enums.dart' show ChannelType, ReverbPreset;
 export 'src/exception.dart' show YseException;
 export 'src/listener.dart' show Listener;
 export 'src/pos.dart' show Pos;
+export 'src/reverb.dart' show Reverb;
 export 'src/sound.dart' show Sound;
 export 'src/system.dart' show System;

@@ -4,8 +4,13 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 
 import 'bindings/yse_bindings.g.dart';
+import 'channel.dart';
+import 'device.dart';
+import 'enums.dart';
 import 'exception.dart';
+import 'ffi_helpers.dart';
 import 'library.dart';
+import 'reverb.dart';
 
 /// Engine lifecycle, audio device control, global settings.
 ///
@@ -101,6 +106,66 @@ class System {
     final cstr = bindings.version();
     return cstr.cast<Utf8>().toDartString();
   }
+
+  // ─── devices ────────────────────────────────────────────────────────────
+
+  /// All audio devices visible to the engine.
+  ///
+  /// Available after [init] / [initOffline]. Each [Device] descriptor is
+  /// borrowed from the engine; do not retain references past [close].
+  List<Device> get devices {
+    final n = _b.system_num_devices(_handle);
+    return List<Device>.generate(
+      n,
+      (i) => Device.borrowed(_b.system_get_device(_handle, i)),
+      growable: false,
+    );
+  }
+
+  /// Open the audio device described by [setup] with the requested speaker
+  /// [layout] (defaults to stereo-when-possible).
+  ///
+  /// Throws [YseException] if the device cannot be opened.
+  void openDevice(DeviceSetup setup, {ChannelType layout = ChannelType.auto}) {
+    checkStatus(
+      _b.system_open_device(_handle, setup.handle, layout.native),
+      _b,
+    );
+  }
+
+  /// Close whichever audio device is currently open.
+  void closeCurrentDevice() => _b.system_close_current_device(_handle);
+
+  /// Name of the platform-default audio device.
+  String get defaultDevice => fetchString(
+        (buf, cap) => _b.system_default_device(_handle, buf, cap),
+      );
+
+  /// Name of the platform-default audio host (WASAPI, ALSA, ...).
+  String get defaultHost => fetchString(
+        (buf, cap) => _b.system_default_host(_handle, buf, cap),
+      );
+
+  // ─── global reverb ──────────────────────────────────────────────────────
+
+  /// The fallback reverb used wherever no positioned [Reverb] zone reaches.
+  ///
+  /// Disabled by default — set `globalReverb.active = true` to enable.
+  /// Borrowed from the engine; do not [Reverb.dispose] this instance.
+  Reverb get globalReverb =>
+      Reverb.borrowed(_b.system_get_global_reverb(_handle));
+
+  // ─── underwater FX ──────────────────────────────────────────────────────
+
+  /// Route [channel] through the built-in underwater filter (low-pass +
+  /// pitch shift).
+  void underwaterFx(Channel channel) =>
+      _b.system_underwater_fx(_handle, channel.handle);
+
+  /// Depth of the underwater effect, in [0.0, 1.0]. 0 is dry; 1 is the
+  /// maximum filter strength.
+  set underwaterDepth(double value) =>
+      _b.system_set_underwater_depth(_handle, value);
 
   /// Convenience: drive [update] from a periodic [Timer].
   ///

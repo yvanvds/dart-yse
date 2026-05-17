@@ -49,11 +49,16 @@ maintainer-applied.
 
 ## Running locally
 
-Requires Windows, Dart SDK ≥ 3.8, MSYS2 Clang64 (to build `libyse.dll`),
-and CMake. See [README.md](README.md) for the full build recipe.
+Requires Dart SDK ≥ 3.8, CMake ≥ 3.20, and one of:
+
+- **Windows** — MSYS2 Clang64 (to build `libyse.dll`).
+- **Linux** — GCC or Clang, plus `portaudio19-dev`, `libsndfile1-dev`,
+  `librtmidi-dev` (Ubuntu 24.04 is the tested baseline).
+
+See [README.md](README.md) for the per-platform build recipe.
 
 ```powershell
-# One-time: build libyse.dll (see README for the cmake invocation).
+# Windows. After building libyse.dll into the submodule's build/ dir:
 $env:YSE_DLL_PATH = "$PWD\third_party\yse-soundengine\build\bin"
 
 dart pub get
@@ -61,6 +66,19 @@ dart analyze
 dart test
 dart run example/hello_sound.dart
 ```
+
+```bash
+# Linux. After building libyse.so into the submodule's build/ dir:
+export YSE_DLL_PATH="$PWD/third_party/yse-soundengine/build/bin"
+
+dart pub get
+dart analyze
+dart test
+dart run example/hello_sound.dart
+```
+
+For Windows-only Linux validation without rebooting, see
+`tools/ci-linux/Dockerfile` in the README.
 
 ## Boundaries
 

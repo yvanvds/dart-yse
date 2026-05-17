@@ -9,10 +9,11 @@ import 'exception.dart';
 
 /// Lazily-loaded singleton handle to the generated [YseBindings].
 ///
-/// Resolves the path to `libyse.dll` in this order:
+/// Resolves the native library path in this order:
 ///   1. `YSE_DLL_PATH` env var — absolute path to a directory containing
-///      `libyse.dll` (and its runtime dependencies).
-///   2. `third_party/yse-soundengine/build/bin/libyse.dll` under the `yse`
+///      the engine library (`libyse.dll` on Windows, `libyse.so` on
+///      Linux) and its runtime dependencies.
+///   2. `third_party/yse-soundengine/build/bin/` under the `yse`
 ///      package's own root, located via the consumer's
 ///      `.dart_tool/package_config.json`. Works for path, git, and
 ///      pub-hosted dependencies.
@@ -22,32 +23,37 @@ import 'exception.dart';
 ///
 /// On Windows the resolved directory is also passed to `SetDllDirectoryW`
 /// so that `libyse.dll`'s own dependency DLLs (libstdc++, libsndfile,
-/// libportaudio, etc.) sitting alongside it are discoverable by the loader.
+/// libportaudio, etc.) sitting alongside it are discoverable by the
+/// loader. On Linux the upstream CMake build embeds `$ORIGIN` in the
+/// `.so`'s RPATH, so sibling shared libraries are found automatically
+/// — no equivalent runtime call is needed.
 YseBindings get bindings => _bindings ??= _load();
 YseBindings? _bindings;
 
 YseBindings _load() {
-  if (!Platform.isWindows) {
+  if (!Platform.isWindows && !Platform.isLinux) {
     throw YseException(
-      'yse v0.x is Windows-only. Other platforms land in a later milestone.',
+      'yse v0.x supports Windows and Linux. Android and macOS land in '
+      'later milestones.',
     );
   }
 
-  final dir = _resolveDllDirectory();
-  final dllPath = '$dir${Platform.pathSeparator}libyse.dll';
-  if (!File(dllPath).existsSync()) {
+  final dir = _resolveLibDirectory();
+  final libName = Platform.isWindows ? 'libyse.dll' : 'libyse.so';
+  final libPath = '$dir${Platform.pathSeparator}$libName';
+  if (!File(libPath).existsSync()) {
     throw YseException(
-      'libyse.dll not found at $dllPath. '
+      '$libName not found at $libPath. '
       'Either set YSE_DLL_PATH to a directory containing it, or build '
       'yse-soundengine via `cmake --build third_party/yse-soundengine/build`.',
     );
   }
 
-  _setDllDirectory(dir);
-  return YseBindings(DynamicLibrary.open(dllPath));
+  if (Platform.isWindows) _setDllDirectory(dir);
+  return YseBindings(DynamicLibrary.open(libPath));
 }
 
-String _resolveDllDirectory() {
+String _resolveLibDirectory() {
   final envPath = Platform.environment['YSE_DLL_PATH'];
   if (envPath != null && envPath.isNotEmpty) return envPath;
 

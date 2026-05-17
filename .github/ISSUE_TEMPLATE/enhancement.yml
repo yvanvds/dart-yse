@@ -1,0 +1,22 @@
+name: Enhancement
+description: An improvement to an existing capability — clearer API, better performance, more flexible.
+labels: ["type:enhancement", "status:triaged"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What should be enhanced?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why now?
+      description: What changed, what was learned, or what motivates this enhancement?
+    validations:
+      required: true
+  - type: textarea
+    id: non-goals
+    attributes:
+      label: Non-goals
+      description: Anything that is explicitly out of scope.

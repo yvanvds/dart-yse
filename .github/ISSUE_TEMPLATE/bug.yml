@@ -1,0 +1,51 @@
+name: Bug
+description: Something is broken or behaves contrary to the wrapped C++ API.
+labels: ["type:bug", "status:triaged"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A short description of the observed behaviour.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. dart run example/...
+        2. ...
+        3. Observe
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: Dart SDK version, Windows build, yse-soundengine commit, how libyse.dll was built.
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Layer
+      description: Pick the layer most likely affected. Maintainers may add more labels.
+      options:
+        - system
+        - listener
+        - sound
+        - channel
+        - reverb
+        - device
+        - dsp-buffer
+        - dsp-object
+        - patcher
+        - midi
+        - music
+        - log
+        - buffer-io
+        - bindings
+        - infra

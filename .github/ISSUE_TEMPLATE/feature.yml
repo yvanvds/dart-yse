@@ -1,0 +1,34 @@
+name: Feature
+description: A new capability not yet exposed by the wrapper.
+labels: ["type:feature", "status:triaged"]
+body:
+  - type: textarea
+    id: api-story
+    attributes:
+      label: API-user story
+      description: How does this read from a Dart consumer's perspective? What does it enable?
+      placeholder: As a Dart app embedding yse, I want to ... so that ...
+    validations:
+      required: true
+  - type: textarea
+    id: subsystem
+    attributes:
+      label: Which subsystem(s) does this touch?
+      placeholder: System / Sound / DspObject / Patcher / Midi / Music / bindings / infra
+    validations:
+      required: true
+  - type: textarea
+    id: upstream
+    attributes:
+      label: Upstream coverage
+      description: Is the underlying C++ API already in yse-soundengine, or does it need an upstream change first? Link the upstream symbol or issue.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance — how do we know it's done?
+      placeholder: A short checklist.
+  - type: textarea
+    id: non-goals
+    attributes:
+      label: Non-goals
+      description: Anything explicitly out of scope for this issue.

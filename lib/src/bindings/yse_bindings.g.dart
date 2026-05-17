@@ -4273,6 +4273,857 @@ class YseBindings {
   late final _midi_note_get_velocity = _midi_note_get_velocityPtr
       .asFunction<int Function(ffi.Pointer<YseMidiNote>)>();
 
+  /// ─── note ──────────────────────────────────────────────────────────
+  ffi.Pointer<YseNote> note_create(
+    double pitch,
+    double volume,
+    double length,
+    int channel,
+  ) {
+    return _note_create(pitch, volume, length, channel);
+  }
+
+  late final _note_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseNote> Function(
+            ffi.Float,
+            ffi.Float,
+            ffi.Float,
+            ffi.Int,
+          )
+        >
+      >('yse_note_create');
+  late final _note_create = _note_createPtr
+      .asFunction<ffi.Pointer<YseNote> Function(double, double, double, int)>();
+
+  void note_destroy(ffi.Pointer<YseNote> n) {
+    return _note_destroy(n);
+  }
+
+  late final _note_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseNote>)>>(
+        'yse_note_destroy',
+      );
+  late final _note_destroy = _note_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseNote>)>();
+
+  void note_set(
+    ffi.Pointer<YseNote> n,
+    double pitch,
+    double volume,
+    double length,
+    int channel,
+  ) {
+    return _note_set(n, pitch, volume, length, channel);
+  }
+
+  late final _note_setPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseNote>,
+            ffi.Float,
+            ffi.Float,
+            ffi.Float,
+            ffi.Int,
+          )
+        >
+      >('yse_note_set');
+  late final _note_set = _note_setPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseNote>, double, double, double, int)
+      >();
+
+  void note_set_pitch(ffi.Pointer<YseNote> n, double pitch) {
+    return _note_set_pitch(n, pitch);
+  }
+
+  late final _note_set_pitchPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseNote>, ffi.Float)>
+      >('yse_note_set_pitch');
+  late final _note_set_pitch = _note_set_pitchPtr
+      .asFunction<void Function(ffi.Pointer<YseNote>, double)>();
+
+  void note_set_volume(ffi.Pointer<YseNote> n, double volume) {
+    return _note_set_volume(n, volume);
+  }
+
+  late final _note_set_volumePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseNote>, ffi.Float)>
+      >('yse_note_set_volume');
+  late final _note_set_volume = _note_set_volumePtr
+      .asFunction<void Function(ffi.Pointer<YseNote>, double)>();
+
+  void note_set_length(ffi.Pointer<YseNote> n, double length) {
+    return _note_set_length(n, length);
+  }
+
+  late final _note_set_lengthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseNote>, ffi.Float)>
+      >('yse_note_set_length');
+  late final _note_set_length = _note_set_lengthPtr
+      .asFunction<void Function(ffi.Pointer<YseNote>, double)>();
+
+  void note_set_channel(ffi.Pointer<YseNote> n, int channel) {
+    return _note_set_channel(n, channel);
+  }
+
+  late final _note_set_channelPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseNote>, ffi.Int)>
+      >('yse_note_set_channel');
+  late final _note_set_channel = _note_set_channelPtr
+      .asFunction<void Function(ffi.Pointer<YseNote>, int)>();
+
+  double note_get_pitch(ffi.Pointer<YseNote> n) {
+    return _note_get_pitch(n);
+  }
+
+  late final _note_get_pitchPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseNote>)>>(
+        'yse_note_get_pitch',
+      );
+  late final _note_get_pitch = _note_get_pitchPtr
+      .asFunction<double Function(ffi.Pointer<YseNote>)>();
+
+  double note_get_volume(ffi.Pointer<YseNote> n) {
+    return _note_get_volume(n);
+  }
+
+  late final _note_get_volumePtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseNote>)>>(
+        'yse_note_get_volume',
+      );
+  late final _note_get_volume = _note_get_volumePtr
+      .asFunction<double Function(ffi.Pointer<YseNote>)>();
+
+  double note_get_length(ffi.Pointer<YseNote> n) {
+    return _note_get_length(n);
+  }
+
+  late final _note_get_lengthPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseNote>)>>(
+        'yse_note_get_length',
+      );
+  late final _note_get_length = _note_get_lengthPtr
+      .asFunction<double Function(ffi.Pointer<YseNote>)>();
+
+  int note_get_channel(ffi.Pointer<YseNote> n) {
+    return _note_get_channel(n);
+  }
+
+  late final _note_get_channelPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseNote>)>>(
+        'yse_note_get_channel',
+      );
+  late final _note_get_channel = _note_get_channelPtr
+      .asFunction<int Function(ffi.Pointer<YseNote>)>();
+
+  /// ─── pNote — positioned note ───────────────────────────────────────
+  ffi.Pointer<YsePNote> pnote_create(
+    double position,
+    double pitch,
+    double volume,
+    double length,
+    int channel,
+  ) {
+    return _pnote_create(position, pitch, volume, length, channel);
+  }
+
+  late final _pnote_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YsePNote> Function(
+            ffi.Float,
+            ffi.Float,
+            ffi.Float,
+            ffi.Float,
+            ffi.Int,
+          )
+        >
+      >('yse_pnote_create');
+  late final _pnote_create = _pnote_createPtr
+      .asFunction<
+        ffi.Pointer<YsePNote> Function(double, double, double, double, int)
+      >();
+
+  void pnote_destroy(ffi.Pointer<YsePNote> n) {
+    return _pnote_destroy(n);
+  }
+
+  late final _pnote_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePNote>)>>(
+        'yse_pnote_destroy',
+      );
+  late final _pnote_destroy = _pnote_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YsePNote>)>();
+
+  void pnote_set_position(ffi.Pointer<YsePNote> n, double position) {
+    return _pnote_set_position(n, position);
+  }
+
+  late final _pnote_set_positionPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePNote>, ffi.Float)>
+      >('yse_pnote_set_position');
+  late final _pnote_set_position = _pnote_set_positionPtr
+      .asFunction<void Function(ffi.Pointer<YsePNote>, double)>();
+
+  double pnote_get_position(ffi.Pointer<YsePNote> n) {
+    return _pnote_get_position(n);
+  }
+
+  late final _pnote_get_positionPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YsePNote>)>>(
+        'yse_pnote_get_position',
+      );
+  late final _pnote_get_position = _pnote_get_positionPtr
+      .asFunction<double Function(ffi.Pointer<YsePNote>)>();
+
+  /// Inherited from note:
+  void pnote_set_pitch(ffi.Pointer<YsePNote> n, double pitch) {
+    return _pnote_set_pitch(n, pitch);
+  }
+
+  late final _pnote_set_pitchPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePNote>, ffi.Float)>
+      >('yse_pnote_set_pitch');
+  late final _pnote_set_pitch = _pnote_set_pitchPtr
+      .asFunction<void Function(ffi.Pointer<YsePNote>, double)>();
+
+  void pnote_set_volume(ffi.Pointer<YsePNote> n, double volume) {
+    return _pnote_set_volume(n, volume);
+  }
+
+  late final _pnote_set_volumePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePNote>, ffi.Float)>
+      >('yse_pnote_set_volume');
+  late final _pnote_set_volume = _pnote_set_volumePtr
+      .asFunction<void Function(ffi.Pointer<YsePNote>, double)>();
+
+  void pnote_set_length(ffi.Pointer<YsePNote> n, double length) {
+    return _pnote_set_length(n, length);
+  }
+
+  late final _pnote_set_lengthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePNote>, ffi.Float)>
+      >('yse_pnote_set_length');
+  late final _pnote_set_length = _pnote_set_lengthPtr
+      .asFunction<void Function(ffi.Pointer<YsePNote>, double)>();
+
+  double pnote_get_pitch(ffi.Pointer<YsePNote> n) {
+    return _pnote_get_pitch(n);
+  }
+
+  late final _pnote_get_pitchPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YsePNote>)>>(
+        'yse_pnote_get_pitch',
+      );
+  late final _pnote_get_pitch = _pnote_get_pitchPtr
+      .asFunction<double Function(ffi.Pointer<YsePNote>)>();
+
+  double pnote_get_volume(ffi.Pointer<YsePNote> n) {
+    return _pnote_get_volume(n);
+  }
+
+  late final _pnote_get_volumePtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YsePNote>)>>(
+        'yse_pnote_get_volume',
+      );
+  late final _pnote_get_volume = _pnote_get_volumePtr
+      .asFunction<double Function(ffi.Pointer<YsePNote>)>();
+
+  double pnote_get_length(ffi.Pointer<YsePNote> n) {
+    return _pnote_get_length(n);
+  }
+
+  late final _pnote_get_lengthPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YsePNote>)>>(
+        'yse_pnote_get_length',
+      );
+  late final _pnote_get_length = _pnote_get_lengthPtr
+      .asFunction<double Function(ffi.Pointer<YsePNote>)>();
+
+  /// ─── scale — set of allowed pitches ────────────────────────────────
+  ffi.Pointer<YseScale> scale_create() {
+    return _scale_create();
+  }
+
+  late final _scale_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseScale> Function()>>(
+        'yse_scale_create',
+      );
+  late final _scale_create = _scale_createPtr
+      .asFunction<ffi.Pointer<YseScale> Function()>();
+
+  void scale_destroy(ffi.Pointer<YseScale> s) {
+    return _scale_destroy(s);
+  }
+
+  late final _scale_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseScale>)>>(
+        'yse_scale_destroy',
+      );
+  late final _scale_destroy = _scale_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseScale>)>();
+
+  void scale_add(ffi.Pointer<YseScale> s, double pitch, double octave_step) {
+    return _scale_add(s, pitch, octave_step);
+  }
+
+  late final _scale_addPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseScale>, ffi.Float, ffi.Float)
+        >
+      >('yse_scale_add');
+  late final _scale_add = _scale_addPtr
+      .asFunction<void Function(ffi.Pointer<YseScale>, double, double)>();
+
+  void scale_remove(ffi.Pointer<YseScale> s, double pitch, double octave_step) {
+    return _scale_remove(s, pitch, octave_step);
+  }
+
+  late final _scale_removePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseScale>, ffi.Float, ffi.Float)
+        >
+      >('yse_scale_remove');
+  late final _scale_remove = _scale_removePtr
+      .asFunction<void Function(ffi.Pointer<YseScale>, double, double)>();
+
+  int scale_has(ffi.Pointer<YseScale> s, double pitch) {
+    return _scale_has(s, pitch);
+  }
+
+  late final _scale_hasPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseScale>, ffi.Float)>
+      >('yse_scale_has');
+  late final _scale_has = _scale_hasPtr
+      .asFunction<int Function(ffi.Pointer<YseScale>, double)>();
+
+  double scale_nearest(ffi.Pointer<YseScale> s, double pitch) {
+    return _scale_nearest(s, pitch);
+  }
+
+  late final _scale_nearestPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseScale>, ffi.Float)>
+      >('yse_scale_nearest');
+  late final _scale_nearest = _scale_nearestPtr
+      .asFunction<double Function(ffi.Pointer<YseScale>, double)>();
+
+  int scale_size(ffi.Pointer<YseScale> s) {
+    return _scale_size(s);
+  }
+
+  late final _scale_sizePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseScale>)>
+      >('yse_scale_size');
+  late final _scale_size = _scale_sizePtr
+      .asFunction<int Function(ffi.Pointer<YseScale>)>();
+
+  void scale_clear(ffi.Pointer<YseScale> s) {
+    return _scale_clear(s);
+  }
+
+  late final _scale_clearPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseScale>)>>(
+        'yse_scale_clear',
+      );
+  late final _scale_clear = _scale_clearPtr
+      .asFunction<void Function(ffi.Pointer<YseScale>)>();
+
+  /// ─── motif — re-usable phrase of positioned notes ──────────────────
+  ffi.Pointer<YseMotif> motif_create() {
+    return _motif_create();
+  }
+
+  late final _motif_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseMotif> Function()>>(
+        'yse_motif_create',
+      );
+  late final _motif_create = _motif_createPtr
+      .asFunction<ffi.Pointer<YseMotif> Function()>();
+
+  void motif_destroy(ffi.Pointer<YseMotif> m) {
+    return _motif_destroy(m);
+  }
+
+  late final _motif_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMotif>)>>(
+        'yse_motif_destroy',
+      );
+  late final _motif_destroy = _motif_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseMotif>)>();
+
+  void motif_add(ffi.Pointer<YseMotif> m, ffi.Pointer<YsePNote> note) {
+    return _motif_add(m, note);
+  }
+
+  late final _motif_addPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMotif>, ffi.Pointer<YsePNote>)
+        >
+      >('yse_motif_add');
+  late final _motif_add = _motif_addPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseMotif>, ffi.Pointer<YsePNote>)
+      >();
+
+  void motif_clear(ffi.Pointer<YseMotif> m) {
+    return _motif_clear(m);
+  }
+
+  late final _motif_clearPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMotif>)>>(
+        'yse_motif_clear',
+      );
+  late final _motif_clear = _motif_clearPtr
+      .asFunction<void Function(ffi.Pointer<YseMotif>)>();
+
+  void motif_set_length(ffi.Pointer<YseMotif> m, double length) {
+    return _motif_set_length(m, length);
+  }
+
+  late final _motif_set_lengthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMotif>, ffi.Float)>
+      >('yse_motif_set_length');
+  late final _motif_set_length = _motif_set_lengthPtr
+      .asFunction<void Function(ffi.Pointer<YseMotif>, double)>();
+
+  void motif_set_length_auto(ffi.Pointer<YseMotif> m) {
+    return _motif_set_length_auto(m);
+  }
+
+  late final _motif_set_length_autoPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMotif>)>>(
+        'yse_motif_set_length_auto',
+      );
+  late final _motif_set_length_auto = _motif_set_length_autoPtr
+      .asFunction<void Function(ffi.Pointer<YseMotif>)>();
+
+  void motif_transpose(ffi.Pointer<YseMotif> m, double pitch) {
+    return _motif_transpose(m, pitch);
+  }
+
+  late final _motif_transposePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMotif>, ffi.Float)>
+      >('yse_motif_transpose');
+  late final _motif_transpose = _motif_transposePtr
+      .asFunction<void Function(ffi.Pointer<YseMotif>, double)>();
+
+  void motif_set_first_pitch(
+    ffi.Pointer<YseMotif> m,
+    ffi.Pointer<YseScale> valid_pitches,
+  ) {
+    return _motif_set_first_pitch(m, valid_pitches);
+  }
+
+  late final _motif_set_first_pitchPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMotif>, ffi.Pointer<YseScale>)
+        >
+      >('yse_motif_set_first_pitch');
+  late final _motif_set_first_pitch = _motif_set_first_pitchPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseMotif>, ffi.Pointer<YseScale>)
+      >();
+
+  double motif_get_length(ffi.Pointer<YseMotif> m) {
+    return _motif_get_length(m);
+  }
+
+  late final _motif_get_lengthPtr =
+      _lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseMotif>)>>(
+        'yse_motif_get_length',
+      );
+  late final _motif_get_length = _motif_get_lengthPtr
+      .asFunction<double Function(ffi.Pointer<YseMotif>)>();
+
+  int motif_empty(ffi.Pointer<YseMotif> m) {
+    return _motif_empty(m);
+  }
+
+  late final _motif_emptyPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseMotif>)>>(
+        'yse_motif_empty',
+      );
+  late final _motif_empty = _motif_emptyPtr
+      .asFunction<int Function(ffi.Pointer<YseMotif>)>();
+
+  int motif_size(ffi.Pointer<YseMotif> m) {
+    return _motif_size(m);
+  }
+
+  late final _motif_sizePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseMotif>)>
+      >('yse_motif_size');
+  late final _motif_size = _motif_sizePtr
+      .asFunction<int Function(ffi.Pointer<YseMotif>)>();
+
+  /// ─── player — generative sequencer ─────────────────────────────────
+  ffi.Pointer<YsePlayer> player_create() {
+    return _player_create();
+  }
+
+  late final _player_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YsePlayer> Function()>>(
+        'yse_player_create',
+      );
+  late final _player_create = _player_createPtr
+      .asFunction<ffi.Pointer<YsePlayer> Function()>();
+
+  void player_destroy(ffi.Pointer<YsePlayer> p) {
+    return _player_destroy(p);
+  }
+
+  late final _player_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePlayer>)>>(
+        'yse_player_destroy',
+      );
+  late final _player_destroy = _player_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>)>();
+
+  void player_play(ffi.Pointer<YsePlayer> p) {
+    return _player_play(p);
+  }
+
+  late final _player_playPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePlayer>)>>(
+        'yse_player_play',
+      );
+  late final _player_play = _player_playPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>)>();
+
+  void player_stop(ffi.Pointer<YsePlayer> p) {
+    return _player_stop(p);
+  }
+
+  late final _player_stopPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePlayer>)>>(
+        'yse_player_stop',
+      );
+  late final _player_stop = _player_stopPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>)>();
+
+  int player_is_playing(ffi.Pointer<YsePlayer> p) {
+    return _player_is_playing(p);
+  }
+
+  late final _player_is_playingPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YsePlayer>)>>(
+        'yse_player_is_playing',
+      );
+  late final _player_is_playing = _player_is_playingPtr
+      .asFunction<int Function(ffi.Pointer<YsePlayer>)>();
+
+  void player_set_minimum_pitch(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_set_minimum_pitch(p, target, fade_time);
+  }
+
+  late final _player_set_minimum_pitchPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_set_minimum_pitch');
+  late final _player_set_minimum_pitch = _player_set_minimum_pitchPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_set_maximum_pitch(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_set_maximum_pitch(p, target, fade_time);
+  }
+
+  late final _player_set_maximum_pitchPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_set_maximum_pitch');
+  late final _player_set_maximum_pitch = _player_set_maximum_pitchPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_set_minimum_velocity(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_set_minimum_velocity(p, target, fade_time);
+  }
+
+  late final _player_set_minimum_velocityPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_set_minimum_velocity');
+  late final _player_set_minimum_velocity = _player_set_minimum_velocityPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_set_maximum_velocity(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_set_maximum_velocity(p, target, fade_time);
+  }
+
+  late final _player_set_maximum_velocityPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_set_maximum_velocity');
+  late final _player_set_maximum_velocity = _player_set_maximum_velocityPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_set_minimum_gap(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_set_minimum_gap(p, target, fade_time);
+  }
+
+  late final _player_set_minimum_gapPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_set_minimum_gap');
+  late final _player_set_minimum_gap = _player_set_minimum_gapPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_set_maximum_gap(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_set_maximum_gap(p, target, fade_time);
+  }
+
+  late final _player_set_maximum_gapPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_set_maximum_gap');
+  late final _player_set_maximum_gap = _player_set_maximum_gapPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_set_minimum_length(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_set_minimum_length(p, target, fade_time);
+  }
+
+  late final _player_set_minimum_lengthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_set_minimum_length');
+  late final _player_set_minimum_length = _player_set_minimum_lengthPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_set_maximum_length(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_set_maximum_length(p, target, fade_time);
+  }
+
+  late final _player_set_maximum_lengthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_set_maximum_length');
+  late final _player_set_maximum_length = _player_set_maximum_lengthPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_set_voices(
+    ffi.Pointer<YsePlayer> p,
+    int target,
+    double fade_time,
+  ) {
+    return _player_set_voices(p, target, fade_time);
+  }
+
+  late final _player_set_voicesPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.UnsignedInt, ffi.Float)
+        >
+      >('yse_player_set_voices');
+  late final _player_set_voices = _player_set_voicesPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, int, double)>();
+
+  void player_set_scale(
+    ffi.Pointer<YsePlayer> p,
+    ffi.Pointer<YseScale> scale,
+    double fade_time,
+  ) {
+    return _player_set_scale(p, scale, fade_time);
+  }
+
+  late final _player_set_scalePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YsePlayer>,
+            ffi.Pointer<YseScale>,
+            ffi.Float,
+          )
+        >
+      >('yse_player_set_scale');
+  late final _player_set_scale = _player_set_scalePtr
+      .asFunction<
+        void Function(ffi.Pointer<YsePlayer>, ffi.Pointer<YseScale>, double)
+      >();
+
+  void player_add_motif(
+    ffi.Pointer<YsePlayer> p,
+    ffi.Pointer<YseMotif> motif,
+    int weight,
+  ) {
+    return _player_add_motif(p, motif, weight);
+  }
+
+  late final _player_add_motifPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YsePlayer>,
+            ffi.Pointer<YseMotif>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_player_add_motif');
+  late final _player_add_motif = _player_add_motifPtr
+      .asFunction<
+        void Function(ffi.Pointer<YsePlayer>, ffi.Pointer<YseMotif>, int)
+      >();
+
+  void player_remove_motif(
+    ffi.Pointer<YsePlayer> p,
+    ffi.Pointer<YseMotif> motif,
+  ) {
+    return _player_remove_motif(p, motif);
+  }
+
+  late final _player_remove_motifPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Pointer<YseMotif>)
+        >
+      >('yse_player_remove_motif');
+  late final _player_remove_motif = _player_remove_motifPtr
+      .asFunction<
+        void Function(ffi.Pointer<YsePlayer>, ffi.Pointer<YseMotif>)
+      >();
+
+  void player_adjust_motif_weight(
+    ffi.Pointer<YsePlayer> p,
+    ffi.Pointer<YseMotif> motif,
+    int weight,
+  ) {
+    return _player_adjust_motif_weight(p, motif, weight);
+  }
+
+  late final _player_adjust_motif_weightPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YsePlayer>,
+            ffi.Pointer<YseMotif>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_player_adjust_motif_weight');
+  late final _player_adjust_motif_weight = _player_adjust_motif_weightPtr
+      .asFunction<
+        void Function(ffi.Pointer<YsePlayer>, ffi.Pointer<YseMotif>, int)
+      >();
+
+  void player_play_partial_motifs(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_play_partial_motifs(p, target, fade_time);
+  }
+
+  late final _player_play_partial_motifsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_play_partial_motifs');
+  late final _player_play_partial_motifs = _player_play_partial_motifsPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_play_motifs(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_play_motifs(p, target, fade_time);
+  }
+
+  late final _player_play_motifsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_play_motifs');
+  late final _player_play_motifs = _player_play_motifsPtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
+  void player_fit_motifs_to_scale(
+    ffi.Pointer<YsePlayer> p,
+    double target,
+    double fade_time,
+  ) {
+    return _player_fit_motifs_to_scale(p, target, fade_time);
+  }
+
+  late final _player_fit_motifs_to_scalePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YsePlayer>, ffi.Float, ffi.Float)
+        >
+      >('yse_player_fit_motifs_to_scale');
+  late final _player_fit_motifs_to_scale = _player_fit_motifs_to_scalePtr
+      .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
+
   late final addresses = _SymbolAddresses(this);
 }
 
@@ -4301,6 +5152,16 @@ class _SymbolAddresses {
   get midi_out_destroy => _library._midi_out_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiNote>)>>
   get midi_note_destroy => _library._midi_note_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseNote>)>>
+  get note_destroy => _library._note_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePNote>)>>
+  get pnote_destroy => _library._pnote_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseScale>)>>
+  get scale_destroy => _library._scale_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMotif>)>>
+  get motif_destroy => _library._motif_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePlayer>)>>
+  get player_destroy => _library._player_destroyPtr;
 }
 
 enum YseStatus {
@@ -4515,3 +5376,13 @@ final class YseMidiFile extends ffi.Opaque {}
 final class YseMidiOut extends ffi.Opaque {}
 
 final class YseMidiNote extends ffi.Opaque {}
+
+final class YseNote extends ffi.Opaque {}
+
+final class YsePNote extends ffi.Opaque {}
+
+final class YseScale extends ffi.Opaque {}
+
+final class YseMotif extends ffi.Opaque {}
+
+final class YsePlayer extends ffi.Opaque {}

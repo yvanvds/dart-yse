@@ -342,6 +342,79 @@ class YseBindings {
         int Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>, int)
       >();
 
+  /// MIDI devices (Windows / Linux only — Android builds report 0).
+  int system_num_midi_in_devices(ffi.Pointer<YseSystem> sys) {
+    return _system_num_midi_in_devices(sys);
+  }
+
+  late final _system_num_midi_in_devicesPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseSystem>)>
+      >('yse_system_num_midi_in_devices');
+  late final _system_num_midi_in_devices = _system_num_midi_in_devicesPtr
+      .asFunction<int Function(ffi.Pointer<YseSystem>)>();
+
+  int system_num_midi_out_devices(ffi.Pointer<YseSystem> sys) {
+    return _system_num_midi_out_devices(sys);
+  }
+
+  late final _system_num_midi_out_devicesPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseSystem>)>
+      >('yse_system_num_midi_out_devices');
+  late final _system_num_midi_out_devices = _system_num_midi_out_devicesPtr
+      .asFunction<int Function(ffi.Pointer<YseSystem>)>();
+
+  int system_midi_in_device_name(
+    ffi.Pointer<YseSystem> sys,
+    int id,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _system_midi_in_device_name(sys, id, buf, cap);
+  }
+
+  late final _system_midi_in_device_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseSystem>,
+            ffi.UnsignedInt,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_system_midi_in_device_name');
+  late final _system_midi_in_device_name = _system_midi_in_device_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSystem>, int, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int system_midi_out_device_name(
+    ffi.Pointer<YseSystem> sys,
+    int id,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _system_midi_out_device_name(sys, id, buf, cap);
+  }
+
+  late final _system_midi_out_device_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseSystem>,
+            ffi.UnsignedInt,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_system_midi_out_device_name');
+  late final _system_midi_out_device_name = _system_midi_out_device_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSystem>, int, ffi.Pointer<ffi.Char>, int)
+      >();
+
   /// Global reverb — fallback wherever no positioned reverb zone reaches.
   /// Returned pointer is borrowed; never destroy.
   ffi.Pointer<YseReverb> system_get_global_reverb(ffi.Pointer<YseSystem> sys) {
@@ -3812,6 +3885,394 @@ class YseBindings {
       _phandle_get_connection_target_inletPtr
           .asFunction<int Function(ffi.Pointer<YsePHandle>, int, int)>();
 
+  /// ─── standard MIDI file playback ───────────────────────────────────
+  ffi.Pointer<YseMidiFile> midi_file_create() {
+    return _midi_file_create();
+  }
+
+  late final _midi_file_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseMidiFile> Function()>>(
+        'yse_midi_file_create',
+      );
+  late final _midi_file_create = _midi_file_createPtr
+      .asFunction<ffi.Pointer<YseMidiFile> Function()>();
+
+  void midi_file_destroy(ffi.Pointer<YseMidiFile> f) {
+    return _midi_file_destroy(f);
+  }
+
+  late final _midi_file_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiFile>)>>(
+        'yse_midi_file_destroy',
+      );
+  late final _midi_file_destroy = _midi_file_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiFile>)>();
+
+  YseStatus midi_file_load(
+    ffi.Pointer<YseMidiFile> f,
+    ffi.Pointer<ffi.Char> filename,
+  ) {
+    return YseStatus.fromValue(_midi_file_load(f, filename));
+  }
+
+  late final _midi_file_loadPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseMidiFile>,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('yse_midi_file_load');
+  late final _midi_file_load = _midi_file_loadPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseMidiFile>, ffi.Pointer<ffi.Char>)
+      >();
+
+  void midi_file_play(ffi.Pointer<YseMidiFile> f) {
+    return _midi_file_play(f);
+  }
+
+  late final _midi_file_playPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiFile>)>>(
+        'yse_midi_file_play',
+      );
+  late final _midi_file_play = _midi_file_playPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiFile>)>();
+
+  void midi_file_pause(ffi.Pointer<YseMidiFile> f) {
+    return _midi_file_pause(f);
+  }
+
+  late final _midi_file_pausePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiFile>)>>(
+        'yse_midi_file_pause',
+      );
+  late final _midi_file_pause = _midi_file_pausePtr
+      .asFunction<void Function(ffi.Pointer<YseMidiFile>)>();
+
+  void midi_file_stop(ffi.Pointer<YseMidiFile> f) {
+    return _midi_file_stop(f);
+  }
+
+  late final _midi_file_stopPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiFile>)>>(
+        'yse_midi_file_stop',
+      );
+  late final _midi_file_stop = _midi_file_stopPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiFile>)>();
+
+  /// ─── MIDI device output ────────────────────────────────────────────
+  ffi.Pointer<YseMidiOut> midi_out_create() {
+    return _midi_out_create();
+  }
+
+  late final _midi_out_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseMidiOut> Function()>>(
+        'yse_midi_out_create',
+      );
+  late final _midi_out_create = _midi_out_createPtr
+      .asFunction<ffi.Pointer<YseMidiOut> Function()>();
+
+  void midi_out_destroy(ffi.Pointer<YseMidiOut> m) {
+    return _midi_out_destroy(m);
+  }
+
+  late final _midi_out_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>)>>(
+        'yse_midi_out_destroy',
+      );
+  late final _midi_out_destroy = _midi_out_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>)>();
+
+  void midi_out_open(ffi.Pointer<YseMidiOut> m, int port) {
+    return _midi_out_open(m, port);
+  }
+
+  late final _midi_out_openPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.UnsignedInt)
+        >
+      >('yse_midi_out_open');
+  late final _midi_out_open = _midi_out_openPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int)>();
+
+  void midi_out_note_on(
+    ffi.Pointer<YseMidiOut> m,
+    int channel,
+    int pitch,
+    int velocity,
+  ) {
+    return _midi_out_note_on(m, channel, pitch, velocity);
+  }
+
+  late final _midi_out_note_onPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int, ffi.Int, ffi.Int)
+        >
+      >('yse_midi_out_note_on');
+  late final _midi_out_note_on = _midi_out_note_onPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int, int, int)>();
+
+  void midi_out_note_off(
+    ffi.Pointer<YseMidiOut> m,
+    int channel,
+    int pitch,
+    int velocity,
+  ) {
+    return _midi_out_note_off(m, channel, pitch, velocity);
+  }
+
+  late final _midi_out_note_offPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int, ffi.Int, ffi.Int)
+        >
+      >('yse_midi_out_note_off');
+  late final _midi_out_note_off = _midi_out_note_offPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int, int, int)>();
+
+  void midi_out_poly_pressure(
+    ffi.Pointer<YseMidiOut> m,
+    int channel,
+    int pitch,
+    int value,
+  ) {
+    return _midi_out_poly_pressure(m, channel, pitch, value);
+  }
+
+  late final _midi_out_poly_pressurePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int, ffi.Int, ffi.Int)
+        >
+      >('yse_midi_out_poly_pressure');
+  late final _midi_out_poly_pressure = _midi_out_poly_pressurePtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int, int, int)>();
+
+  void midi_out_channel_pressure(
+    ffi.Pointer<YseMidiOut> m,
+    int channel,
+    int value,
+  ) {
+    return _midi_out_channel_pressure(m, channel, value);
+  }
+
+  late final _midi_out_channel_pressurePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int, ffi.Int)
+        >
+      >('yse_midi_out_channel_pressure');
+  late final _midi_out_channel_pressure = _midi_out_channel_pressurePtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int, int)>();
+
+  void midi_out_program_change(
+    ffi.Pointer<YseMidiOut> m,
+    int channel,
+    int value,
+  ) {
+    return _midi_out_program_change(m, channel, value);
+  }
+
+  late final _midi_out_program_changePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int, ffi.Int)
+        >
+      >('yse_midi_out_program_change');
+  late final _midi_out_program_change = _midi_out_program_changePtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int, int)>();
+
+  void midi_out_control_change(
+    ffi.Pointer<YseMidiOut> m,
+    int channel,
+    int controller,
+    int value,
+  ) {
+    return _midi_out_control_change(m, channel, controller, value);
+  }
+
+  late final _midi_out_control_changePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int, ffi.Int, ffi.Int)
+        >
+      >('yse_midi_out_control_change');
+  late final _midi_out_control_change = _midi_out_control_changePtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int, int, int)>();
+
+  void midi_out_all_notes_off_channel(ffi.Pointer<YseMidiOut> m, int channel) {
+    return _midi_out_all_notes_off_channel(m, channel);
+  }
+
+  late final _midi_out_all_notes_off_channelPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int)>
+      >('yse_midi_out_all_notes_off_channel');
+  late final _midi_out_all_notes_off_channel =
+      _midi_out_all_notes_off_channelPtr
+          .asFunction<void Function(ffi.Pointer<YseMidiOut>, int)>();
+
+  void midi_out_all_notes_off(ffi.Pointer<YseMidiOut> m) {
+    return _midi_out_all_notes_off(m);
+  }
+
+  late final _midi_out_all_notes_offPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>)>>(
+        'yse_midi_out_all_notes_off',
+      );
+  late final _midi_out_all_notes_off = _midi_out_all_notes_offPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>)>();
+
+  void midi_out_reset_channel(ffi.Pointer<YseMidiOut> m, int channel) {
+    return _midi_out_reset_channel(m, channel);
+  }
+
+  late final _midi_out_reset_channelPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int)>
+      >('yse_midi_out_reset_channel');
+  late final _midi_out_reset_channel = _midi_out_reset_channelPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int)>();
+
+  void midi_out_reset(ffi.Pointer<YseMidiOut> m) {
+    return _midi_out_reset(m);
+  }
+
+  late final _midi_out_resetPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>)>>(
+        'yse_midi_out_reset',
+      );
+  late final _midi_out_reset = _midi_out_resetPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>)>();
+
+  void midi_out_local_control(ffi.Pointer<YseMidiOut> m, int on) {
+    return _midi_out_local_control(m, on);
+  }
+
+  late final _midi_out_local_controlPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int)>
+      >('yse_midi_out_local_control');
+  late final _midi_out_local_control = _midi_out_local_controlPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int)>();
+
+  void midi_out_omni(ffi.Pointer<YseMidiOut> m, int on) {
+    return _midi_out_omni(m, on);
+  }
+
+  late final _midi_out_omniPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int)>
+      >('yse_midi_out_omni');
+  late final _midi_out_omni = _midi_out_omniPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int)>();
+
+  void midi_out_poly(ffi.Pointer<YseMidiOut> m, int on) {
+    return _midi_out_poly(m, on);
+  }
+
+  late final _midi_out_polyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>, ffi.Int)>
+      >('yse_midi_out_poly');
+  late final _midi_out_poly = _midi_out_polyPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int)>();
+
+  void midi_out_raw3(ffi.Pointer<YseMidiOut> m, int a, int b, int c) {
+    return _midi_out_raw3(m, a, b, c);
+  }
+
+  late final _midi_out_raw3Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseMidiOut>,
+            ffi.UnsignedChar,
+            ffi.UnsignedChar,
+            ffi.UnsignedChar,
+          )
+        >
+      >('yse_midi_out_raw3');
+  late final _midi_out_raw3 = _midi_out_raw3Ptr
+      .asFunction<void Function(ffi.Pointer<YseMidiOut>, int, int, int)>();
+
+  /// ─── midiNote convenience value ────────────────────────────────────
+  ffi.Pointer<YseMidiNote> midi_note_create(int note, int velocity) {
+    return _midi_note_create(note, velocity);
+  }
+
+  late final _midi_note_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseMidiNote> Function(ffi.UnsignedChar, ffi.UnsignedInt)
+        >
+      >('yse_midi_note_create');
+  late final _midi_note_create = _midi_note_createPtr
+      .asFunction<ffi.Pointer<YseMidiNote> Function(int, int)>();
+
+  void midi_note_destroy(ffi.Pointer<YseMidiNote> n) {
+    return _midi_note_destroy(n);
+  }
+
+  late final _midi_note_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiNote>)>>(
+        'yse_midi_note_destroy',
+      );
+  late final _midi_note_destroy = _midi_note_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiNote>)>();
+
+  void midi_note_set_note(ffi.Pointer<YseMidiNote> n, int note) {
+    return _midi_note_set_note(n, note);
+  }
+
+  late final _midi_note_set_notePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiNote>, ffi.UnsignedChar)
+        >
+      >('yse_midi_note_set_note');
+  late final _midi_note_set_note = _midi_note_set_notePtr
+      .asFunction<void Function(ffi.Pointer<YseMidiNote>, int)>();
+
+  int midi_note_get_note(ffi.Pointer<YseMidiNote> n) {
+    return _midi_note_get_note(n);
+  }
+
+  late final _midi_note_get_notePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedChar Function(ffi.Pointer<YseMidiNote>)>
+      >('yse_midi_note_get_note');
+  late final _midi_note_get_note = _midi_note_get_notePtr
+      .asFunction<int Function(ffi.Pointer<YseMidiNote>)>();
+
+  void midi_note_set_velocity(ffi.Pointer<YseMidiNote> n, int velocity) {
+    return _midi_note_set_velocity(n, velocity);
+  }
+
+  late final _midi_note_set_velocityPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseMidiNote>, ffi.UnsignedChar)
+        >
+      >('yse_midi_note_set_velocity');
+  late final _midi_note_set_velocity = _midi_note_set_velocityPtr
+      .asFunction<void Function(ffi.Pointer<YseMidiNote>, int)>();
+
+  int midi_note_get_velocity(ffi.Pointer<YseMidiNote> n) {
+    return _midi_note_get_velocity(n);
+  }
+
+  late final _midi_note_get_velocityPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedChar Function(ffi.Pointer<YseMidiNote>)>
+      >('yse_midi_note_get_velocity');
+  late final _midi_note_get_velocity = _midi_note_get_velocityPtr
+      .asFunction<int Function(ffi.Pointer<YseMidiNote>)>();
+
   late final addresses = _SymbolAddresses(this);
 }
 
@@ -3834,6 +4295,12 @@ class _SymbolAddresses {
   get dsp_object_destroy => _library._dsp_object_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePatcher>)>>
   get patcher_destroy => _library._patcher_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiFile>)>>
+  get midi_file_destroy => _library._midi_file_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiOut>)>>
+  get midi_out_destroy => _library._midi_out_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiNote>)>>
+  get midi_note_destroy => _library._midi_note_destroyPtr;
 }
 
 enum YseStatus {
@@ -4042,3 +4509,9 @@ final class YseDspObject extends ffi.Opaque {}
 final class YsePatcher extends ffi.Opaque {}
 
 final class YsePHandle extends ffi.Opaque {}
+
+final class YseMidiFile extends ffi.Opaque {}
+
+final class YseMidiOut extends ffi.Opaque {}
+
+final class YseMidiNote extends ffi.Opaque {}

@@ -31,6 +31,7 @@ export 'src/enums.dart'
     show ChannelType, DelayTap, LfoType, OutType, ReverbPreset, SweepShape;
 export 'src/exception.dart' show YseException;
 export 'src/listener.dart' show Listener;
+export 'src/midi.dart' show MidiFile, MidiOut;
 export 'src/patcher.dart' show Obj, PHandle, Patcher;
 export 'src/pos.dart' show Pos;
 export 'src/reverb.dart' show Reverb;

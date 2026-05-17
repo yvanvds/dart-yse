@@ -146,6 +146,28 @@ class System {
         (buf, cap) => _b.system_default_host(_handle, buf, cap),
       );
 
+  // ─── MIDI devices ───────────────────────────────────────────────────────
+
+  /// Number of MIDI input devices visible to the engine.
+  ///
+  /// Windows / Linux only — other platforms always return 0.
+  int get midiInDeviceCount => _b.system_num_midi_in_devices(_handle);
+
+  /// Number of MIDI output devices visible to the engine.
+  ///
+  /// Windows / Linux only — other platforms always return 0.
+  int get midiOutDeviceCount => _b.system_num_midi_out_devices(_handle);
+
+  /// Name of the MIDI input device at [id].
+  String midiInDeviceName(int id) => fetchString(
+        (buf, cap) => _b.system_midi_in_device_name(_handle, id, buf, cap),
+      );
+
+  /// Name of the MIDI output device at [id]. Pair with [MidiOut.open].
+  String midiOutDeviceName(int id) => fetchString(
+        (buf, cap) => _b.system_midi_out_device_name(_handle, id, buf, cap),
+      );
+
   // ─── global reverb ──────────────────────────────────────────────────────
 
   /// The fallback reverb used wherever no positioned [Reverb] zone reaches.

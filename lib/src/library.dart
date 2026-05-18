@@ -9,31 +9,45 @@ import 'exception.dart';
 
 /// Lazily-loaded singleton handle to the generated [YseBindings].
 ///
-/// Resolves the native library path in this order:
+/// Resolution differs by platform:
+///
+/// * **Windows / Linux** — locates the engine library on disk in this order:
 ///   1. `YSE_DLL_PATH` env var — absolute path to a directory containing
-///      the engine library (`libyse.dll` on Windows, `libyse.so` on
-///      Linux) and its runtime dependencies.
-///   2. `third_party/yse-soundengine/build/bin/` under the `yse`
-///      package's own root, located via the consumer's
+///      `libyse.dll` (Windows) or `libyse.so` (Linux) and its runtime
+///      dependencies.
+///   2. `third_party/yse-soundengine/build/bin/` under the `yse` package's
+///      own root, located via the consumer's
 ///      `.dart_tool/package_config.json`. Works for path, git, and
 ///      pub-hosted dependencies.
 ///   3. The same relative path under the current working directory — last
 ///      resort when no package config is available (e.g. running a loose
 ///      script).
 ///
-/// On Windows the resolved directory is also passed to `SetDllDirectoryW`
-/// so that `libyse.dll`'s own dependency DLLs (libstdc++, libsndfile,
-/// libportaudio, etc.) sitting alongside it are discoverable by the
-/// loader. On Linux the upstream CMake build embeds `$ORIGIN` in the
-/// `.so`'s RPATH, so sibling shared libraries are found automatically
-/// — no equivalent runtime call is needed.
+///   On Windows the resolved directory is also passed to `SetDllDirectoryW`
+///   so that `libyse.dll`'s own dependency DLLs (libstdc++, libsndfile,
+///   libportaudio, etc.) sitting alongside it are discoverable by the
+///   loader. On Linux the upstream CMake build embeds `$ORIGIN` in the
+///   `.so`'s RPATH, so sibling shared libraries are found automatically
+///   — no equivalent runtime call is needed.
+///
+/// * **Android** — calls `DynamicLibrary.open('libyse.so')` and relies on
+///   the Android linker to resolve the per-ABI copy out of the APK's
+///   `lib/<abi>/` directory. The `.so` is bundled into the host APK by
+///   the sibling `yse_flutter_libs` plugin (see the Android section of
+///   the package README). All transitive engine deps (Oboe, libsndfile)
+///   are statically linked into `libyse.so`, so no other shared libraries
+///   need to be loadable.
 YseBindings get bindings => _bindings ??= _load();
 YseBindings? _bindings;
 
 YseBindings _load() {
+  if (Platform.isAndroid) {
+    return YseBindings(DynamicLibrary.open('libyse.so'));
+  }
+
   if (!Platform.isWindows && !Platform.isLinux) {
     throw YseException(
-      'yse v0.x supports Windows and Linux. Android and macOS land in '
+      'yse v0.x supports Windows, Linux, and Android. macOS / iOS land in '
       'later milestones.',
     );
   }

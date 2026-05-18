@@ -36,3 +36,27 @@ YSElog.txt
 
 # Docker / CI build output (tools/ci-linux/Dockerfile)
 .docker-build/
+
+# Flutter sample app — only lib/, pubspec.yaml, assets/, and README.md are
+# checked in; platform scaffolding (android/, ios/, web/, etc.) is
+# regenerated via `flutter create --platforms=android .` per the sample
+# README.
+example/android_sample/.dart_tool/
+example/android_sample/android/
+example/android_sample/build/
+example/android_sample/ios/
+example/android_sample/linux/
+example/android_sample/macos/
+example/android_sample/web/
+example/android_sample/windows/
+example/android_sample/.flutter-plugins
+example/android_sample/.flutter-plugins-dependencies
+example/android_sample/.metadata
+example/android_sample/assets/drone.ogg
+
+# Native engine artefacts produced by the yse_flutter_libs Gradle build —
+# regenerated on every consumer build, never committed.
+packages/yse_flutter_libs/android/.gradle/
+packages/yse_flutter_libs/android/build/
+packages/yse_flutter_libs/android/.cxx/
+packages/yse_flutter_libs/.dart_tool/

@@ -8,3 +8,9 @@ third_party/
 # Local Claude IDE config — never publish.
 .claude/
 YSElog.txt
+
+# Sibling Flutter plugin and its Android sample app are published as a
+# separate package (yse_flutter_libs) and a non-publishable sample; they
+# don't belong inside the yse package tarball.
+packages/
+example/android_sample/

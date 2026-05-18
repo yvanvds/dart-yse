@@ -54,6 +54,9 @@ Requires Dart SDK ≥ 3.8, CMake ≥ 3.20, and one of:
 - **Windows** — MSYS2 Clang64 (to build `libyse.dll`).
 - **Linux** — GCC or Clang, plus `portaudio19-dev`, `libsndfile1-dev`,
   `librtmidi-dev` (Ubuntu 24.04 is the tested baseline).
+- **Android** — NDK 27 via Flutter / Gradle, driven by the sibling
+  `yse_flutter_libs` plugin under `packages/`. The plugin's Gradle
+  module externalNativeBuild's the engine CMakeLists for each ABI.
 
 See [README.md](README.md) for the per-platform build recipe.
 

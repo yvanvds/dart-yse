@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- **Android support.** `library.dart` resolves `libyse.so` on Android via
+  the Android linker (no path lookup — the `.so` is bundled into the
+  host APK / AAB under `lib/<abi>/`). A new sibling Flutter plugin
+  `packages/yse_flutter_libs/` cross-compiles the engine for each ABI
+  (default `arm64-v8a`, `x86_64`) by externalNativeBuild'ing the
+  upstream CMakeLists with NDK 27 / minSdk 26. Consumers add both
+  `yse` and `yse_flutter_libs` to their `pubspec.yaml`; Gradle picks up
+  the resulting `libyse.so` automatically. Oboe is the audio backend
+  (AAudio on API 26+ with OpenSL ES fallback). A minimal end-to-end
+  sample lives at `example/android_sample/`. README has a parallel
+  Android section covering the plugin model, ABI selection,
+  permissions, and threading notes.
 - **Linux support.** `library.dart` resolves `libyse.so` on Linux in
   addition to `libyse.dll` on Windows. RPATH is `$ORIGIN`, so sibling
   shared libs are discovered without `LD_LIBRARY_PATH`. Tested against
@@ -50,8 +62,7 @@ wrappers in this package.
 
 **Known limitations:**
 
-- Android support is still pending (Linux landed in the next release —
-  see Unreleased above).
+- Android (and Linux) landed in the next release — see Unreleased above.
 - `Player` is wrapped but its upstream `player::create(synth&)` factory
   is commented out (synth subsystem deferred upstream) — every method
   call crashes the process. Don't use until YSE restores the synth.

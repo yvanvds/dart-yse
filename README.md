@@ -5,7 +5,7 @@ Dart bindings for the [YSE sound engine](https://github.com/yvanvds/yse-soundeng
 
 ## Status
 
-**Pre-release.** v0.x supports **Windows and Linux**; Android is next.
+**Pre-release.** v0.x supports **Windows, Linux, and Android**; iOS / macOS are next.
 The full C++ API is wrapped except for two upstream-deferred areas:
 
 - **Player + synth**: the `Player` class is wrapped but every method
@@ -118,6 +118,51 @@ docker run --rm `
   -v "D:/yse-soundengine:/workspace/third_party/yse-soundengine" `
   dart-yse-ci
 ```
+
+### Android
+
+Android consumers add a second package — the sibling Flutter plugin
+[`yse_flutter_libs`](packages/yse_flutter_libs/) — which is responsible
+for cross-compiling `libyse.so` with the NDK and bundling it into the
+APK / AAB. `package:yse` itself stays pure Dart and works unchanged on
+CLI / server hosts.
+
+```yaml
+dependencies:
+  yse: ^0.1.0
+  yse_flutter_libs: ^0.1.0
+```
+
+Requirements:
+
+- Flutter ≥ 3.22
+- Android NDK **27.0.12077973** (matches the engine's CMake config) —
+  install via the Android SDK Manager.
+- Android Gradle Plugin ≥ 8.5
+- `minSdk` 26 so Oboe negotiates the AAudio backend (older devices fall
+  back to OpenSL ES, which the engine still supports through Oboe but
+  has fewer guarantees on latency).
+- Default ABIs: `arm64-v8a`, `x86_64`. Add `armeabi-v7a` via
+  `ndk.abiFilters` in your app's `build.gradle` if you target older
+  32-bit devices (the engine builds for it but is not routinely tested
+  there).
+
+The first Gradle build pulls Oboe and libsndfile sources via
+FetchContent and compiles the engine cold — expect 5–10 minutes per
+ABI. Subsequent incremental builds are fast.
+
+A minimal end-to-end Flutter sample lives at
+[`example/android_sample/`](example/android_sample/) — see the README
+there for the one-time `flutter create` scaffold and run instructions.
+
+**Permissions.** Oboe playback needs no runtime permission. Add
+`RECORD_AUDIO` to your manifest only if you exercise an input-capture
+code path (none is exposed by `package:yse` today).
+
+**Threading.** The audio callback runs on a thread owned by Oboe /
+AAudio. As with desktop builds, never call into `yse` from a callback
+you didn't install, and keep all `yse.*` calls on the same isolate that
+called `System.init()`. On Flutter, that is typically the UI isolate.
 
 ## Hello, sound
 

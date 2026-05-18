@@ -1,0 +1,4 @@
+// Empty settings so Flutter's host project can include this module without
+// the Android Gradle plugin complaining about a missing settings file when
+// the project is opened standalone (e.g. by Android Studio).
+rootProject.name = 'yse_flutter_libs'

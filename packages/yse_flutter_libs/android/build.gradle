@@ -1,0 +1,99 @@
+// Build configuration for yse_flutter_libs.
+//
+// The plugin carries no Dart/Kotlin logic of its own. Its sole job is to
+// cross-compile the YSE sound engine for each requested Android ABI via the
+// NDK and let Gradle merge the resulting libyse.so into the host app's APK /
+// AAB. At runtime, package:yse loads it with
+// DynamicLibrary.open('libyse.so') and Android's linker resolves the
+// per-ABI copy out of lib/<abi>/.
+//
+// Path layout:
+//   ../../../third_party/yse-soundengine/CMakeLists.txt
+//   ↑      ↑    ↑
+//   |      |    └─ packages/yse_flutter_libs/android/  (this file)
+//   |      └─ packages/yse_flutter_libs/
+//   └─ repo root
+
+group 'net.attrx.yse_flutter_libs'
+version '0.1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.5.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace 'net.attrx.yse_flutter_libs'
+    compileSdk 34
+    ndkVersion '27.0.12077973'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        // Engine uses Oboe with AAudio (API 26+) as the preferred backend.
+        // Going below 26 would force the OpenSL ES fallback path everywhere.
+        minSdk 26
+
+        ndk {
+            // Default to 64-bit ABIs only. arm64-v8a covers modern phones;
+            // x86_64 covers the emulator on Intel/AMD dev hosts. Consumers
+            // who need armeabi-v7a can override this in their app's
+            // build.gradle.
+            abiFilters 'arm64-v8a', 'x86_64'
+        }
+
+        externalNativeBuild {
+            cmake {
+                // Build only the YSE shared library — skip demos, tests, the
+                // benchmarks subdir, and any other targets the upstream
+                // CMakeLists declares for desktop.
+                targets 'yse'
+                arguments '-DYSE_BUILD_TESTS=OFF',
+                          '-DYSE_BUILD_BENCHMARKS=OFF',
+                          '-DCMAKE_BUILD_TYPE=Release'
+                cppFlags '-std=c++20'
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            // The engine's top-level CMakeLists.txt lives in the dart-yse
+            // submodule, three levels up from this build.gradle.
+            path file('../../../third_party/yse-soundengine/CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
+}
+
+dependencies {
+    // No runtime deps — the plugin only ships the native library.
+}

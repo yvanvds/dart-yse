@@ -1,0 +1,27 @@
+name: yse_flutter_libs
+description: >-
+  Native binaries for the YSE sound engine, bundled into Flutter apps that
+  depend on package:yse. Carries no Dart API of its own — its sole purpose is
+  to have Gradle build libyse.so per ABI and ship it inside the APK / AAB so
+  package:yse's DynamicLibrary.open('libyse.so') resolves at runtime.
+version: 0.1.0
+repository: https://github.com/yvanvds/dart-yse
+issue_tracker: https://github.com/yvanvds/dart-yse/issues
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: net.attrx.yse_flutter_libs
+        pluginClass: YseFlutterLibsPlugin

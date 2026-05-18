@@ -1,0 +1,27 @@
+name: yse_android_sample
+description: Minimal Flutter app demonstrating package:yse on Android.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Path dependencies during local development. Replace with hosted versions
+  # when publishing.
+  yse:
+    path: ../..
+  yse_flutter_libs:
+    path: ../../packages/yse_flutter_libs
+  path_provider: ^2.1.0
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/drone.ogg

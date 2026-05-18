@@ -3,6 +3,12 @@ include: package:lints/recommended.yaml
 analyzer:
   exclude:
     - lib/src/bindings/**
+    # Sub-packages with their own pubspec.yaml — analysed in their own
+    # context where Flutter is on the path. Including them under the
+    # parent package's `dart analyze` would fail CI on the Flutter
+    # imports (no Flutter SDK on the dart-only Linux job).
+    - packages/yse_flutter_libs/**
+    - example/android_sample/**
   language:
     strict-casts: true
     strict-inference: true

@@ -101,11 +101,23 @@ docker run --rm -v ${PWD}:/workspace dart-yse-ci
 ```
 
 The default command configures + builds `libyse.so` into
-`third_party/yse-soundengine/build-linux/` (kept separate from the
-Windows `build/` so the two toolchains never collide), runs
-`dart analyze`, and exercises the FFI surface via
-`tool/linux_smoke.dart` (initOffline → renderOffline; no audio
-device required).
+`.docker-build/yse/bin/` (a `.gitignore`d directory inside dart-yse —
+keeps Docker artefacts out of the Windows `build/` tree and out of
+the submodule, so neither toolchain trips on stale CMakeCache
+entries left by the other), runs `dart analyze`, and exercises the
+FFI surface via `tool/linux_smoke.dart` (initOffline → renderOffline;
+no audio device required).
+
+If the submodule is a Windows junction to a separate engine-dev
+workspace, bind-mount the junction target into the container at the
+submodule path so the container can see the sources:
+
+```powershell
+docker run --rm `
+  -v "${PWD}:/workspace" `
+  -v "D:/yse-soundengine:/workspace/third_party/yse-soundengine" `
+  dart-yse-ci
+```
 
 ## Hello, sound
 

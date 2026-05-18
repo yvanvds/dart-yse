@@ -33,3 +33,6 @@ doc/api/
 
 # YSE runtime log — written to cwd on engine startup
 YSElog.txt
+
+# Docker / CI build output (tools/ci-linux/Dockerfile)
+.docker-build/

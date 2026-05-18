@@ -46,10 +46,14 @@ RUN curl -fsSL https://dl-ssl.google.com/linux/linux_signing_key.pub \
 
 WORKDIR /workspace
 
+# Build the engine into a dart-yse-owned path (.docker-build/) rather than
+# inside the submodule. The submodule may be a Windows junction to a separate
+# engine-dev workspace that already has its own build-linux/ — keeping our
+# artefacts out of there avoids stale-CMakeCache collisions on iterate.
 CMD ["bash", "-c", "set -ex && \
-    cmake -S third_party/yse-soundengine -B third_party/yse-soundengine/build-linux -G Ninja \
+    cmake -S third_party/yse-soundengine -B .docker-build/yse -G Ninja \
         -DCMAKE_BUILD_TYPE=Release && \
-    cmake --build third_party/yse-soundengine/build-linux --target yse && \
+    cmake --build .docker-build/yse --target yse && \
     dart pub get && \
     dart analyze && \
-    YSE_DLL_PATH=$(pwd)/third_party/yse-soundengine/build-linux/bin dart run tool/linux_smoke.dart"]
+    YSE_DLL_PATH=$(pwd)/.docker-build/yse/bin dart run tool/linux_smoke.dart"]

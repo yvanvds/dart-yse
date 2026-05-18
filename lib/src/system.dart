@@ -146,6 +146,14 @@ class System {
         (buf, cap) => _b.system_default_host(_handle, buf, cap),
       );
 
+  /// Engine session sample rate in Hz. Stays constant from [init] until
+  /// [close], including across [pause] / [resume] cycles where
+  /// [activeSampleRate] transiently drops to 0. Returns 0 before [init].
+  ///
+  /// Use this for sample-count-driven scheduling that must outlive a
+  /// pause; use [activeSampleRate] for live device-state UI.
+  double get sessionSampleRate => _b.system_get_sample_rate(_handle);
+
   /// Sample rate of the currently open audio device, or 0 when no device
   /// is open (pre-init, after close, or [initOffline] path).
   double get activeSampleRate => _b.system_get_active_sample_rate(_handle);

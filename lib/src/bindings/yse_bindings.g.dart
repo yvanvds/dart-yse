@@ -171,6 +171,22 @@ class YseBindings {
   late final _system_cpu_load = _system_cpu_loadPtr
       .asFunction<double Function(ffi.Pointer<YseSystem>)>();
 
+  /// Engine session sample rate in Hz. Stays constant for the lifetime of an
+  /// init()/close() session, including across pause/resume cycles where the
+  /// live "active" rate transiently drops to 0. Returns 0 before init(). Use
+  /// this for sample-count-driven scheduling that must outlive a pause; use
+  /// yse_system_get_active_sample_rate() for live device-state UI.
+  double system_get_sample_rate(ffi.Pointer<YseSystem> sys) {
+    return _system_get_sample_rate(sys);
+  }
+
+  late final _system_get_sample_ratePtr =
+      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Pointer<YseSystem>)>>(
+        'yse_system_get_sample_rate',
+      );
+  late final _system_get_sample_rate = _system_get_sample_ratePtr
+      .asFunction<double Function(ffi.Pointer<YseSystem>)>();
+
   /// Live state of the currently open audio device. Returns 0 when no device
   /// is open (pre-init, after close, or initOffline path). Buffer size is the
   /// device's frames-per-callback, NOT the engine block size. Output latency

@@ -4066,6 +4066,270 @@ class YseBindings {
       _phandle_get_connection_target_inletPtr
           .asFunction<int Function(ffi.Pointer<YsePHandle>, int, int)>();
 
+  /// ─── registry metadata ──────────────────────────────────────────────
+  /// Read-only access to the in-code documentation captured by the
+  /// pRegistry (issue #102). Lets a binding generate its own node palette
+  /// or documentation site without forking the registry.
+  ///
+  /// These functions are main-thread only. They are NOT RT-safe and must
+  /// not be called from the audio callback.
+  ///
+  /// String returns point at engine-owned storage with a lifetime tied to
+  /// the process; the cache is built lazily on the first metadata call and
+  /// never freed. The pointers stay valid for the rest of the process and
+  /// may be safely cached by the binding.
+  ///
+  /// The exception is yse_patcher_get_metadata_json(), which allocates a
+  /// fresh buffer per call; the caller must release it with
+  /// yse_free_string(). The JSON layout is identical to the snapshot
+  /// emitted by `yse.py dump-patcher-meta` (modulo object order — both
+  /// iterate the registry's lexicographic order).
+  ///
+  /// Lookups by an unknown type_name return 0 / "" / YSE_PCAT_UNSET /
+  /// YSE_OUT_INVALID. NULL out-pointers in *_get_inlet_info /
+  /// _get_outlet_info / *_get_param_info are skipped, so callers can
+  /// ignore fields they don't need.
+  int patcher_get_type_count() {
+    return _patcher_get_type_count();
+  }
+
+  late final _patcher_get_type_countPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>(
+        'yse_patcher_get_type_count',
+      );
+  late final _patcher_get_type_count = _patcher_get_type_countPtr
+      .asFunction<int Function()>();
+
+  ffi.Pointer<ffi.Char> patcher_get_type_name(int index) {
+    return _patcher_get_type_name(index);
+  }
+
+  late final _patcher_get_type_namePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int)>>(
+        'yse_patcher_get_type_name',
+      );
+  late final _patcher_get_type_name = _patcher_get_type_namePtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(int)>();
+
+  ffi.Pointer<ffi.Char> patcher_get_type_description(
+    ffi.Pointer<ffi.Char> type_name,
+  ) {
+    return _patcher_get_type_description(type_name);
+  }
+
+  late final _patcher_get_type_descriptionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)
+        >
+      >('yse_patcher_get_type_description');
+  late final _patcher_get_type_description = _patcher_get_type_descriptionPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
+
+  YsePCategory patcher_get_type_category(ffi.Pointer<ffi.Char> type_name) {
+    return YsePCategory.fromValue(_patcher_get_type_category(type_name));
+  }
+
+  late final _patcher_get_type_categoryPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<ffi.Char>)>
+      >('yse_patcher_get_type_category');
+  late final _patcher_get_type_category = _patcher_get_type_categoryPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  int patcher_get_type_is_dsp(ffi.Pointer<ffi.Char> type_name) {
+    return _patcher_get_type_is_dsp(type_name);
+  }
+
+  late final _patcher_get_type_is_dspPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
+        'yse_patcher_get_type_is_dsp',
+      );
+  late final _patcher_get_type_is_dsp = _patcher_get_type_is_dspPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  int patcher_get_inlet_count(ffi.Pointer<ffi.Char> type_name) {
+    return _patcher_get_inlet_count(type_name);
+  }
+
+  late final _patcher_get_inlet_countPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
+        'yse_patcher_get_inlet_count',
+      );
+  late final _patcher_get_inlet_count = _patcher_get_inlet_countPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  void patcher_get_inlet_info(
+    ffi.Pointer<ffi.Char> type_name,
+    int idx,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> label,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> doc,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> range,
+    ffi.Pointer<ffi.UnsignedInt> accepts_bitmask,
+  ) {
+    return _patcher_get_inlet_info(
+      type_name,
+      idx,
+      label,
+      doc,
+      range,
+      accepts_bitmask,
+    );
+  }
+
+  late final _patcher_get_inlet_infoPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<ffi.Char>,
+            ffi.Int,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.UnsignedInt>,
+          )
+        >
+      >('yse_patcher_get_inlet_info');
+  late final _patcher_get_inlet_info = _patcher_get_inlet_infoPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<ffi.Char>,
+          int,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.UnsignedInt>,
+        )
+      >();
+
+  int patcher_get_outlet_count(ffi.Pointer<ffi.Char> type_name) {
+    return _patcher_get_outlet_count(type_name);
+  }
+
+  late final _patcher_get_outlet_countPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
+        'yse_patcher_get_outlet_count',
+      );
+  late final _patcher_get_outlet_count = _patcher_get_outlet_countPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  void patcher_get_outlet_info(
+    ffi.Pointer<ffi.Char> type_name,
+    int idx,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> label,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> doc,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> range,
+    ffi.Pointer<ffi.UnsignedInt> type,
+  ) {
+    return _patcher_get_outlet_info(type_name, idx, label, doc, range, type);
+  }
+
+  late final _patcher_get_outlet_infoPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<ffi.Char>,
+            ffi.Int,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.UnsignedInt>,
+          )
+        >
+      >('yse_patcher_get_outlet_info');
+  late final _patcher_get_outlet_info = _patcher_get_outlet_infoPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<ffi.Char>,
+          int,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.UnsignedInt>,
+        )
+      >();
+
+  int patcher_get_param_count(ffi.Pointer<ffi.Char> type_name) {
+    return _patcher_get_param_count(type_name);
+  }
+
+  late final _patcher_get_param_countPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
+        'yse_patcher_get_param_count',
+      );
+  late final _patcher_get_param_count = _patcher_get_param_countPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  void patcher_get_param_info(
+    ffi.Pointer<ffi.Char> type_name,
+    int idx,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> name,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> doc,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> default_value,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> range,
+  ) {
+    return _patcher_get_param_info(
+      type_name,
+      idx,
+      name,
+      doc,
+      default_value,
+      range,
+    );
+  }
+
+  late final _patcher_get_param_infoPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<ffi.Char>,
+            ffi.Int,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          )
+        >
+      >('yse_patcher_get_param_info');
+  late final _patcher_get_param_info = _patcher_get_param_infoPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<ffi.Char>,
+          int,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+        )
+      >();
+
+  /// Returns a fresh malloc'd JSON snapshot of every registered object's
+  /// metadata. One-stop shop for bindings that want to cache the metadata
+  /// or regenerate their own reference at build time. The caller must
+  /// release the buffer with yse_free_string(); returns NULL on
+  /// allocation failure.
+  ffi.Pointer<ffi.Char> patcher_get_metadata_json() {
+    return _patcher_get_metadata_json();
+  }
+
+  late final _patcher_get_metadata_jsonPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+        'yse_patcher_get_metadata_json',
+      );
+  late final _patcher_get_metadata_json = _patcher_get_metadata_jsonPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function()>();
+
+  void free_string(ffi.Pointer<ffi.Char> s) {
+    return _free_string(s);
+  }
+
+  late final _free_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+        'yse_free_string',
+      );
+  late final _free_string = _free_stringPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
   /// ─── standard MIDI file playback ───────────────────────────────────
   ffi.Pointer<YseMidiFile> midi_file_create() {
     return _midi_file_create();
@@ -5879,6 +6143,58 @@ enum YseDspDelayTap {
     1 => YSE_DELAY_TAP_SECOND,
     2 => YSE_DELAY_TAP_THIRD,
     _ => throw ArgumentError('Unknown value for YseDspDelayTap: $value'),
+  };
+}
+
+/// Mirrors YSE::PATCHER::pCategory in patcher/pEnums.h. The patcher
+/// registry exposes this through the metadata API so binding-side
+/// documentation generators can group objects without inspecting the
+/// engine source.
+enum YsePCategory {
+  YSE_PCAT_UNSET(0),
+  YSE_PCAT_OSC(1),
+  YSE_PCAT_FILTER(2),
+  YSE_PCAT_MATH(3),
+  YSE_PCAT_GENERIC(4),
+  YSE_PCAT_GUI(5),
+  YSE_PCAT_TIME(6),
+  YSE_PCAT_MIDI(7);
+
+  final int value;
+  const YsePCategory(this.value);
+
+  static YsePCategory fromValue(int value) => switch (value) {
+    0 => YSE_PCAT_UNSET,
+    1 => YSE_PCAT_OSC,
+    2 => YSE_PCAT_FILTER,
+    3 => YSE_PCAT_MATH,
+    4 => YSE_PCAT_GENERIC,
+    5 => YSE_PCAT_GUI,
+    6 => YSE_PCAT_TIME,
+    7 => YSE_PCAT_MIDI,
+    _ => throw ArgumentError('Unknown value for YsePCategory: $value'),
+  };
+}
+
+/// Bitmask of message types an inlet accepts; mirrors
+/// YSE::PATCHER::InletType. OR the flags together; check with `&`.
+enum YseInletAccepts {
+  YSE_IN_ACCEPTS_BUFFER(1),
+  YSE_IN_ACCEPTS_FLOAT(2),
+  YSE_IN_ACCEPTS_INT(4),
+  YSE_IN_ACCEPTS_BANG(8),
+  YSE_IN_ACCEPTS_LIST(16);
+
+  final int value;
+  const YseInletAccepts(this.value);
+
+  static YseInletAccepts fromValue(int value) => switch (value) {
+    1 => YSE_IN_ACCEPTS_BUFFER,
+    2 => YSE_IN_ACCEPTS_FLOAT,
+    4 => YSE_IN_ACCEPTS_INT,
+    8 => YSE_IN_ACCEPTS_BANG,
+    16 => YSE_IN_ACCEPTS_LIST,
+    _ => throw ArgumentError('Unknown value for YseInletAccepts: $value'),
   };
 }
 

@@ -1,0 +1,956 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Music &#8212; dart-yse 0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/music';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Patcher" href="patcher.html" />
+    <link rel="prev" title="MIDI" href="midi.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/hello_sound.html">Hello, sound</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="reverb.html">Reverb</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="dsp.html">DSP</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="patcher.html">Patcher</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="patcher_objects.html">Patcher object reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="enums.html">Enums</a></li>
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/music.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/api/music.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Music</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Music</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#note">Note</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pnote">PNote</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#scale">Scale</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#motif">Motif</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#player">Player</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Methods</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="music">
+<h1>Music<a class="headerlink" href="#music" title="Link to this heading">#</a></h1>
+<p>Musical primitives — <code class="xref py py-class docutils literal notranslate"><span class="pre">Note</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PNote</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Motif</span></code>. The <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> is wrapped but currently
+non-functional (see the Status note in the project README); the
+primitives are usable on their own.</p>
+<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::note">api/music.html</a>.</p>
+</section>
+<section id="note">
+<h1>Note<a class="headerlink" href="#note" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">Note</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Finalizable</span>
+</pre></div>
+</div>
+<p>A single musical event — pitch, volume, length, MIDI channel.</p>
+<p>The fundamental unit for the music subsystem: [Motif]s are sequences
+of [PNote]s (positioned [Note]s), and the [Player] generates notes
+within a [Scale] constraint.</p>
+<section id="constructors">
+<h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Note</span><span class="p">({</span><span class="kt">double</span><span class="w"> </span><span class="n">pitch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">60</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Construct a note.</p>
+<p>[pitch] is a MIDI pitch (60 = middle C). [volume] is velocity in
+<cite>[0, 1]</cite>. [length] is the duration in seconds (0 = engine default).
+[channel] is the MIDI channel.</p>
+</section>
+<section id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">YseNote</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">handle</span>
+</pre></div>
+</div>
+<p>Internal: native handle.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">pitch</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">pitch</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MIDI pitch (60 = middle C).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">volume</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">volume</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Velocity in <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">length</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Duration in seconds.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">channel</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">channel</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MIDI channel.</p>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="kd">set</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">pitch</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Replace all four fields in one call.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Destroy the underlying native note and detach the finalizer.</p>
+</section>
+</section>
+<section id="pnote">
+<h1>PNote<a class="headerlink" href="#pnote" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">PNote</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Finalizable</span>
+</pre></div>
+</div>
+<p>A [Note] with a time position — the building block of a [Motif].</p>
+<p>Position is measured from the start of the containing motif, in
+seconds.</p>
+<section id="id1">
+<h2>Constructors<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">PNote</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">pitch</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Construct a positioned note.</p>
+</section>
+<section id="id2">
+<h2>Properties<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">YsePNote</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">handle</span>
+</pre></div>
+</div>
+<p>Internal: native handle.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">position</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">position</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Time position from the start of the motif, in seconds.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">pitch</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">pitch</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MIDI pitch.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">volume</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">volume</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Velocity in <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">length</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Duration in seconds.</p>
+</section>
+<section id="id3">
+<h2>Methods<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Destroy the underlying native pNote and detach the finalizer.</p>
+</section>
+</section>
+<section id="scale">
+<h1>Scale<a class="headerlink" href="#scale" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">Scale</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Finalizable</span>
+</pre></div>
+</div>
+<p>A set of allowed pitches.</p>
+<p>Drives the [Player] so its generated notes stay in key, and
+constrains the transpositions a [Motif] can take.</p>
+<section id="id4">
+<h2>Constructors<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Scale</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Construct an empty scale.</p>
+</section>
+<section id="id5">
+<h2>Properties<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">YseScale</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">handle</span>
+</pre></div>
+</div>
+<p>Internal: native handle.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">size</span>
+</pre></div>
+</div>
+<p>Number of pitches in the scale.</p>
+</section>
+<section id="id6">
+<h2>Methods<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">pitch</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">double</span><span class="w"> </span><span class="n">octaveStep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Add a pitch to the scale.</p>
+<p>[octaveStep] controls automatic octave replication: 12 (default)
+replicates the pitch at every octave; values &lt;= 0 add only the
+exact pitch.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">remove</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">pitch</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">double</span><span class="w"> </span><span class="n">octaveStep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Remove a pitch (with optional octave replication).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">has</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">pitch</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Whether [pitch] is a member of the scale.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">nearest</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">pitch</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Nearest in-scale pitch to [pitch].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Remove every pitch.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Destroy the underlying native scale and detach the finalizer.</p>
+</section>
+</section>
+<section id="motif">
+<h1>Motif<a class="headerlink" href="#motif" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">Motif</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Finalizable</span>
+</pre></div>
+</div>
+<p>A re-usable phrase or pattern — a sequence of [PNote]s.</p>
+<p>Hand it to a [Player] which will trigger it at appropriate moments.</p>
+<section id="id7">
+<h2>Constructors<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Motif</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Construct an empty motif.</p>
+</section>
+<section id="id8">
+<h2>Properties<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">YseMotif</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">handle</span>
+</pre></div>
+</div>
+<p>Internal: native handle.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">length</span>
+</pre></div>
+</div>
+<p>Set the motif length explicitly, in seconds.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isEmpty</span>
+</pre></div>
+</div>
+<p>Whether the motif contains any notes.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">size</span>
+</pre></div>
+</div>
+<p>Number of notes.</p>
+</section>
+<section id="id9">
+<h2>Methods<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">PNote</span><span class="w"> </span><span class="n">note</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Append a positioned note.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Remove every note.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">autoSetLength</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Set the motif length automatically to the end of the last note.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">transpose</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">pitch</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Transpose every note by [pitch] semitones.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setFirstPitch</span><span class="p">(</span><span class="n">Scale</span><span class="w"> </span><span class="n">validPitches</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Restrict legal starting pitches.</p>
+<p>When the [Player] picks a transposition for this motif it picks one
+whose starting note belongs to [validPitches].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Destroy the underlying native motif and detach the finalizer.</p>
+</section>
+</section>
+<section id="player">
+<h1>Player<a class="headerlink" href="#player" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">Player</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Finalizable</span>
+</pre></div>
+</div>
+<p>Generative note sequencer.</p>
+<p>Plays random notes within configurable pitch / velocity / gap / length
+ranges, optionally constrained to a [Scale], optionally drawing from
+one or more weighted [Motif]s instead of pure randomness. Numeric
+setters accept an optional [fade] parameter that interpolates from
+the current value to the target over that many seconds.</p>
+<p><strong>Note</strong>: the upstream <cite>YSE::player::create(synth&amp;)</cite> factory is
+commented out, and there is no other path to initialise the player’s
+implementation pointer. Calling any method on a freshly-constructed
+[Player] therefore crashes the process (null pimpl dereference) —
+this surface is dead until the synth subsystem returns to the public
+API. The class is exposed here so the wrapping is in place when that
+happens; do not call its methods until then.</p>
+<section id="id10">
+<h2>Constructors<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Player</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Construct a player.</p>
+</section>
+<section id="id11">
+<h2>Properties<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isPlaying</span>
+</pre></div>
+</div>
+<p>Whether the player is currently producing notes.</p>
+</section>
+<section id="id12">
+<h2>Methods<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">play</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Start producing notes.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Stop producing notes.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setMinimumPitch</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Set the lowest pitch the player may produce (0..126). [fade] interpolates.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setMaximumPitch</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Set the highest pitch the player may produce (1..127). [fade] interpolates.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setMinimumVelocity</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Set the lowest velocity (0..0.999999). [fade] interpolates.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setMaximumVelocity</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Set the highest velocity (0.000001..1). [fade] interpolates.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setMinimumGap</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Set the minimum gap between successive notes / motifs, in seconds.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setMaximumGap</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Set the maximum gap between successive notes / motifs, in seconds.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setMinimumLength</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Set the minimum note length, in seconds (used when no motif is active).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setMaximumLength</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Set the maximum note length, in seconds (used when no motif is active).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setVoices</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Number of simultaneous voices.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setScale</span><span class="p">(</span><span class="n">Scale</span><span class="w"> </span><span class="n">scale</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Constrain generated pitches to [scale].</p>
+<p>The player keeps its own copy — modifying [scale] after this
+call has no effect on the player.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addMotif</span><span class="p">(</span><span class="n">Motif</span><span class="w"> </span><span class="n">motif</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Add a [motif] to the player’s pool. Picked weighted by [weight].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">removeMotif</span><span class="p">(</span><span class="n">Motif</span><span class="w"> </span><span class="n">motif</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Remove a previously added motif.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">adjustMotifWeight</span><span class="p">(</span><span class="n">Motif</span><span class="w"> </span><span class="n">motif</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">weight</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Adjust the selection weight of an already-added motif.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">playPartialMotifs</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Probability that the player plays only part of a motif (0..1).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">playMotifs</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Probability that the player draws notes from a motif vs. random (0..1).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">fitMotifsToScale</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">fade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Probability that motif notes are quantised to the active scale (0..1).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Destroy the underlying native player and detach the finalizer.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="midi.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">MIDI</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="patcher.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Patcher</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Music</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#note">Note</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pnote">PNote</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#scale">Scale</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#motif">Motif</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#player">Player</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Methods</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

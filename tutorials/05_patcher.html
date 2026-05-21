@@ -1,0 +1,788 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Patcher: modular synthesis in code &#8212; dart-yse 0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/05_patcher';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../api/index.html" />
+    <link rel="prev" title="Tutorials" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/hello_sound.html">Hello, sound</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/core.html">Core</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/reverb.html">Reverb</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/dsp.html">DSP</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/music.html">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/patcher.html">Patcher</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/patcher_objects.html">Patcher object reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/enums.html">Enums</a></li>
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Ftutorials/05_patcher.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/05_patcher.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Patcher: modular synthesis in code</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mental-model">Mental model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-patcher-and-attaching-it-to-a-sound">Creating a patcher and attaching it to a sound</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-graph">Building a graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#driving-parameters-at-runtime">Driving parameters at runtime</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#driving-an-object-directly-via-phandle">Driving an object directly via PHandle</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enumerating-the-graph">Enumerating the graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#persistence">Persistence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifetime-and-cleanup">Lifetime and cleanup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-find-the-full-object-reference">Where to find the full object reference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-learned">What you learned</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="patcher-modular-synthesis-in-code">
+<h1>Patcher: modular synthesis in code<a class="headerlink" href="#patcher-modular-synthesis-in-code" title="Link to this heading">#</a></h1>
+<p>Goal: build a small synthesis graph programmatically, drive its
+parameters at runtime, then save and reload the graph as JSON.</p>
+<p>This tutorial walks through <code class="docutils literal notranslate"><span class="pre">example/demo13_patcher.dart</span></code> line by
+line. By the end you will have a sine oscillator with a named control
+that re-tunes it from Dart code, plus a JSON round trip that can
+rebuild the same graph from a string.</p>
+<p>Source:
+<a class="reference external" href="https://github.com/yvanvds/dart-yse/blob/main/example/demo13_patcher.dart">example/demo13_patcher.dart</a>.</p>
+<p>If you have read the upstream libYSE <code class="docutils literal notranslate"><span class="pre">05_patcher</span></code> tutorial that
+covers <code class="docutils literal notranslate"><span class="pre">Demo13_Patcher.cpp</span></code> and <code class="docutils literal notranslate"><span class="pre">Demo14_LoadPatcher.cpp</span></code>, the
+underlying graph is the same — only the call site moves from C++ to
+Dart.</p>
+<section id="mental-model">
+<h2>Mental model<a class="headerlink" href="#mental-model" title="Link to this heading">#</a></h2>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Patcher</span></code> is a graph of small objects. Each object has zero
+or more <strong>inlets</strong> (left side, accepting data) and zero or more
+<strong>outlets</strong> (right side, emitting data). You wire them together with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.connect()</span></code>; data flows from outlets into inlets.</p>
+<p>Object type strings follow a two-character convention that mirrors
+Max/MSP:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">~</span></code> prefix — audio-rate (DSP) object. <code class="docutils literal notranslate"><span class="pre">~sine</span></code> evaluates one
+sample per audio frame.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.</span></code> prefix — control-rate (event) object. <code class="docutils literal notranslate"><span class="pre">.r</span></code> (receive) fires
+only when you push data into it with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passFloat()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passInt()</span></code> /
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passString()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passBang()</span></code>.</p></li>
+</ul>
+<p>The full list of supported types is exposed as constants on the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Obj</span></code> class — pass any of them to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> in place of raw string literals.
+Every object’s accepted inlets, outlets, parameters, and message
+types are listed on the <a class="reference internal" href="../api/patcher_objects.html"><span class="doc">Patcher object reference</span></a> reference page,
+generated directly from the engine source so it can never drift from
+what <code class="docutils literal notranslate"><span class="pre">createObject</span></code> actually accepts.</p>
+</section>
+<section id="creating-a-patcher-and-attaching-it-to-a-sound">
+<h2>Creating a patcher and attaching it to a sound<a class="headerlink" href="#creating-a-patcher-and-attaching-it-to-a-sound" title="Link to this heading">#</a></h2>
+<p>A patcher is just an object; you initialise it with the number of
+audio outputs it should expose, then hand it to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromPatcher()</span></code> so the engine drives the graph as a
+sound source:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Patcher</span><span class="p">(</span><span class="nl">mainOutputs:</span><span class="w"> </span><span class="m">1</span><span class="p">);</span><span class="w">                 </span><span class="c1">// 1 = mono; 2 = stereo</span>
+<span class="c1">// ... build the graph here ...</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromPatcher</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="nl">volume:</span><span class="w"> </span><span class="m">0.3</span><span class="p">);</span>
+<span class="n">sound</span><span class="p">.</span><span class="n">play</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The first argument to <code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromPatcher()</span></code> is the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Patcher</span></code>; the optional <code class="docutils literal notranslate"><span class="pre">channel</span></code> argument routes through a
+specific <code class="xref py py-class docutils literal notranslate"><span class="pre">Channel</span></code> (default: master mix). The Sound holds a
+borrowed reference to the patcher — keep the <code class="docutils literal notranslate"><span class="pre">Patcher</span></code> instance
+alive as long as the <code class="docutils literal notranslate"><span class="pre">Sound</span></code> is alive.</p>
+</section>
+<section id="building-a-graph">
+<h2>Building a graph<a class="headerlink" href="#building-a-graph" title="Link to this heading">#</a></h2>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">PHandle</span></code> — an owned
+pointer into the patcher’s object list. There are two ways to
+identify a type: the literal string (<code class="docutils literal notranslate"><span class="pre">'~sine'</span></code>) or the corresponding
+constant on <code class="xref py py-class docutils literal notranslate"><span class="pre">Obj</span></code> (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Obj.dSine</span></code>). Both are
+interchangeable — <code class="xref py py-attr docutils literal notranslate"><span class="pre">Obj.dSine</span></code> literally is the string
+<code class="docutils literal notranslate"><span class="pre">'~sine'</span></code> at runtime. Use whichever style reads better at the call
+site.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">sine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dSine</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">&#39;220&#39;</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">dac</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dDac</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">recv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">gReceive</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">&#39;freq&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">args</span></code> parameter to <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> is
+the object’s creation argument string, parsed by the object exactly
+as it would in a saved patch. <code class="docutils literal notranslate"><span class="pre">~sine</span></code> with <code class="docutils literal notranslate"><span class="pre">'220'</span></code> starts
+oscillating at 220 Hz; <code class="docutils literal notranslate"><span class="pre">.r</span></code> with <code class="docutils literal notranslate"><span class="pre">'freq'</span></code> registers the receive
+under the name <code class="docutils literal notranslate"><span class="pre">&quot;freq&quot;</span></code>; an empty <code class="docutils literal notranslate"><span class="pre">args</span></code> leaves the object at its
+default configuration.</p>
+<p>Connecting objects is the next step. <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.connect()</span></code> wires
+one outlet to one inlet — both are zero-indexed:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sine</span><span class="p">,</span><span class="w"> </span><span class="nl">outlet:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="nl">to:</span><span class="w"> </span><span class="n">dac</span><span class="p">,</span><span class="w"> </span><span class="nl">inlet:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span><span class="w">    </span><span class="c1">// audio out</span>
+<span class="n">p</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">recv</span><span class="p">,</span><span class="w"> </span><span class="nl">outlet:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="nl">to:</span><span class="w"> </span><span class="n">sine</span><span class="p">,</span><span class="w"> </span><span class="nl">inlet:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span><span class="w">   </span><span class="c1">// freq control</span>
+</pre></div>
+</div>
+<p>The signal flow in this graph is: <code class="docutils literal notranslate"><span class="pre">~sine</span></code> (initially 220 Hz, but
+overridable through the <code class="docutils literal notranslate"><span class="pre">&quot;freq&quot;</span></code> receive) → <code class="docutils literal notranslate"><span class="pre">~dac</span></code> (hands the
+buffer back to the engine).</p>
+</section>
+<section id="driving-parameters-at-runtime">
+<h2>Driving parameters at runtime<a class="headerlink" href="#driving-parameters-at-runtime" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.r</span></code> (receive) objects are the patcher’s external interface.
+Each one has a name; calling
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passFloat()</span></code> /
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passInt()</span></code> /
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passString()</span></code> /
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passBang()</span></code> on the patcher delivers the value to
+every <code class="docutils literal notranslate"><span class="pre">.r</span></code> registered under that name.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">passFloat</span><span class="p">(</span><span class="m">440</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;freq&#39;</span><span class="p">);</span><span class="w">     </span><span class="c1">// change pitch to A4</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">ok</span><span class="p">)</span><span class="w"> </span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;No receiver named &quot;freq&quot; — graph not wired correctly&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Return value of every <code class="docutils literal notranslate"><span class="pre">pass*</span></code> method is <code class="docutils literal notranslate"><span class="pre">false</span></code> when no receiver
+was registered under that name. The four methods cover the four data
+types the engine knows about:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passFloat()</span></code> for continuous controls (frequency,
+gain).</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passInt()</span></code> for discrete steps (MIDI note numbers,
+selector indices).</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passString()</span></code> for symbolic values (a preset name,
+an arbitrary tag the graph dispatches on).</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passBang()</span></code> for bare triggers with no payload (fire
+an envelope, advance a counter).</p></li>
+</ul>
+</section>
+<section id="driving-an-object-directly-via-phandle">
+<h2>Driving an object directly via PHandle<a class="headerlink" href="#driving-an-object-directly-via-phandle" title="Link to this heading">#</a></h2>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">PHandle</span></code> returned by <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> is
+not just a token — it exposes the object’s full state to Dart. Use
+this to:</p>
+<ul class="simple">
+<li><p><strong>Read structural information.</strong> <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.type</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.inputs</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.outputs</span></code>, and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.isDspInput()</span></code> describe the object’s I/O surface.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.outputDataType()</span></code> returns an <code class="xref py py-class docutils literal notranslate"><span class="pre">OutType</span></code> enum
+value (<code class="docutils literal notranslate"><span class="pre">bang</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">integer</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>,
+<code class="docutils literal notranslate"><span class="pre">any</span></code>) describing what a given outlet emits — useful when you
+build an external patcher editor on top of the engine.</p></li>
+<li><p><strong>Walk connections.</strong> <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.connectionCount()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.connectionTargetId()</span></code>, and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.connectionTargetInlet()</span></code> return the wiring graph
+outward from each outlet so you can serialise it yourself or check
+what is connected to what.</p></li>
+<li><p><strong>Send messages directly to a specific inlet</strong> — bypassing the
+named-receiver layer. <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.sendBang()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.sendInt()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.sendFloat()</span></code>, and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.sendList()</span></code> are the same API a connected outlet
+would call.</p></li>
+<li><p><strong>Reconfigure an object after the fact.</strong>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.setParams()</span></code> re-runs the object’s creation parser
+on a new argument string — equivalent to deleting and recreating it
+but with the connections preserved.</p></li>
+<li><p><strong>Bridge a GUI.</strong> <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.guiValue</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.getGuiProperty()</span></code>, and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.setGuiProperty()</span></code> expose the per-object metadata an
+external editor reads and writes back.</p></li>
+</ul>
+<p>In short: <code class="docutils literal notranslate"><span class="pre">Patcher.pass*</span></code> is the convenient broadcast path through
+named receives, and <code class="docutils literal notranslate"><span class="pre">PHandle.send*</span></code> is the targeted path to one
+specific inlet.</p>
+</section>
+<section id="enumerating-the-graph">
+<h2>Enumerating the graph<a class="headerlink" href="#enumerating-the-graph" title="Link to this heading">#</a></h2>
+<p>You can ask the patcher how many objects it contains and fetch a
+handle to each one by index or by ID:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">objects</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">getHandleAt</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<span class="w">  </span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">id</span><span class="si">}</span><span class="s1">: </span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">type</span><span class="si">}</span><span class="s1"> (</span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">inputs</span><span class="si">}</span><span class="s1"> in, </span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">outputs</span><span class="si">}</span><span class="s1"> out)&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is the entry point for tooling that walks an existing graph —
+visualisers, exporters, automated tests that assert on object counts.</p>
+</section>
+<section id="persistence">
+<h2>Persistence<a class="headerlink" href="#persistence" title="Link to this heading">#</a></h2>
+<p>The graph — every object, parameter, and connection — can be
+serialised to JSON with <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.dumpJson()</span></code>. The result is
+plain UTF-8 text, suitable for writing to disk or shipping as a
+preset:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">dumpJson</span><span class="p">();</span>
+<span class="n">File</span><span class="p">(</span><span class="s1">&#39;mypatch.yap&#39;</span><span class="p">).</span><span class="n">writeAsStringSync</span><span class="p">(</span><span class="n">json</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Reloading is the inverse — read the file, hand the contents to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.parseJson()</span></code>, and the patcher rebuilds itself in
+place:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Patcher</span><span class="p">(</span><span class="nl">mainOutputs:</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+<span class="n">p2</span><span class="p">.</span><span class="n">parseJson</span><span class="p">(</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;mypatch.yap&#39;</span><span class="p">).</span><span class="n">readAsStringSync</span><span class="p">());</span>
+</pre></div>
+</div>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.parseJson()</span></code> replaces the current graph wholesale —
+any objects already in the patcher are discarded. After loading,
+re-send the initial control values so the receives have something to
+forward.</p>
+<p>The round trip — patch built once in code, saved to a string,
+rebuilt from that string with no code-side knowledge of its internal
+structure — is what makes external editors possible. Build the patch
+in a desktop tool, ship the resulting JSON as an asset, deserialise
+it at runtime.</p>
+</section>
+<section id="lifetime-and-cleanup">
+<h2>Lifetime and cleanup<a class="headerlink" href="#lifetime-and-cleanup" title="Link to this heading">#</a></h2>
+<p>Three rules cover the patcher’s memory model:</p>
+<ol class="arabic simple">
+<li><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">PHandle</span></code> is owned by its <code class="xref py py-class docutils literal notranslate"><span class="pre">Patcher</span></code>. Don’t try to
+<code class="docutils literal notranslate"><span class="pre">dispose</span></code> it directly — call <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.deleteObject()</span></code> or
+let <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.clear()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.dispose()</span></code> handle
+it.</p></li>
+<li><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Sound</span></code> created from a patcher
+(<code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromPatcher()</span></code>) holds a borrowed pointer to that
+patcher’s native handle. The patcher must outlive the sound.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Patcher</span></code> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">Finalizable</span></code>, so a dropped reference
+eventually frees the native graph — but for predictable timing
+(especially when the sound that wraps it is also being disposed),
+call <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.dispose()</span></code> explicitly when you’re done.</p></li>
+</ol>
+</section>
+<section id="where-to-find-the-full-object-reference">
+<h2>Where to find the full object reference<a class="headerlink" href="#where-to-find-the-full-object-reference" title="Link to this heading">#</a></h2>
+<p>The full set of registered object types — every inlet, outlet,
+parameter, and accepted message type — is on the
+<a class="reference internal" href="../api/patcher_objects.html"><span class="doc">Patcher object reference</span></a> reference page. That page is generated
+directly from the engine source (the same JSON snapshot the upstream
+libYSE docs render), so it can never drift from what
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> actually accepts.</p>
+</section>
+<section id="what-you-learned">
+<h2>What you learned<a class="headerlink" href="#what-you-learned" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A patcher is a node graph. Objects have inlets and outlets; data
+flows along <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.connect()</span></code> edges.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">~</span></code> types run at audio rate, <code class="docutils literal notranslate"><span class="pre">.</span></code> types fire on events.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">.r</span></code> (receive) objects plus
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passFloat()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passInt()</span></code> etc. to
+drive the graph from application code, or
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.sendFloat()</span></code> etc. to address one specific inlet.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PHandle</span></code> exposes every piece of structural and runtime
+state for an object — type, connections, GUI properties.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.dumpJson()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.parseJson()</span></code> round-
+trip the whole graph — ship patches as plain text or build an
+external editor on top.</p></li>
+</ul>
+</section>
+<section id="next">
+<h2>Next<a class="headerlink" href="#next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/patcher.html"><span class="doc">Patcher</span></a> — the full <code class="xref py py-class docutils literal notranslate"><span class="pre">Patcher</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PHandle</span></code> class reference.</p></li>
+<li><p><a class="reference internal" href="../api/patcher_objects.html"><span class="doc">Patcher object reference</span></a> — every patcher object, with inlets,
+outlets, parameters, and value ranges.</p></li>
+<li><p><a class="reference internal" href="index.html"><span class="doc">Tutorials</span></a> — index of remaining tutorials.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorials</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mental-model">Mental model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-patcher-and-attaching-it-to-a-sound">Creating a patcher and attaching it to a sound</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-graph">Building a graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#driving-parameters-at-runtime">Driving parameters at runtime</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#driving-an-object-directly-via-phandle">Driving an object directly via PHandle</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enumerating-the-graph">Enumerating the graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#persistence">Persistence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifetime-and-cleanup">Lifetime and cleanup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-find-the-full-object-reference">Where to find the full object reference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-learned">What you learned</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

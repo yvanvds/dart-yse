@@ -1,0 +1,4140 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Patcher object reference &#8212; dart-yse 0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/patcher_objects';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Utilities" href="utils.html" />
+    <link rel="prev" title="Patcher" href="patcher.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/hello_sound.html">Hello, sound</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="reverb.html">Reverb</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="dsp.html">DSP</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="music.html">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="patcher.html">Patcher</a></li>
+
+
+
+
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Patcher object reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="enums.html">Enums</a></li>
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/patcher_objects.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/api/patcher_objects.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Patcher object reference</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oscillators">Oscillators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#noise"><code class="docutils literal notranslate"><span class="pre">~noise</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#saw"><code class="docutils literal notranslate"><span class="pre">~saw</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sine"><code class="docutils literal notranslate"><span class="pre">~sine</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filters">Filters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bp"><code class="docutils literal notranslate"><span class="pre">~bp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hp"><code class="docutils literal notranslate"><span class="pre">~hp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lp"><code class="docutils literal notranslate"><span class="pre">~lp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vcf"><code class="docutils literal notranslate"><span class="pre">~vcf</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#math">Math</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">.*</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">.+</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><code class="docutils literal notranslate"><span class="pre">.-</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4"><code class="docutils literal notranslate"><span class="pre">./</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#counter"><code class="docutils literal notranslate"><span class="pre">.counter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ftom"><code class="docutils literal notranslate"><span class="pre">.ftom</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mtof"><code class="docutils literal notranslate"><span class="pre">.mtof</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#random"><code class="docutils literal notranslate"><span class="pre">.random</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5"><code class="docutils literal notranslate"><span class="pre">~*</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6"><code class="docutils literal notranslate"><span class="pre">~+</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7"><code class="docutils literal notranslate"><span class="pre">~-</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8"><code class="docutils literal notranslate"><span class="pre">~/</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generic-routing">Generic / routing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gate"><code class="docutils literal notranslate"><span class="pre">.gate</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#r"><code class="docutils literal notranslate"><span class="pre">.r</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#route"><code class="docutils literal notranslate"><span class="pre">.route</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#s"><code class="docutils literal notranslate"><span class="pre">.s</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switch"><code class="docutils literal notranslate"><span class="pre">.switch</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#line"><code class="docutils literal notranslate"><span class="pre">~line</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gui-controls">GUI controls</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b"><code class="docutils literal notranslate"><span class="pre">.b</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#f"><code class="docutils literal notranslate"><span class="pre">.f</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i"><code class="docutils literal notranslate"><span class="pre">.i</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#l"><code class="docutils literal notranslate"><span class="pre">.l</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#m"><code class="docutils literal notranslate"><span class="pre">.m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#slider"><code class="docutils literal notranslate"><span class="pre">.slider</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#t"><code class="docutils literal notranslate"><span class="pre">.t</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#text"><code class="docutils literal notranslate"><span class="pre">.text</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#time">Time</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metro"><code class="docutils literal notranslate"><span class="pre">.metro</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midi">MIDI</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#channelpressure"><code class="docutils literal notranslate"><span class="pre">.channelpressure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#controlchange"><code class="docutils literal notranslate"><span class="pre">.controlchange</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#midiout"><code class="docutils literal notranslate"><span class="pre">.midiout</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#noteoff"><code class="docutils literal notranslate"><span class="pre">.noteoff</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#noteon"><code class="docutils literal notranslate"><span class="pre">.noteon</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#polypressure"><code class="docutils literal notranslate"><span class="pre">.polypressure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#programchange"><code class="docutils literal notranslate"><span class="pre">.programchange</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="patcher-object-reference">
+<h1>Patcher object reference<a class="headerlink" href="#patcher-object-reference" title="Link to this heading">#</a></h1>
+<p>Every patcher object that the engine’s <code class="docutils literal notranslate"><span class="pre">patcher::CreateObject</span></code> knows
+about. Each entry shows the object’s description, inlet/outlet/parameter
+documentation pulled directly from the C++ source via the engine’s
+<code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code> / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code>
+macros.</p>
+<p>Pass the type string (or the matching <code class="xref py py-class docutils literal notranslate"><span class="pre">yse.Obj</span></code> constant) as
+the first argument to <code class="xref py py-meth docutils literal notranslate"><span class="pre">yse.Patcher.createObject()</span></code>. The <code class="docutils literal notranslate"><span class="pre">~</span></code>
+prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks control-rate
+objects.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#oscillators" id="id9">Oscillators</a></p></li>
+<li><p><a class="reference internal" href="#filters" id="id10">Filters</a></p></li>
+<li><p><a class="reference internal" href="#math" id="id11">Math</a></p></li>
+<li><p><a class="reference internal" href="#generic-routing" id="id12">Generic / routing</a></p></li>
+<li><p><a class="reference internal" href="#gui-controls" id="id13">GUI controls</a></p></li>
+<li><p><a class="reference internal" href="#time" id="id14">Time</a></p></li>
+<li><p><a class="reference internal" href="#midi" id="id15">MIDI</a></p></li>
+</ul>
+</nav>
+<section id="oscillators">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Oscillators</a><a class="headerlink" href="#oscillators" title="Link to this heading">#</a></h2>
+<section id="noise">
+<h3><code class="docutils literal notranslate"><span class="pre">~noise</span></code><a class="headerlink" href="#noise" title="Link to this heading">#</a></h3>
+<p>White-noise generator. Emits a fresh DSP buffer of pseudo-random samples on every audio frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>White-noise audio output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="saw">
+<h3><code class="docutils literal notranslate"><span class="pre">~saw</span></code><a class="headerlink" href="#saw" title="Link to this heading">#</a></h3>
+<p>Audio-rate sawtooth oscillator. Frequency can be set with a float or modulated with a DSP buffer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>freq</p></td>
+<td><p>BUFFER, FLOAT</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Oscillator frequency in Hz. Accepts a DSP buffer (FM) or a float.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Sawtooth wave audio output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>frequency</p></td>
+<td><p>440</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Initial frequency in Hz.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sine">
+<h3><code class="docutils literal notranslate"><span class="pre">~sine</span></code><a class="headerlink" href="#sine" title="Link to this heading">#</a></h3>
+<p>Audio-rate sine oscillator. Frequency can be set with a float or modulated with a DSP buffer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>freq</p></td>
+<td><p>BUFFER, FLOAT</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Oscillator frequency in Hz. Accepts a DSP buffer (FM) or a float.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Sine wave audio output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>frequency</p></td>
+<td><p>440</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Initial frequency in Hz.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="filters">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Filters</a><a class="headerlink" href="#filters" title="Link to this heading">#</a></h2>
+<section id="bp">
+<h3><code class="docutils literal notranslate"><span class="pre">~bp</span></code><a class="headerlink" href="#bp" title="Link to this heading">#</a></h3>
+<p>Bandpass filter. Passes a frequency band centered on ‘frequency’ with bandwidth shaped by ‘Q’ (resonance).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Audio input buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>freq</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Center frequency in Hz.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>Q</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0.1-100</p></td>
+<td><p>Resonance / inverse bandwidth — higher narrows the band.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Filtered audio output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>frequency</p></td>
+<td><p>0</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Initial center frequency in Hz.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Q</p></td>
+<td><p>0</p></td>
+<td><p>0.1-100</p></td>
+<td><p>Initial Q / resonance.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="hp">
+<h3><code class="docutils literal notranslate"><span class="pre">~hp</span></code><a class="headerlink" href="#hp" title="Link to this heading">#</a></h3>
+<p>Single-pole highpass filter. Attenuates content below the cutoff frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Audio input buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>cutoff</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Cutoff frequency in Hz.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Filtered audio output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>frequency</p></td>
+<td><p>0</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Initial cutoff frequency in Hz.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="lp">
+<h3><code class="docutils literal notranslate"><span class="pre">~lp</span></code><a class="headerlink" href="#lp" title="Link to this heading">#</a></h3>
+<p>Single-pole lowpass filter. Attenuates content above the cutoff frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Audio input buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>cutoff</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Cutoff frequency in Hz.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Filtered audio output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>frequency</p></td>
+<td><p>0</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Initial cutoff frequency in Hz.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="vcf">
+<h3><code class="docutils literal notranslate"><span class="pre">~vcf</span></code><a class="headerlink" href="#vcf" title="Link to this heading">#</a></h3>
+<p>Voltage-controlled (heterodyne) filter. Mixes the input with a center-frequency buffer; sharpness controls resonance. Emits real and imaginary components on two buffer outlets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Audio input buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>center</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Center-frequency buffer (typically a sine at the target frequency).</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>sharpness</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0.0-1.0</p></td>
+<td><p>Resonance / sharpness control.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>real</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Real component of the filtered signal.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>imag</p></td>
+<td><p>BUFFER</p></td>
+<td><p>-1.0 to 1.0</p></td>
+<td><p>Imaginary component of the filtered signal.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>sharpness</p></td>
+<td><p>0</p></td>
+<td><p>0.0-1.0</p></td>
+<td><p>Initial resonance / sharpness.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="math">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Math</a><a class="headerlink" href="#math" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h3><code class="docutils literal notranslate"><span class="pre">.*</span></code><a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Control-rate multiply. Emits left * right as a float whenever inlet 0 fires.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>left</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Left operand — fires the multiplication.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Right operand — stored until next multiply.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>left * right.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>right</p></td>
+<td><p>0</p></td>
+<td><p>any float</p></td>
+<td><p>Initial right-operand value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id2">
+<h3><code class="docutils literal notranslate"><span class="pre">.+</span></code><a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>Control-rate add. Emits left + right as a float whenever inlet 0 fires.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>left</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Left operand — fires the addition.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Right operand — stored until next add.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>left + right.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>right</p></td>
+<td><p>0</p></td>
+<td><p>any float</p></td>
+<td><p>Initial right-operand value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id3">
+<h3><code class="docutils literal notranslate"><span class="pre">.-</span></code><a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>Control-rate subtract. Emits left - right as a float whenever inlet 0 fires.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>left</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Left operand — fires the subtraction.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Right operand — stored until next subtract.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>left - right.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>right</p></td>
+<td><p>0</p></td>
+<td><p>any float</p></td>
+<td><p>Initial right-operand value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id4">
+<h3><code class="docutils literal notranslate"><span class="pre">./</span></code><a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p>Control-rate divide. Emits left / right as a float whenever inlet 0 fires; division by zero emits 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>left</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Left operand — fires the division.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Right operand — stored until next divide. Zero forces output to 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>left / right (or 0 when right == 0).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>right</p></td>
+<td><p>0</p></td>
+<td><p>any float</p></td>
+<td><p>Initial right-operand value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="counter">
+<h3><code class="docutils literal notranslate"><span class="pre">.counter</span></code><a class="headerlink" href="#counter" title="Link to this heading">#</a></h3>
+<p>Step counter. Bang increments the current value by ‘step’ and emits it. Send ‘reset’ as a list to return to startValue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>control</p></td>
+<td><p>INT, BANG, LIST</p></td>
+<td><p>any int</p></td>
+<td><p>Bang to step / int to set the value / list ‘reset’ to return to startValue.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>step</p></td>
+<td><p>INT</p></td>
+<td><p>any int</p></td>
+<td><p>Sets the increment used on each bang.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>INT</p></td>
+<td><p>any int</p></td>
+<td><p>Current counter value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>startValue</p></td>
+<td><p>0</p></td>
+<td><p>any int</p></td>
+<td><p>Initial counter value (and the value ‘reset’ returns to).</p></td>
+</tr>
+<tr class="row-odd"><td><p>step</p></td>
+<td><p>1</p></td>
+<td><p>any int</p></td>
+<td><p>Increment applied on each bang.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="ftom">
+<h3><code class="docutils literal notranslate"><span class="pre">.ftom</span></code><a class="headerlink" href="#ftom" title="Link to this heading">#</a></h3>
+<p>Converts a frequency in Hz to its MIDI note number (with A4 == 69, fractional output).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>freq</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>0-20000 Hz</p></td>
+<td><p>Frequency in Hz.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>MIDI note number — fractional.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="mtof">
+<h3><code class="docutils literal notranslate"><span class="pre">.mtof</span></code><a class="headerlink" href="#mtof" title="Link to this heading">#</a></h3>
+<p>Converts a MIDI note number (with A4 == 69) to its frequency in Hz.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>0-127</p></td>
+<td><p>MIDI note number — fractional values are supported.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>freq</p></td>
+<td><p>FLOAT</p></td>
+<td><p>8.18-12543 Hz</p></td>
+<td><p>Frequency in Hz.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="random">
+<h3><code class="docutils literal notranslate"><span class="pre">.random</span></code><a class="headerlink" href="#random" title="Link to this heading">#</a></h3>
+<p>Random integer generator. On bang, emits a uniformly distributed integer in [0, range).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>bang</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>Trigger — emits a fresh random integer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>range</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>1+</p></td>
+<td><p>Sets the exclusive upper bound of the output range.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>INT</p></td>
+<td><p>0 to range-1</p></td>
+<td><p>Random integer in [0, range).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>range</p></td>
+<td><p>2</p></td>
+<td><p>1+</p></td>
+<td><p>Initial exclusive upper bound.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id5">
+<h3><code class="docutils literal notranslate"><span class="pre">~*</span></code><a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>Audio-rate multiply. Multiplies the left buffer by either the right buffer (audio-rate) or the right float (control-rate). The canonical ‘gain’ / ring-mod node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>left</p></td>
+<td><p>BUFFER</p></td>
+<td><p>any float</p></td>
+<td><p>Left operand — audio buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right</p></td>
+<td><p>BUFFER, FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>Right operand — audio buffer or float (gain).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>any float</p></td>
+<td><p>left * right.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>right</p></td>
+<td><p>1.0</p></td>
+<td><p>any float</p></td>
+<td><p>Initial right-operand float (used until a buffer arrives on inlet 1).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id6">
+<h3><code class="docutils literal notranslate"><span class="pre">~+</span></code><a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p>Audio-rate add. Sums the left buffer with either the right buffer (audio-rate) or the right float (control-rate).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>left</p></td>
+<td><p>BUFFER</p></td>
+<td><p>any float</p></td>
+<td><p>Left operand — audio buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right</p></td>
+<td><p>BUFFER, FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>Right operand — audio buffer or float.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>any float</p></td>
+<td><p>left + right.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>right</p></td>
+<td><p>1.0</p></td>
+<td><p>any float</p></td>
+<td><p>Initial right-operand float (used until a buffer arrives on inlet 1).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id7">
+<h3><code class="docutils literal notranslate"><span class="pre">~-</span></code><a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>Audio-rate subtract. Subtracts either the right buffer (audio-rate) or the right float (control-rate) from the left buffer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>left</p></td>
+<td><p>BUFFER</p></td>
+<td><p>any float</p></td>
+<td><p>Left operand — audio buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right</p></td>
+<td><p>BUFFER, FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>Right operand — audio buffer or float.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>any float</p></td>
+<td><p>left - right.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>right</p></td>
+<td><p>1.0</p></td>
+<td><p>any float</p></td>
+<td><p>Initial right-operand float (used until a buffer arrives on inlet 1).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id8">
+<h3><code class="docutils literal notranslate"><span class="pre">~/</span></code><a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>Audio-rate divide. Divides the left buffer by either the right buffer (audio-rate) or the right float (control-rate). A right-float of 0 is silently treated as a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>left</p></td>
+<td><p>BUFFER</p></td>
+<td><p>any float</p></td>
+<td><p>Left operand — audio buffer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right</p></td>
+<td><p>BUFFER, FLOAT</p></td>
+<td><p>any non-zero float</p></td>
+<td><p>Right operand — audio buffer or float (non-zero).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>any float</p></td>
+<td><p>left / right.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>right</p></td>
+<td><p>1.0</p></td>
+<td><p>any non-zero float</p></td>
+<td><p>Initial right-operand float (used until a buffer arrives on inlet 1). 0 disables division.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="generic-routing">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Generic / routing</a><a class="headerlink" href="#generic-routing" title="Link to this heading">#</a></h2>
+<section id="gate">
+<h3><code class="docutils literal notranslate"><span class="pre">.gate</span></code><a class="headerlink" href="#gate" title="Link to this heading">#</a></h3>
+<p>Demultiplexer. Routes a value inlet to one of N outlets, selected by inlet 0. activeOutlet=0 silences output; 1-based otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>select</p></td>
+<td><p>INT</p></td>
+<td><p>0+</p></td>
+<td><p>1-based outlet index to forward to (0 = mute).</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Value inlet — accepts bang / int / float / list.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out0</p></td>
+<td><p>ANY</p></td>
+<td><p>—</p></td>
+<td><p>Outlet 0 — emits the routed value when select == 1.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>out1</p></td>
+<td><p>ANY</p></td>
+<td><p>—</p></td>
+<td><p>Outlet 1 — emits the routed value when select == 2.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>numOutlets</p></td>
+<td><p>2</p></td>
+<td><p>1+</p></td>
+<td><p>Number of value outlets (additional outlets are created by SetParams).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="r">
+<h3><code class="docutils literal notranslate"><span class="pre">.r</span></code><a class="headerlink" href="#r" title="Link to this heading">#</a></h3>
+<p>Named receive endpoint. Forwards values arriving from any matching gSend (same dataName) in the patcher.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Wired inlet (rarely used — receives typically pair with gSend by name).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>—</p></td>
+<td><p>Forwarded value from matching gSend nodes.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>dataName</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>Name to listen for; must match the dataName of one or more gSend nodes.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="route">
+<h3><code class="docutils literal notranslate"><span class="pre">.route</span></code><a class="headerlink" href="#route" title="Link to this heading">#</a></h3>
+<p>Match-and-route. Compares the incoming value to each token in the list parameter and forwards to the matching outlet; unmatched values go to the final fall-through outlet. Outlets are created when the list parameter is set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Value inlet — accepts bang / int / float / list.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>list</p></td>
+<td><p>—</p></td>
+<td><p>any tokens</p></td>
+<td><p>Space-separated list of match tokens; one outlet is created per token plus one fall-through outlet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="s">
+<h3><code class="docutils literal notranslate"><span class="pre">.s</span></code><a class="headerlink" href="#s" title="Link to this heading">#</a></h3>
+<p>Named send endpoint. Broadcasts incoming values to every gReceive in the patcher whose dataName matches.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Value inlet — accepts bang / int / float / list.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>dataName</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>Name to broadcast on; matching gReceive nodes will emit the forwarded value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="switch">
+<h3><code class="docutils literal notranslate"><span class="pre">.switch</span></code><a class="headerlink" href="#switch" title="Link to this heading">#</a></h3>
+<p>Selector switch. Routes one of N value inlets to a single outlet, chosen by the index on inlet 0. The number of value inlets is set by the numInlets parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>select</p></td>
+<td><p>INT</p></td>
+<td><p>0+</p></td>
+<td><p>Index (0-based) of the value inlet to forward.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>in0</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Value inlet 0 — accepts bang / int / float / list.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>in1</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Value inlet 1 — accepts bang / int / float / list.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>—</p></td>
+<td><p>Forwarded value from the currently selected inlet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>numInlets</p></td>
+<td><p>2</p></td>
+<td><p>1+</p></td>
+<td><p>Number of value inlets (additional inlets are created by SetParams).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="line">
+<h3><code class="docutils literal notranslate"><span class="pre">~line</span></code><a class="headerlink" href="#line" title="Link to this heading">#</a></h3>
+<p>Linear-ramp generator. Ramps an audio-rate value toward a target over a given time in ms. The ‘stop’ message freezes the ramp at the current value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DSP (audio-rate)</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>target</p></td>
+<td><p>FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>Target value to ramp toward.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>time</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0+ ms</p></td>
+<td><p>Ramp duration in milliseconds.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BUFFER</p></td>
+<td><p>any float</p></td>
+<td><p>Audio-rate ramp output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>target</p></td>
+<td><p>0</p></td>
+<td><p>any float</p></td>
+<td><p>Initial target value.</p></td>
+</tr>
+<tr class="row-odd"><td><p>time</p></td>
+<td><p>0</p></td>
+<td><p>0+ ms</p></td>
+<td><p>Initial ramp time in milliseconds.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="gui-controls">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">GUI controls</a><a class="headerlink" href="#gui-controls" title="Link to this heading">#</a></h2>
+<section id="b">
+<h3><code class="docutils literal notranslate"><span class="pre">.b</span></code><a class="headerlink" href="#b" title="Link to this heading">#</a></h3>
+<p>Momentary button. Any input (bang/int/float) lights the button until the next GUI poll; emits a bang on every calculate tick.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>trigger</p></td>
+<td><p>FLOAT, INT, BANG</p></td>
+<td><p>—</p></td>
+<td><p>Press — bang/int/float all light the button.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>Bang emitted on every calculate tick.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="f">
+<h3><code class="docutils literal notranslate"><span class="pre">.f</span></code><a class="headerlink" href="#f" title="Link to this heading">#</a></h3>
+<p>Float number box. Stores a float; inlet 0 sets-and-fires (bang re-emits the current value), inlet 1 sets silently.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>set/bang</p></td>
+<td><p>FLOAT, INT, BANG</p></td>
+<td><p>any float</p></td>
+<td><p>Sets the value and emits it; bang re-emits the current value.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>silent set</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Silently updates the stored value without emitting.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>Current float value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>value</p></td>
+<td><p>0</p></td>
+<td><p>any float</p></td>
+<td><p>Initial value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="i">
+<h3><code class="docutils literal notranslate"><span class="pre">.i</span></code><a class="headerlink" href="#i" title="Link to this heading">#</a></h3>
+<p>Integer number box. Stores an int; inlet 0 sets-and-fires (bang re-emits the current value), inlet 1 sets silently.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>set/bang</p></td>
+<td><p>FLOAT, INT, BANG</p></td>
+<td><p>any int</p></td>
+<td><p>Sets the value and emits it; bang re-emits the current value.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>silent set</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any int</p></td>
+<td><p>Silently updates the stored value without emitting.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>INT</p></td>
+<td><p>any int</p></td>
+<td><p>Current integer value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>value</p></td>
+<td><p>0</p></td>
+<td><p>any int</p></td>
+<td><p>Initial value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="l">
+<h3><code class="docutils literal notranslate"><span class="pre">.l</span></code><a class="headerlink" href="#l" title="Link to this heading">#</a></h3>
+<p>Static list. Bang re-sends the stored list; list updates the stored payload.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>trigger/set</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Bang re-sends the stored list; list replaces it.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Stored list payload.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>message</p></td>
+<td><p>—</p></td>
+<td><p>any string</p></td>
+<td><p>Initial list payload.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="m">
+<h3><code class="docutils literal notranslate"><span class="pre">.m</span></code><a class="headerlink" href="#m" title="Link to this heading">#</a></h3>
+<p>Static message. Bang re-sends the stored message; list updates the stored payload.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>trigger/set</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Bang re-sends the stored message; list replaces it.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Stored message broadcast as a SetMessage.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>message</p></td>
+<td><p>—</p></td>
+<td><p>any string</p></td>
+<td><p>Initial message payload.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="slider">
+<h3><code class="docutils literal notranslate"><span class="pre">.slider</span></code><a class="headerlink" href="#slider" title="Link to this heading">#</a></h3>
+<p>Slider control. Stores a normalized float in [0, 1]; ints/floats are clamped on input. Emits the stored value on every calculate tick.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>set/bang</p></td>
+<td><p>FLOAT, INT, BANG</p></td>
+<td><p>0.0-1.0</p></td>
+<td><p>Sets the slider position; bang is a no-op trigger that still fires the output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0.0-1.0</p></td>
+<td><p>Current slider value (clamped to [0, 1]).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="t">
+<h3><code class="docutils literal notranslate"><span class="pre">.t</span></code><a class="headerlink" href="#t" title="Link to this heading">#</a></h3>
+<p>Latching on/off toggle. Int sets the state directly (0 = off, non-zero = on); bang flips it. Emits 0 or 1 every calculate tick.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>set/toggle</p></td>
+<td><p>INT, BANG</p></td>
+<td><p>0 or 1</p></td>
+<td><p>Int sets state (0 = off, !=0 = on); bang flips the current state.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>INT</p></td>
+<td><p>0 or 1</p></td>
+<td><p>Current state — 0 or 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="text">
+<h3><code class="docutils literal notranslate"><span class="pre">.text</span></code><a class="headerlink" href="#text" title="Link to this heading">#</a></h3>
+<p>Text label. Holds a string parameter for display; no inlets, no outlets — purely a visual annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>text</p></td>
+<td><p>—</p></td>
+<td><p>any string</p></td>
+<td><p>Label text.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="time">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Time</a><a class="headerlink" href="#time" title="Link to this heading">#</a></h2>
+<section id="metro">
+<h3><code class="docutils literal notranslate"><span class="pre">.metro</span></code><a class="headerlink" href="#metro" title="Link to this heading">#</a></h3>
+<p>Periodic bang generator. Once toggled on, emits a bang every ‘period’ milliseconds (and immediately on start). Toggle off to stop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>on/off</p></td>
+<td><p>INT</p></td>
+<td><p>0 or 1</p></td>
+<td><p>Non-zero int starts the metronome; 0 stops it.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>period</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>1+ ms</p></td>
+<td><p>Sets the bang interval in milliseconds.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>Periodic bang.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>period</p></td>
+<td><p>1000</p></td>
+<td><p>1+ ms</p></td>
+<td><p>Initial interval in milliseconds.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="midi">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">MIDI</a><a class="headerlink" href="#midi" title="Link to this heading">#</a></h2>
+<section id="channelpressure">
+<h3><code class="docutils literal notranslate"><span class="pre">.channelpressure</span></code><a class="headerlink" href="#channelpressure" title="Link to this heading">#</a></h3>
+<p>MIDI Channel Pressure (aftertouch) message generator. Emits a status/value MIDI packet on every value change.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pressure</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Aftertouch pressure value (also fires the output).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Encoded MIDI Channel Pressure message.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel offset (0-based).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="controlchange">
+<h3><code class="docutils literal notranslate"><span class="pre">.controlchange</span></code><a class="headerlink" href="#controlchange" title="Link to this heading">#</a></h3>
+<p>MIDI Control Change message generator. Emits a 3-byte status/controller/value packet on every value change.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Controller value (also fires the output).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Encoded MIDI Control Change message.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel offset (0-based).</p></td>
+</tr>
+<tr class="row-odd"><td><p>controller</p></td>
+<td><p>0</p></td>
+<td><p>0-127</p></td>
+<td><p>Controller number.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="midiout">
+<h3><code class="docutils literal notranslate"><span class="pre">.midiout</span></code><a class="headerlink" href="#midiout" title="Link to this heading">#</a></h3>
+<p>MIDI device output. Sends raw MIDI byte lists to the selected hardware port; understands ‘allnotesoff’, ‘reset’, ‘omni on/off’, ‘poly on/off’, and ‘local control on/off’ as control messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Raw MIDI byte list to send to the device.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>device-dependent</p></td>
+<td><p>Index of the output MIDI port.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="noteoff">
+<h3><code class="docutils literal notranslate"><span class="pre">.noteoff</span></code><a class="headerlink" href="#noteoff" title="Link to this heading">#</a></h3>
+<p>MIDI Note-Off message generator. Inlet 0 fires the message; emits a 3-byte status/pitch/velocity packet as a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>MIDI note number (also fires the output).</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Release velocity (stored until next pitch).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Encoded MIDI Note-Off message (status, pitch, velocity).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel offset (0-based).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="noteon">
+<h3><code class="docutils literal notranslate"><span class="pre">.noteon</span></code><a class="headerlink" href="#noteon" title="Link to this heading">#</a></h3>
+<p>MIDI Note-On message generator. Inlet 0 fires the message; emits a 3-byte status/pitch/velocity packet as a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>MIDI note number (also fires the output).</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Note velocity (stored until next pitch).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Encoded MIDI Note-On message (status, pitch, velocity).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel offset (0-based).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="polypressure">
+<h3><code class="docutils literal notranslate"><span class="pre">.polypressure</span></code><a class="headerlink" href="#polypressure" title="Link to this heading">#</a></h3>
+<p>MIDI Polyphonic Key Pressure message generator. Inlet 0 fires the message with the stored pressure value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>MIDI note number (also fires the output).</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>pressure</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Pressure value for the note (stored until next pitch).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Encoded MIDI Poly Key Pressure message.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel offset (0-based).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="programchange">
+<h3><code class="docutils literal notranslate"><span class="pre">.programchange</span></code><a class="headerlink" href="#programchange" title="Link to this heading">#</a></h3>
+<p>MIDI Program Change message generator. Emits a status/program packet on every value change.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Kind<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>program</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Program number (also fires the output).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Encoded MIDI Program Change message.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel offset (0-based).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="patcher.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Patcher</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="utils.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Utilities</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oscillators">Oscillators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#noise"><code class="docutils literal notranslate"><span class="pre">~noise</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#saw"><code class="docutils literal notranslate"><span class="pre">~saw</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sine"><code class="docutils literal notranslate"><span class="pre">~sine</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filters">Filters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bp"><code class="docutils literal notranslate"><span class="pre">~bp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hp"><code class="docutils literal notranslate"><span class="pre">~hp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lp"><code class="docutils literal notranslate"><span class="pre">~lp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vcf"><code class="docutils literal notranslate"><span class="pre">~vcf</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#math">Math</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">.*</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">.+</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><code class="docutils literal notranslate"><span class="pre">.-</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4"><code class="docutils literal notranslate"><span class="pre">./</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#counter"><code class="docutils literal notranslate"><span class="pre">.counter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ftom"><code class="docutils literal notranslate"><span class="pre">.ftom</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mtof"><code class="docutils literal notranslate"><span class="pre">.mtof</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#random"><code class="docutils literal notranslate"><span class="pre">.random</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5"><code class="docutils literal notranslate"><span class="pre">~*</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6"><code class="docutils literal notranslate"><span class="pre">~+</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7"><code class="docutils literal notranslate"><span class="pre">~-</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8"><code class="docutils literal notranslate"><span class="pre">~/</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generic-routing">Generic / routing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gate"><code class="docutils literal notranslate"><span class="pre">.gate</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#r"><code class="docutils literal notranslate"><span class="pre">.r</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#route"><code class="docutils literal notranslate"><span class="pre">.route</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#s"><code class="docutils literal notranslate"><span class="pre">.s</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switch"><code class="docutils literal notranslate"><span class="pre">.switch</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#line"><code class="docutils literal notranslate"><span class="pre">~line</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gui-controls">GUI controls</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b"><code class="docutils literal notranslate"><span class="pre">.b</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#f"><code class="docutils literal notranslate"><span class="pre">.f</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i"><code class="docutils literal notranslate"><span class="pre">.i</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#l"><code class="docutils literal notranslate"><span class="pre">.l</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#m"><code class="docutils literal notranslate"><span class="pre">.m</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#slider"><code class="docutils literal notranslate"><span class="pre">.slider</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#t"><code class="docutils literal notranslate"><span class="pre">.t</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#text"><code class="docutils literal notranslate"><span class="pre">.text</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#time">Time</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metro"><code class="docutils literal notranslate"><span class="pre">.metro</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midi">MIDI</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#channelpressure"><code class="docutils literal notranslate"><span class="pre">.channelpressure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#controlchange"><code class="docutils literal notranslate"><span class="pre">.controlchange</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#midiout"><code class="docutils literal notranslate"><span class="pre">.midiout</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#noteoff"><code class="docutils literal notranslate"><span class="pre">.noteoff</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#noteon"><code class="docutils literal notranslate"><span class="pre">.noteon</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#polypressure"><code class="docutils literal notranslate"><span class="pre">.polypressure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#programchange"><code class="docutils literal notranslate"><span class="pre">.programchange</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

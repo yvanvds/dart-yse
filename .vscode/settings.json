@@ -7,5 +7,6 @@
         "node_modules",
         "third_party"
     ],
-    "git.detectSubmodules": false
+    "git.detectSubmodules": false,
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}\\.docker-build\\yse\\compile_commands.json"
 }

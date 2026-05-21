@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- **API reference site.** New `docs/` tree builds a Sphinx site that
+  mirrors the upstream libYSE docs site (sphinx-book-theme, same
+  intro / tutorials / API layout) so contributors who already know
+  the C++ docs find their way. `tool/emit_api_rst.dart` walks the
+  classes re-exported from `lib/yse.dart` and emits one RST page per
+  class straight from each class's dartdoc comments — comments stay
+  the canonical source of truth, no separate documentation prose to
+  drift. The patcher object reference page is rendered at build time
+  from the upstream `patcher_objects.json` snapshot via the same
+  Jinja template the upstream docs use. A new
+  `.github/workflows/docs.yml` builds the site on every push to
+  `main` and publishes to `gh-pages`. (Closes #6.)
+
+
 - **Android support.** `library.dart` resolves `libyse.so` on Android via
   the Android linker (no path lookup — the `.so` is bundled into the
   host APK / AAB under `lib/<abi>/`). A new sibling Flutter plugin

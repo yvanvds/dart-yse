@@ -14,3 +14,7 @@ YSElog.txt
 # don't belong inside the yse package tarball.
 packages/
 example/android_sample/
+
+# Docs site sources and generated outputs — pub.dev renders dartdoc, so
+# the Sphinx site is only useful from the GitHub Pages deployment.
+docs/

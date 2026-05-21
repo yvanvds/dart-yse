@@ -60,3 +60,8 @@ packages/yse_flutter_libs/android/.gradle/
 packages/yse_flutter_libs/android/build/
 packages/yse_flutter_libs/android/.cxx/
 packages/yse_flutter_libs/.dart_tool/
+
+# Sphinx docs site (docs/) — generated outputs only; sources are committed.
+docs/build/
+docs/source/api/_generated/
+docs/source/api/patcher_objects.rst

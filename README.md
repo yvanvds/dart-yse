@@ -230,5 +230,9 @@ Eclipse Public License 2.0 — matches the upstream YSE license.
 
 ## Links
 
+- [API reference site](https://yvanvds.github.io/dart-yse/) — Sphinx
+  docs with tutorials, mental model, and the full Dart API. Built
+  from the dartdoc comments in `lib/`; see [docs/README.md](docs/README.md)
+  for the local build recipe.
 - [yse-soundengine](https://github.com/yvanvds/yse-soundengine) — the C++ engine this package wraps.
 - [Issue tracker](https://github.com/yvanvds/dart-yse/issues)

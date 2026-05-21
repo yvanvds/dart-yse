@@ -14,3 +14,7 @@ dev_dependencies:
   ffigen: ^20.1.1
   test: ^1.25.0
   lints: ^5.0.0
+  # tool/emit_api_rst.dart walks the public API surface to emit RST
+  # pages for the Sphinx docs site (docs/). Lexical analysis only —
+  # no type resolution — so we keep the dependency loose.
+  analyzer: ^7.0.0

@@ -39,6 +39,7 @@ export 'src/enums.dart'
         SweepShape;
 export 'src/exception.dart' show YseException;
 export 'src/listener.dart' show Listener;
+export 'src/live_coding.dart' show LiveCoding;
 export 'src/log.dart' show Log;
 export 'src/midi.dart'
     show MidiFile, MidiIn, MidiInParsedMessage, MidiInRawMessage, MidiOut;

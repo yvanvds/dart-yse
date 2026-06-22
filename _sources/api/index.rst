@@ -60,6 +60,7 @@ you can read both views of the API side by side. Look for the
    utils
    buffer_io
    log
+   live_coding
 
 .. toctree::
    :maxdepth: 1

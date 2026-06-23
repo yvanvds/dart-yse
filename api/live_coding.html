@@ -409,7 +409,12 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">LiveCoding</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">LiveCoding</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-live-coding-is">What live coding is</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-dependent-behaviour">Build-dependent behaviour</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-delivery-model">Error-delivery model</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">LiveCoding</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
@@ -432,8 +437,56 @@
 <p>Static façade over the engine’s embedded-CPython script API
 (<code class="docutils literal notranslate"><span class="pre">yse_python.h</span></code>). Submit scripts with <code class="xref py py-meth docutils literal notranslate"><span class="pre">LiveCoding.run()</span></code> and
 observe uncaught Python errors through the <code class="xref py py-attr docutils literal notranslate"><span class="pre">LiveCoding.errors</span></code>
-broadcast <code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code>. The interpreter is only present on a
-<code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_PYTHON=ON</span></code> build — query <code class="xref py py-attr docutils literal notranslate"><span class="pre">LiveCoding.enabled</span></code>.</p>
+broadcast <code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code>.</p>
+<section id="what-live-coding-is">
+<h2>What live coding is<a class="headerlink" href="#what-live-coding-is" title="Link to this heading">#</a></h2>
+<p>A <em>live-coding</em> script is a chunk of Python source you hand to the
+engine at runtime. Inside the interpreter the script drives the audio
+engine through the <code class="docutils literal notranslate"><span class="pre">yse</span></code> Python DSL — a small module of scheduling
+verbs that the embedded interpreter exposes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">yse.send</span></code> — push an event into the engine immediately.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yse.on</span></code> — register a callback to fire on a named engine event.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yse.schedule</span></code> — queue an action to run at a future beat / time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yse.tick</span></code> — advance the script’s logical clock by one step.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yse.cancel_all</span></code> — clear every pending scheduled action.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yse.fresh_scope</span></code> — reset the script namespace, discarding state
+accumulated by earlier submissions.</p></li>
+</ul>
+<p>A script is submitted with <code class="xref py py-meth docutils literal notranslate"><span class="pre">LiveCoding.run()</span></code>, which returns
+immediately — the engine takes its own copy of the source and evaluates
+it on its script thread. See <code class="docutils literal notranslate"><span class="pre">example/demo18_live_coding.dart</span></code> for an
+end-to-end submit-and-pump loop.</p>
+<p>The full Python-side DSL is owned by the upstream engine; this wrapper
+only marshals the source string in and the error text out. For the
+complete verb reference see the upstream live-coding epic,
+<a class="reference external" href="https://github.com/yvanvds/yse-soundengine/issues/119">yvanvds/yse-soundengine#119</a>.</p>
+</section>
+<section id="build-dependent-behaviour">
+<h2>Build-dependent behaviour<a class="headerlink" href="#build-dependent-behaviour" title="Link to this heading">#</a></h2>
+<p>The CPython interpreter is a compile-time option. Full functionality
+requires a library built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_PYTHON=ON</span></code>;
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">LiveCoding.enabled</span></code> reports which build you are running
+against and is safe to query regardless of engine state.</p>
+<p>On an <code class="docutils literal notranslate"><span class="pre">OFF</span></code> build the API stays callable — <code class="xref py py-meth docutils literal notranslate"><span class="pre">LiveCoding.run()</span></code>
+does not throw. Instead the engine <strong>synchronously</strong> emits the sentinel
+string <code class="docutils literal notranslate"><span class="pre">&quot;YSE</span> <span class="pre">compiled</span> <span class="pre">without</span> <span class="pre">YSE_ENABLE_PYTHON&quot;</span></code> through
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">LiveCoding.errors</span></code> from inside the <code class="docutils literal notranslate"><span class="pre">run</span></code> call itself.
+Subscribe to <code class="docutils literal notranslate"><span class="pre">errors</span></code> <em>before</em> calling <code class="docutils literal notranslate"><span class="pre">run</span></code> if you want to observe
+that sentinel.</p>
+</section>
+<section id="error-delivery-model">
+<h2>Error-delivery model<a class="headerlink" href="#error-delivery-model" title="Link to this heading">#</a></h2>
+<p>Uncaught Python exceptions and syntax errors do not surface from
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">LiveCoding.run()</span></code> (which has already returned). Instead the
+engine formats the traceback and delivers it on the thread that drives
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">System.update()</span></code> — the same isolate that called
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">System.init()</span></code>. Pump the update loop to receive queued
+tracebacks, which arrive as strings on the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">LiveCoding.errors</span></code> broadcast stream. The OFF-build sentinel
+above is the one exception: it fires synchronously during <code class="docutils literal notranslate"><span class="pre">run</span></code>
+rather than on a later <code class="docutils literal notranslate"><span class="pre">update</span></code>.</p>
+</section>
 </section>
 <section id="id1">
 <h1>LiveCoding<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
@@ -531,7 +584,12 @@ through [errors] (during [System].`update()`).</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">LiveCoding</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">LiveCoding</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-live-coding-is">What live coding is</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-dependent-behaviour">Build-dependent behaviour</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-delivery-model">Error-delivery model</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">LiveCoding</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>

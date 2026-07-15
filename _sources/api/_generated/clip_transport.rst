@@ -22,9 +22,9 @@ Threading (CLAUDE.md): construct and drive this from the [System] isolate.
 The audio thread performs the actual dispatch; MIDI sends run on a
 dedicated sender thread, so the audio callback never touches the device.
 
-The internal-synth sink (`yse_clip_connect_synth`) is intentionally not
-surfaced yet — it needs the `YSE::synth` wrapper tracked by epic #23 to
-supply a typed handle. It will be added alongside that wrapper.
+Route a clip to an internal [Synth] instead of (or alongside) external
+MIDI-out ports via [connectSynth] — the clip drives the synth's
+`noteOn` / `noteOff` from the audio thread.
 
 Constructors
 ------------
@@ -72,6 +72,20 @@ already have opened a port. May be called for several ports.
    void disconnectMidiOut(MidiOut out)
 
 Stop routing this clip to [out].
+
+.. code-block:: dart
+
+   void connectSynth(Synth synth)
+
+Route this clip's playback to an internal [synth]. The engine drives the
+synth's note events from the audio thread. [synth] must outlive the clip
+(or be disconnected first). May be called for several synths.
+
+.. code-block:: dart
+
+   void disconnectSynth(Synth synth)
+
+Stop routing this clip to [synth].
 
 .. code-block:: dart
 

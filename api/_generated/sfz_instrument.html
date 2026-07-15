@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LiveCoding &#8212; dart-yse 0.1</title>
+    <title>SfzInstrument &#8212; dart-yse 0.1</title>
   
   
   
@@ -43,7 +43,7 @@
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/live_coding';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/sfz_instrument';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -303,7 +303,7 @@
       
       
       
-      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/live_coding.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/sfz_instrument.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -333,7 +333,7 @@
       
       
       
-      <li><a href="../../_sources/api/_generated/live_coding.rst" target="_blank"
+      <li><a href="../../_sources/api/_generated/sfz_instrument.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -409,7 +409,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>LiveCoding</h1>
+    <h1>SfzInstrument</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -419,8 +419,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
             </nav>
         </div>
@@ -432,52 +433,60 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="livecoding">
-<h1>LiveCoding<a class="headerlink" href="#livecoding" title="Link to this heading">#</a></h1>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">LiveCoding</span>
+  <section id="sfzinstrument">
+<h1>SfzInstrument<a class="headerlink" href="#sfzinstrument" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">SfzInstrument</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Finalizable</span>
 </pre></div>
 </div>
-<p>Live-coding façade over the engine’s embedded-CPython script API.</p>
-<p>The C surface (<cite>yse_python.h</cite>) is a set of stateless globals — there is
-no native handle — so this is a thin static façade rather than a fetched
-singleton. Scripts are submitted with [run] and uncaught Python errors
-surface through the [errors] stream.</p>
-<p>The interpreter is only present on a <cite>YSE_ENABLE_PYTHON=ON</cite> build; query
-[enabled] to tell. On an OFF build [run] is still safe to call — the
-engine reports the missing feature through [errors] with a sentinel
-“compiled without” message.</p>
-<section id="static-accessors">
-<h2>Static accessors<a class="headerlink" href="#static-accessors" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">enabled</span>
+<p>A loadable SFZ sampler instrument (issue #23 / engine issue #174).</p>
+<p>A shareable, engine-lifetime-independent asset: a parsed SFZ region table
+plus the resident PCM it references. Load one from disk with
+[SfzInstrument.load], or synthesise a single-region instrument around one
+sample file with [SfzInstrument.fromSample]. Hand it to a synth’s sampler
+voice pool via [Synth.addSamplerVoices].</p>
+<p>The handle is reference-counted: a voice group that renders the instrument
+retains its own share, so it is safe to [dispose] this handle right after
+[Synth.addSamplerVoices] returns, and safe to hold or dispose it across
+[System] close. Loading decodes samples on the calling isolate (never the
+audio thread), so construct these off any latency-sensitive path.</p>
+<section id="constructors">
+<h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">SfzInstrument</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Compile-time feature query. True only when the library was built with
-<cite>YSE_ENABLE_PYTHON=ON</cite>. Safe to call regardless of engine state.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">Stream</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">errors</span>
+<p>Load and preload an <cite>.sfz</cite> file, decoding every unique sample into RAM.</p>
+<p>Throws [YseException] if the file is unreadable, empty, or has no
+playable region.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">SfzInstrument</span><span class="p">.</span><span class="n">fromSample</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">60</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">low</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">high</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">attack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.0</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">release</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">maxLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.0</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>Broadcast stream of formatted tracebacks from uncaught Python
-exceptions and syntax errors. The first subscription installs the
-engine error callback; the bridge is torn down when the last
-subscriber cancels (or the engine closes).</p>
-<p>Unlike [Log.messages], the traceback string is <strong>owned by the engine
-and valid only for the duration of the call</strong> — there is no free
-function. A <cite>NativeCallable.listener</cite> would copy the pointer and read
-it later, by which point it dangles. So this uses
-<cite>NativeCallable.isolateLocal</cite>: the closure runs synchronously inside
-the C call and copies the string with <cite>toDartString()</cite> before
-returning. Safe because the engine fires this callback on the thread
-that drives <cite>yse_system_update()</cite> — the main isolate.</p>
+<p>Build a one-region instrument around a single sample [file] without an
+<cite>.sfz</cite> text file.</p>
+<p>[root] is the key that plays the sample untransposed; [low] and [high]
+bound the playable key range. [attack] and [release] are the amplitude
+envelope times in seconds; [maxLength] caps a non-looping one-shot in
+seconds. [name] is an optional label used only for identification.</p>
+<p>Throws [YseException] if the sample is missing or unreadable.</p>
 </section>
-<section id="static-methods">
-<h2>Static methods<a class="headerlink" href="#static-methods" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">run</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">src</span><span class="p">)</span>
+<section id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isValid</span>
 </pre></div>
 </div>
-<p>Submit a UTF-8 [src] script for evaluation on the engine’s script
-thread. Returns immediately; the engine takes its own copy, so the
-marshalled buffer is freed on return. Uncaught errors arrive later
-through [errors] (during [System].`update()`).</p>
+<p>Whether the instrument is playable (a valid region table with at least
+one resident sample).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">YseSfzInstrument</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">handle</span>
+</pre></div>
+</div>
+<p>Raw native handle, for sibling wrappers within <cite>lib/src/</cite>
+(e.g. [Synth.addSamplerVoices]). Not part of the public API surface.</p>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Release the instrument. Idempotent; a double free is a logged no-op.</p>
 </section>
 </section>
 
@@ -510,8 +519,9 @@ through [errors] (during [System].`update()`).</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
   </nav></div>
 

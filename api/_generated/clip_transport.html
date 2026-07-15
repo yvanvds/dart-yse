@@ -190,6 +190,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../clip.html">Clip transport</a></li>
 
 
+<li class="toctree-l2"><a class="reference internal" href="../synth.html">Synth</a></li>
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../music.html">Music</a></li>
 
 
@@ -212,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
 
 
 
@@ -445,9 +451,9 @@ notes sounding across the swap), then [play] / [stop].</p>
 <p>Threading (CLAUDE.md): construct and drive this from the [System] isolate.
 The audio thread performs the actual dispatch; MIDI sends run on a
 dedicated sender thread, so the audio callback never touches the device.</p>
-<p>The internal-synth sink (<cite>yse_clip_connect_synth</cite>) is intentionally not
-surfaced yet — it needs the <cite>YSE::synth</cite> wrapper tracked by epic #23 to
-supply a typed handle. It will be added alongside that wrapper.</p>
+<p>Route a clip to an internal [Synth] instead of (or alongside) external
+MIDI-out ports via [connectSynth] — the clip drives the synth’s
+<cite>noteOn</cite> / <cite>noteOff</cite> from the audio thread.</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">ClipTransport</span><span class="p">(</span><span class="n">DomainClock</span><span class="w"> </span><span class="n">clock</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">MidiOut</span><span class="o">?</span><span class="w"> </span><span class="n">midiOut</span><span class="p">})</span>
@@ -482,6 +488,16 @@ already have opened a port. May be called for several ports.</p>
 </pre></div>
 </div>
 <p>Stop routing this clip to [out].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">connectSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Route this clip’s playback to an internal [synth]. The engine drives the
+synth’s note events from the audio thread. [synth] must outlive the clip
+(or be disconnected first). May be called for several synths.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">disconnectSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Stop routing this clip to [synth].</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setEvents</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">ClipEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">loopBeats</span><span class="p">})</span>
 </pre></div>
 </div>

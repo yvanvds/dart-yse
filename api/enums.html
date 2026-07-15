@@ -189,6 +189,11 @@
 <li class="toctree-l2"><a class="reference internal" href="clip.html">Clip transport</a></li>
 
 
+<li class="toctree-l2"><a class="reference internal" href="synth.html">Synth</a></li>
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="music.html">Music</a></li>
 
 
@@ -211,6 +216,7 @@
 <li class="toctree-l2"><a class="reference internal" href="live_coding.html">LiveCoding</a></li>
 
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Enums</a></li>
+
 
 
 
@@ -425,34 +431,40 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-sweepshape">enum SweepShape</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-vawaveform">enum VaWaveform</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-loglevel">enum LogLevel</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-sweepshape">enum SweepShape</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-outtype">enum OutType</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-loglevel">enum LogLevel</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-delaytap">enum DelayTap</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-outtype">enum OutType</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-reverbpreset">enum ReverbPreset</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-delaytap">enum DelayTap</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-reverbpreset">enum ReverbPreset</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">Values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Properties</a></li>
 </ul>
 </li>
 </ul>
@@ -554,26 +566,75 @@ the underlying C enum.</p>
 </div>
 </section>
 </section>
+<section id="enum-vawaveform">
+<h1>enum VaWaveform<a class="headerlink" href="#enum-vawaveform" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">VaWaveform</span>
+</pre></div>
+</div>
+<p>Oscillator waveform for a synth’s virtual-analog voice
+([Synth.setVaOscWave]).</p>
+<p>Values match <cite>YSE::SYNTH::VA_WAVEFORM</cite> (see <cite>synth/vaVoice.hpp</cite>).</p>
+<section id="id4">
+<h2>Values<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p id="va-waveform-saw"><code class="docutils literal notranslate"><span class="pre">saw</span></code></p>
+<blockquote>
+<div><p>Band-limited sawtooth.</p>
+</div></blockquote>
+<p id="va-waveform-pulse"><code class="docutils literal notranslate"><span class="pre">pulse</span></code></p>
+<blockquote>
+<div><p>Band-limited pulse with variable width (PWM).</p>
+</div></blockquote>
+<p id="va-waveform-triangle"><code class="docutils literal notranslate"><span class="pre">triangle</span></code></p>
+<blockquote>
+<div><p>Band-limited triangle.</p>
+</div></blockquote>
+<p id="va-waveform-sine"><code class="docutils literal notranslate"><span class="pre">sine</span></code></p>
+<blockquote>
+<div><p>Sine.</p>
+</div></blockquote>
+<p id="va-waveform-noise"><code class="docutils literal notranslate"><span class="pre">noise</span></code></p>
+<blockquote>
+<div><p>White noise.</p>
+</div></blockquote>
+<p id="va-waveform-wavetable"><code class="docutils literal notranslate"><span class="pre">wavetable</span></code></p>
+<blockquote>
+<div><p>Morph across the wavetable bank (see [Synth.loadVaWavetable]).</p>
+</div></blockquote>
+</section>
+<section id="id5">
+<h2>Constructors<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">VaWaveform</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>Properties<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseVaWaveform</span><span class="w"> </span><span class="kd">native</span>
+</pre></div>
+</div>
+<p>The raw FFI enum value passed to the C ABI.</p>
+</section>
+</section>
 <section id="enum-sweepshape">
 <h1>enum SweepShape<a class="headerlink" href="#enum-sweepshape" title="Link to this heading">#</a></h1>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">SweepShape</span>
 </pre></div>
 </div>
 <p>LFO shape used by the [DspObject.sweep] constructor.</p>
-<section id="id4">
-<h2>Values<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>Values<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p id="sweep-shape-triangle"><code class="docutils literal notranslate"><span class="pre">triangle</span></code></p>
 <p id="sweep-shape-saw"><code class="docutils literal notranslate"><span class="pre">saw</span></code></p>
 <p id="sweep-shape-square"><code class="docutils literal notranslate"><span class="pre">square</span></code></p>
 </section>
-<section id="id5">
-<h2>Constructors<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>Constructors<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">SweepShape</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id6">
-<h2>Properties<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>Properties<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseDspSweepShape</span><span class="w"> </span><span class="kd">native</span>
 </pre></div>
 </div>
@@ -586,21 +647,21 @@ the underlying C enum.</p>
 </div>
 <p>Log-level filter for [Log].</p>
 <p>Values match <cite>YSE::ERROR_LEVEL</cite>.</p>
-<section id="id7">
-<h2>Values<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h2>Values<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <p id="log-level-none"><code class="docutils literal notranslate"><span class="pre">none</span></code></p>
 <p id="log-level-error"><code class="docutils literal notranslate"><span class="pre">error</span></code></p>
 <p id="log-level-warning"><code class="docutils literal notranslate"><span class="pre">warning</span></code></p>
 <p id="log-level-debug"><code class="docutils literal notranslate"><span class="pre">debug</span></code></p>
 </section>
-<section id="id8">
-<h2>Constructors<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id11">
+<h2>Constructors<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">LogLevel</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id9">
-<h2>Properties<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h2>Properties<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseErrorLevel</span><span class="w"> </span><span class="kd">native</span>
 </pre></div>
 </div>
@@ -613,8 +674,8 @@ the underlying C enum.</p>
 </div>
 <p>Data type produced by a patcher outlet ([PHandle.outputDataType]).</p>
 <p>Values match <cite>YSE::OUT_TYPE</cite>.</p>
-<section id="id10">
-<h2>Values<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h2>Values<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p id="out-type-invalid"><code class="docutils literal notranslate"><span class="pre">invalid</span></code></p>
 <p id="out-type-bang"><code class="docutils literal notranslate"><span class="pre">bang</span></code></p>
 <p id="out-type-float"><code class="docutils literal notranslate"><span class="pre">float</span></code></p>
@@ -623,14 +684,14 @@ the underlying C enum.</p>
 <p id="out-type-list"><code class="docutils literal notranslate"><span class="pre">list</span></code></p>
 <p id="out-type-any"><code class="docutils literal notranslate"><span class="pre">any</span></code></p>
 </section>
-<section id="id11">
-<h2>Constructors<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<section id="id14">
+<h2>Constructors<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">OutType</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id12">
-<h2>Properties<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<section id="id15">
+<h2>Properties<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseOutType</span><span class="w"> </span><span class="kd">native</span>
 </pre></div>
 </div>
@@ -643,20 +704,20 @@ the underlying C enum.</p>
 </div>
 <p>One of the three delay taps on a [DspObject.basicDelay] (and its
 filtered subclasses).</p>
-<section id="id13">
-<h2>Values<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<section id="id16">
+<h2>Values<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
 <p id="delay-tap-first"><code class="docutils literal notranslate"><span class="pre">first</span></code></p>
 <p id="delay-tap-second"><code class="docutils literal notranslate"><span class="pre">second</span></code></p>
 <p id="delay-tap-third"><code class="docutils literal notranslate"><span class="pre">third</span></code></p>
 </section>
-<section id="id14">
-<h2>Constructors<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<section id="id17">
+<h2>Constructors<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">DelayTap</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id15">
-<h2>Properties<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<section id="id18">
+<h2>Properties<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseDspDelayTap</span><span class="w"> </span><span class="kd">native</span>
 </pre></div>
 </div>
@@ -669,8 +730,8 @@ filtered subclasses).</p>
 </div>
 <p>Named reverb-tail presets for [Reverb.preset].</p>
 <p>Values match <cite>YSE::REVERB_PRESET</cite>.</p>
-<section id="id16">
-<h2>Values<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<section id="id19">
+<h2>Values<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
 <p id="reverb-preset-off"><code class="docutils literal notranslate"><span class="pre">off</span></code></p>
 <p id="reverb-preset-generic"><code class="docutils literal notranslate"><span class="pre">generic</span></code></p>
 <p id="reverb-preset-padded"><code class="docutils literal notranslate"><span class="pre">padded</span></code></p>
@@ -683,14 +744,14 @@ filtered subclasses).</p>
 <p id="reverb-preset-sewerpipe"><code class="docutils literal notranslate"><span class="pre">sewerpipe</span></code></p>
 <p id="reverb-preset-underwater"><code class="docutils literal notranslate"><span class="pre">underwater</span></code></p>
 </section>
-<section id="id17">
-<h2>Constructors<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<section id="id20">
+<h2>Constructors<a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ReverbPreset</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id18">
-<h2>Properties<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
+<section id="id21">
+<h2>Properties<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseReverbPreset</span><span class="w"> </span><span class="kd">native</span>
 </pre></div>
 </div>
@@ -749,34 +810,40 @@ filtered subclasses).</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-sweepshape">enum SweepShape</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-vawaveform">enum VaWaveform</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-loglevel">enum LogLevel</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-sweepshape">enum SweepShape</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-outtype">enum OutType</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-loglevel">enum LogLevel</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-delaytap">enum DelayTap</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-outtype">enum OutType</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Properties</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-reverbpreset">enum ReverbPreset</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-delaytap">enum DelayTap</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-reverbpreset">enum ReverbPreset</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">Values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Properties</a></li>
 </ul>
 </li>
 </ul>

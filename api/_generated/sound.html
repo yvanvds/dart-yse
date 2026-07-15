@@ -190,6 +190,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../clip.html">Clip transport</a></li>
 
 
+<li class="toctree-l2"><a class="reference internal" href="../synth.html">Synth</a></li>
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../music.html">Music</a></li>
 
 
@@ -212,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
 
 
 
@@ -462,6 +468,18 @@ output on every audio callback.</p>
 thread reads from it on every callback. Keep a Dart reference to the
 buffer for as long as the sound exists; don’t <cite>.dispose()</cite> the
 buffer before disposing the sound.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Channel</span><span class="o">?</span><span class="w"> </span><span class="n">channel</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Construct a positioned sound that renders a [Synth]’s voice pool.</p>
+<p>Mirrors the engine’s <cite>YSE::sound::create(synth&amp;, channel*, volume)</cite>: the
+sound supplies the single 3D position, [channel] routing and master
+play/stop intent for every voice. Build the synth’s voices (with its
+<cite>add*Voices</cite> methods) before constructing this sound.</p>
+<p><strong>Lifetime contract:</strong> [synth] must outlive this sound — the audio thread
+renders its voices on every callback. Dispose this sound before the
+synth. Pass <cite>null</cite> for [channel] to route through the master mix.</p>
+<p>Throws [YseException] if the sound cannot be created.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>

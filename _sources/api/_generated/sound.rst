@@ -48,6 +48,23 @@ thread reads from it on every callback. Keep a Dart reference to the
 buffer for as long as the sound exists; don't `.dispose()` the
 buffer before disposing the sound.
 
+.. code-block:: dart
+
+   factory Sound.fromSynth(Synth synth, {Channel? channel, double volume = 1.0})
+
+Construct a positioned sound that renders a [Synth]'s voice pool.
+
+Mirrors the engine's `YSE::sound::create(synth&, channel*, volume)`: the
+sound supplies the single 3D position, [channel] routing and master
+play/stop intent for every voice. Build the synth's voices (with its
+`add*Voices` methods) before constructing this sound.
+
+**Lifetime contract:** [synth] must outlive this sound — the audio thread
+renders its voices on every callback. Dispose this sound before the
+synth. Pass `null` for [channel] to route through the master mix.
+
+Throws [YseException] if the sound cannot be created.
+
 Properties
 ----------
 

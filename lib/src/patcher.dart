@@ -318,3 +318,282 @@ class PHandle {
         bindings.phandle_set_gui_property(_handle, keyPtr.cast(), valPtr.cast());
       });
 }
+
+/// Reads an engine-owned `const char*` into a Dart string.
+///
+/// The registry metadata getters hand back pointers into engine storage
+/// whose lifetime is the whole process — they must **not** be freed. A
+/// NULL pointer (unknown lookup, skipped field) decodes to the empty
+/// string.
+String _ownedString(Pointer<Char> p) =>
+    p.address == 0 ? '' : p.cast<Utf8>().toDartString();
+
+/// Read-only registry of every patcher object type the engine knows about.
+///
+/// The registry is the introspection surface behind the engine's own
+/// patcher reference: it enumerates the object types
+/// [Patcher.createObject] accepts and, per type, the documentation
+/// metadata (description, category, and the inlet / outlet / parameter
+/// schema). Use it to build a node palette or generate documentation
+/// without hard-coding the catalogue.
+///
+/// All members are static; there is a single process-wide registry.
+///
+/// Threading: main-thread only, and **not** real-time safe — never call
+/// from the audio callback (CLAUDE.md Boundaries). The engine builds its
+/// metadata cache lazily on the first call and keeps it for the life of
+/// the process.
+class PatcherRegistry {
+  PatcherRegistry._();
+
+  /// Number of registered object types.
+  static int get typeCount => bindings.patcher_get_type_count();
+
+  /// Type identifier at [index] in the registry (0-based, lexicographic).
+  ///
+  /// Returns the empty string when [index] is out of range.
+  static String typeNameAt(int index) =>
+      _ownedString(bindings.patcher_get_type_name(index));
+
+  /// Every registered type identifier, in registry (lexicographic) order.
+  static List<String> typeNames() =>
+      [for (var i = 0; i < typeCount; i++) typeNameAt(i)];
+
+  /// Metadata handle for [typeName], or `null` if the registry has no such
+  /// type. Compare against [Obj] constants, e.g. `PatcherRegistry.type(Obj.dSine)`.
+  static PatcherObjectType? type(String typeName) {
+    for (var i = 0; i < typeCount; i++) {
+      if (typeNameAt(i) == typeName) return PatcherObjectType._(typeName);
+    }
+    return null;
+  }
+
+  /// Every registered type as a metadata handle, in registry order.
+  static List<PatcherObjectType> types() =>
+      [for (final n in typeNames()) PatcherObjectType._(n)];
+
+  /// A fresh JSON snapshot of every registered object's full metadata.
+  ///
+  /// The engine allocates the buffer per call; this getter releases it
+  /// through `yse_free_string` before returning, so no native memory
+  /// leaks. Returns the empty string if the engine reports an allocation
+  /// failure.
+  static String metadataJson() {
+    final ptr = bindings.patcher_get_metadata_json();
+    if (ptr.address == 0) return '';
+    try {
+      return ptr.cast<Utf8>().toDartString();
+    } finally {
+      bindings.free_string(ptr);
+    }
+  }
+}
+
+/// Read-only metadata for one registered patcher object type.
+///
+/// Obtain one from [PatcherRegistry.type] / [PatcherRegistry.types]. Every
+/// accessor reads live from the engine registry; the strings returned are
+/// copied out of engine-owned storage (never freed by the caller).
+class PatcherObjectType {
+  /// The type identifier (matches one of the [Obj] constants).
+  final String name;
+
+  PatcherObjectType._(this.name);
+
+  /// One-line human-readable description of the object.
+  String get description => using((arena) {
+        final namePtr = name.toNativeUtf8(allocator: arena);
+        return _ownedString(bindings.patcher_get_type_description(namePtr.cast()));
+      });
+
+  /// Documentation category the object is filed under.
+  PCategory get category => using((arena) {
+        final namePtr = name.toNativeUtf8(allocator: arena);
+        return PCategory.fromNative(
+          bindings.patcher_get_type_category(namePtr.cast()),
+        );
+      });
+
+  /// Whether this is a DSP / audio-rate object (the `~` prefix convention).
+  bool get isDsp => using((arena) {
+        final namePtr = name.toNativeUtf8(allocator: arena);
+        return bindings.patcher_get_type_is_dsp(namePtr.cast()) != 0;
+      });
+
+  /// Number of inlets on this object type.
+  int get inletCount => using((arena) {
+        final namePtr = name.toNativeUtf8(allocator: arena);
+        return bindings.patcher_get_inlet_count(namePtr.cast());
+      });
+
+  /// Number of outlets on this object type.
+  int get outletCount => using((arena) {
+        final namePtr = name.toNativeUtf8(allocator: arena);
+        return bindings.patcher_get_outlet_count(namePtr.cast());
+      });
+
+  /// Number of creation parameters this object type documents.
+  int get paramCount => using((arena) {
+        final namePtr = name.toNativeUtf8(allocator: arena);
+        return bindings.patcher_get_param_count(namePtr.cast());
+      });
+
+  /// Metadata for the inlet at [idx] (0-based).
+  PatcherInlet inletAt(int idx) => using((arena) {
+        final namePtr = name.toNativeUtf8(allocator: arena);
+        final label = arena<Pointer<Char>>();
+        final doc = arena<Pointer<Char>>();
+        final range = arena<Pointer<Char>>();
+        final accepts = arena<UnsignedInt>();
+        bindings.patcher_get_inlet_info(
+          namePtr.cast(),
+          idx,
+          label,
+          doc,
+          range,
+          accepts,
+        );
+        return PatcherInlet._(
+          label: _ownedString(label.value),
+          doc: _ownedString(doc.value),
+          range: _ownedString(range.value),
+          accepts: InletAccepts.fromBitmask(accepts.value),
+        );
+      });
+
+  /// Metadata for every inlet, in order.
+  List<PatcherInlet> inlets() =>
+      [for (var i = 0; i < inletCount; i++) inletAt(i)];
+
+  /// Metadata for the outlet at [idx] (0-based).
+  PatcherOutlet outletAt(int idx) => using((arena) {
+        final namePtr = name.toNativeUtf8(allocator: arena);
+        final label = arena<Pointer<Char>>();
+        final doc = arena<Pointer<Char>>();
+        final range = arena<Pointer<Char>>();
+        final type = arena<UnsignedInt>();
+        bindings.patcher_get_outlet_info(
+          namePtr.cast(),
+          idx,
+          label,
+          doc,
+          range,
+          type,
+        );
+        return PatcherOutlet._(
+          label: _ownedString(label.value),
+          doc: _ownedString(doc.value),
+          range: _ownedString(range.value),
+          type: OutType.fromNative(YseOutType.fromValue(type.value)),
+        );
+      });
+
+  /// Metadata for every outlet, in order.
+  List<PatcherOutlet> outlets() =>
+      [for (var i = 0; i < outletCount; i++) outletAt(i)];
+
+  /// Metadata for the creation parameter at [idx] (0-based).
+  PatcherParam paramAt(int idx) => using((arena) {
+        final namePtr = name.toNativeUtf8(allocator: arena);
+        final pName = arena<Pointer<Char>>();
+        final doc = arena<Pointer<Char>>();
+        final defaultValue = arena<Pointer<Char>>();
+        final range = arena<Pointer<Char>>();
+        bindings.patcher_get_param_info(
+          namePtr.cast(),
+          idx,
+          pName,
+          doc,
+          defaultValue,
+          range,
+        );
+        return PatcherParam._(
+          name: _ownedString(pName.value),
+          doc: _ownedString(doc.value),
+          defaultValue: _ownedString(defaultValue.value),
+          range: _ownedString(range.value),
+        );
+      });
+
+  /// Metadata for every creation parameter, in order.
+  List<PatcherParam> params() =>
+      [for (var i = 0; i < paramCount; i++) paramAt(i)];
+
+  @override
+  String toString() => 'PatcherObjectType($name)';
+}
+
+/// Documentation for one inlet of a [PatcherObjectType].
+class PatcherInlet {
+  /// Short inlet label (e.g. `freq`).
+  final String label;
+
+  /// Longer human-readable description.
+  final String doc;
+
+  /// Documented value range (free-form text, may be empty).
+  final String range;
+
+  /// The set of message kinds this inlet accepts.
+  final Set<InletAccepts> accepts;
+
+  PatcherInlet._({
+    required this.label,
+    required this.doc,
+    required this.range,
+    required this.accepts,
+  });
+
+  @override
+  String toString() => 'PatcherInlet($label, accepts: $accepts)';
+}
+
+/// Documentation for one outlet of a [PatcherObjectType].
+class PatcherOutlet {
+  /// Short outlet label (e.g. `out`).
+  final String label;
+
+  /// Longer human-readable description.
+  final String doc;
+
+  /// Documented value range (free-form text, may be empty).
+  final String range;
+
+  /// The data type this outlet emits.
+  final OutType type;
+
+  PatcherOutlet._({
+    required this.label,
+    required this.doc,
+    required this.range,
+    required this.type,
+  });
+
+  @override
+  String toString() => 'PatcherOutlet($label, type: $type)';
+}
+
+/// Documentation for one creation parameter of a [PatcherObjectType].
+class PatcherParam {
+  /// Parameter name (e.g. `frequency`).
+  final String name;
+
+  /// Longer human-readable description.
+  final String doc;
+
+  /// Documented default value (free-form text, may be empty).
+  final String defaultValue;
+
+  /// Documented value range (free-form text, may be empty).
+  final String range;
+
+  PatcherParam._({
+    required this.name,
+    required this.doc,
+    required this.defaultValue,
+    required this.range,
+  });
+
+  @override
+  String toString() => 'PatcherParam($name, default: $defaultValue)';
+}

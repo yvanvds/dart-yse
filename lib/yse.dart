@@ -28,11 +28,21 @@ export 'src/channel.dart' show Channel;
 export 'src/clip.dart' show ClipEvent, ClipTransport;
 export 'src/device.dart' show Device, DeviceSetup;
 export 'src/dsp_buffer.dart' show DspBuffer;
-export 'src/dsp_object.dart' show DspObject;
+export 'src/dsp_object.dart'
+    show
+        Chorus,
+        Compressor,
+        DspObject,
+        FeedbackDelay,
+        ParametricEq,
+        PlateReverb;
 export 'src/enums.dart'
     show
         ChannelType,
+        ChorusMode,
+        CompressorDetector,
         DelayTap,
+        EqBand,
         LfoType,
         LogLevel,
         OutType,

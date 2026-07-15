@@ -146,6 +146,13 @@ class DspObject implements Finalizable {
       case _DspKind.sweep:
       case _DspKind.basicDelay:
       case _DspKind.granulator:
+      // Mix-grade modules expose their own typed frequency accessors
+      // ([ParametricEq.setFrequency] is per-band; the rest have none).
+      case _DspKind.compressor:
+      case _DspKind.eq:
+      case _DspKind.chorus:
+      case _DspKind.plateReverb:
+      case _DspKind.feedbackDelay:
         throw YseException('frequency getter not supported for $_kind');
     }
   }
@@ -163,6 +170,11 @@ class DspObject implements Finalizable {
       case _DspKind.sweep:
       case _DspKind.basicDelay:
       case _DspKind.granulator:
+      case _DspKind.compressor:
+      case _DspKind.eq:
+      case _DspKind.chorus:
+      case _DspKind.plateReverb:
+      case _DspKind.feedbackDelay:
         throw YseException('frequency setter not supported for $_kind');
     }
   }
@@ -224,10 +236,18 @@ class DspObject implements Finalizable {
   void setGrainLength({required int samples, int random = 0}) =>
       _b.dsp_granulator_set_grain_length(_handle, samples, random);
 
+  /// Granulator: the base grain length in samples (the [samples] argument
+  /// last passed to [setGrainLength], without the per-grain randomisation).
+  int get grainLength => _b.dsp_granulator_get_grain_length(_handle);
+
   /// Granulator: pitch shift (1.0 = unchanged, 2.0 = octave up).
   /// [random] adds variation.
   void setGrainTranspose({required double pitch, double random = 0}) =>
       _b.dsp_granulator_set_grain_transpose(_handle, pitch, random);
+
+  /// Granulator: the base pitch shift (the [pitch] argument last passed to
+  /// [setGrainTranspose], without the per-grain randomisation).
+  double get grainTranspose => _b.dsp_granulator_get_grain_transpose(_handle);
 
   /// Granulator: output gain.
   double get grainGain => _b.dsp_granulator_get_gain(_handle);
@@ -242,8 +262,206 @@ class DspObject implements Finalizable {
   }
 }
 
+/// Feed-forward, stereo-linked dynamics compressor — a mix-grade
+/// [DspObject] for a channel insert or a send return.
+///
+/// Attach with `Channel.dsp` or [Sound.setDsp]; the inherited [impact]
+/// controls the wet/dry balance and [bypass] the compression. All setters
+/// take effect immediately; the engine ramps the internal gain to keep
+/// moves click-free.
+class Compressor extends DspObject {
+  Compressor._(Pointer<YseDspObject> handle)
+      : super._(bindings, handle, _DspKind.compressor);
+
+  /// Construct a compressor with the engine's default curve.
+  factory Compressor() => Compressor._(
+        _created(bindings.dsp_compressor_create(), 'yse_dsp_compressor_create'),
+      );
+
+  /// Level-detector mode (peak vs. RMS).
+  CompressorDetector get detector => CompressorDetector.values.firstWhere(
+        (e) => e.native == _b.dsp_compressor_get_detector(_handle),
+        orElse: () => CompressorDetector.peak,
+      );
+  set detector(CompressorDetector value) =>
+      _b.dsp_compressor_set_detector(_handle, value.native);
+
+  /// Threshold in dB below which no gain reduction is applied.
+  double get threshold => _b.dsp_compressor_get_threshold(_handle);
+  set threshold(double db) => _b.dsp_compressor_set_threshold(_handle, db);
+
+  /// Compression ratio (e.g. 4.0 is 4:1). 1.0 is no compression.
+  double get ratio => _b.dsp_compressor_get_ratio(_handle);
+  set ratio(double value) => _b.dsp_compressor_set_ratio(_handle, value);
+
+  /// Attack time in milliseconds.
+  double get attack => _b.dsp_compressor_get_attack(_handle);
+  set attack(double ms) => _b.dsp_compressor_set_attack(_handle, ms);
+
+  /// Release time in milliseconds.
+  double get release => _b.dsp_compressor_get_release(_handle);
+  set release(double ms) => _b.dsp_compressor_set_release(_handle, ms);
+
+  /// Make-up gain in dB applied after compression.
+  double get makeup => _b.dsp_compressor_get_makeup(_handle);
+  set makeup(double db) => _b.dsp_compressor_set_makeup(_handle, db);
+
+  /// Read-only meter: the gain reduction (in dB, `<= 0`) applied to the last
+  /// processed sample.
+  double get gainReductionDb =>
+      _b.dsp_compressor_get_gain_reduction_db(_handle);
+}
+
+/// Four-band parametric EQ (low shelf, two peaks, high shelf) — a mix-grade
+/// [DspObject] for a channel insert or a send return.
+///
+/// Every parameter is addressed by an [EqBand]; a band with 0 dB [getGain]
+/// is flat (bypassed). Attach with `Channel.dsp` or [Sound.setDsp].
+class ParametricEq extends DspObject {
+  ParametricEq._(Pointer<YseDspObject> handle)
+      : super._(bindings, handle, _DspKind.eq);
+
+  /// Construct a flat four-band parametric EQ.
+  factory ParametricEq() =>
+      ParametricEq._(_created(bindings.dsp_eq_create(), 'yse_dsp_eq_create'));
+
+  /// Centre/corner frequency of [band] in Hz.
+  double getFrequency(EqBand band) =>
+      _b.dsp_eq_get_frequency(_handle, band.native);
+
+  /// Set the centre/corner frequency of [band] to [hz].
+  void setFrequency(EqBand band, double hz) =>
+      _b.dsp_eq_set_frequency(_handle, band.native, hz);
+
+  /// Gain of [band] in dB (0 = flat / band bypass).
+  double getGain(EqBand band) => _b.dsp_eq_get_gain(_handle, band.native);
+
+  /// Set the gain of [band] to [db] (0 = flat / band bypass).
+  void setGain(EqBand band, double db) =>
+      _b.dsp_eq_set_gain(_handle, band.native, db);
+
+  /// Q (bandwidth) of [band].
+  double getQ(EqBand band) => _b.dsp_eq_get_q(_handle, band.native);
+
+  /// Set the Q (bandwidth) of [band] to [value].
+  void setQ(EqBand band, double value) =>
+      _b.dsp_eq_set_q(_handle, band.native, value);
+}
+
+/// Chorus / flanger — one modulated-delay [DspObject] with a [mode] switch,
+/// for a channel insert or a send return.
+///
+/// [spread] fans a per-channel LFO phase offset for stereo width. Attach
+/// with `Channel.dsp` or [Sound.setDsp]; the inherited [impact] sets the
+/// wet/dry balance.
+class Chorus extends DspObject {
+  Chorus._(Pointer<YseDspObject> handle)
+      : super._(bindings, handle, _DspKind.chorus);
+
+  /// Construct a chorus module (defaults to [ChorusMode.chorus]).
+  factory Chorus() =>
+      Chorus._(_created(bindings.dsp_chorus_create(), 'yse_dsp_chorus_create'));
+
+  /// Chorus vs. flanger character.
+  ChorusMode get mode => ChorusMode.values.firstWhere(
+        (e) => e.native == _b.dsp_chorus_get_mode(_handle),
+        orElse: () => ChorusMode.chorus,
+      );
+  set mode(ChorusMode value) => _b.dsp_chorus_set_mode(_handle, value.native);
+
+  /// LFO rate in Hz.
+  double get rate => _b.dsp_chorus_get_rate(_handle);
+  set rate(double hz) => _b.dsp_chorus_set_rate(_handle, hz);
+
+  /// Modulation depth.
+  double get depth => _b.dsp_chorus_get_depth(_handle);
+  set depth(double value) => _b.dsp_chorus_set_depth(_handle, value);
+
+  /// Feedback amount (comb resonance; most audible in flanger mode).
+  double get feedback => _b.dsp_chorus_get_feedback(_handle);
+  set feedback(double value) => _b.dsp_chorus_set_feedback(_handle, value);
+
+  /// Stereo spread — the per-channel LFO phase offset.
+  double get spread => _b.dsp_chorus_get_spread(_handle);
+  set spread(double value) => _b.dsp_chorus_set_spread(_handle, value);
+}
+
+/// Dattorro plate reverb — a mix-grade [DspObject] for a channel insert or a
+/// send return.
+///
+/// Distinct from the engine's global spatial [Reverb]. `impact(0.25)` is a
+/// natural insert mix; `impact(1)` is fully wet for send-return use. Attach
+/// with `Channel.dsp` or [Sound.setDsp].
+class PlateReverb extends DspObject {
+  PlateReverb._(Pointer<YseDspObject> handle)
+      : super._(bindings, handle, _DspKind.plateReverb);
+
+  /// Construct a plate reverb with the engine's default tail.
+  factory PlateReverb() => PlateReverb._(
+        _created(
+          bindings.dsp_plate_reverb_create(),
+          'yse_dsp_plate_reverb_create',
+        ),
+      );
+
+  /// Tail decay (feedback) in `[0.0, 1.0)`.
+  double get decay => _b.dsp_plate_reverb_get_decay(_handle);
+  set decay(double value) => _b.dsp_plate_reverb_set_decay(_handle, value);
+
+  /// High-frequency damping corner in Hz.
+  double get damping => _b.dsp_plate_reverb_get_damping(_handle);
+  set damping(double hz) => _b.dsp_plate_reverb_set_damping(_handle, hz);
+
+  /// Pre-delay before the tail begins, in milliseconds.
+  double get predelay => _b.dsp_plate_reverb_get_predelay(_handle);
+  set predelay(double ms) => _b.dsp_plate_reverb_set_predelay(_handle, ms);
+}
+
+/// Recirculating feedback delay — a mix-grade [DspObject] for a channel
+/// insert or a send return.
+///
+/// A per-channel delay line with a damping low-pass in the feedback path and
+/// [crossfeed] between channel pairs for ping-pong echoes. `impact(1)` is
+/// echoes-only (send use). Attach with `Channel.dsp` or [Sound.setDsp].
+class FeedbackDelay extends DspObject {
+  FeedbackDelay._(Pointer<YseDspObject> handle)
+      : super._(bindings, handle, _DspKind.feedbackDelay);
+
+  /// Construct a feedback delay with the engine's default timing.
+  factory FeedbackDelay() => FeedbackDelay._(
+        _created(
+          bindings.dsp_feedback_delay_create(),
+          'yse_dsp_feedback_delay_create',
+        ),
+      );
+
+  /// Delay time in milliseconds.
+  double get time => _b.dsp_feedback_delay_get_time(_handle);
+  set time(double ms) => _b.dsp_feedback_delay_set_time(_handle, ms);
+
+  /// Feedback amount in `[0.0, 1.0)`.
+  double get feedback => _b.dsp_feedback_delay_get_feedback(_handle);
+  set feedback(double amount) =>
+      _b.dsp_feedback_delay_set_feedback(_handle, amount);
+
+  /// Damping low-pass corner in the feedback path, in Hz.
+  double get damping => _b.dsp_feedback_delay_get_damping(_handle);
+  set damping(double hz) => _b.dsp_feedback_delay_set_damping(_handle, hz);
+
+  /// Cross-feed between the channel pair for ping-pong echoes.
+  double get crossfeed => _b.dsp_feedback_delay_get_crossfeed(_handle);
+  set crossfeed(double amount) =>
+      _b.dsp_feedback_delay_set_crossfeed(_handle, amount);
+}
+
+Pointer<YseDspObject> _created(Pointer<YseDspObject> handle, String fn) {
+  if (handle.address == 0) throw YseException('$fn returned null');
+  return handle;
+}
+
 enum _DspKind {
   lowpass, highpass, bandpass, sweep,
   basicDelay, lowpassDelay, highpassDelay,
   phaser, ringModulator, difference, granulator,
+  compressor, eq, chorus, plateReverb, feedbackDelay,
 }

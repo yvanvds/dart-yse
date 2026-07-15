@@ -131,6 +131,55 @@ enum DelayTap {
   const DelayTap(this.native);
 }
 
+/// Modulation character of a [Chorus] module.
+///
+/// Values match `YSE::DSP::MODULES::chorusMode` (see `chorus.hpp`).
+enum ChorusMode {
+  /// Longer base delay with a wide, slow sweep.
+  chorus(raw.YseChorusMode.YSE_CHORUS_MODE_CHORUS),
+
+  /// Short base delay with a feedback comb.
+  flanger(raw.YseChorusMode.YSE_CHORUS_MODE_FLANGER);
+
+  final raw.YseChorusMode native;
+  const ChorusMode(this.native);
+}
+
+/// One of the four fixed bands of a [ParametricEq].
+///
+/// Values match `YSE::DSP::MODULES::eqBand` (see `parametricEQ.hpp`). The
+/// `YSE_EQ_BAND_COUNT` sentinel is intentionally omitted.
+enum EqBand {
+  /// Low shelf.
+  lowShelf(raw.YseEqBand.YSE_EQ_LOW_SHELF),
+
+  /// First peaking band.
+  peak1(raw.YseEqBand.YSE_EQ_PEAK_1),
+
+  /// Second peaking band.
+  peak2(raw.YseEqBand.YSE_EQ_PEAK_2),
+
+  /// High shelf.
+  highShelf(raw.YseEqBand.YSE_EQ_HIGH_SHELF);
+
+  final raw.YseEqBand native;
+  const EqBand(this.native);
+}
+
+/// Level-detector mode of a [Compressor].
+///
+/// Values match `YSE::DSP::MODULES::compressorDetector` (see `compressor.hpp`).
+enum CompressorDetector {
+  /// Instantaneous linked peak.
+  peak(raw.YseCompressorDetector.YSE_COMPRESSOR_DETECT_PEAK),
+
+  /// Short mean-square window.
+  rms(raw.YseCompressorDetector.YSE_COMPRESSOR_DETECT_RMS);
+
+  final raw.YseCompressorDetector native;
+  const CompressorDetector(this.native);
+}
+
 /// Named reverb-tail presets for [Reverb.preset].
 ///
 /// Values match `YSE::REVERB_PRESET`.

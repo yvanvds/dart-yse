@@ -37,7 +37,8 @@ export 'src/enums.dart'
         LogLevel,
         OutType,
         ReverbPreset,
-        SweepShape;
+        SweepShape,
+        VaWaveform;
 export 'src/exception.dart' show YseException;
 export 'src/listener.dart' show Listener;
 export 'src/live_coding.dart' show LiveCoding;
@@ -49,4 +50,5 @@ export 'src/patcher.dart' show Obj, PHandle, Patcher;
 export 'src/pos.dart' show Pos;
 export 'src/reverb.dart' show Reverb;
 export 'src/sound.dart' show Sound;
+export 'src/synth.dart' show Dx7Bank, PositionHandler, SfzInstrument, Synth;
 export 'src/system.dart' show DomainClock, System;

@@ -53,6 +53,34 @@ enum LfoType {
   const LfoType(this.native);
 }
 
+/// Oscillator waveform for a synth's virtual-analog voice
+/// ([Synth.setVaOscWave]).
+///
+/// Values match `YSE::SYNTH::VA_WAVEFORM` (see `synth/vaVoice.hpp`).
+enum VaWaveform {
+  /// Band-limited sawtooth.
+  saw(raw.YseVaWaveform.YSE_VA_SAW),
+
+  /// Band-limited pulse with variable width (PWM).
+  pulse(raw.YseVaWaveform.YSE_VA_PULSE),
+
+  /// Band-limited triangle.
+  triangle(raw.YseVaWaveform.YSE_VA_TRIANGLE),
+
+  /// Sine.
+  sine(raw.YseVaWaveform.YSE_VA_SINE),
+
+  /// White noise.
+  noise(raw.YseVaWaveform.YSE_VA_NOISE),
+
+  /// Morph across the wavetable bank (see [Synth.loadVaWavetable]).
+  wavetable(raw.YseVaWaveform.YSE_VA_WAVETABLE);
+
+  /// The raw FFI enum value passed to the C ABI.
+  final raw.YseVaWaveform native;
+  const VaWaveform(this.native);
+}
+
 /// LFO shape used by the [DspObject.sweep] constructor.
 enum SweepShape {
   triangle(raw.YseDspSweepShape.YSE_SWEEP_TRIANGLE),

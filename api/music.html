@@ -731,6 +731,11 @@ happens; do not call its methods until then.</p>
 </pre></div>
 </div>
 <p>Construct a player.</p>
+<p>As of engine v2.3.0 <cite>yse_player_create</cite> takes a <cite>YseSynth*</cite>. The synth
+subsystem does not yet have an idiomatic Dart wrapper (tracked as a
+separate issue in this batch), so a null synth is passed here — matching
+the dead-surface contract documented on this class. Do not call this
+class’s methods until the synth wiring lands.</p>
 </section>
 <section id="id11">
 <h2>Properties<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>

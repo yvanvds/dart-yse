@@ -30,6 +30,12 @@ Constructors
 
 Construct a player.
 
+As of engine v2.3.0 `yse_player_create` takes a `YseSynth*`. The synth
+subsystem does not yet have an idiomatic Dart wrapper (tracked as a
+separate issue in this batch), so a null synth is passed here — matching
+the dead-surface contract documented on this class. Do not call this
+class's methods until the synth wiring lands.
+
 Properties
 ----------
 

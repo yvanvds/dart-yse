@@ -39,6 +39,25 @@ Outlet data-type enum returned by :py:meth:`PHandle.outputDataType`.
 
 .. include:: _generated/out_type.rst
 
+Registry introspection
+----------------------
+
+Read-only access to the engine's patcher object *registry* — the same
+in-code documentation that drives the :doc:`patcher_objects` reference.
+Use :class:`PatcherRegistry` to enumerate the registered object types and,
+per type, read the description, category, and inlet / outlet / parameter
+schema without hard-coding the catalogue.
+
+.. include:: _generated/patcher_registry.rst
+
+.. include:: _generated/patcher_object_type.rst
+
+.. include:: _generated/patcher_inlet.rst
+
+.. include:: _generated/patcher_outlet.rst
+
+.. include:: _generated/patcher_param.rst
+
 Object type constants
 ---------------------
 

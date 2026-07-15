@@ -118,6 +118,84 @@ enum OutType {
 
   final raw.YseOutType native;
   const OutType(this.native);
+
+  /// Maps a raw C-side [raw.YseOutType] to its Dart enum, defaulting to
+  /// [OutType.invalid] for unknown values.
+  static OutType fromNative(raw.YseOutType native) => values.firstWhere(
+        (e) => e.native == native,
+        orElse: () => OutType.invalid,
+      );
+}
+
+/// Documentation category a patcher object type is filed under
+/// ([PatcherObjectType.category]).
+///
+/// Drives the section headings on the patcher object reference. Values
+/// match `YSE::PATCHER::pCategory` (mirrored by the C enum
+/// `YsePCategory`).
+enum PCategory {
+  /// Uncategorised — should not reach a shipped object in practice.
+  unset(raw.YsePCategory.YSE_PCAT_UNSET),
+
+  /// Oscillators / signal generators.
+  oscillator(raw.YsePCategory.YSE_PCAT_OSC),
+
+  /// Filters.
+  filter(raw.YsePCategory.YSE_PCAT_FILTER),
+
+  /// Arithmetic / math objects.
+  math(raw.YsePCategory.YSE_PCAT_MATH),
+
+  /// Generic routing / utility objects.
+  generic(raw.YsePCategory.YSE_PCAT_GENERIC),
+
+  /// GUI control objects.
+  gui(raw.YsePCategory.YSE_PCAT_GUI),
+
+  /// Timing objects.
+  time(raw.YsePCategory.YSE_PCAT_TIME),
+
+  /// MIDI message objects.
+  midi(raw.YsePCategory.YSE_PCAT_MIDI);
+
+  final raw.YsePCategory native;
+  const PCategory(this.native);
+
+  /// Maps a raw C-side [raw.YsePCategory] to its Dart enum, defaulting to
+  /// [PCategory.unset] for unknown values.
+  static PCategory fromNative(raw.YsePCategory native) => values.firstWhere(
+        (e) => e.native == native,
+        orElse: () => PCategory.unset,
+      );
+}
+
+/// One message kind a patcher inlet accepts ([PatcherInlet.accepts]).
+///
+/// The engine reports the set as an OR-ed bitmask; the wrapper decodes it
+/// into a `Set<InletAccepts>`. Values match `YSE::PATCHER::InletType`
+/// (mirrored by the C enum `YseInletAccepts`).
+enum InletAccepts {
+  /// Accepts an audio-rate DSP buffer.
+  buffer(raw.YseInletAccepts.YSE_IN_ACCEPTS_BUFFER),
+
+  /// Accepts a float.
+  float(raw.YseInletAccepts.YSE_IN_ACCEPTS_FLOAT),
+
+  /// Accepts an integer.
+  integer(raw.YseInletAccepts.YSE_IN_ACCEPTS_INT),
+
+  /// Accepts a bang.
+  bang(raw.YseInletAccepts.YSE_IN_ACCEPTS_BANG),
+
+  /// Accepts a list.
+  list(raw.YseInletAccepts.YSE_IN_ACCEPTS_LIST);
+
+  final raw.YseInletAccepts native;
+  const InletAccepts(this.native);
+
+  /// Decodes an engine `accepts` bitmask into the set of flags it encodes.
+  static Set<InletAccepts> fromBitmask(int mask) =>
+      {for (final a in values) if (mask & a.native.value != 0) a};
 }
 
 /// One of the three delay taps on a [DspObject.basicDelay] (and its

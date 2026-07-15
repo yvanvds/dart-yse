@@ -43,9 +43,11 @@ export 'src/enums.dart'
         CompressorDetector,
         DelayTap,
         EqBand,
+        InletAccepts,
         LfoType,
         LogLevel,
         OutType,
+        PCategory,
         ReverbPreset,
         SweepShape,
         VaWaveform;
@@ -56,7 +58,16 @@ export 'src/log.dart' show Log;
 export 'src/midi.dart'
     show MidiFile, MidiIn, MidiInParsedMessage, MidiInRawMessage, MidiOut;
 export 'src/music.dart' show Motif, Note, PNote, Player, Scale;
-export 'src/patcher.dart' show Obj, PHandle, Patcher;
+export 'src/patcher.dart'
+    show
+        Obj,
+        PHandle,
+        Patcher,
+        PatcherInlet,
+        PatcherObjectType,
+        PatcherOutlet,
+        PatcherParam,
+        PatcherRegistry;
 export 'src/pos.dart' show Pos;
 export 'src/reverb.dart' show Reverb;
 export 'src/sound.dart' show Sound;

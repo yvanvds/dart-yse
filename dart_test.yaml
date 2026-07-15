@@ -1,0 +1,7 @@
+# The YSE engine is a process-global native singleton (one `YSE::System`
+# behind `System.instance`). `dart test` runs suite files concurrently in
+# separate isolates but the *same OS process*, so two engine-touching suites
+# would init/render/close that one singleton at the same time and corrupt it.
+# Serialise suites so each owns the engine for its full setUpAll..tearDownAll
+# lifecycle. Tests within a suite already share a single init via setUpAll.
+concurrency: 1

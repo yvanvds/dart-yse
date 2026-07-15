@@ -25,6 +25,7 @@ library;
 
 export 'src/buffer_io.dart' show BufferIO;
 export 'src/channel.dart' show Channel;
+export 'src/clip.dart' show ClipEvent, ClipTransport;
 export 'src/device.dart' show Device, DeviceSetup;
 export 'src/dsp_buffer.dart' show DspBuffer;
 export 'src/dsp_object.dart' show DspObject;
@@ -48,4 +49,4 @@ export 'src/patcher.dart' show Obj, PHandle, Patcher;
 export 'src/pos.dart' show Pos;
 export 'src/reverb.dart' show Reverb;
 export 'src/sound.dart' show Sound;
-export 'src/system.dart' show System;
+export 'src/system.dart' show DomainClock, System;

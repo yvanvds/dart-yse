@@ -145,6 +145,10 @@ class MidiOut implements Finalizable {
   /// Send three raw MIDI bytes.
   void raw3(int a, int b, int c) => _b.midi_out_raw3(_handle, a, b, c);
 
+  /// Internal: the raw native handle, for wiring this port as a
+  /// [ClipTransport] sink. Not part of the public surface.
+  Pointer<YseMidiOut> get handle => _handle;
+
   /// Destroy the underlying native port and detach the finalizer.
   void dispose() {
     if (_handle.address == 0) return;

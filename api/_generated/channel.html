@@ -453,6 +453,34 @@ etc.) directly, or build subtrees by passing them as the [parent] to
 </div>
 <p>Construct a new channel attached to [parent].</p>
 <p>Throws [YseException] when the engine refuses the new channel.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Channel</span><span class="p">.</span><span class="n">createWithSends</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kd">required</span><span class="w"> </span><span class="n">Channel</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">sendSlots</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Construct a new channel with an explicit number of aux-[send] slots.</p>
+<p>[Channel.create] gives every channel four send slots; use this when a
+channel needs to fan out to more return buses than that. The slot count
+is fixed at construction — the engine sizes it once, off the audio
+thread, and never resizes — so pick a count that covers the channel’s
+busiest routing.</p>
+<p>Throws [YseException] when the engine refuses the new channel.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Channel</span><span class="p">.</span><span class="n">createReturn</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">sendSlots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Construct a send/return bus — an aux bus that sits outside the normal
+mix tree.</p>
+<p>A return bus is an ordinary channel in every other respect (it keeps
+[dsp] inserts, [attachReverb], [volume] and metering), but it is
+excluded from the parent/child mix tree: instead, other channels route
+scaled copies of their signal into it with [send], and its output folds
+into the master mix after the source tree — the classic aux-send
+topology.</p>
+<p>A return may itself [send] onward into another return (e.g. a
+delay → reverb chain). <strong>The send graph must stay acyclic:</strong> the engine
+rejects and logs a wiring that would close a cycle rather than crashing,
+but the edge simply will not connect.</p>
+<p>[sendSlots] fixes how many onward sends this return can drive (see
+[Channel.createWithSends]). Destroy it with [dispose] like any channel.</p>
+<p>Throws [YseException] when the engine refuses the new bus.</p>
 </section>
 <section id="static-accessors">
 <h2>Static accessors<a class="headerlink" href="#static-accessors" title="Link to this heading">#</a></h2>
@@ -511,6 +539,26 @@ runs out of voices.</p>
 </div>
 <p>Number of output speakers this channel feeds. Index into [peakLinear]
 and [peakDb] with values in <cite>[0, numOutputs)</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isReturn</span>
+</pre></div>
+</div>
+<p>Whether this channel is a send/return bus (created via
+[Channel.createReturn]) rather than an ordinary mix-tree channel.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">DspObject</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">dsp</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">dsp</span><span class="p">(</span><span class="n">DspObject</span><span class="o">?</span><span class="w"> </span><span class="n">head</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The pre-fader insert effect chain attached to this channel, or <cite>null</cite>
+when none is attached.</p>
+<p>Assign a [DspObject] chain head to place it in this channel’s insert
+slot; the effect processes the channel’s summed output in place, before
+reverb and the channel [volume]. Chain multiple effects with
+[DspObject.link] and assign the head. Assign <cite>null</cite> to detach.</p>
+<p>The channel holds only a borrowed reference: the assigned [DspObject]
+(and every object linked after it) must outlive the channel, or be
+detached first. This mirrors <cite>Sound.dsp</cite> at the channel level.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">YseChannel</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">handle</span>
 </pre></div>
 </div>
@@ -549,6 +597,38 @@ the channel volume is applied — what listeners hear.</p>
 </pre></div>
 </div>
 <p>[peakLinearPost] expressed in decibels. Silence reports −120 dB.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">send</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="n">Channel</span><span class="w"> </span><span class="n">returnBus</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">double</span><span class="w"> </span><span class="n">level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">preFader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Wire send [slot] of this channel to [returnBus] at [level].</p>
+<p>[slot] indexes this channel’s send slots, <cite>[0, sendSlots)</cite> — four by
+default, or the count fixed by [Channel.createWithSends] /
+[Channel.createReturn]. [returnBus] must be a return bus (see
+[isReturn]).</p>
+<p>Sends are post-fader by default — they follow this channel’s [volume].
+Pass <cite>preFader: true</cite> for a cue-style send that is independent of the
+fader.</p>
+<p>The engine rejects and logs an illegal wiring (a target that is not a
+return, a self-send, a return → return edge that would close a cycle,
+or an out-of-range slot) on the calling thread; it never reaches the
+audio thread. This call is a no-op on such a wiring rather than an
+error.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setSendLevel</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">level</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the level of send [slot], ramped and click-free.</p>
+<p>Safe to call every control tick — the engine designs send levels as
+modulation targets, so continuous writes fuse into the per-block ramp
+without zippering (hence no fade argument).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">getSendLevel</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">slot</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Current target level of send [slot], or <cite>0.0</cite> if the slot is unset or
+out of range.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">clearSend</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">slot</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Detach send [slot], fully disconnecting it from its return bus.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>

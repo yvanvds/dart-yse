@@ -26,6 +26,44 @@ Construct a new channel attached to [parent].
 
 Throws [YseException] when the engine refuses the new channel.
 
+.. code-block:: dart
+
+   factory Channel.createWithSends(String name, {required Channel parent, required int sendSlots})
+
+Construct a new channel with an explicit number of aux-[send] slots.
+
+[Channel.create] gives every channel four send slots; use this when a
+channel needs to fan out to more return buses than that. The slot count
+is fixed at construction — the engine sizes it once, off the audio
+thread, and never resizes — so pick a count that covers the channel's
+busiest routing.
+
+Throws [YseException] when the engine refuses the new channel.
+
+.. code-block:: dart
+
+   factory Channel.createReturn(String name, {int sendSlots = 4})
+
+Construct a send/return bus — an aux bus that sits outside the normal
+mix tree.
+
+A return bus is an ordinary channel in every other respect (it keeps
+[dsp] inserts, [attachReverb], [volume] and metering), but it is
+excluded from the parent/child mix tree: instead, other channels route
+scaled copies of their signal into it with [send], and its output folds
+into the master mix after the source tree — the classic aux-send
+topology.
+
+A return may itself [send] onward into another return (e.g. a
+delay → reverb chain). **The send graph must stay acyclic:** the engine
+rejects and logs a wiring that would close a cycle rather than crashing,
+but the edge simply will not connect.
+
+[sendSlots] fixes how many onward sends this return can drive (see
+[Channel.createWithSends]). Destroy it with [dispose] like any channel.
+
+Throws [YseException] when the engine refuses the new bus.
+
 Static accessors
 ----------------
 
@@ -110,6 +148,33 @@ and [peakDb] with values in `[0, numOutputs)`.
 
 .. code-block:: dart
 
+   bool get isReturn
+
+Whether this channel is a send/return bus (created via
+[Channel.createReturn]) rather than an ordinary mix-tree channel.
+
+.. code-block:: dart
+
+   DspObject? get dsp
+
+.. code-block:: dart
+
+   set dsp(DspObject? head)
+
+The pre-fader insert effect chain attached to this channel, or `null`
+when none is attached.
+
+Assign a [DspObject] chain head to place it in this channel's insert
+slot; the effect processes the channel's summed output in place, before
+reverb and the channel [volume]. Chain multiple effects with
+[DspObject.link] and assign the head. Assign `null` to detach.
+
+The channel holds only a borrowed reference: the assigned [DspObject]
+(and every object linked after it) must outlive the channel, or be
+detached first. This mirrors `Sound.dsp` at the channel level.
+
+.. code-block:: dart
+
    Pointer<YseChannel> get handle
 
 Internal: native handle for cross-wrapper plumbing (sound → channel).
@@ -161,6 +226,50 @@ the channel volume is applied — what listeners hear.
    double peakDbPost({int? output})
 
 [peakLinearPost] expressed in decibels. Silence reports −120 dB.
+
+.. code-block:: dart
+
+   void send(int slot, Channel returnBus, {double level = 1.0, bool preFader = false})
+
+Wire send [slot] of this channel to [returnBus] at [level].
+
+[slot] indexes this channel's send slots, `[0, sendSlots)` — four by
+default, or the count fixed by [Channel.createWithSends] /
+[Channel.createReturn]. [returnBus] must be a return bus (see
+[isReturn]).
+
+Sends are post-fader by default — they follow this channel's [volume].
+Pass `preFader: true` for a cue-style send that is independent of the
+fader.
+
+The engine rejects and logs an illegal wiring (a target that is not a
+return, a self-send, a return → return edge that would close a cycle,
+or an out-of-range slot) on the calling thread; it never reaches the
+audio thread. This call is a no-op on such a wiring rather than an
+error.
+
+.. code-block:: dart
+
+   void setSendLevel(int slot, double level)
+
+Set the level of send [slot], ramped and click-free.
+
+Safe to call every control tick — the engine designs send levels as
+modulation targets, so continuous writes fuse into the per-block ramp
+without zippering (hence no fade argument).
+
+.. code-block:: dart
+
+   double getSendLevel(int slot)
+
+Current target level of send [slot], or `0.0` if the slot is unset or
+out of range.
+
+.. code-block:: dart
+
+   void clearSend(int slot)
+
+Detach send [slot], fully disconnecting it from its return bus.
 
 .. code-block:: dart
 

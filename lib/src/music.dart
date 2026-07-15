@@ -287,9 +287,15 @@ class Player implements Finalizable {
   }
 
   /// Construct a player.
+  ///
+  /// As of engine v2.3.0 `yse_player_create` takes a `YseSynth*`. The synth
+  /// subsystem does not yet have an idiomatic Dart wrapper (tracked as a
+  /// separate issue in this batch), so a null synth is passed here — matching
+  /// the dead-surface contract documented on this class. Do not call this
+  /// class's methods until the synth wiring lands.
   factory Player() {
     final b = bindings;
-    final h = b.player_create();
+    final h = b.player_create(nullptr);
     if (h.address == 0) throw YseException('yse_player_create returned null');
     return Player._(b, h);
   }

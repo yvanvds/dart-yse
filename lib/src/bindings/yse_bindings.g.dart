@@ -473,6 +473,141 @@ class YseBindings {
         int Function(ffi.Pointer<YseSystem>, int, ffi.Pointer<ffi.Char>, int)
       >();
 
+  /// Returns 1 on success, 0 if `sys`/`name` is NULL, the name is empty, or a
+  /// live clock already owns the name (first registration wins).
+  int system_create_clock(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> name,
+    double initial_tempo,
+  ) {
+    return _system_create_clock(sys, name, initial_tempo);
+  }
+
+  late final _system_create_clockPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(
+            ffi.Pointer<YseSystem>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Float,
+          )
+        >
+      >('yse_system_create_clock');
+  late final _system_create_clock = _system_create_clockPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>, double)
+      >();
+
+  /// Destroy the named clock. No-op for an unknown name or NULL args.
+  void system_destroy_clock(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> name,
+  ) {
+    return _system_destroy_clock(sys, name);
+  }
+
+  late final _system_destroy_clockPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_system_destroy_clock');
+  late final _system_destroy_clock = _system_destroy_clockPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>)
+      >();
+
+  /// Returns 1 if a live clock with `name` exists, else 0.
+  int system_clock_exists(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> name,
+  ) {
+    return _system_clock_exists(sys, name);
+  }
+
+  late final _system_clock_existsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_system_clock_exists');
+  late final _system_clock_exists = _system_clock_existsPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>)
+      >();
+
+  /// Ramp the named clock's tempo toward `bpm` over `ramp_seconds` (0 = instant).
+  /// No-op for an unknown name or NULL args.
+  void system_set_tempo(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> name,
+    double bpm,
+    double ramp_seconds,
+  ) {
+    return _system_set_tempo(sys, name, bpm, ramp_seconds);
+  }
+
+  late final _system_set_tempoPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseSystem>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Float,
+            ffi.Float,
+          )
+        >
+      >('yse_system_set_tempo');
+  late final _system_set_tempo = _system_set_tempoPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YseSystem>,
+          ffi.Pointer<ffi.Char>,
+          double,
+          double,
+        )
+      >();
+
+  /// Current beat position (running integral of tempo) of the named clock, or 0
+  /// for an unknown name or NULL args.
+  double system_beat_position(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> name,
+  ) {
+    return _system_beat_position(sys, name);
+  }
+
+  late final _system_beat_positionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Double Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_system_beat_position');
+  late final _system_beat_position = _system_beat_positionPtr
+      .asFunction<
+        double Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>)
+      >();
+
+  /// Current tempo in BPM of the named clock, or 0 for an unknown name or NULL
+  /// args.
+  double system_current_tempo(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> name,
+  ) {
+    return _system_current_tempo(sys, name);
+  }
+
+  late final _system_current_tempoPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Float Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_system_current_tempo');
+  late final _system_current_tempo = _system_current_tempoPtr
+      .asFunction<
+        double Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>)
+      >();
+
   /// Global reverb — fallback wherever no positioned reverb zone reaches.
   /// Returned pointer is borrowed; never destroy.
   ffi.Pointer<YseReverb> system_get_global_reverb(ffi.Pointer<YseSystem> sys) {
@@ -488,8 +623,12 @@ class YseBindings {
   late final _system_get_global_reverb = _system_get_global_reverbPtr
       .asFunction<ffi.Pointer<YseReverb> Function(ffi.Pointer<YseSystem>)>();
 
-  /// Underwater effect: routes a channel through the built-in low-pass /
-  /// pitch-shift "underwater" filter. Depth is in [0.0, 1.0].
+  /// Underwater effect: attaches the engine's underwater insert module to the
+  /// channel's insert slot (the same slot yse_channel_set_dsp uses; the two
+  /// replace each other). Depth is the listener's distance below the water
+  /// surface in world units: <= 0 disables the effect, the low-passed
+  /// position-neutral treatment fades in above 1 and saturates at 5. A positive
+  /// depth also enables the built-in underwater reverb zone.
   void system_underwater_fx(
     ffi.Pointer<YseSystem> sys,
     ffi.Pointer<YseChannel> target,
@@ -684,7 +823,11 @@ class YseBindings {
   late final _channel_gui = _channel_guiPtr
       .asFunction<ffi.Pointer<YseChannel> Function()>();
 
-  /// User-created channels.
+  /// User-created channels. yse_channel_create allocates a channel with the
+  /// default 4 aux-send slots; yse_channel_create_with_sends chooses the slot
+  /// count (sized once off the audio thread and never resized — raise it for a
+  /// channel that fans out to many return buses). Both return NULL and set
+  /// yse_last_error() on a NULL name/parent.
   ffi.Pointer<YseChannel> channel_create(
     ffi.Pointer<ffi.Char> name,
     ffi.Pointer<YseChannel> parent,
@@ -709,6 +852,33 @@ class YseBindings {
         )
       >();
 
+  ffi.Pointer<YseChannel> channel_create_with_sends(
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<YseChannel> parent,
+    int send_slots,
+  ) {
+    return _channel_create_with_sends(name, parent, send_slots);
+  }
+
+  late final _channel_create_with_sendsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseChannel> Function(
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<YseChannel>,
+            ffi.Int,
+          )
+        >
+      >('yse_channel_create_with_sends');
+  late final _channel_create_with_sends = _channel_create_with_sendsPtr
+      .asFunction<
+        ffi.Pointer<YseChannel> Function(
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<YseChannel>,
+          int,
+        )
+      >();
+
   void channel_destroy(ffi.Pointer<YseChannel> ch) {
     return _channel_destroy(ch);
   }
@@ -719,6 +889,174 @@ class YseBindings {
       );
   late final _channel_destroy = _channel_destroyPtr
       .asFunction<void Function(ffi.Pointer<YseChannel>)>();
+
+  /// ─── send/return buses (issue #165; design docs/design/send_return_buses.md) ──
+  ///
+  /// A return bus is an ordinary channel (it keeps set_dsp inserts, attach_reverb,
+  /// set_volume, and metering) excluded from the normal mix tree; other channels
+  /// route scaled copies of their signal into it and its output folds into the
+  /// master mix after the source tree — the classic aux-send topology. A return
+  /// may itself send into another return (an acyclic delay→reverb chain); cycles
+  /// are rejected at wiring time.
+  ///
+  /// yse_channel_create_return allocates and flags a return in one call (the C
+  /// mirror of makeReturn) — call it INSTEAD of yse_channel_create. Destroy it
+  /// with yse_channel_destroy like any channel.
+  ffi.Pointer<YseChannel> channel_create_return(
+    ffi.Pointer<ffi.Char> name,
+    int send_slots,
+  ) {
+    return _channel_create_return(name, send_slots);
+  }
+
+  late final _channel_create_returnPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseChannel> Function(ffi.Pointer<ffi.Char>, ffi.Int)
+        >
+      >('yse_channel_create_return');
+  late final _channel_create_return = _channel_create_returnPtr
+      .asFunction<
+        ffi.Pointer<YseChannel> Function(ffi.Pointer<ffi.Char>, int)
+      >();
+
+  /// 1 if the channel is a send/return bus, else 0 (also 0 on NULL).
+  int channel_is_return(ffi.Pointer<YseChannel> ch) {
+    return _channel_is_return(ch);
+  }
+
+  late final _channel_is_returnPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseChannel>)>>(
+        'yse_channel_is_return',
+      );
+  late final _channel_is_return = _channel_is_returnPtr
+      .asFunction<int Function(ffi.Pointer<YseChannel>)>();
+
+  /// Wire send slot `slot` (in [0, send_slots)) of `ch` to `return_bus` at
+  /// `level`. Post-fader by default; pass pre_fader != 0 for a cue-style send
+  /// independent of the channel fader. Illegal wirings (target not a return, a
+  /// self-send, a return→return edge that would close a cycle, an out-of-range
+  /// slot) are rejected on the calling thread and logged — never reaching the
+  /// audio thread. Null-safe no-op.
+  void channel_send(
+    ffi.Pointer<YseChannel> ch,
+    int slot,
+    ffi.Pointer<YseChannel> return_bus,
+    double level,
+    int pre_fader,
+  ) {
+    return _channel_send(ch, slot, return_bus, level, pre_fader);
+  }
+
+  late final _channel_sendPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseChannel>,
+            ffi.Int,
+            ffi.Pointer<YseChannel>,
+            ffi.Float,
+            ffi.Int,
+          )
+        >
+      >('yse_channel_send');
+  late final _channel_send = _channel_sendPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YseChannel>,
+          int,
+          ffi.Pointer<YseChannel>,
+          double,
+          int,
+        )
+      >();
+
+  /// Set a send slot's level, ramped and click-free. Safe to call every control
+  /// tick — send levels are designed as modulation targets, so continuous writes
+  /// fuse into the per-block ramp without zippering. Null-safe no-op.
+  void channel_set_send_level(
+    ffi.Pointer<YseChannel> ch,
+    int slot,
+    double level,
+  ) {
+    return _channel_set_send_level(ch, slot, level);
+  }
+
+  late final _channel_set_send_levelPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseChannel>, ffi.Int, ffi.Float)
+        >
+      >('yse_channel_set_send_level');
+  late final _channel_set_send_level = _channel_set_send_levelPtr
+      .asFunction<void Function(ffi.Pointer<YseChannel>, int, double)>();
+
+  /// Detach send slot `slot`, fully disconnecting it from its return. Null-safe
+  /// no-op.
+  void channel_clear_send(ffi.Pointer<YseChannel> ch, int slot) {
+    return _channel_clear_send(ch, slot);
+  }
+
+  late final _channel_clear_sendPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseChannel>, ffi.Int)>
+      >('yse_channel_clear_send');
+  late final _channel_clear_send = _channel_clear_sendPtr
+      .asFunction<void Function(ffi.Pointer<YseChannel>, int)>();
+
+  /// Current target level of send slot `slot`, or 0 if unset/invalid/NULL.
+  double channel_get_send_level(ffi.Pointer<YseChannel> ch, int slot) {
+    return _channel_get_send_level(ch, slot);
+  }
+
+  late final _channel_get_send_levelPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseChannel>, ffi.Int)>
+      >('yse_channel_get_send_level');
+  late final _channel_get_send_level = _channel_get_send_levelPtr
+      .asFunction<double Function(ffi.Pointer<YseChannel>, int)>();
+
+  /// ─── channel insert DSP (issue #159) ─────────────────────────────────────
+  ///
+  /// Attach a pre-fader insert effect chain to this channel — the DAW "insert"
+  /// slot, mirroring yse_sound_set_dsp at the channel level. The effect processes
+  /// the channel's summed output in place, before reverb and the channel volume.
+  /// Chain effects with yse_dsp_object_link. Pass NULL to detach. The channel
+  /// takes no ownership: the YseDspObject must outlive the channel or be detached
+  /// first. Null-safe no-op.
+  void channel_set_dsp(
+    ffi.Pointer<YseChannel> ch,
+    ffi.Pointer<YseDspObject> dsp,
+  ) {
+    return _channel_set_dsp(ch, dsp);
+  }
+
+  late final _channel_set_dspPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseChannel>, ffi.Pointer<YseDspObject>)
+        >
+      >('yse_channel_set_dsp');
+  late final _channel_set_dsp = _channel_set_dspPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseChannel>, ffi.Pointer<YseDspObject>)
+      >();
+
+  /// The currently attached insert effect chain head, or NULL if none/NULL.
+  ffi.Pointer<YseDspObject> channel_get_dsp(ffi.Pointer<YseChannel> ch) {
+    return _channel_get_dsp(ch);
+  }
+
+  late final _channel_get_dspPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDspObject> Function(ffi.Pointer<YseChannel>)
+        >
+      >('yse_channel_get_dsp');
+  late final _channel_get_dsp = _channel_get_dspPtr
+      .asFunction<
+        ffi.Pointer<YseDspObject> Function(ffi.Pointer<YseChannel>)
+      >();
 
   void channel_set_volume(ffi.Pointer<YseChannel> ch, double value) {
     return _channel_set_volume(ch, value);
@@ -821,7 +1159,7 @@ class YseBindings {
 
   /// Output peak metering — see channelInterface.hpp for semantics.
   ///
-  /// "Pre" reads the peak measured at the end of dsp() (after reverb/underwater FX,
+  /// "Pre" reads the peak measured at the end of dsp() (after inserts and reverb,
   /// before the channel volume is applied); "Post" reads the peak measured
   /// immediately after adjustVolume() — what listeners hear. Per-output overloads
   /// take an index in [0, yse_channel_get_num_outputs()); out-of-range indices
@@ -2703,6 +3041,65 @@ class YseBindings {
   late final _dsp_granulator_create = _dsp_granulator_createPtr
       .asFunction<ffi.Pointer<YseDspObject> Function(int, int)>();
 
+  /// Mix-grade effect modules (issues #160-#163). Each is a chainable insert or
+  /// send-return effect; drop one on a channel with yse_channel_set_dsp() or a
+  /// sound with yse_sound_set_dsp(). Their wet/dry balance is the inherited
+  /// yse_dsp_object_set_impact().
+  ffi.Pointer<YseDspObject> dsp_feedback_delay_create() {
+    return _dsp_feedback_delay_create();
+  }
+
+  late final _dsp_feedback_delay_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_feedback_delay_create',
+      );
+  late final _dsp_feedback_delay_create = _dsp_feedback_delay_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_chorus_create() {
+    return _dsp_chorus_create();
+  }
+
+  late final _dsp_chorus_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_chorus_create',
+      );
+  late final _dsp_chorus_create = _dsp_chorus_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_plate_reverb_create() {
+    return _dsp_plate_reverb_create();
+  }
+
+  late final _dsp_plate_reverb_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_plate_reverb_create',
+      );
+  late final _dsp_plate_reverb_create = _dsp_plate_reverb_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_eq_create() {
+    return _dsp_eq_create();
+  }
+
+  late final _dsp_eq_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_eq_create',
+      );
+  late final _dsp_eq_create = _dsp_eq_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
+  ffi.Pointer<YseDspObject> dsp_compressor_create() {
+    return _dsp_compressor_create();
+  }
+
+  late final _dsp_compressor_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_compressor_create',
+      );
+  late final _dsp_compressor_create = _dsp_compressor_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
   void dsp_object_destroy(ffi.Pointer<YseDspObject> obj) {
     return _dsp_object_destroy(obj);
   }
@@ -3367,6 +3764,589 @@ class YseBindings {
       >('yse_dsp_granulator_get_gain');
   late final _dsp_granulator_get_gain = _dsp_granulator_get_gainPtr
       .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  /// ─── feedback delay (#160) ──────────────────────────────────────────────
+  /// A recirculating delay for a channel insert or a send return: per-channel
+  /// delay line, a damping low-pass in the feedback path, and cross-feed between
+  /// channel pairs for ping-pong. impact(1) is echoes only (send use).
+  void dsp_feedback_delay_set_time(ffi.Pointer<YseDspObject> obj, double ms) {
+    return _dsp_feedback_delay_set_time(obj, ms);
+  }
+
+  late final _dsp_feedback_delay_set_timePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_feedback_delay_set_time');
+  late final _dsp_feedback_delay_set_time = _dsp_feedback_delay_set_timePtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_feedback_delay_get_time(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_feedback_delay_get_time(obj);
+  }
+
+  late final _dsp_feedback_delay_get_timePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_feedback_delay_get_time');
+  late final _dsp_feedback_delay_get_time = _dsp_feedback_delay_get_timePtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_feedback_delay_set_feedback(
+    ffi.Pointer<YseDspObject> obj,
+    double amount,
+  ) {
+    return _dsp_feedback_delay_set_feedback(obj, amount);
+  }
+
+  late final _dsp_feedback_delay_set_feedbackPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_feedback_delay_set_feedback');
+  late final _dsp_feedback_delay_set_feedback =
+      _dsp_feedback_delay_set_feedbackPtr
+          .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_feedback_delay_get_feedback(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_feedback_delay_get_feedback(obj);
+  }
+
+  late final _dsp_feedback_delay_get_feedbackPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_feedback_delay_get_feedback');
+  late final _dsp_feedback_delay_get_feedback =
+      _dsp_feedback_delay_get_feedbackPtr
+          .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_feedback_delay_set_damping(
+    ffi.Pointer<YseDspObject> obj,
+    double hz,
+  ) {
+    return _dsp_feedback_delay_set_damping(obj, hz);
+  }
+
+  late final _dsp_feedback_delay_set_dampingPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_feedback_delay_set_damping');
+  late final _dsp_feedback_delay_set_damping =
+      _dsp_feedback_delay_set_dampingPtr
+          .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_feedback_delay_get_damping(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_feedback_delay_get_damping(obj);
+  }
+
+  late final _dsp_feedback_delay_get_dampingPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_feedback_delay_get_damping');
+  late final _dsp_feedback_delay_get_damping =
+      _dsp_feedback_delay_get_dampingPtr
+          .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_feedback_delay_set_crossfeed(
+    ffi.Pointer<YseDspObject> obj,
+    double amount,
+  ) {
+    return _dsp_feedback_delay_set_crossfeed(obj, amount);
+  }
+
+  late final _dsp_feedback_delay_set_crossfeedPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_feedback_delay_set_crossfeed');
+  late final _dsp_feedback_delay_set_crossfeed =
+      _dsp_feedback_delay_set_crossfeedPtr
+          .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_feedback_delay_get_crossfeed(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_feedback_delay_get_crossfeed(obj);
+  }
+
+  late final _dsp_feedback_delay_get_crossfeedPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_feedback_delay_get_crossfeed');
+  late final _dsp_feedback_delay_get_crossfeed =
+      _dsp_feedback_delay_get_crossfeedPtr
+          .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  /// ─── chorus / flanger (#161) ────────────────────────────────────────────
+  /// One modulated-delay module with a mode() switch between chorus and flanger.
+  /// spread() fans a per-channel LFO phase offset for stereo width.
+  void dsp_chorus_set_mode(ffi.Pointer<YseDspObject> obj, YseChorusMode mode) {
+    return _dsp_chorus_set_mode(obj, mode.value);
+  }
+
+  late final _dsp_chorus_set_modePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.UnsignedInt)
+        >
+      >('yse_dsp_chorus_set_mode');
+  late final _dsp_chorus_set_mode = _dsp_chorus_set_modePtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, int)>();
+
+  YseChorusMode dsp_chorus_get_mode(ffi.Pointer<YseDspObject> obj) {
+    return YseChorusMode.fromValue(_dsp_chorus_get_mode(obj));
+  }
+
+  late final _dsp_chorus_get_modePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_chorus_get_mode');
+  late final _dsp_chorus_get_mode = _dsp_chorus_get_modePtr
+      .asFunction<int Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_chorus_set_rate(ffi.Pointer<YseDspObject> obj, double hz) {
+    return _dsp_chorus_set_rate(obj, hz);
+  }
+
+  late final _dsp_chorus_set_ratePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_chorus_set_rate');
+  late final _dsp_chorus_set_rate = _dsp_chorus_set_ratePtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_chorus_get_rate(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_chorus_get_rate(obj);
+  }
+
+  late final _dsp_chorus_get_ratePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_chorus_get_rate');
+  late final _dsp_chorus_get_rate = _dsp_chorus_get_ratePtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_chorus_set_depth(ffi.Pointer<YseDspObject> obj, double value) {
+    return _dsp_chorus_set_depth(obj, value);
+  }
+
+  late final _dsp_chorus_set_depthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_chorus_set_depth');
+  late final _dsp_chorus_set_depth = _dsp_chorus_set_depthPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_chorus_get_depth(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_chorus_get_depth(obj);
+  }
+
+  late final _dsp_chorus_get_depthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_chorus_get_depth');
+  late final _dsp_chorus_get_depth = _dsp_chorus_get_depthPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_chorus_set_feedback(ffi.Pointer<YseDspObject> obj, double value) {
+    return _dsp_chorus_set_feedback(obj, value);
+  }
+
+  late final _dsp_chorus_set_feedbackPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_chorus_set_feedback');
+  late final _dsp_chorus_set_feedback = _dsp_chorus_set_feedbackPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_chorus_get_feedback(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_chorus_get_feedback(obj);
+  }
+
+  late final _dsp_chorus_get_feedbackPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_chorus_get_feedback');
+  late final _dsp_chorus_get_feedback = _dsp_chorus_get_feedbackPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_chorus_set_spread(ffi.Pointer<YseDspObject> obj, double value) {
+    return _dsp_chorus_set_spread(obj, value);
+  }
+
+  late final _dsp_chorus_set_spreadPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_chorus_set_spread');
+  late final _dsp_chorus_set_spread = _dsp_chorus_set_spreadPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_chorus_get_spread(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_chorus_get_spread(obj);
+  }
+
+  late final _dsp_chorus_get_spreadPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_chorus_get_spread');
+  late final _dsp_chorus_get_spread = _dsp_chorus_get_spreadPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  /// ─── plate reverb (#162) ────────────────────────────────────────────────
+  /// Dattorro plate reverb for a channel insert or a send return. Distinct from
+  /// the engine's global spatial reverb; impact(0.25) is a natural insert mix,
+  /// impact(1) is fully wet (send-return use).
+  void dsp_plate_reverb_set_decay(ffi.Pointer<YseDspObject> obj, double value) {
+    return _dsp_plate_reverb_set_decay(obj, value);
+  }
+
+  late final _dsp_plate_reverb_set_decayPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_plate_reverb_set_decay');
+  late final _dsp_plate_reverb_set_decay = _dsp_plate_reverb_set_decayPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_plate_reverb_get_decay(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_plate_reverb_get_decay(obj);
+  }
+
+  late final _dsp_plate_reverb_get_decayPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_plate_reverb_get_decay');
+  late final _dsp_plate_reverb_get_decay = _dsp_plate_reverb_get_decayPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_plate_reverb_set_damping(ffi.Pointer<YseDspObject> obj, double hz) {
+    return _dsp_plate_reverb_set_damping(obj, hz);
+  }
+
+  late final _dsp_plate_reverb_set_dampingPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_plate_reverb_set_damping');
+  late final _dsp_plate_reverb_set_damping = _dsp_plate_reverb_set_dampingPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_plate_reverb_get_damping(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_plate_reverb_get_damping(obj);
+  }
+
+  late final _dsp_plate_reverb_get_dampingPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_plate_reverb_get_damping');
+  late final _dsp_plate_reverb_get_damping = _dsp_plate_reverb_get_dampingPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_plate_reverb_set_predelay(ffi.Pointer<YseDspObject> obj, double ms) {
+    return _dsp_plate_reverb_set_predelay(obj, ms);
+  }
+
+  late final _dsp_plate_reverb_set_predelayPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_plate_reverb_set_predelay');
+  late final _dsp_plate_reverb_set_predelay = _dsp_plate_reverb_set_predelayPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_plate_reverb_get_predelay(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_plate_reverb_get_predelay(obj);
+  }
+
+  late final _dsp_plate_reverb_get_predelayPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_plate_reverb_get_predelay');
+  late final _dsp_plate_reverb_get_predelay = _dsp_plate_reverb_get_predelayPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  /// ─── parametric EQ (#163) ───────────────────────────────────────────────
+  /// Four cascaded bands (low shelf, two peaks, high shelf); each parameter is
+  /// addressed by a YseEqBand. Gain is in dB (0 = flat / band bypass).
+  void dsp_eq_set_frequency(
+    ffi.Pointer<YseDspObject> obj,
+    YseEqBand band,
+    double hz,
+  ) {
+    return _dsp_eq_set_frequency(obj, band.value, hz);
+  }
+
+  late final _dsp_eq_set_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspObject>,
+            ffi.UnsignedInt,
+            ffi.Float,
+          )
+        >
+      >('yse_dsp_eq_set_frequency');
+  late final _dsp_eq_set_frequency = _dsp_eq_set_frequencyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, int, double)>();
+
+  double dsp_eq_get_frequency(ffi.Pointer<YseDspObject> obj, YseEqBand band) {
+    return _dsp_eq_get_frequency(obj, band.value);
+  }
+
+  late final _dsp_eq_get_frequencyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Float Function(ffi.Pointer<YseDspObject>, ffi.UnsignedInt)
+        >
+      >('yse_dsp_eq_get_frequency');
+  late final _dsp_eq_get_frequency = _dsp_eq_get_frequencyPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>, int)>();
+
+  void dsp_eq_set_gain(
+    ffi.Pointer<YseDspObject> obj,
+    YseEqBand band,
+    double db,
+  ) {
+    return _dsp_eq_set_gain(obj, band.value, db);
+  }
+
+  late final _dsp_eq_set_gainPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspObject>,
+            ffi.UnsignedInt,
+            ffi.Float,
+          )
+        >
+      >('yse_dsp_eq_set_gain');
+  late final _dsp_eq_set_gain = _dsp_eq_set_gainPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, int, double)>();
+
+  double dsp_eq_get_gain(ffi.Pointer<YseDspObject> obj, YseEqBand band) {
+    return _dsp_eq_get_gain(obj, band.value);
+  }
+
+  late final _dsp_eq_get_gainPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Float Function(ffi.Pointer<YseDspObject>, ffi.UnsignedInt)
+        >
+      >('yse_dsp_eq_get_gain');
+  late final _dsp_eq_get_gain = _dsp_eq_get_gainPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>, int)>();
+
+  void dsp_eq_set_q(
+    ffi.Pointer<YseDspObject> obj,
+    YseEqBand band,
+    double value,
+  ) {
+    return _dsp_eq_set_q(obj, band.value, value);
+  }
+
+  late final _dsp_eq_set_qPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspObject>,
+            ffi.UnsignedInt,
+            ffi.Float,
+          )
+        >
+      >('yse_dsp_eq_set_q');
+  late final _dsp_eq_set_q = _dsp_eq_set_qPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, int, double)>();
+
+  double dsp_eq_get_q(ffi.Pointer<YseDspObject> obj, YseEqBand band) {
+    return _dsp_eq_get_q(obj, band.value);
+  }
+
+  late final _dsp_eq_get_qPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Float Function(ffi.Pointer<YseDspObject>, ffi.UnsignedInt)
+        >
+      >('yse_dsp_eq_get_q');
+  late final _dsp_eq_get_q = _dsp_eq_get_qPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>, int)>();
+
+  /// ─── compressor (#163) ──────────────────────────────────────────────────
+  /// Feed-forward, stereo-linked dynamics. gain_reduction_db is a read-only
+  /// meter of the reduction on the last processed sample (<= 0 dB).
+  void dsp_compressor_set_detector(
+    ffi.Pointer<YseDspObject> obj,
+    YseCompressorDetector mode,
+  ) {
+    return _dsp_compressor_set_detector(obj, mode.value);
+  }
+
+  late final _dsp_compressor_set_detectorPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.UnsignedInt)
+        >
+      >('yse_dsp_compressor_set_detector');
+  late final _dsp_compressor_set_detector = _dsp_compressor_set_detectorPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, int)>();
+
+  YseCompressorDetector dsp_compressor_get_detector(
+    ffi.Pointer<YseDspObject> obj,
+  ) {
+    return YseCompressorDetector.fromValue(_dsp_compressor_get_detector(obj));
+  }
+
+  late final _dsp_compressor_get_detectorPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_compressor_get_detector');
+  late final _dsp_compressor_get_detector = _dsp_compressor_get_detectorPtr
+      .asFunction<int Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_compressor_set_threshold(ffi.Pointer<YseDspObject> obj, double db) {
+    return _dsp_compressor_set_threshold(obj, db);
+  }
+
+  late final _dsp_compressor_set_thresholdPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_compressor_set_threshold');
+  late final _dsp_compressor_set_threshold = _dsp_compressor_set_thresholdPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_compressor_get_threshold(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_compressor_get_threshold(obj);
+  }
+
+  late final _dsp_compressor_get_thresholdPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_compressor_get_threshold');
+  late final _dsp_compressor_get_threshold = _dsp_compressor_get_thresholdPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_compressor_set_ratio(ffi.Pointer<YseDspObject> obj, double value) {
+    return _dsp_compressor_set_ratio(obj, value);
+  }
+
+  late final _dsp_compressor_set_ratioPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_compressor_set_ratio');
+  late final _dsp_compressor_set_ratio = _dsp_compressor_set_ratioPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_compressor_get_ratio(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_compressor_get_ratio(obj);
+  }
+
+  late final _dsp_compressor_get_ratioPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_compressor_get_ratio');
+  late final _dsp_compressor_get_ratio = _dsp_compressor_get_ratioPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_compressor_set_attack(ffi.Pointer<YseDspObject> obj, double ms) {
+    return _dsp_compressor_set_attack(obj, ms);
+  }
+
+  late final _dsp_compressor_set_attackPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_compressor_set_attack');
+  late final _dsp_compressor_set_attack = _dsp_compressor_set_attackPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_compressor_get_attack(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_compressor_get_attack(obj);
+  }
+
+  late final _dsp_compressor_get_attackPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_compressor_get_attack');
+  late final _dsp_compressor_get_attack = _dsp_compressor_get_attackPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_compressor_set_release(ffi.Pointer<YseDspObject> obj, double ms) {
+    return _dsp_compressor_set_release(obj, ms);
+  }
+
+  late final _dsp_compressor_set_releasePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_compressor_set_release');
+  late final _dsp_compressor_set_release = _dsp_compressor_set_releasePtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_compressor_get_release(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_compressor_get_release(obj);
+  }
+
+  late final _dsp_compressor_get_releasePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_compressor_get_release');
+  late final _dsp_compressor_get_release = _dsp_compressor_get_releasePtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  void dsp_compressor_set_makeup(ffi.Pointer<YseDspObject> obj, double db) {
+    return _dsp_compressor_set_makeup(obj, db);
+  }
+
+  late final _dsp_compressor_set_makeupPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_compressor_set_makeup');
+  late final _dsp_compressor_set_makeup = _dsp_compressor_set_makeupPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_compressor_get_makeup(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_compressor_get_makeup(obj);
+  }
+
+  late final _dsp_compressor_get_makeupPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_compressor_get_makeup');
+  late final _dsp_compressor_get_makeup = _dsp_compressor_get_makeupPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
+  double dsp_compressor_get_gain_reduction_db(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_compressor_get_gain_reduction_db(obj);
+  }
+
+  late final _dsp_compressor_get_gain_reduction_dbPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_compressor_get_gain_reduction_db');
+  late final _dsp_compressor_get_gain_reduction_db =
+      _dsp_compressor_get_gain_reduction_dbPtr
+          .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
 
   /// ─── patcher lifecycle ──────────────────────────────────────────────
   ffi.Pointer<YsePatcher> patcher_create() {
@@ -4843,6 +5823,190 @@ class YseBindings {
   late final _midi_note_get_velocity = _midi_note_get_velocityPtr
       .asFunction<int Function(ffi.Pointer<YseMidiNote>)>();
 
+  ffi.Pointer<YseClip> clip_create() {
+    return _clip_create();
+  }
+
+  late final _clip_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseClip> Function()>>(
+        'yse_clip_create',
+      );
+  late final _clip_create = _clip_createPtr
+      .asFunction<ffi.Pointer<YseClip> Function()>();
+
+  void clip_destroy(ffi.Pointer<YseClip> c) {
+    return _clip_destroy(c);
+  }
+
+  late final _clip_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseClip>)>>(
+        'yse_clip_destroy',
+      );
+  late final _clip_destroy = _clip_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseClip>)>();
+
+  /// Bind the clip to a live domain clock by name. Returns 1 on success, 0 if no
+  /// live clock owns the name (or on NULL args). The bound clock must outlive the
+  /// clip.
+  int clip_bind(ffi.Pointer<YseClip> c, ffi.Pointer<ffi.Char> clock_name) {
+    return _clip_bind(c, clock_name);
+  }
+
+  late final _clip_bindPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YseClip>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_clip_bind');
+  late final _clip_bind = _clip_bindPtr
+      .asFunction<int Function(ffi.Pointer<YseClip>, ffi.Pointer<ffi.Char>)>();
+
+  /// Replace the event list (copied). Takes effect at the next audio block
+  /// boundary. `events` may be NULL only when `count` is 0 (clears the list).
+  void clip_set_events(
+    ffi.Pointer<YseClip> c,
+    ffi.Pointer<YseClipEvent> events,
+    int count,
+  ) {
+    return _clip_set_events(c, events, count);
+  }
+
+  late final _clip_set_eventsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseClip>,
+            ffi.Pointer<YseClipEvent>,
+            ffi.Size,
+          )
+        >
+      >('yse_clip_set_events');
+  late final _clip_set_events = _clip_set_eventsPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseClip>, ffi.Pointer<YseClipEvent>, int)
+      >();
+
+  /// Loop length in beats. Values <= 0 disable looping (events fire once).
+  void clip_set_loop_length(ffi.Pointer<YseClip> c, double beats) {
+    return _clip_set_loop_length(c, beats);
+  }
+
+  late final _clip_set_loop_lengthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseClip>, ffi.Double)>
+      >('yse_clip_set_loop_length');
+  late final _clip_set_loop_length = _clip_set_loop_lengthPtr
+      .asFunction<void Function(ffi.Pointer<YseClip>, double)>();
+
+  /// Route this clip's playback into a synth (may be called for several synths).
+  /// The synth must outlive the connection.
+  void clip_connect_synth(ffi.Pointer<YseClip> c, ffi.Pointer<YseSynth> synth) {
+    return _clip_connect_synth(c, synth);
+  }
+
+  late final _clip_connect_synthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseClip>, ffi.Pointer<YseSynth>)
+        >
+      >('yse_clip_connect_synth');
+  late final _clip_connect_synth = _clip_connect_synthPtr
+      .asFunction<void Function(ffi.Pointer<YseClip>, ffi.Pointer<YseSynth>)>();
+
+  void clip_disconnect_synth(
+    ffi.Pointer<YseClip> c,
+    ffi.Pointer<YseSynth> synth,
+  ) {
+    return _clip_disconnect_synth(c, synth);
+  }
+
+  late final _clip_disconnect_synthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseClip>, ffi.Pointer<YseSynth>)
+        >
+      >('yse_clip_disconnect_synth');
+  late final _clip_disconnect_synth = _clip_disconnect_synthPtr
+      .asFunction<void Function(ffi.Pointer<YseClip>, ffi.Pointer<YseSynth>)>();
+
+  /// Route this clip's playback to an external MIDI output port (issue #350).
+  /// `m` must already have opened a port (yse_midi_out_open); connecting an
+  /// unopened handle is ignored. The underlying device port is engine-owned and
+  /// stays open, so `m` itself may be destroyed after connecting. May be called
+  /// for several ports. The audio thread stamps fired messages with an absolute
+  /// send time and hands them to a dedicated sender thread over a bounded
+  /// lock-free queue — timing stays block-accurate, and the audio callback never
+  /// performs the send. On builds without MIDI device support these set
+  /// last_error and no-op.
+  void clip_connect_midi_out(
+    ffi.Pointer<YseClip> c,
+    ffi.Pointer<YseMidiOut> m,
+  ) {
+    return _clip_connect_midi_out(c, m);
+  }
+
+  late final _clip_connect_midi_outPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseClip>, ffi.Pointer<YseMidiOut>)
+        >
+      >('yse_clip_connect_midi_out');
+  late final _clip_connect_midi_out = _clip_connect_midi_outPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseClip>, ffi.Pointer<YseMidiOut>)
+      >();
+
+  void clip_disconnect_midi_out(
+    ffi.Pointer<YseClip> c,
+    ffi.Pointer<YseMidiOut> m,
+  ) {
+    return _clip_disconnect_midi_out(c, m);
+  }
+
+  late final _clip_disconnect_midi_outPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseClip>, ffi.Pointer<YseMidiOut>)
+        >
+      >('yse_clip_disconnect_midi_out');
+  late final _clip_disconnect_midi_out = _clip_disconnect_midi_outPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseClip>, ffi.Pointer<YseMidiOut>)
+      >();
+
+  void clip_play(ffi.Pointer<YseClip> c) {
+    return _clip_play(c);
+  }
+
+  late final _clip_playPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseClip>)>>(
+        'yse_clip_play',
+      );
+  late final _clip_play = _clip_playPtr
+      .asFunction<void Function(ffi.Pointer<YseClip>)>();
+
+  void clip_stop(ffi.Pointer<YseClip> c) {
+    return _clip_stop(c);
+  }
+
+  late final _clip_stopPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseClip>)>>(
+        'yse_clip_stop',
+      );
+  late final _clip_stop = _clip_stopPtr
+      .asFunction<void Function(ffi.Pointer<YseClip>)>();
+
+  int clip_is_playing(ffi.Pointer<YseClip> c) {
+    return _clip_is_playing(c);
+  }
+
+  late final _clip_is_playingPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseClip>)>>(
+        'yse_clip_is_playing',
+      );
+  late final _clip_is_playing = _clip_is_playingPtr
+      .asFunction<int Function(ffi.Pointer<YseClip>)>();
+
   /// ─── note ──────────────────────────────────────────────────────────
   ffi.Pointer<YseNote> note_create(
     double pitch,
@@ -5347,17 +6511,25 @@ class YseBindings {
   late final _motif_size = _motif_sizePtr
       .asFunction<int Function(ffi.Pointer<YseMotif>)>();
 
-  /// ─── player — generative sequencer ─────────────────────────────────
-  ffi.Pointer<YsePlayer> player_create() {
-    return _player_create();
+  /// Create a generative player bound to `synth` and register it with the engine.
+  /// `synth` must be a live handle from yse_synth_create and must outlive the
+  /// player — every note the player generates is delivered to it. Returns NULL
+  /// (with yse_last_error() set) when `synth` is NULL or on allocation failure.
+  /// This is the only create path: a player has no useful state until it is bound
+  /// to a synth, so unlike most create functions it takes its target up front
+  /// (issue #268).
+  ffi.Pointer<YsePlayer> player_create(ffi.Pointer<YseSynth> synth) {
+    return _player_create(synth);
   }
 
   late final _player_createPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<YsePlayer> Function()>>(
-        'yse_player_create',
-      );
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YsePlayer> Function(ffi.Pointer<YseSynth>)
+        >
+      >('yse_player_create');
   late final _player_create = _player_createPtr
-      .asFunction<ffi.Pointer<YsePlayer> Function()>();
+      .asFunction<ffi.Pointer<YsePlayer> Function(ffi.Pointer<YseSynth>)>();
 
   void player_destroy(ffi.Pointer<YsePlayer> p) {
     return _player_destroy(p);
@@ -5694,6 +6866,1220 @@ class YseBindings {
   late final _player_fit_motifs_to_scale = _player_fit_motifs_to_scalePtr
       .asFunction<void Function(ffi.Pointer<YsePlayer>, double, double)>();
 
+  /// Load and preload an .sfz file into a shareable instrument. Parses the file
+  /// and decodes every unique sample into RAM on the calling thread (off the
+  /// audio thread). Returns NULL on failure (unreadable / empty file, no playable
+  /// region) with yse_last_error() set.
+  ffi.Pointer<YseSfzInstrument> sfz_load(ffi.Pointer<ffi.Char> path) {
+    return _sfz_load(path);
+  }
+
+  late final _sfz_loadPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseSfzInstrument> Function(ffi.Pointer<ffi.Char>)
+        >
+      >('yse_sfz_load');
+  late final _sfz_load = _sfz_loadPtr
+      .asFunction<
+        ffi.Pointer<YseSfzInstrument> Function(ffi.Pointer<ffi.Char>)
+      >();
+
+  /// Build a one-region instrument from a YseSamplerConfig. Returns NULL on
+  /// failure (NULL cfg, missing / unreadable sample) with yse_last_error() set.
+  ffi.Pointer<YseSfzInstrument> sfz_load_config(
+    ffi.Pointer<YseSamplerConfig> cfg,
+  ) {
+    return _sfz_load_config(cfg);
+  }
+
+  late final _sfz_load_configPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseSfzInstrument> Function(ffi.Pointer<YseSamplerConfig>)
+        >
+      >('yse_sfz_load_config');
+  late final _sfz_load_config = _sfz_load_configPtr
+      .asFunction<
+        ffi.Pointer<YseSfzInstrument> Function(ffi.Pointer<YseSamplerConfig>)
+      >();
+
+  /// Whether the instrument is playable (valid region table + at least one
+  /// resident sample). 0 on a NULL or already-destroyed handle.
+  int sfz_is_valid(ffi.Pointer<YseSfzInstrument> h) {
+    return _sfz_is_valid(h);
+  }
+
+  late final _sfz_is_validPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseSfzInstrument>)>
+      >('yse_sfz_is_valid');
+  late final _sfz_is_valid = _sfz_is_validPtr
+      .asFunction<int Function(ffi.Pointer<YseSfzInstrument>)>();
+
+  /// Release an instrument handle. A double free or a NULL handle is a logged
+  /// no-op, not a crash.
+  void sfz_destroy(ffi.Pointer<YseSfzInstrument> h) {
+    return _sfz_destroy(h);
+  }
+
+  late final _sfz_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSfzInstrument>)>
+      >('yse_sfz_destroy');
+  late final _sfz_destroy = _sfz_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseSfzInstrument>)>();
+
+  /// Load and parse a DX7 .syx file into a bank. A 32-voice packed bulk dump
+  /// yields 32 patches; a single-voice dump yields 1. Reads the file on the
+  /// calling thread. Returns NULL on failure (file not found / unreadable, bad
+  /// header, wrong length, checksum mismatch) with yse_last_error() set.
+  ffi.Pointer<YseDx7Bank> dx7_import_sysex(ffi.Pointer<ffi.Char> path) {
+    return _dx7_import_sysex(path);
+  }
+
+  late final _dx7_import_sysexPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDx7Bank> Function(ffi.Pointer<ffi.Char>)
+        >
+      >('yse_dx7_import_sysex');
+  late final _dx7_import_sysex = _dx7_import_sysexPtr
+      .asFunction<ffi.Pointer<YseDx7Bank> Function(ffi.Pointer<ffi.Char>)>();
+
+  /// Number of patches in the bank. 0 on a NULL or already-destroyed handle.
+  int dx7_get_patch_count(ffi.Pointer<YseDx7Bank> h) {
+    return _dx7_get_patch_count(h);
+  }
+
+  late final _dx7_get_patch_countPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDx7Bank>)>>(
+        'yse_dx7_get_patch_count',
+      );
+  late final _dx7_get_patch_count = _dx7_get_patch_countPtr
+      .asFunction<int Function(ffi.Pointer<YseDx7Bank>)>();
+
+  /// Write the (space-trimmed) name of patch `index` into `buf` as a
+  /// NUL-terminated string, snprintf-style; returns the length that would have
+  /// been written (excluding the NUL), or 0 for an out-of-range index or a NULL /
+  /// destroyed handle. `buf` may be NULL to query the length.
+  int dx7_get_patch_name(
+    ffi.Pointer<YseDx7Bank> h,
+    int index,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _dx7_get_patch_name(h, index, buf, cap);
+  }
+
+  late final _dx7_get_patch_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseDx7Bank>,
+            ffi.Int,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_dx7_get_patch_name');
+  late final _dx7_get_patch_name = _dx7_get_patch_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseDx7Bank>, int, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  /// Release a bank handle. A double free or a NULL handle is a logged no-op,
+  /// not a crash.
+  void dx7_destroy(ffi.Pointer<YseDx7Bank> h) {
+    return _dx7_destroy(h);
+  }
+
+  late final _dx7_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDx7Bank>)>>(
+        'yse_dx7_destroy',
+      );
+  late final _dx7_destroy = _dx7_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseDx7Bank>)>();
+
+  /// Create and register a synth. Ready to receive add-voices and note events
+  /// immediately (runs the C++ constructor and YSE::synth::create()). Returns
+  /// NULL on allocation failure with yse_last_error() set.
+  ffi.Pointer<YseSynth> synth_create() {
+    return _synth_create();
+  }
+
+  late final _synth_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseSynth> Function()>>(
+        'yse_synth_create',
+      );
+  late final _synth_create = _synth_createPtr
+      .asFunction<ffi.Pointer<YseSynth> Function()>();
+
+  void synth_destroy(ffi.Pointer<YseSynth> h) {
+    return _synth_destroy(h);
+  }
+
+  late final _synth_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>)>>(
+        'yse_synth_destroy',
+      );
+  late final _synth_destroy = _synth_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>)>();
+
+  /// Whether the synth has a live implementation (registered with the engine).
+  int synth_is_valid(ffi.Pointer<YseSynth> h) {
+    return _synth_is_valid(h);
+  }
+
+  late final _synth_is_validPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseSynth>)>>(
+        'yse_synth_is_valid',
+      );
+  late final _synth_is_valid = _synth_is_validPtr
+      .asFunction<int Function(ffi.Pointer<YseSynth>)>();
+
+  /// Add a group of `num_voices` built-in sine voices (sine oscillator shaped
+  /// by an ADSR envelope) responding to note numbers in
+  /// [lowest_note, highest_note] on `channel` (0 = omni). May be called several
+  /// times to build layered or split keyboards. attack / decay / release are in
+  /// seconds; sustain is a level in [0, 1]. Must be called before the synth is
+  /// played; adding voices after the pool is built is rejected (a non-goal, see
+  /// docs/design/synth_core.md §1). Returns YseStatus; on failure yse_last_error()
+  /// is set and no group is added.
+  YseStatus synth_add_voices_sine(
+    ffi.Pointer<YseSynth> h,
+    int num_voices,
+    int channel,
+    int lowest_note,
+    int highest_note,
+    double attack,
+    double decay,
+    double sustain,
+    double release,
+  ) {
+    return YseStatus.fromValue(
+      _synth_add_voices_sine(
+        h,
+        num_voices,
+        channel,
+        lowest_note,
+        highest_note,
+        attack,
+        decay,
+        sustain,
+        release,
+      ),
+    );
+  }
+
+  late final _synth_add_voices_sinePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSynth>,
+            ffi.Int,
+            ffi.Int,
+            ffi.Int,
+            ffi.Int,
+            ffi.Float,
+            ffi.Float,
+            ffi.Float,
+            ffi.Float,
+          )
+        >
+      >('yse_synth_add_voices_sine');
+  late final _synth_add_voices_sine = _synth_add_voices_sinePtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseSynth>,
+          int,
+          int,
+          int,
+          int,
+          double,
+          double,
+          double,
+          double,
+        )
+      >();
+
+  /// Add a group of SFZ sampler voices rendering `instrument` (loaded via
+  /// yse_sfz_load / yse_sfz_load_config). The instrument's region table and PCM
+  /// are shared with the voice group, which retains its own reference — so the
+  /// YseSfzInstrument handle may be destroyed right after this returns.
+  /// YSE_ERR_INVALID_ARGUMENT if `instrument` is NULL or already destroyed.
+  YseStatus synth_add_voices_sampler(
+    ffi.Pointer<YseSynth> h,
+    ffi.Pointer<YseSfzInstrument> instrument,
+    int num_voices,
+  ) {
+    return YseStatus.fromValue(
+      _synth_add_voices_sampler(h, instrument, num_voices),
+    );
+  }
+
+  late final _synth_add_voices_samplerPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSynth>,
+            ffi.Pointer<YseSfzInstrument>,
+            ffi.Int,
+          )
+        >
+      >('yse_synth_add_voices_sampler');
+  late final _synth_add_voices_sampler = _synth_add_voices_samplerPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSynth>, ffi.Pointer<YseSfzInstrument>, int)
+      >();
+
+  /// Add a group of virtual-analog + wavetable voices with a fresh default patch.
+  /// This establishes the synth's VA patch; the yse_synth_va_set_* setters below
+  /// steer it. Call once per synth (a second call replaces which patch the setters
+  /// target — layering multiple VA groups is out of scope for the C API).
+  YseStatus synth_add_voices_va(ffi.Pointer<YseSynth> h, int num_voices) {
+    return YseStatus.fromValue(_synth_add_voices_va(h, num_voices));
+  }
+
+  late final _synth_add_voices_vaPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YseSynth>, ffi.Int)
+        >
+      >('yse_synth_add_voices_va');
+  late final _synth_add_voices_va = _synth_add_voices_vaPtr
+      .asFunction<int Function(ffi.Pointer<YseSynth>, int)>();
+
+  /// Add a group of DX7-class 6-operator FM voices with the built-in sine test
+  /// patch. This establishes the synth's FM patch; select a DX7 voice into it with
+  /// yse_synth_fm_set_patch, or dial the headline params with yse_synth_fm_set_*.
+  /// Call once per synth (see add_voices_va's note).
+  YseStatus synth_add_voices_fm(ffi.Pointer<YseSynth> h, int num_voices) {
+    return YseStatus.fromValue(_synth_add_voices_fm(h, num_voices));
+  }
+
+  late final _synth_add_voices_fmPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YseSynth>, ffi.Int)
+        >
+      >('yse_synth_add_voices_fm');
+  late final _synth_add_voices_fm = _synth_add_voices_fmPtr
+      .asFunction<int Function(ffi.Pointer<YseSynth>, int)>();
+
+  /// ─── VA patch parameters (issue #178) ─────────────────────────────────────
+  /// Steer the synth's VA patch (established by yse_synth_add_voices_va). Every
+  /// value is a glitch-free atomic read on the audio thread, so these are safe to
+  /// call while voices play. All are null-safe no-ops on a NULL handle or a synth
+  /// with no VA group. `osc` is the oscillator index 0..2 (out-of-range ignored).
+  /// Times are in seconds; sustains and normalised depths in [0, 1] unless noted.
+  void synth_va_set_osc_wave(
+    ffi.Pointer<YseSynth> h,
+    int osc,
+    YseVaWaveform wave,
+  ) {
+    return _synth_va_set_osc_wave(h, osc, wave.value);
+  }
+
+  late final _synth_va_set_osc_wavePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.UnsignedInt)
+        >
+      >('yse_synth_va_set_osc_wave');
+  late final _synth_va_set_osc_wave = _synth_va_set_osc_wavePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  void synth_va_set_osc_detune(
+    ffi.Pointer<YseSynth> h,
+    int osc,
+    double semitones,
+  ) {
+    return _synth_va_set_osc_detune(h, osc, semitones);
+  }
+
+  late final _synth_va_set_osc_detunePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Float)
+        >
+      >('yse_synth_va_set_osc_detune');
+  late final _synth_va_set_osc_detune = _synth_va_set_osc_detunePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, double)>();
+
+  void synth_va_set_osc_level(ffi.Pointer<YseSynth> h, int osc, double level) {
+    return _synth_va_set_osc_level(h, osc, level);
+  }
+
+  late final _synth_va_set_osc_levelPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Float)
+        >
+      >('yse_synth_va_set_osc_level');
+  late final _synth_va_set_osc_level = _synth_va_set_osc_levelPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, double)>();
+
+  void synth_va_set_osc_pulse_width(
+    ffi.Pointer<YseSynth> h,
+    int osc,
+    double width,
+  ) {
+    return _synth_va_set_osc_pulse_width(h, osc, width);
+  }
+
+  late final _synth_va_set_osc_pulse_widthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Float)
+        >
+      >('yse_synth_va_set_osc_pulse_width');
+  late final _synth_va_set_osc_pulse_width = _synth_va_set_osc_pulse_widthPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, double)>();
+
+  void synth_va_set_wavetable_position(
+    ffi.Pointer<YseSynth> h,
+    double position,
+  ) {
+    return _synth_va_set_wavetable_position(h, position);
+  }
+
+  late final _synth_va_set_wavetable_positionPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_wavetable_position');
+  late final _synth_va_set_wavetable_position =
+      _synth_va_set_wavetable_positionPtr
+          .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_cutoff(ffi.Pointer<YseSynth> h, double hz) {
+    return _synth_va_set_cutoff(h, hz);
+  }
+
+  late final _synth_va_set_cutoffPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_cutoff');
+  late final _synth_va_set_cutoff = _synth_va_set_cutoffPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_resonance(ffi.Pointer<YseSynth> h, double resonance) {
+    return _synth_va_set_resonance(h, resonance);
+  }
+
+  late final _synth_va_set_resonancePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_resonance');
+  late final _synth_va_set_resonance = _synth_va_set_resonancePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_key_tracking(ffi.Pointer<YseSynth> h, double amount) {
+    return _synth_va_set_key_tracking(h, amount);
+  }
+
+  late final _synth_va_set_key_trackingPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_key_tracking');
+  late final _synth_va_set_key_tracking = _synth_va_set_key_trackingPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_filter_env_amount(ffi.Pointer<YseSynth> h, double octaves) {
+    return _synth_va_set_filter_env_amount(h, octaves);
+  }
+
+  late final _synth_va_set_filter_env_amountPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_filter_env_amount');
+  late final _synth_va_set_filter_env_amount =
+      _synth_va_set_filter_env_amountPtr
+          .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_filter_vel_amount(ffi.Pointer<YseSynth> h, double octaves) {
+    return _synth_va_set_filter_vel_amount(h, octaves);
+  }
+
+  late final _synth_va_set_filter_vel_amountPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_filter_vel_amount');
+  late final _synth_va_set_filter_vel_amount =
+      _synth_va_set_filter_vel_amountPtr
+          .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_amp_attack(ffi.Pointer<YseSynth> h, double seconds) {
+    return _synth_va_set_amp_attack(h, seconds);
+  }
+
+  late final _synth_va_set_amp_attackPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_amp_attack');
+  late final _synth_va_set_amp_attack = _synth_va_set_amp_attackPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_amp_decay(ffi.Pointer<YseSynth> h, double seconds) {
+    return _synth_va_set_amp_decay(h, seconds);
+  }
+
+  late final _synth_va_set_amp_decayPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_amp_decay');
+  late final _synth_va_set_amp_decay = _synth_va_set_amp_decayPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_amp_sustain(ffi.Pointer<YseSynth> h, double level) {
+    return _synth_va_set_amp_sustain(h, level);
+  }
+
+  late final _synth_va_set_amp_sustainPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_amp_sustain');
+  late final _synth_va_set_amp_sustain = _synth_va_set_amp_sustainPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_amp_release(ffi.Pointer<YseSynth> h, double seconds) {
+    return _synth_va_set_amp_release(h, seconds);
+  }
+
+  late final _synth_va_set_amp_releasePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_amp_release');
+  late final _synth_va_set_amp_release = _synth_va_set_amp_releasePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_amp_vel_amount(ffi.Pointer<YseSynth> h, double amount) {
+    return _synth_va_set_amp_vel_amount(h, amount);
+  }
+
+  late final _synth_va_set_amp_vel_amountPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_amp_vel_amount');
+  late final _synth_va_set_amp_vel_amount = _synth_va_set_amp_vel_amountPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_filter_attack(ffi.Pointer<YseSynth> h, double seconds) {
+    return _synth_va_set_filter_attack(h, seconds);
+  }
+
+  late final _synth_va_set_filter_attackPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_filter_attack');
+  late final _synth_va_set_filter_attack = _synth_va_set_filter_attackPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_filter_decay(ffi.Pointer<YseSynth> h, double seconds) {
+    return _synth_va_set_filter_decay(h, seconds);
+  }
+
+  late final _synth_va_set_filter_decayPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_filter_decay');
+  late final _synth_va_set_filter_decay = _synth_va_set_filter_decayPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_filter_sustain(ffi.Pointer<YseSynth> h, double level) {
+    return _synth_va_set_filter_sustain(h, level);
+  }
+
+  late final _synth_va_set_filter_sustainPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_filter_sustain');
+  late final _synth_va_set_filter_sustain = _synth_va_set_filter_sustainPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_filter_release(ffi.Pointer<YseSynth> h, double seconds) {
+    return _synth_va_set_filter_release(h, seconds);
+  }
+
+  late final _synth_va_set_filter_releasePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_filter_release');
+  late final _synth_va_set_filter_release = _synth_va_set_filter_releasePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_lfo_type(ffi.Pointer<YseSynth> h, YseLfoType type) {
+    return _synth_va_set_lfo_type(h, type.value);
+  }
+
+  late final _synth_va_set_lfo_typePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.UnsignedInt)
+        >
+      >('yse_synth_va_set_lfo_type');
+  late final _synth_va_set_lfo_type = _synth_va_set_lfo_typePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  void synth_va_set_lfo_rate(ffi.Pointer<YseSynth> h, double hz) {
+    return _synth_va_set_lfo_rate(h, hz);
+  }
+
+  late final _synth_va_set_lfo_ratePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_lfo_rate');
+  late final _synth_va_set_lfo_rate = _synth_va_set_lfo_ratePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_lfo_to_pitch(ffi.Pointer<YseSynth> h, double semitones) {
+    return _synth_va_set_lfo_to_pitch(h, semitones);
+  }
+
+  late final _synth_va_set_lfo_to_pitchPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_lfo_to_pitch');
+  late final _synth_va_set_lfo_to_pitch = _synth_va_set_lfo_to_pitchPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_lfo_to_cutoff(ffi.Pointer<YseSynth> h, double octaves) {
+    return _synth_va_set_lfo_to_cutoff(h, octaves);
+  }
+
+  late final _synth_va_set_lfo_to_cutoffPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_lfo_to_cutoff');
+  late final _synth_va_set_lfo_to_cutoff = _synth_va_set_lfo_to_cutoffPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_lfo_to_wavetable(ffi.Pointer<YseSynth> h, double amount) {
+    return _synth_va_set_lfo_to_wavetable(h, amount);
+  }
+
+  late final _synth_va_set_lfo_to_wavetablePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_lfo_to_wavetable');
+  late final _synth_va_set_lfo_to_wavetable = _synth_va_set_lfo_to_wavetablePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  void synth_va_set_gain(ffi.Pointer<YseSynth> h, double gain) {
+    return _synth_va_set_gain(h, gain);
+  }
+
+  late final _synth_va_set_gainPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Float)>
+      >('yse_synth_va_set_gain');
+  late final _synth_va_set_gain = _synth_va_set_gainPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, double)>();
+
+  /// Install a single-cycle waveform into the VA wavetable morph bank at `slot`
+  /// (used by YSE_VA_WAVETABLE mode). `cycle` points to `length` normalised
+  /// samples (one period). SETUP-THREAD only — this reshapes table storage; call
+  /// before the synth is played, not while voices render. Null-safe no-op on a
+  /// NULL handle / cycle, an empty length, or a synth with no VA group.
+  void synth_va_load_wavetable(
+    ffi.Pointer<YseSynth> h,
+    int slot,
+    ffi.Pointer<ffi.Float> cycle,
+    int length,
+  ) {
+    return _synth_va_load_wavetable(h, slot, cycle, length);
+  }
+
+  late final _synth_va_load_wavetablePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseSynth>,
+            ffi.Int,
+            ffi.Pointer<ffi.Float>,
+            ffi.Size,
+          )
+        >
+      >('yse_synth_va_load_wavetable');
+  late final _synth_va_load_wavetable = _synth_va_load_wavetablePtr
+      .asFunction<
+        void Function(ffi.Pointer<YseSynth>, int, ffi.Pointer<ffi.Float>, int)
+      >();
+
+  /// Copy patch `index` from a DX7 bank (imported via yse_dx7_import_sysex) into
+  /// the synth's FM patch — the way to reach the full 155-parameter DX7 voice from
+  /// C. The patch is copied, so `bank` may be destroyed afterwards.
+  /// YSE_ERR_INVALID_ARGUMENT for a NULL / destroyed bank or an out-of-range
+  /// index; YSE_ERR_INVALID_HANDLE for a NULL synth or one with no FM group.
+  YseStatus synth_fm_set_patch(
+    ffi.Pointer<YseSynth> h,
+    ffi.Pointer<YseDx7Bank> bank,
+    int index,
+  ) {
+    return YseStatus.fromValue(_synth_fm_set_patch(h, bank, index));
+  }
+
+  late final _synth_fm_set_patchPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSynth>,
+            ffi.Pointer<YseDx7Bank>,
+            ffi.Int,
+          )
+        >
+      >('yse_synth_fm_set_patch');
+  late final _synth_fm_set_patch = _synth_fm_set_patchPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSynth>, ffi.Pointer<YseDx7Bank>, int)
+      >();
+
+  /// Headline global params (DX7 ranges; clamped defensively engine-side).
+  void synth_fm_set_algorithm(ffi.Pointer<YseSynth> h, int algorithm) {
+    return _synth_fm_set_algorithm(h, algorithm);
+  }
+
+  late final _synth_fm_set_algorithmPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_fm_set_algorithm');
+  late final _synth_fm_set_algorithm = _synth_fm_set_algorithmPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  void synth_fm_set_feedback(ffi.Pointer<YseSynth> h, int feedback) {
+    return _synth_fm_set_feedback(h, feedback);
+  }
+
+  late final _synth_fm_set_feedbackPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_fm_set_feedback');
+  late final _synth_fm_set_feedback = _synth_fm_set_feedbackPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  void synth_fm_set_transpose(ffi.Pointer<YseSynth> h, int transpose) {
+    return _synth_fm_set_transpose(h, transpose);
+  }
+
+  late final _synth_fm_set_transposePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_fm_set_transpose');
+  late final _synth_fm_set_transpose = _synth_fm_set_transposePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  void synth_fm_set_lfo_speed(ffi.Pointer<YseSynth> h, int speed) {
+    return _synth_fm_set_lfo_speed(h, speed);
+  }
+
+  late final _synth_fm_set_lfo_speedPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_fm_set_lfo_speed');
+  late final _synth_fm_set_lfo_speed = _synth_fm_set_lfo_speedPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  void synth_fm_set_lfo_delay(ffi.Pointer<YseSynth> h, int delay) {
+    return _synth_fm_set_lfo_delay(h, delay);
+  }
+
+  late final _synth_fm_set_lfo_delayPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_fm_set_lfo_delay');
+  late final _synth_fm_set_lfo_delay = _synth_fm_set_lfo_delayPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  void synth_fm_set_lfo_waveform(ffi.Pointer<YseSynth> h, int waveform) {
+    return _synth_fm_set_lfo_waveform(h, waveform);
+  }
+
+  late final _synth_fm_set_lfo_waveformPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_fm_set_lfo_waveform');
+  late final _synth_fm_set_lfo_waveform = _synth_fm_set_lfo_waveformPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  void synth_fm_set_lfo_pitch_mod_depth(ffi.Pointer<YseSynth> h, int depth) {
+    return _synth_fm_set_lfo_pitch_mod_depth(h, depth);
+  }
+
+  late final _synth_fm_set_lfo_pitch_mod_depthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_fm_set_lfo_pitch_mod_depth');
+  late final _synth_fm_set_lfo_pitch_mod_depth =
+      _synth_fm_set_lfo_pitch_mod_depthPtr
+          .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  void synth_fm_set_lfo_amp_mod_depth(ffi.Pointer<YseSynth> h, int depth) {
+    return _synth_fm_set_lfo_amp_mod_depth(h, depth);
+  }
+
+  late final _synth_fm_set_lfo_amp_mod_depthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_fm_set_lfo_amp_mod_depth');
+  late final _synth_fm_set_lfo_amp_mod_depth =
+      _synth_fm_set_lfo_amp_mod_depthPtr
+          .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  void synth_fm_set_pitch_mod_sens(ffi.Pointer<YseSynth> h, int sensitivity) {
+    return _synth_fm_set_pitch_mod_sens(h, sensitivity);
+  }
+
+  late final _synth_fm_set_pitch_mod_sensPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_fm_set_pitch_mod_sens');
+  late final _synth_fm_set_pitch_mod_sens = _synth_fm_set_pitch_mod_sensPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  /// Headline per-operator params. `op` is the operator index 0..5 (OP1..OP6);
+  /// out-of-range is ignored.
+  void synth_fm_set_op_output_level(
+    ffi.Pointer<YseSynth> h,
+    int op,
+    int level,
+  ) {
+    return _synth_fm_set_op_output_level(h, op, level);
+  }
+
+  late final _synth_fm_set_op_output_levelPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int)
+        >
+      >('yse_synth_fm_set_op_output_level');
+  late final _synth_fm_set_op_output_level = _synth_fm_set_op_output_levelPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  void synth_fm_set_op_freq_coarse(
+    ffi.Pointer<YseSynth> h,
+    int op,
+    int coarse,
+  ) {
+    return _synth_fm_set_op_freq_coarse(h, op, coarse);
+  }
+
+  late final _synth_fm_set_op_freq_coarsePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int)
+        >
+      >('yse_synth_fm_set_op_freq_coarse');
+  late final _synth_fm_set_op_freq_coarse = _synth_fm_set_op_freq_coarsePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  void synth_fm_set_op_freq_fine(ffi.Pointer<YseSynth> h, int op, int fine) {
+    return _synth_fm_set_op_freq_fine(h, op, fine);
+  }
+
+  late final _synth_fm_set_op_freq_finePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int)
+        >
+      >('yse_synth_fm_set_op_freq_fine');
+  late final _synth_fm_set_op_freq_fine = _synth_fm_set_op_freq_finePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  void synth_fm_set_op_detune(ffi.Pointer<YseSynth> h, int op, int detune) {
+    return _synth_fm_set_op_detune(h, op, detune);
+  }
+
+  late final _synth_fm_set_op_detunePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int)
+        >
+      >('yse_synth_fm_set_op_detune');
+  late final _synth_fm_set_op_detune = _synth_fm_set_op_detunePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  void synth_fm_set_op_osc_mode(ffi.Pointer<YseSynth> h, int op, int mode) {
+    return _synth_fm_set_op_osc_mode(h, op, mode);
+  }
+
+  late final _synth_fm_set_op_osc_modePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int)
+        >
+      >('yse_synth_fm_set_op_osc_mode');
+  late final _synth_fm_set_op_osc_mode = _synth_fm_set_op_osc_modePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  void synth_fm_set_op_enabled(ffi.Pointer<YseSynth> h, int op, int enabled) {
+    return _synth_fm_set_op_enabled(h, op, enabled);
+  }
+
+  late final _synth_fm_set_op_enabledPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int)
+        >
+      >('yse_synth_fm_set_op_enabled');
+  late final _synth_fm_set_op_enabled = _synth_fm_set_op_enabledPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  /// Total number of allocated (cloned) voices across every group. Zero until
+  /// the setup pool finishes cloning; poll it to know the synth is playable.
+  int synth_get_num_voices(ffi.Pointer<YseSynth> h) {
+    return _synth_get_num_voices(h);
+  }
+
+  late final _synth_get_num_voicesPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseSynth>)>>(
+        'yse_synth_get_num_voices',
+      );
+  late final _synth_get_num_voices = _synth_get_num_voicesPtr
+      .asFunction<int Function(ffi.Pointer<YseSynth>)>();
+
+  /// Start / release a note. velocity is normalised to [0, 1].
+  void synth_note_on(
+    ffi.Pointer<YseSynth> h,
+    int channel,
+    int note_number,
+    double velocity,
+  ) {
+    return _synth_note_on(h, channel, note_number, velocity);
+  }
+
+  late final _synth_note_onPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int, ffi.Float)
+        >
+      >('yse_synth_note_on');
+  late final _synth_note_on = _synth_note_onPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int, double)>();
+
+  void synth_note_off(
+    ffi.Pointer<YseSynth> h,
+    int channel,
+    int note_number,
+    double velocity,
+  ) {
+    return _synth_note_off(h, channel, note_number, velocity);
+  }
+
+  late final _synth_note_offPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int, ffi.Float)
+        >
+      >('yse_synth_note_off');
+  late final _synth_note_off = _synth_note_offPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int, double)>();
+
+  /// Release every held note on `channel` (0 = all channels). A bulk note-off:
+  /// voices enter their normal release, they are not cut.
+  void synth_all_notes_off(ffi.Pointer<YseSynth> h, int channel) {
+    return _synth_all_notes_off(h, channel);
+  }
+
+  late final _synth_all_notes_offPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int)>
+      >('yse_synth_all_notes_off');
+  late final _synth_all_notes_off = _synth_all_notes_offPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int)>();
+
+  /// Bend every voice on `channel`. value is normalised to [-1, 1] (0 = centre).
+  void synth_pitch_wheel(ffi.Pointer<YseSynth> h, int channel, double value) {
+    return _synth_pitch_wheel(h, channel, value);
+  }
+
+  late final _synth_pitch_wheelPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Float)
+        >
+      >('yse_synth_pitch_wheel');
+  late final _synth_pitch_wheel = _synth_pitch_wheelPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, double)>();
+
+  /// Send a control-change. value is normalised to [0, 1]. CC 64 / 66 / 67 act
+  /// as the sustain / sostenuto / soft pedals; other CC numbers are stored as
+  /// the channel's last controller value.
+  void synth_controller(
+    ffi.Pointer<YseSynth> h,
+    int channel,
+    int number,
+    double value,
+  ) {
+    return _synth_controller(h, channel, number, value);
+  }
+
+  late final _synth_controllerPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int, ffi.Float)
+        >
+      >('yse_synth_controller');
+  late final _synth_controller = _synth_controllerPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int, double)>();
+
+  /// Apply aftertouch pressure, normalised to [0, 1]. note_number == -1 is
+  /// channel-wide; otherwise only the voice(s) sounding that note receive it.
+  void synth_aftertouch(
+    ffi.Pointer<YseSynth> h,
+    int channel,
+    int note_number,
+    double value,
+  ) {
+    return _synth_aftertouch(h, channel, note_number, value);
+  }
+
+  late final _synth_aftertouchPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int, ffi.Float)
+        >
+      >('yse_synth_aftertouch');
+  late final _synth_aftertouch = _synth_aftertouchPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int, double)>();
+
+  /// Pedals (down is a boolean: non-zero = down).
+  void synth_sustain(ffi.Pointer<YseSynth> h, int channel, int down) {
+    return _synth_sustain(h, channel, down);
+  }
+
+  late final _synth_sustainPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int)
+        >
+      >('yse_synth_sustain');
+  late final _synth_sustain = _synth_sustainPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  void synth_sostenuto(ffi.Pointer<YseSynth> h, int channel, int down) {
+    return _synth_sostenuto(h, channel, down);
+  }
+
+  late final _synth_sostenutoPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int)
+        >
+      >('yse_synth_sostenuto');
+  late final _synth_sostenuto = _synth_sostenutoPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  void synth_soft_pedal(ffi.Pointer<YseSynth> h, int channel, int down) {
+    return _synth_soft_pedal(h, channel, down);
+  }
+
+  late final _synth_soft_pedalPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Int)
+        >
+      >('yse_synth_soft_pedal');
+  late final _synth_soft_pedal = _synth_soft_pedalPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
+
+  /// Install (or clear, with NULL) the audio-thread note-rewrite hook. The
+  /// engine stores the pointer atomically; passing NULL disables the hook.
+  /// See the YseSynthNoteCallback contract above.
+  void synth_set_note_callback(
+    ffi.Pointer<YseSynth> h,
+    YseSynthNoteCallback cb,
+  ) {
+    return _synth_set_note_callback(h, cb);
+  }
+
+  late final _synth_set_note_callbackPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, YseSynthNoteCallback)
+        >
+      >('yse_synth_set_note_callback');
+  late final _synth_set_note_callback = _synth_set_note_callbackPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, YseSynthNoteCallback)>();
+
+  /// Render this synth behind `sound`, which supplies the single 3D position,
+  /// channel routing and master play/stop intent (mirrors the C++
+  /// YSE::sound::create(synth&, channel*, volume)). Build the synth's voices
+  /// with yse_synth_add_voices_* before calling this. `channel` may be NULL for
+  /// the master channel. volume is a linear gain.
+  ///
+  /// Lifetime: the synth must outlive the sound — destroy the sound before the
+  /// synth. Returns YseStatus; on failure (e.g. the sound could not be created)
+  /// yse_last_error() is set.
+  YseStatus synth_attach_to_sound(
+    ffi.Pointer<YseSynth> h,
+    ffi.Pointer<YseSound> sound,
+    ffi.Pointer<YseChannel> channel,
+    double volume,
+  ) {
+    return YseStatus.fromValue(
+      _synth_attach_to_sound(h, sound, channel, volume),
+    );
+  }
+
+  late final _synth_attach_to_soundPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSynth>,
+            ffi.Pointer<YseSound>,
+            ffi.Pointer<YseChannel>,
+            ffi.Float,
+          )
+        >
+      >('yse_synth_attach_to_sound');
+  late final _synth_attach_to_sound = _synth_attach_to_soundPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseSynth>,
+          ffi.Pointer<YseSound>,
+          ffi.Pointer<YseChannel>,
+          double,
+        )
+      >();
+
+  /// Attach one of the built-in per-note position handlers, giving every voice its
+  /// own 3D position and movement (mirrors YSE::synth::positionHandler with a
+  /// shipped handler prototype). `kind` selects the handler; `params` configures
+  /// it (NULL = engine defaults for that kind). The handle keeps the prototype
+  /// alive; the engine clones it once per voice slot on the setup pool.
+  ///
+  /// Must be called BEFORE the synth is attached/played — like add-voices, the
+  /// engine rejects a handler swap after the voice pool is built (it logs a
+  /// warning and keeps the existing handler; the call still returns YSE_OK).
+  /// Returns YSE_ERR_INVALID_ARGUMENT for an unknown `kind`; yse_last_error() is
+  /// set on failure.
+  ///
+  /// Custom C-side handlers (subclassing YSE::SYNTH::positionHandler from C) are
+  /// DEFERRED — the hooks run on the AUDIO THREAD, the same callback-plumbing gap
+  /// that keeps custom dspVoice / dspSourceObject unwrapped (see yse_dsp.h and the
+  /// scope note at the top of this header). Only the built-ins are reachable.
+  YseStatus synth_set_position_handler(
+    ffi.Pointer<YseSynth> h,
+    YseSynthPositionHandler kind,
+    ffi.Pointer<YseSynthPositionParams> params,
+  ) {
+    return YseStatus.fromValue(
+      _synth_set_position_handler(h, kind.value, params),
+    );
+  }
+
+  late final _synth_set_position_handlerPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSynth>,
+            ffi.UnsignedInt,
+            ffi.Pointer<YseSynthPositionParams>,
+          )
+        >
+      >('yse_synth_set_position_handler');
+  late final _synth_set_position_handler = _synth_set_position_handlerPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseSynth>,
+          int,
+          ffi.Pointer<YseSynthPositionParams>,
+        )
+      >();
+
+  /// Update a shared handler parameter at runtime (message-based, RT-safe). All of
+  /// the synth's live handlers read the block next audio block, so this steers the
+  /// swarm / spread centre from the control thread. `index` is a
+  /// YseSynthHandlerParam (0..2 = centre X / Y / Z); out-of-range indices are
+  /// ignored engine-side. A bounded, allocation-free message — safe to call every
+  /// control tick.
+  void synth_handler_param(ffi.Pointer<YseSynth> h, int index, double value) {
+    return _synth_handler_param(h, index, value);
+  }
+
+  late final _synth_handler_paramPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Int, ffi.Float)
+        >
+      >('yse_synth_handler_param');
+  late final _synth_handler_param = _synth_handler_paramPtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, int, double)>();
+
+  /// Imperatively place the voice(s) sounding `note_number` on `channel` at
+  /// (x, y, z) — app-driven trajectories (mirrors YSE::synth::notePosition). A
+  /// bounded, allocation-free message. When a handler is attached it re-steers the
+  /// voice next block, so this is primarily for the no-handler case.
+  void synth_note_position(
+    ffi.Pointer<YseSynth> h,
+    int channel,
+    int note_number,
+    double x,
+    double y,
+    double z,
+  ) {
+    return _synth_note_position(h, channel, note_number, x, y, z);
+  }
+
+  late final _synth_note_positionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseSynth>,
+            ffi.Int,
+            ffi.Int,
+            ffi.Float,
+            ffi.Float,
+            ffi.Float,
+          )
+        >
+      >('yse_synth_note_position');
+  late final _synth_note_position = _synth_note_positionPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseSynth>, int, int, double, double, double)
+      >();
+
+  /// Best-effort snapshot of the current position of a voice sounding
+  /// (channel, note_number); writes the origin (0, 0, 0) if none is sounding
+  /// (mirrors YSE::synth::getVoicePosition, intended for tests / metering). Any of
+  /// the out pointers may be NULL. This is a single snapshot, not a per-note
+  /// readback stream. On a NULL synth handle it writes the origin.
+  void synth_get_voice_position(
+    ffi.Pointer<YseSynth> h,
+    int channel,
+    int note_number,
+    ffi.Pointer<ffi.Float> x,
+    ffi.Pointer<ffi.Float> y,
+    ffi.Pointer<ffi.Float> z,
+  ) {
+    return _synth_get_voice_position(h, channel, note_number, x, y, z);
+  }
+
+  late final _synth_get_voice_positionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseSynth>,
+            ffi.Int,
+            ffi.Int,
+            ffi.Pointer<ffi.Float>,
+            ffi.Pointer<ffi.Float>,
+            ffi.Pointer<ffi.Float>,
+          )
+        >
+      >('yse_synth_get_voice_position');
+  late final _synth_get_voice_position = _synth_get_voice_positionPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YseSynth>,
+          int,
+          int,
+          ffi.Pointer<ffi.Float>,
+          ffi.Pointer<ffi.Float>,
+          ffi.Pointer<ffi.Float>,
+        )
+      >();
+
   ffi.Pointer<YseLog> log_get() {
     return _log_get();
   }
@@ -6014,6 +8400,8 @@ class _SymbolAddresses {
   get midi_in_destroy => _library._midi_in_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseMidiNote>)>>
   get midi_note_destroy => _library._midi_note_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseClip>)>>
+  get clip_destroy => _library._clip_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseNote>)>>
   get note_destroy => _library._note_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePNote>)>>
@@ -6024,6 +8412,14 @@ class _SymbolAddresses {
   get motif_destroy => _library._motif_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePlayer>)>>
   get player_destroy => _library._player_destroyPtr;
+  ffi.Pointer<
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSfzInstrument>)>
+  >
+  get sfz_destroy => _library._sfz_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDx7Bank>)>>
+  get dx7_destroy => _library._dx7_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseSynth>)>>
+  get synth_destroy => _library._synth_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseBufferIO>)>>
   get buffer_io_destroy => _library._buffer_io_destroyPtr;
 }
@@ -6165,6 +8561,41 @@ enum YseLfoType {
   };
 }
 
+/// Mirrors YSE::SYNTH::VA_WAVEFORM in synth/vaVoice.hpp — the oscillator
+/// waveform selector for the virtual-analog voice (yse_synth_va_set_osc_wave).
+enum YseVaWaveform {
+  /// Band-limited sawtooth.
+  YSE_VA_SAW(0),
+
+  /// Band-limited pulse with variable width (PWM).
+  YSE_VA_PULSE(1),
+
+  /// Band-limited triangle.
+  YSE_VA_TRIANGLE(2),
+
+  /// Sine.
+  YSE_VA_SINE(3),
+
+  /// White noise.
+  YSE_VA_NOISE(4),
+
+  /// Morph across the wavetable bank.
+  YSE_VA_WAVETABLE(5);
+
+  final int value;
+  const YseVaWaveform(this.value);
+
+  static YseVaWaveform fromValue(int value) => switch (value) {
+    0 => YSE_VA_SAW,
+    1 => YSE_VA_PULSE,
+    2 => YSE_VA_TRIANGLE,
+    3 => YSE_VA_SINE,
+    4 => YSE_VA_NOISE,
+    5 => YSE_VA_WAVETABLE,
+    _ => throw ArgumentError('Unknown value for YseVaWaveform: $value'),
+  };
+}
+
 /// Mirrors YSE::DSP::MODULES::sweepFilter::SHAPE.
 enum YseDspSweepShape {
   YSE_SWEEP_TRIANGLE(0),
@@ -6196,6 +8627,66 @@ enum YseDspDelayTap {
     1 => YSE_DELAY_TAP_SECOND,
     2 => YSE_DELAY_TAP_THIRD,
     _ => throw ArgumentError('Unknown value for YseDspDelayTap: $value'),
+  };
+}
+
+/// Mirrors YSE::DSP::MODULES::chorusMode (chorus.hpp) — the chorus/flanger
+/// topology switch.
+enum YseChorusMode {
+  /// Longer base delay, wide slow sweep.
+  YSE_CHORUS_MODE_CHORUS(0),
+
+  /// Short base delay, feedback comb.
+  YSE_CHORUS_MODE_FLANGER(1);
+
+  final int value;
+  const YseChorusMode(this.value);
+
+  static YseChorusMode fromValue(int value) => switch (value) {
+    0 => YSE_CHORUS_MODE_CHORUS,
+    1 => YSE_CHORUS_MODE_FLANGER,
+    _ => throw ArgumentError('Unknown value for YseChorusMode: $value'),
+  };
+}
+
+/// Mirrors YSE::DSP::MODULES::eqBand (parametricEQ.hpp) — the four fixed
+/// bands of the parametric EQ. YSE_EQ_BAND_COUNT is the sentinel count.
+enum YseEqBand {
+  YSE_EQ_LOW_SHELF(0),
+  YSE_EQ_PEAK_1(1),
+  YSE_EQ_PEAK_2(2),
+  YSE_EQ_HIGH_SHELF(3),
+  YSE_EQ_BAND_COUNT(4);
+
+  final int value;
+  const YseEqBand(this.value);
+
+  static YseEqBand fromValue(int value) => switch (value) {
+    0 => YSE_EQ_LOW_SHELF,
+    1 => YSE_EQ_PEAK_1,
+    2 => YSE_EQ_PEAK_2,
+    3 => YSE_EQ_HIGH_SHELF,
+    4 => YSE_EQ_BAND_COUNT,
+    _ => throw ArgumentError('Unknown value for YseEqBand: $value'),
+  };
+}
+
+/// Mirrors YSE::DSP::MODULES::compressorDetector (compressor.hpp) — the
+/// level-detector mode.
+enum YseCompressorDetector {
+  /// Instantaneous linked peak.
+  YSE_COMPRESSOR_DETECT_PEAK(0),
+
+  /// Short mean-square window.
+  YSE_COMPRESSOR_DETECT_RMS(1);
+
+  final int value;
+  const YseCompressorDetector(this.value);
+
+  static YseCompressorDetector fromValue(int value) => switch (value) {
+    0 => YSE_COMPRESSOR_DETECT_PEAK,
+    1 => YSE_COMPRESSOR_DETECT_RMS,
+    _ => throw ArgumentError('Unknown value for YseCompressorDetector: $value'),
   };
 }
 
@@ -6251,6 +8742,62 @@ enum YseInletAccepts {
   };
 }
 
+/// Selects which built-in per-note position handler
+/// yse_synth_set_position_handler attaches. Mirrors the three shipped handler
+/// classes in synth/positionHandlers.hpp (staticHandler / randomSpreadHandler /
+/// orbitHandler). This is a C-API-owned dispatch selector: the engine has no
+/// single enum of handler kinds (each is a distinct class), so its drift guard
+/// is structural, not a value mirror — the exhaustive dispatch in yse_synth.cpp
+/// plus the YSE_POSITION_HANDLER_COUNT sentinel and the is_base_of asserts in
+/// yse_enums_check.cpp. Keep YSE_POSITION_HANDLER_COUNT last.
+enum YseSynthPositionHandler {
+  /// staticHandler — one fixed position.
+  YSE_POSITION_HANDLER_STATIC(0),
+
+  /// randomSpreadHandler — seeded scatter.
+  YSE_POSITION_HANDLER_RANDOM_SPREAD(1),
+
+  /// orbitHandler — the swarm handler.
+  YSE_POSITION_HANDLER_ORBIT(2),
+
+  /// sentinel — number of kinds; keep last.
+  YSE_POSITION_HANDLER_COUNT(3);
+
+  final int value;
+  const YseSynthPositionHandler(this.value);
+
+  static YseSynthPositionHandler fromValue(int value) => switch (value) {
+    0 => YSE_POSITION_HANDLER_STATIC,
+    1 => YSE_POSITION_HANDLER_RANDOM_SPREAD,
+    2 => YSE_POSITION_HANDLER_ORBIT,
+    3 => YSE_POSITION_HANDLER_COUNT,
+    _ => throw ArgumentError(
+      'Unknown value for YseSynthPositionHandler: $value',
+    ),
+  };
+}
+
+/// Shared handler-parameter indices the built-in handlers read for their
+/// steerable centre; mirrors YSE::SYNTH::HandlerParamIndex in
+/// synth/positionHandlers.hpp. Pass one to yse_synth_handler_param to move the
+/// swarm / spread centre at runtime. Indices 0..2 are the centre X / Y / Z;
+/// higher indices (up to the engine's block size) are free for custom use.
+enum YseSynthHandlerParam {
+  YSE_HANDLER_PARAM_CENTER_X(0),
+  YSE_HANDLER_PARAM_CENTER_Y(1),
+  YSE_HANDLER_PARAM_CENTER_Z(2);
+
+  final int value;
+  const YseSynthHandlerParam(this.value);
+
+  static YseSynthHandlerParam fromValue(int value) => switch (value) {
+    0 => YSE_HANDLER_PARAM_CENTER_X,
+    1 => YSE_HANDLER_PARAM_CENTER_Y,
+    2 => YSE_HANDLER_PARAM_CENTER_Z,
+    _ => throw ArgumentError('Unknown value for YseSynthHandlerParam: $value'),
+  };
+}
+
 /// Mirrors YSE::REVERB_PRESET in headers/enums.hpp.
 enum YseReverbPreset {
   YSE_REVERB_OFF(0),
@@ -6296,11 +8843,11 @@ final class YseDeviceSetup extends ffi.Opaque {}
 
 final class YseListener extends ffi.Opaque {}
 
+final class YseDspObject extends ffi.Opaque {}
+
 final class YseSound extends ffi.Opaque {}
 
 final class YseDspBuffer extends ffi.Opaque {}
-
-final class YseDspObject extends ffi.Opaque {}
 
 final class YsePatcher extends ffi.Opaque {}
 
@@ -6358,6 +8905,38 @@ typedef DartYseMidiInParsedCallbackFunction =
 typedef YseMidiInParsedCallback =
     ffi.Pointer<ffi.NativeFunction<YseMidiInParsedCallbackFunction>>;
 
+final class YseClip extends ffi.Opaque {}
+
+final class YseSynth extends ffi.Opaque {}
+
+/// One timed note event, positioned in beats on the bound domain clock.
+/// Layout-compatible with YSE::clipEvent.
+final class YseClipEvent extends ffi.Struct {
+  /// beat within the loop at which the note starts (>= 0)
+  @ffi.Double()
+  external double start_beat;
+
+  /// note length in beats
+  @ffi.Double()
+  external double duration_beats;
+
+  /// MIDI channel, 1..16
+  @ffi.Int()
+  external int channel;
+
+  /// MIDI note number, 0..127
+  @ffi.Int()
+  external int pitch;
+
+  /// normalized to [0, 1]
+  @ffi.Float()
+  external double velocity;
+
+  /// optional per-note bend, [-1, 1]; 0 = none
+  @ffi.Float()
+  external double pitch_bend;
+}
+
 final class YseNote extends ffi.Opaque {}
 
 final class YsePNote extends ffi.Opaque {}
@@ -6367,6 +8946,129 @@ final class YseScale extends ffi.Opaque {}
 final class YseMotif extends ffi.Opaque {}
 
 final class YsePlayer extends ffi.Opaque {}
+
+final class YseSfzInstrument extends ffi.Opaque {}
+
+final class YseDx7Bank extends ffi.Opaque {}
+
+/// One-region convenience creator — the samplerConfig facade (spec §11) as a
+/// flat, ffigen-friendly param struct. Builds a single-region instrument around
+/// one sample file without an .sfz text file, decoding the sample on the calling
+/// thread. `name` may be NULL (identification only). `file` is the absolute
+/// sample path. `root` is the key that plays the sample untransposed; `low` /
+/// `high` bound the playable key range. `attack` / `release` are the amplitude
+/// envelope times in seconds; `max_length` caps a non-looping one-shot in
+/// seconds. Mirrors YSE::SYNTH::samplerConfig.
+final class YseSamplerConfig extends ffi.Struct {
+  /// Instrument label (may be NULL).
+  external ffi.Pointer<ffi.Char> name;
+
+  /// Absolute path to the sample file (sample=).
+  external ffi.Pointer<ffi.Char> file;
+
+  /// Root note (key that plays untransposed).
+  @ffi.Int()
+  external int root;
+
+  /// Lowest playable key.
+  @ffi.Int()
+  external int low;
+
+  /// Highest playable key.
+  @ffi.Int()
+  external int high;
+
+  /// Amplitude-envelope attack, seconds.
+  @ffi.Float()
+  external double attack;
+
+  /// Amplitude-envelope release, seconds.
+  @ffi.Float()
+  external double release;
+
+  /// One-shot length cap, seconds (non-looping regions).
+  @ffi.Float()
+  external double max_length;
+}
+
+typedef YseSynthNoteCallbackFunction =
+    ffi.Void Function(
+      ffi.Int note_on,
+      ffi.Pointer<ffi.Float> note_number,
+      ffi.Pointer<ffi.Float> velocity,
+    );
+typedef DartYseSynthNoteCallbackFunction =
+    void Function(
+      int note_on,
+      ffi.Pointer<ffi.Float> note_number,
+      ffi.Pointer<ffi.Float> velocity,
+    );
+
+/// Audio-thread note-rewrite hook, mirroring YSE::synth::onNoteEvent
+/// (docs/design/synth_core.md §7). Invoked by the engine on the AUDIO THREAD
+/// for every note-on / note-off, before keyboard bookkeeping and voice
+/// allocation. It may rewrite *note_number and *velocity in place — the
+/// classic use is transposition, retuning, velocity curves or note filtering.
+///
+/// note_on is 1 for a note-on, 0 for a note-off. Same real-time rules as a
+/// voice's render: no allocation, no locks, no blocking I/O. There is no
+/// user_data slot — the engine hook is a bare captureless function pointer,
+/// so state must be reached through globals (matches the C++ API, which
+/// accepts only a free function / captureless lambda).
+typedef YseSynthNoteCallback =
+    ffi.Pointer<ffi.NativeFunction<YseSynthNoteCallbackFunction>>;
+
+/// ─── per-note 3D positioning (issue #171) ────────────────────────────────
+///
+/// Configuration for yse_synth_set_position_handler. One flat, ffigen-friendly
+/// struct covering every built-in handler; only the fields belonging to the
+/// selected kind are read. Pass NULL to take the engine's defaults for that
+/// kind. Mirrors the chainable setters on YSE::SYNTH::staticHandler /
+/// randomSpreadHandler / orbitHandler. All positions are in the same coordinate
+/// frame as a sound position.
+final class YseSynthPositionParams extends ffi.Struct {
+  /// YSE_POSITION_HANDLER_STATIC — the single fixed position.
+  @ffi.Float()
+  external double static_x;
+
+  @ffi.Float()
+  external double static_y;
+
+  @ffi.Float()
+  external double static_z;
+
+  /// radius of the scatter sphere around the centre
+  @ffi.Float()
+  external double spread_radius;
+
+  /// base RNG seed (a given seed reproduces the scatter)
+  @ffi.UnsignedInt()
+  external int spread_seed;
+
+  /// base orbit radius
+  @ffi.Float()
+  external double orbit_radius;
+
+  /// extra radius added at full velocity
+  @ffi.Float()
+  external double orbit_velocity_radius;
+
+  /// fraction of extra radius at full aftertouch
+  @ffi.Float()
+  external double orbit_aftertouch_widen;
+
+  /// orbit angular speed, radians per second
+  @ffi.Float()
+  external double orbit_rate;
+
+  /// vertical offset of the orbit plane
+  @ffi.Float()
+  external double orbit_height;
+
+  /// rate multiplier once the note is released
+  @ffi.Float()
+  external double orbit_release_slow;
+}
 
 final class YseLog extends ffi.Opaque {}
 

@@ -181,6 +181,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../dsp.html">DSP</a></li>
 
 
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -217,6 +222,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
+
+
 
 
 
@@ -593,6 +601,16 @@ unchanged.</p>
 </pre></div>
 </div>
 <p>Granulator: spawn rate in grains per second.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">grainLength</span>
+</pre></div>
+</div>
+<p>Granulator: the base grain length in samples (the [samples] argument
+last passed to [setGrainLength], without the per-grain randomisation).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">grainTranspose</span>
+</pre></div>
+</div>
+<p>Granulator: the base pitch shift (the [pitch] argument last passed to
+[setGrainTranspose], without the per-grain randomisation).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">grainGain</span>
 </pre></div>
 </div>

@@ -229,6 +229,20 @@ Granulator: spawn rate in grains per second.
 
 .. code-block:: dart
 
+   int get grainLength
+
+Granulator: the base grain length in samples (the [samples] argument
+last passed to [setGrainLength], without the per-grain randomisation).
+
+.. code-block:: dart
+
+   double get grainTranspose
+
+Granulator: the base pitch shift (the [pitch] argument last passed to
+[setGrainTranspose], without the per-grain randomisation).
+
+.. code-block:: dart
+
    double get grainGain
 
 .. code-block:: dart

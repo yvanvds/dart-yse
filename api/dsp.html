@@ -181,6 +181,11 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">DSP</a></li>
 
 
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
 
 
@@ -217,6 +222,9 @@
 <li class="toctree-l2"><a class="reference internal" href="live_coding.html">LiveCoding</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="enums.html">Enums</a></li>
+
+
+
 
 
 
@@ -430,6 +438,32 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mix-grade-modules">Mix-grade modules</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#compressor">Compressor</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#parametriceq">ParametricEq</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#chorus">Chorus</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#platereverb">PlateReverb</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#feedbackdelay">FeedbackDelay</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Properties</a></li>
 </ul>
 </li>
 </ul>
@@ -761,6 +795,16 @@ unchanged.</p>
 </pre></div>
 </div>
 <p>Granulator: spawn rate in grains per second.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">grainLength</span>
+</pre></div>
+</div>
+<p>Granulator: the base grain length in samples (the [samples] argument
+last passed to [setGrainLength], without the per-grain randomisation).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">grainTranspose</span>
+</pre></div>
+</div>
+<p>Granulator: the base pitch shift (the [pitch] argument last passed to
+[setGrainTranspose], without the per-grain randomisation).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">grainGain</span>
 </pre></div>
 </div>
@@ -801,6 +845,273 @@ around [samples].</p>
 </pre></div>
 </div>
 <p>Destroy the underlying native effect and detach the finalizer.</p>
+</section>
+<section id="mix-grade-modules">
+<h2>Mix-grade modules<a class="headerlink" href="#mix-grade-modules" title="Link to this heading">#</a></h2>
+<p>Channel-strip effects added in engine v2.3.0. Each is a <code class="xref py py-class docutils literal notranslate"><span class="pre">DspObject</span></code>
+subclass — construct it, then attach it to a channel insert (<code class="docutils literal notranslate"><span class="pre">Channel.dsp</span></code>)
+or a sound (<code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.setDsp()</span></code>) exactly like the base modules. The inherited
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">DspObject.impact</span></code> sets the wet/dry balance.</p>
+</section>
+</section>
+<section id="compressor">
+<h1>Compressor<a class="headerlink" href="#compressor" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">Compressor</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">DspObject</span>
+</pre></div>
+</div>
+<p>Feed-forward, stereo-linked dynamics compressor — a mix-grade
+[DspObject] for a channel insert or a send return.</p>
+<p>Attach with <cite>Channel.dsp</cite> or [Sound.setDsp]; the inherited [impact]
+controls the wet/dry balance and [bypass] the compression. All setters
+take effect immediately; the engine ramps the internal gain to keep
+moves click-free.</p>
+<section id="id4">
+<h2>Constructors<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Compressor</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Construct a compressor with the engine’s default curve.</p>
+</section>
+<section id="id5">
+<h2>Properties<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">CompressorDetector</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">detector</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">detector</span><span class="p">(</span><span class="n">CompressorDetector</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Level-detector mode (peak vs. RMS).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">threshold</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">threshold</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Threshold in dB below which no gain reduction is applied.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">ratio</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">ratio</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Compression ratio (e.g. 4.0 is 4:1). 1.0 is no compression.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">attack</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">attack</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Attack time in milliseconds.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">release</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">release</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Release time in milliseconds.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">makeup</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">makeup</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Make-up gain in dB applied after compression.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">gainReductionDb</span>
+</pre></div>
+</div>
+<p>Read-only meter: the gain reduction (in dB, <cite>&lt;= 0</cite>) applied to the last
+processed sample.</p>
+</section>
+</section>
+<section id="parametriceq">
+<h1>ParametricEq<a class="headerlink" href="#parametriceq" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">ParametricEq</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">DspObject</span>
+</pre></div>
+</div>
+<p>Four-band parametric EQ (low shelf, two peaks, high shelf) — a mix-grade
+[DspObject] for a channel insert or a send return.</p>
+<p>Every parameter is addressed by an [EqBand]; a band with 0 dB [getGain]
+is flat (bypassed). Attach with <cite>Channel.dsp</cite> or [Sound.setDsp].</p>
+<section id="id6">
+<h2>Constructors<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">ParametricEq</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Construct a flat four-band parametric EQ.</p>
+</section>
+<section id="id7">
+<h2>Methods<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">getFrequency</span><span class="p">(</span><span class="n">EqBand</span><span class="w"> </span><span class="n">band</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Centre/corner frequency of [band] in Hz.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setFrequency</span><span class="p">(</span><span class="n">EqBand</span><span class="w"> </span><span class="n">band</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">hz</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the centre/corner frequency of [band] to [hz].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">getGain</span><span class="p">(</span><span class="n">EqBand</span><span class="w"> </span><span class="n">band</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Gain of [band] in dB (0 = flat / band bypass).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setGain</span><span class="p">(</span><span class="n">EqBand</span><span class="w"> </span><span class="n">band</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the gain of [band] to [db] (0 = flat / band bypass).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">getQ</span><span class="p">(</span><span class="n">EqBand</span><span class="w"> </span><span class="n">band</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Q (bandwidth) of [band].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setQ</span><span class="p">(</span><span class="n">EqBand</span><span class="w"> </span><span class="n">band</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the Q (bandwidth) of [band] to [value].</p>
+</section>
+</section>
+<section id="chorus">
+<h1>Chorus<a class="headerlink" href="#chorus" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">Chorus</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">DspObject</span>
+</pre></div>
+</div>
+<p>Chorus / flanger — one modulated-delay [DspObject] with a [mode] switch,
+for a channel insert or a send return.</p>
+<p>[spread] fans a per-channel LFO phase offset for stereo width. Attach
+with <cite>Channel.dsp</cite> or [Sound.setDsp]; the inherited [impact] sets the
+wet/dry balance.</p>
+<section id="id8">
+<h2>Constructors<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Chorus</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Construct a chorus module (defaults to [ChorusMode.chorus]).</p>
+</section>
+<section id="id9">
+<h2>Properties<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ChorusMode</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">mode</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">mode</span><span class="p">(</span><span class="n">ChorusMode</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Chorus vs. flanger character.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">rate</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">rate</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">hz</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>LFO rate in Hz.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">depth</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">depth</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Modulation depth.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">feedback</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">feedback</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Feedback amount (comb resonance; most audible in flanger mode).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">spread</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">spread</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Stereo spread — the per-channel LFO phase offset.</p>
+</section>
+</section>
+<section id="platereverb">
+<h1>PlateReverb<a class="headerlink" href="#platereverb" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">PlateReverb</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">DspObject</span>
+</pre></div>
+</div>
+<p>Dattorro plate reverb — a mix-grade [DspObject] for a channel insert or a
+send return.</p>
+<p>Distinct from the engine’s global spatial [Reverb]. <cite>impact(0.25)</cite> is a
+natural insert mix; <cite>impact(1)</cite> is fully wet for send-return use. Attach
+with <cite>Channel.dsp</cite> or [Sound.setDsp].</p>
+<section id="id10">
+<h2>Constructors<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">PlateReverb</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Construct a plate reverb with the engine’s default tail.</p>
+</section>
+<section id="id11">
+<h2>Properties<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">decay</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">decay</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Tail decay (feedback) in <cite>[0.0, 1.0)</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">damping</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">damping</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">hz</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>High-frequency damping corner in Hz.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">predelay</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">predelay</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Pre-delay before the tail begins, in milliseconds.</p>
+</section>
+</section>
+<section id="feedbackdelay">
+<h1>FeedbackDelay<a class="headerlink" href="#feedbackdelay" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">FeedbackDelay</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">DspObject</span>
+</pre></div>
+</div>
+<p>Recirculating feedback delay — a mix-grade [DspObject] for a channel
+insert or a send return.</p>
+<p>A per-channel delay line with a damping low-pass in the feedback path and
+[crossfeed] between channel pairs for ping-pong echoes. <cite>impact(1)</cite> is
+echoes-only (send use). Attach with <cite>Channel.dsp</cite> or [Sound.setDsp].</p>
+<section id="id12">
+<h2>Constructors<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">FeedbackDelay</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Construct a feedback delay with the engine’s default timing.</p>
+</section>
+<section id="id13">
+<h2>Properties<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">time</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">time</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Delay time in milliseconds.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">feedback</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">feedback</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Feedback amount in <cite>[0.0, 1.0)</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">damping</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">damping</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">hz</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Damping low-pass corner in the feedback path, in Hz.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">crossfeed</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">crossfeed</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Cross-feed between the channel pair for ping-pong echoes.</p>
 </section>
 </section>
 
@@ -862,6 +1173,32 @@ around [samples].</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mix-grade-modules">Mix-grade modules</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#compressor">Compressor</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#parametriceq">ParametricEq</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#chorus">Chorus</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#platereverb">PlateReverb</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#feedbackdelay">FeedbackDelay</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Properties</a></li>
 </ul>
 </li>
 </ul>

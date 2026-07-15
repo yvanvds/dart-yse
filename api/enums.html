@@ -180,6 +180,11 @@
 <li class="toctree-l2"><a class="reference internal" href="dsp.html">DSP</a></li>
 
 
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
 
 
@@ -216,6 +221,9 @@
 <li class="toctree-l2"><a class="reference internal" href="live_coding.html">LiveCoding</a></li>
 
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Enums</a></li>
+
+
+
 
 
 
@@ -465,6 +473,24 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-chorusmode">enum ChorusMode</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">Values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-eqband">enum EqBand</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">Values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-compressordetector">enum CompressorDetector</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">Values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">Properties</a></li>
 </ul>
 </li>
 </ul>
@@ -758,6 +784,108 @@ filtered subclasses).</p>
 <p>The raw FFI enum value passed to the C ABI.</p>
 </section>
 </section>
+<section id="enum-chorusmode">
+<h1>enum ChorusMode<a class="headerlink" href="#enum-chorusmode" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">ChorusMode</span>
+</pre></div>
+</div>
+<p>Modulation character of a [Chorus] module.</p>
+<p>Values match <cite>YSE::DSP::MODULES::chorusMode</cite> (see <cite>chorus.hpp</cite>).</p>
+<section id="id22">
+<h2>Values<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
+<p id="chorus-mode-chorus"><code class="docutils literal notranslate"><span class="pre">chorus</span></code></p>
+<blockquote>
+<div><p>Longer base delay with a wide, slow sweep.</p>
+</div></blockquote>
+<p id="chorus-mode-flanger"><code class="docutils literal notranslate"><span class="pre">flanger</span></code></p>
+<blockquote>
+<div><p>Short base delay with a feedback comb.</p>
+</div></blockquote>
+</section>
+<section id="id23">
+<h2>Constructors<a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ChorusMode</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id24">
+<h2>Properties<a class="headerlink" href="#id24" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseChorusMode</span><span class="w"> </span><span class="kd">native</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="enum-eqband">
+<h1>enum EqBand<a class="headerlink" href="#enum-eqband" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">EqBand</span>
+</pre></div>
+</div>
+<p>One of the four fixed bands of a [ParametricEq].</p>
+<p>Values match <cite>YSE::DSP::MODULES::eqBand</cite> (see <cite>parametricEQ.hpp</cite>). The
+<cite>YSE_EQ_BAND_COUNT</cite> sentinel is intentionally omitted.</p>
+<section id="id25">
+<h2>Values<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
+<p id="eq-band-lowshelf"><code class="docutils literal notranslate"><span class="pre">lowShelf</span></code></p>
+<blockquote>
+<div><p>Low shelf.</p>
+</div></blockquote>
+<p id="eq-band-peak1"><code class="docutils literal notranslate"><span class="pre">peak1</span></code></p>
+<blockquote>
+<div><p>First peaking band.</p>
+</div></blockquote>
+<p id="eq-band-peak2"><code class="docutils literal notranslate"><span class="pre">peak2</span></code></p>
+<blockquote>
+<div><p>Second peaking band.</p>
+</div></blockquote>
+<p id="eq-band-highshelf"><code class="docutils literal notranslate"><span class="pre">highShelf</span></code></p>
+<blockquote>
+<div><p>High shelf.</p>
+</div></blockquote>
+</section>
+<section id="id26">
+<h2>Constructors<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">EqBand</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id27">
+<h2>Properties<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseEqBand</span><span class="w"> </span><span class="kd">native</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="enum-compressordetector">
+<h1>enum CompressorDetector<a class="headerlink" href="#enum-compressordetector" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">CompressorDetector</span>
+</pre></div>
+</div>
+<p>Level-detector mode of a [Compressor].</p>
+<p>Values match <cite>YSE::DSP::MODULES::compressorDetector</cite> (see <cite>compressor.hpp</cite>).</p>
+<section id="id28">
+<h2>Values<a class="headerlink" href="#id28" title="Link to this heading">#</a></h2>
+<p id="compressor-detector-peak"><code class="docutils literal notranslate"><span class="pre">peak</span></code></p>
+<blockquote>
+<div><p>Instantaneous linked peak.</p>
+</div></blockquote>
+<p id="compressor-detector-rms"><code class="docutils literal notranslate"><span class="pre">rms</span></code></p>
+<blockquote>
+<div><p>Short mean-square window.</p>
+</div></blockquote>
+</section>
+<section id="id29">
+<h2>Constructors<a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">CompressorDetector</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id30">
+<h2>Properties<a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseCompressorDetector</span><span class="w"> </span><span class="kd">native</span>
+</pre></div>
+</div>
+</section>
+</section>
 
 
                 </article>
@@ -844,6 +972,24 @@ filtered subclasses).</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-chorusmode">enum ChorusMode</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">Values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-eqband">enum EqBand</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">Values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-compressordetector">enum CompressorDetector</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">Values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">Properties</a></li>
 </ul>
 </li>
 </ul>

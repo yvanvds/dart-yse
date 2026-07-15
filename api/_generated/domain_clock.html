@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>enum ChannelType &#8212; dart-yse 0.1</title>
+    <title>DomainClock &#8212; dart-yse 0.1</title>
   
   
   
@@ -43,7 +43,7 @@
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/channel_type';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/domain_clock';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -297,7 +297,7 @@
       
       
       
-      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/channel_type.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/domain_clock.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -327,7 +327,7 @@
       
       
       
-      <li><a href="../../_sources/api/_generated/channel_type.rst" target="_blank"
+      <li><a href="../../_sources/api/_generated/domain_clock.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -403,7 +403,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>enum ChannelType</h1>
+    <h1>DomainClock</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -413,9 +413,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
             </nav>
         </div>
@@ -427,57 +427,72 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="enum-channeltype">
-<h1>enum ChannelType<a class="headerlink" href="#enum-channeltype" title="Link to this heading">#</a></h1>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">ChannelType</span>
+  <section id="domainclock">
+<h1>DomainClock<a class="headerlink" href="#domainclock" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">DomainClock</span>
 </pre></div>
 </div>
-<p>Speaker layout for [System.openDevice].</p>
-<p>Values are kept in lockstep with <cite>YSE::CHANNEL_TYPE</cite> (see
-<cite>YseEngine/headers/enums.hpp</cite>) so the Dart enum value cast equals
-the underlying C enum.</p>
-<section id="values">
-<h2>Values<a class="headerlink" href="#values" title="Link to this heading">#</a></h2>
-<p id="channel-type-auto"><code class="docutils literal notranslate"><span class="pre">auto</span></code></p>
-<blockquote>
-<div><p>Pick stereo when possible.</p>
-</div></blockquote>
-<p id="channel-type-mono"><code class="docutils literal notranslate"><span class="pre">mono</span></code></p>
-<p id="channel-type-stereo"><code class="docutils literal notranslate"><span class="pre">stereo</span></code></p>
-<p id="channel-type-quad"><code class="docutils literal notranslate"><span class="pre">quad</span></code></p>
-<p id="channel-type-surround51"><code class="docutils literal notranslate"><span class="pre">surround51</span></code></p>
-<blockquote>
-<div><p>5.1 surround.</p>
-</div></blockquote>
-<p id="channel-type-surround51side"><code class="docutils literal notranslate"><span class="pre">surround51Side</span></code></p>
-<blockquote>
-<div><p>5.1-side variant.</p>
-</div></blockquote>
-<p id="channel-type-surround61"><code class="docutils literal notranslate"><span class="pre">surround61</span></code></p>
-<blockquote>
-<div><p>6.1 surround.</p>
-</div></blockquote>
-<p id="channel-type-surround71"><code class="docutils literal notranslate"><span class="pre">surround71</span></code></p>
-<blockquote>
-<div><p>7.1 surround.</p>
-</div></blockquote>
-<p id="channel-type-custom"><code class="docutils literal notranslate"><span class="pre">custom</span></code></p>
-<blockquote>
-<div><p>Custom layout — the caller is expected to set speaker positions.</p>
-</div></blockquote>
-</section>
+<p>A named musical beat-clock owned by the engine (issue #21).</p>
+<p>A domain clock is a beat accumulator derived from the audio callback:
+every audio block it advances by <cite>blockSeconds * tempo / 60</cite>, so
+[beatPosition] is the running integral of [currentTempo]. All clocks
+derive from the single sample clock, keeping polytemporal relationships
+exact. Tempo is a playable, rampable control and is <strong>not</strong> clamped — a
+tempo of 0 pauses the clock and a negative tempo runs it backwards.</p>
+<p>Clocks are keyed by [name], not by an owned pointer: the engine holds the
+clock and the <em>first</em> registration of a name wins. Bind a [ClipTransport]
+to a clock by that same [name]; the clock must outlive every clip bound to
+it.</p>
+<p>Threading (CLAUDE.md): construct, [dispose] and [setTempo] are
+control-thread calls made from the [System] isolate; [beatPosition] and
+[currentTempo] are cheap enough to read from the UI thread at frame rate.</p>
+<p>Unlike the pointer-backed wrappers this is <strong>not</strong> [Finalizable]: the
+engine keys clocks by name, and the native destructor takes that name
+rather than a pointer, so there is no token a [NativeFinalizer] could
+carry. Release the clock explicitly with [dispose].</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ChannelType</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DomainClock</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">double</span><span class="w"> </span><span class="n">tempo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">120.0</span><span class="p">})</span>
 </pre></div>
 </div>
+<p>Create a named clock starting at [tempo] BPM.</p>
+<p>Throws [YseException] if a live clock already owns [name] (first
+registration wins).</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseChannelType</span><span class="w"> </span><span class="kd">native</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">name</span>
 </pre></div>
 </div>
-<p>The raw FFI enum value passed to the C ABI.</p>
+<p>Registration name of this clock. Bind a [ClipTransport] with it.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">exists</span>
+</pre></div>
+</div>
+<p>Whether a live clock with this [name] currently exists in the engine.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">beatPosition</span>
+</pre></div>
+</div>
+<p>Current beat position — the running integral of tempo. Returns 0 for a
+disposed or otherwise unknown clock.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">currentTempo</span>
+</pre></div>
+</div>
+<p>Current tempo in BPM. Returns 0 for a disposed or otherwise unknown
+clock.</p>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setTempo</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">ramp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Ramp the tempo toward [target] BPM over [ramp] (zero = instant).</p>
+<p>Tempo is unclamped: 0 pauses the clock, a negative value runs it
+backwards.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Destroy the named clock in the engine. Idempotent. Dispose every
+[ClipTransport] bound to this clock first.</p>
 </section>
 </section>
 
@@ -510,9 +525,9 @@ the underlying C enum.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
   </nav></div>
 

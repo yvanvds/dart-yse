@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>enum ChannelType &#8212; dart-yse 0.1</title>
+    <title>ClipEvent &#8212; dart-yse 0.1</title>
   
   
   
@@ -43,7 +43,7 @@
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/channel_type';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/clip_event';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -297,7 +297,7 @@
       
       
       
-      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/channel_type.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/clip_event.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -327,7 +327,7 @@
       
       
       
-      <li><a href="../../_sources/api/_generated/channel_type.rst" target="_blank"
+      <li><a href="../../_sources/api/_generated/clip_event.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -403,7 +403,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>enum ChannelType</h1>
+    <h1>ClipEvent</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -413,7 +413,6 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 </ul>
@@ -427,57 +426,49 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="enum-channeltype">
-<h1>enum ChannelType<a class="headerlink" href="#enum-channeltype" title="Link to this heading">#</a></h1>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">ChannelType</span>
+  <section id="clipevent">
+<h1>ClipEvent<a class="headerlink" href="#clipevent" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">ClipEvent</span>
 </pre></div>
 </div>
-<p>Speaker layout for [System.openDevice].</p>
-<p>Values are kept in lockstep with <cite>YSE::CHANNEL_TYPE</cite> (see
-<cite>YseEngine/headers/enums.hpp</cite>) so the Dart enum value cast equals
-the underlying C enum.</p>
-<section id="values">
-<h2>Values<a class="headerlink" href="#values" title="Link to this heading">#</a></h2>
-<p id="channel-type-auto"><code class="docutils literal notranslate"><span class="pre">auto</span></code></p>
-<blockquote>
-<div><p>Pick stereo when possible.</p>
-</div></blockquote>
-<p id="channel-type-mono"><code class="docutils literal notranslate"><span class="pre">mono</span></code></p>
-<p id="channel-type-stereo"><code class="docutils literal notranslate"><span class="pre">stereo</span></code></p>
-<p id="channel-type-quad"><code class="docutils literal notranslate"><span class="pre">quad</span></code></p>
-<p id="channel-type-surround51"><code class="docutils literal notranslate"><span class="pre">surround51</span></code></p>
-<blockquote>
-<div><p>5.1 surround.</p>
-</div></blockquote>
-<p id="channel-type-surround51side"><code class="docutils literal notranslate"><span class="pre">surround51Side</span></code></p>
-<blockquote>
-<div><p>5.1-side variant.</p>
-</div></blockquote>
-<p id="channel-type-surround61"><code class="docutils literal notranslate"><span class="pre">surround61</span></code></p>
-<blockquote>
-<div><p>6.1 surround.</p>
-</div></blockquote>
-<p id="channel-type-surround71"><code class="docutils literal notranslate"><span class="pre">surround71</span></code></p>
-<blockquote>
-<div><p>7.1 surround.</p>
-</div></blockquote>
-<p id="channel-type-custom"><code class="docutils literal notranslate"><span class="pre">custom</span></code></p>
-<blockquote>
-<div><p>Custom layout — the caller is expected to set speaker positions.</p>
-</div></blockquote>
-</section>
+<p>One timed note event on a [ClipTransport].</p>
+<p>Positioned in beats on the clip’s bound [DomainClock]. The engine fires
+the note-on at [startBeat] and the matching note-off [durationBeats]
+later, all from the audio thread — the Dart side never dispatches a note.</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ChannelType</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ClipEvent</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">startBeat</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">durationBeats</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">channel</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">pitch</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">pitchBend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.0</span><span class="p">})</span>
 </pre></div>
 </div>
+<p>Construct a note event. [velocity] defaults to full, [pitchBend] to none.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseChannelType</span><span class="w"> </span><span class="kd">native</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">startBeat</span>
 </pre></div>
 </div>
-<p>The raw FFI enum value passed to the C ABI.</p>
+<p>Beat within the loop at which the note starts (<cite>&gt;= 0</cite>).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">durationBeats</span>
+</pre></div>
+</div>
+<p>Note length in beats.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span>
+</pre></div>
+</div>
+<p>MIDI channel, <cite>1..16</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">pitch</span>
+</pre></div>
+</div>
+<p>MIDI note number, <cite>0..127</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">velocity</span>
+</pre></div>
+</div>
+<p>Velocity, normalized to <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">pitchBend</span>
+</pre></div>
+</div>
+<p>Optional per-note pitch bend in <cite>[-1, 1]</cite> for microtonal voicing;
+<cite>0</cite> (the default) applies no bend.</p>
 </section>
 </section>
 
@@ -510,7 +501,6 @@ the underlying C enum.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 </ul>

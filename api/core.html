@@ -166,6 +166,7 @@
 
 
 
+
 <li class="toctree-l2"><a class="reference internal" href="sounds.html">Sound</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="channels.html">Channel</a></li>
@@ -184,6 +185,9 @@
 
 
 
+
+
+<li class="toctree-l2"><a class="reference internal" href="clip.html">Clip transport</a></li>
 
 
 <li class="toctree-l2"><a class="reference internal" href="music.html">Music</a></li>
@@ -414,20 +418,27 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#domain-clocks">Domain clocks</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#domainclock">DomainClock</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pos">Pos</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Pos</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Properties</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Methods</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Pos</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptions">Exceptions</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#yseexception">YseException</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Methods</a></li>
 </ul>
 </li>
 </ul>
@@ -640,20 +651,95 @@ pitch shift).</p>
 </div>
 <p>Cancel the [startUpdateTimer] timer if one is running.</p>
 </section>
+<section id="domain-clocks">
+<h2>Domain clocks<a class="headerlink" href="#domain-clocks" title="Link to this heading">#</a></h2>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DomainClock</span></code> is a named, rampable musical beat clock owned by the
+engine. Each clock integrates its tempo per audio block, so
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">DomainClock.beatPosition</span></code> is cheap to poll at frame rate. Bind a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ClipTransport</span></code> to a clock by name to drive engine-timed playback.</p>
+</section>
+</section>
+<section id="domainclock">
+<h1>DomainClock<a class="headerlink" href="#domainclock" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">DomainClock</span>
+</pre></div>
+</div>
+<p>A named musical beat-clock owned by the engine (issue #21).</p>
+<p>A domain clock is a beat accumulator derived from the audio callback:
+every audio block it advances by <cite>blockSeconds * tempo / 60</cite>, so
+[beatPosition] is the running integral of [currentTempo]. All clocks
+derive from the single sample clock, keeping polytemporal relationships
+exact. Tempo is a playable, rampable control and is <strong>not</strong> clamped — a
+tempo of 0 pauses the clock and a negative tempo runs it backwards.</p>
+<p>Clocks are keyed by [name], not by an owned pointer: the engine holds the
+clock and the <em>first</em> registration of a name wins. Bind a [ClipTransport]
+to a clock by that same [name]; the clock must outlive every clip bound to
+it.</p>
+<p>Threading (CLAUDE.md): construct, [dispose] and [setTempo] are
+control-thread calls made from the [System] isolate; [beatPosition] and
+[currentTempo] are cheap enough to read from the UI thread at frame rate.</p>
+<p>Unlike the pointer-backed wrappers this is <strong>not</strong> [Finalizable]: the
+engine keys clocks by name, and the native destructor takes that name
+rather than a pointer, so there is no token a [NativeFinalizer] could
+carry. Release the clock explicitly with [dispose].</p>
+<section id="constructors">
+<h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DomainClock</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">double</span><span class="w"> </span><span class="n">tempo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">120.0</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Create a named clock starting at [tempo] BPM.</p>
+<p>Throws [YseException] if a live clock already owns [name] (first
+registration wins).</p>
+</section>
+<section id="id1">
+<h2>Properties<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">name</span>
+</pre></div>
+</div>
+<p>Registration name of this clock. Bind a [ClipTransport] with it.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">exists</span>
+</pre></div>
+</div>
+<p>Whether a live clock with this [name] currently exists in the engine.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">beatPosition</span>
+</pre></div>
+</div>
+<p>Current beat position — the running integral of tempo. Returns 0 for a
+disposed or otherwise unknown clock.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">currentTempo</span>
+</pre></div>
+</div>
+<p>Current tempo in BPM. Returns 0 for a disposed or otherwise unknown
+clock.</p>
+</section>
+<section id="id2">
+<h2>Methods<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setTempo</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Duration</span><span class="w"> </span><span class="n">ramp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="n">zero</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Ramp the tempo toward [target] BPM over [ramp] (zero = instant).</p>
+<p>Tempo is unclamped: 0 pauses the clock, a negative value runs it
+backwards.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Destroy the named clock in the engine. Idempotent. Dispose every
+[ClipTransport] bound to this clock first.</p>
+</section>
 <section id="pos">
 <h2>Pos<a class="headerlink" href="#pos" title="Link to this heading">#</a></h2>
 </section>
 </section>
-<section id="id1">
-<h1>Pos<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<section id="id3">
+<h1>Pos<a class="headerlink" href="#id3" title="Link to this heading">#</a></h1>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">Pos</span>
 </pre></div>
 </div>
 <p>3D position vector used everywhere YSE needs spatial coordinates —
 sound positions, the listener position, reverb-zone centres.</p>
 <p>Immutable value type. Construct fresh instances instead of mutating.</p>
-<section id="constructors">
-<h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h2>Constructors<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pos</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">z</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -667,8 +753,8 @@ sound positions, the listener position, reverb-zone centres.</p>
 </div>
 <p>Convert a freshly-returned native [yse_pos_t] struct to a Dart [Pos].</p>
 </section>
-<section id="id2">
-<h2>Properties<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h2>Properties<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">x</span>
 </pre></div>
 </div>
@@ -685,8 +771,8 @@ sound positions, the listener position, reverb-zone centres.</p>
 </pre></div>
 </div>
 </section>
-<section id="id3">
-<h2>Methods<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>Methods<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -707,15 +793,15 @@ sound positions, the listener position, reverb-zone centres.</p>
 <p>Wraps a [YseStatus] code (when the underlying call returned one) and a
 human-readable message — typically the engine’s thread-local last-error
 string at the time of failure.</p>
-<section id="id4">
-<h2>Constructors<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>Constructors<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">YseException</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="n">status</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Constructs an exception with a [message] and optional [status].</p>
 </section>
-<section id="id5">
-<h2>Properties<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>Properties<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">message</span>
 </pre></div>
 </div>
@@ -725,8 +811,8 @@ string at the time of failure.</p>
 </div>
 <p>The raw status code, if the originating C call returns one.</p>
 </section>
-<section id="id6">
-<h2>Methods<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>Methods<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -785,20 +871,27 @@ string at the time of failure.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#domain-clocks">Domain clocks</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#domainclock">DomainClock</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pos">Pos</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Pos</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Properties</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Methods</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Pos</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptions">Exceptions</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#yseexception">YseException</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Methods</a></li>
 </ul>
 </li>
 </ul>

@@ -42,6 +42,12 @@ you can read both views of the API side by side. Look for the
 
 .. toctree::
    :maxdepth: 1
+   :caption: Clip transport
+
+   clip
+
+.. toctree::
+   :maxdepth: 1
    :caption: Music
 
    music

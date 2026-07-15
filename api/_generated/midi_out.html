@@ -166,6 +166,7 @@
 
 
 
+
 <li class="toctree-l2"><a class="reference internal" href="../sounds.html">Sound</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../channels.html">Channel</a></li>
@@ -184,6 +185,9 @@
 
 
 
+
+
+<li class="toctree-l2"><a class="reference internal" href="../clip.html">Clip transport</a></li>
 
 
 <li class="toctree-l2"><a class="reference internal" href="../music.html">Music</a></li>
@@ -452,6 +456,11 @@ with [System.midiOutDeviceName], then open one with [MidiOut.open].</p>
 </pre></div>
 </div>
 <p>Toggle Poly (<cite>true</cite>) or Mono (<cite>false</cite>) mode on the receiving instrument.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">YseMidiOut</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">handle</span>
+</pre></div>
+</div>
+<p>Internal: the raw native handle, for wiring this port as a
+[ClipTransport] sink. Not part of the public surface.</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>

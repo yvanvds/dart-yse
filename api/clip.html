@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Listener &#8212; dart-yse 0.1</title>
+    <title>Clip transport &#8212; dart-yse 0.1</title>
   
   
   
@@ -43,11 +43,11 @@
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/listener';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/clip';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Reverb" href="reverb.html" />
-    <link rel="prev" title="Devices" href="devices.html" />
+    <link rel="next" title="Music" href="music.html" />
+    <link rel="prev" title="MIDI" href="midi.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1" />
@@ -174,7 +174,7 @@
 <li class="toctree-l2"><a class="reference internal" href="devices.html">Devices</a></li>
 
 
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Listener</a></li>
+<li class="toctree-l2"><a class="reference internal" href="listener.html">Listener</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="reverb.html">Reverb</a></li>
 
@@ -187,7 +187,7 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="clip.html">Clip transport</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Clip transport</a></li>
 
 
 <li class="toctree-l2"><a class="reference internal" href="music.html">Music</a></li>
@@ -297,7 +297,7 @@
       
       
       
-      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/listener.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/clip.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -327,7 +327,7 @@
       
       
       
-      <li><a href="../_sources/api/listener.rst" target="_blank"
+      <li><a href="../_sources/api/clip.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -403,7 +403,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Listener</h1>
+    <h1>Clip transport</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -413,11 +413,16 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Listener</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Listener</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Clip transport</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#cliptransport">ClipTransport</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#clipevent">ClipEvent</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Properties</a></li>
 </ul>
 </li>
 </ul>
@@ -432,57 +437,137 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="listener">
-<h1>Listener<a class="headerlink" href="#listener" title="Link to this heading">#</a></h1>
-<p>The 3D listener — the reference point used by the engine to pan
-sounds, attenuate by distance, and compute doppler shifts.</p>
-<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::listener">api/listener.html</a>.</p>
+  <section id="clip-transport">
+<h1>Clip transport<a class="headerlink" href="#clip-transport" title="Link to this heading">#</a></h1>
+<p>Engine-driven, beat-timed MIDI playback. A <code class="xref py py-class docutils literal notranslate"><span class="pre">ClipTransport</span></code> loops a
+flat list of <code class="xref py py-class docutils literal notranslate"><span class="pre">ClipEvent</span></code> against a <code class="xref py py-class docutils literal notranslate"><span class="pre">DomainClock</span></code>, dispatched
+from the audio thread — so the Dart side never has to time a <code class="docutils literal notranslate"><span class="pre">noteOn</span></code> /
+<code class="docutils literal notranslate"><span class="pre">noteOff</span></code> itself. The event list is replaceable while playing (the engine
+swaps it at the next audio-block boundary), and playback routes to one or
+more <code class="xref py py-class docutils literal notranslate"><span class="pre">MidiOut</span></code> sinks.</p>
+<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::clip">api/clip.html</a>.</p>
 </section>
-<section id="id1">
-<h1>Listener<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">Listener</span>
+<section id="cliptransport">
+<h1>ClipTransport<a class="headerlink" href="#cliptransport" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">ClipTransport</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Finalizable</span>
 </pre></div>
 </div>
-<p>Singleton 3D listener — the reference point used by the engine to pan
-sounds, attenuate by distance, and compute doppler shifts.</p>
-<p>Update [position] every frame so velocity and doppler stay coherent.
-Access through [Listener.instance].</p>
-<section id="static-accessors">
-<h2>Static accessors<a class="headerlink" href="#static-accessors" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">Listener</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">instance</span>
+<p>Engine-driven MIDI clip playback (issue #21).</p>
+<p>A clip loops a flat, beat-timed [ClipEvent] list against a bound
+[DomainClock], dispatched from the audio thread. Because the engine owns
+<em>when</em> every event fires, playback does not jitter under UI-isolate load
+the way a timer-driven <cite>noteOn</cite>/<cite>noteOff</cite> over FFI does.</p>
+<p>Wire a clip to one or more sinks — external MIDI-out ports via
+[connectMidiOut] (and the [ClipTransport.new] <cite>midiOut</cite> shortcut). Route
+the playback with [setEvents] (replaceable while playing; the engine swaps
+the list at the next audio-block boundary and still delivers note-offs for
+notes sounding across the swap), then [play] / [stop].</p>
+<p>Threading (CLAUDE.md): construct and drive this from the [System] isolate.
+The audio thread performs the actual dispatch; MIDI sends run on a
+dedicated sender thread, so the audio callback never touches the device.</p>
+<p>The internal-synth sink (<cite>yse_clip_connect_synth</cite>) is intentionally not
+surfaced yet — it needs the <cite>YSE::synth</cite> wrapper tracked by epic #23 to
+supply a typed handle. It will be added alongside that wrapper.</p>
+<section id="constructors">
+<h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">ClipTransport</span><span class="p">(</span><span class="n">DomainClock</span><span class="w"> </span><span class="n">clock</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">MidiOut</span><span class="o">?</span><span class="w"> </span><span class="n">midiOut</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>Borrowed singleton accessor.</p>
+<p>Create a clip bound to [clock], optionally connecting [midiOut] as a
+sink in one step.</p>
+<p>Throws [YseException] if the native clip cannot be created or if no live
+clock owns <cite>clock.name</cite>.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pos</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">position</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isPlaying</span>
 </pre></div>
 </div>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">position</span><span class="p">(</span><span class="n">Pos</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Current listener position in world coordinates.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pos</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">velocity</span>
-</pre></div>
-</div>
-<p>Velocity derived from successive [position] updates. Cannot be set directly.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pos</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">forward</span>
-</pre></div>
-</div>
-<p>Forward-facing unit vector of the listener.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Pos</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">upward</span>
-</pre></div>
-</div>
-<p>Upward unit vector of the listener.</p>
+<p>Whether the clip is currently playing.</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">orient</span><span class="p">(</span><span class="n">Pos</span><span class="w"> </span><span class="n">forward</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Pos</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Pos</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)})</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">bind</span><span class="p">(</span><span class="n">DomainClock</span><span class="w"> </span><span class="n">clock</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Set the listener orientation.</p>
-<p>[up] defaults to (0, 1, 0) — rotation confined to a horizontal plane.</p>
+<p>Bind (or re-bind) the clip to a live domain [clock] by name. The bound
+clock must outlive the clip.</p>
+<p>Throws [YseException] if no live clock owns <cite>clock.name</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">connectMidiOut</span><span class="p">(</span><span class="n">MidiOut</span><span class="w"> </span><span class="n">out</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Route this clip’s playback to an external MIDI output port. [out] must
+already have opened a port. May be called for several ports.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">disconnectMidiOut</span><span class="p">(</span><span class="n">MidiOut</span><span class="w"> </span><span class="n">out</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Stop routing this clip to [out].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setEvents</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">ClipEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">loopBeats</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Replace the note-event list and set the loop length in one call.</p>
+<p>The swap is safe while [isPlaying]: the engine applies the new list at
+the next audio-block boundary and still delivers note-offs for notes
+sounding across the swap. [loopBeats] is the loop length in beats; a
+value <cite>&lt;= 0</cite> disables looping (the events fire once). Passing an empty
+[events] list clears the clip.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">play</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Start (or resume) playback.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Stop playback.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Destroy the underlying native clip and detach the finalizer.</p>
+</section>
+</section>
+<section id="clipevent">
+<h1>ClipEvent<a class="headerlink" href="#clipevent" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">ClipEvent</span>
+</pre></div>
+</div>
+<p>One timed note event on a [ClipTransport].</p>
+<p>Positioned in beats on the clip’s bound [DomainClock]. The engine fires
+the note-on at [startBeat] and the matching note-off [durationBeats]
+later, all from the audio thread — the Dart side never dispatches a note.</p>
+<section id="id1">
+<h2>Constructors<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ClipEvent</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">startBeat</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">durationBeats</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">channel</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">pitch</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">pitchBend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.0</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Construct a note event. [velocity] defaults to full, [pitchBend] to none.</p>
+</section>
+<section id="id2">
+<h2>Properties<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">startBeat</span>
+</pre></div>
+</div>
+<p>Beat within the loop at which the note starts (<cite>&gt;= 0</cite>).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">durationBeats</span>
+</pre></div>
+</div>
+<p>Note length in beats.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span>
+</pre></div>
+</div>
+<p>MIDI channel, <cite>1..16</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">pitch</span>
+</pre></div>
+</div>
+<p>MIDI note number, <cite>0..127</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">velocity</span>
+</pre></div>
+</div>
+<p>Velocity, normalized to <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">pitchBend</span>
+</pre></div>
+</div>
+<p>Optional per-note pitch bend in <cite>[-1, 1]</cite> for microtonal voicing;
+<cite>0</cite> (the default) applies no bend.</p>
 </section>
 </section>
 
@@ -498,20 +583,20 @@ Access through [Listener.instance].</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="devices.html"
+       href="midi.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Devices</p>
+        <p class="prev-next-title">MIDI</p>
       </div>
     </a>
     <a class="right-next"
-       href="reverb.html"
+       href="music.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Reverb</p>
+        <p class="prev-next-title">Music</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -533,11 +618,16 @@ Access through [Listener.instance].</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Listener</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Listener</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Clip transport</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#cliptransport">ClipTransport</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#clipevent">ClipEvent</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Properties</a></li>
 </ul>
 </li>
 </ul>

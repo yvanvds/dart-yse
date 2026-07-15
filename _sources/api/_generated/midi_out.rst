@@ -40,6 +40,13 @@ Toggle Omni mode on the receiving instrument.
 
 Toggle Poly (`true`) or Mono (`false`) mode on the receiving instrument.
 
+.. code-block:: dart
+
+   Pointer<YseMidiOut> get handle
+
+Internal: the raw native handle, for wiring this port as a
+[ClipTransport] sink. Not part of the public surface.
+
 Methods
 -------
 

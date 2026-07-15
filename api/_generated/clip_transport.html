@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>enum ChannelType &#8212; dart-yse 0.1</title>
+    <title>ClipTransport &#8212; dart-yse 0.1</title>
   
   
   
@@ -43,7 +43,7 @@
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/channel_type';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/clip_transport';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -297,7 +297,7 @@
       
       
       
-      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/channel_type.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/clip_transport.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -327,7 +327,7 @@
       
       
       
-      <li><a href="../../_sources/api/_generated/channel_type.rst" target="_blank"
+      <li><a href="../../_sources/api/_generated/clip_transport.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -403,7 +403,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>enum ChannelType</h1>
+    <h1>ClipTransport</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -413,9 +413,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
             </nav>
         </div>
@@ -427,57 +427,82 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="enum-channeltype">
-<h1>enum ChannelType<a class="headerlink" href="#enum-channeltype" title="Link to this heading">#</a></h1>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">ChannelType</span>
+  <section id="cliptransport">
+<h1>ClipTransport<a class="headerlink" href="#cliptransport" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">ClipTransport</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Finalizable</span>
 </pre></div>
 </div>
-<p>Speaker layout for [System.openDevice].</p>
-<p>Values are kept in lockstep with <cite>YSE::CHANNEL_TYPE</cite> (see
-<cite>YseEngine/headers/enums.hpp</cite>) so the Dart enum value cast equals
-the underlying C enum.</p>
-<section id="values">
-<h2>Values<a class="headerlink" href="#values" title="Link to this heading">#</a></h2>
-<p id="channel-type-auto"><code class="docutils literal notranslate"><span class="pre">auto</span></code></p>
-<blockquote>
-<div><p>Pick stereo when possible.</p>
-</div></blockquote>
-<p id="channel-type-mono"><code class="docutils literal notranslate"><span class="pre">mono</span></code></p>
-<p id="channel-type-stereo"><code class="docutils literal notranslate"><span class="pre">stereo</span></code></p>
-<p id="channel-type-quad"><code class="docutils literal notranslate"><span class="pre">quad</span></code></p>
-<p id="channel-type-surround51"><code class="docutils literal notranslate"><span class="pre">surround51</span></code></p>
-<blockquote>
-<div><p>5.1 surround.</p>
-</div></blockquote>
-<p id="channel-type-surround51side"><code class="docutils literal notranslate"><span class="pre">surround51Side</span></code></p>
-<blockquote>
-<div><p>5.1-side variant.</p>
-</div></blockquote>
-<p id="channel-type-surround61"><code class="docutils literal notranslate"><span class="pre">surround61</span></code></p>
-<blockquote>
-<div><p>6.1 surround.</p>
-</div></blockquote>
-<p id="channel-type-surround71"><code class="docutils literal notranslate"><span class="pre">surround71</span></code></p>
-<blockquote>
-<div><p>7.1 surround.</p>
-</div></blockquote>
-<p id="channel-type-custom"><code class="docutils literal notranslate"><span class="pre">custom</span></code></p>
-<blockquote>
-<div><p>Custom layout — the caller is expected to set speaker positions.</p>
-</div></blockquote>
-</section>
+<p>Engine-driven MIDI clip playback (issue #21).</p>
+<p>A clip loops a flat, beat-timed [ClipEvent] list against a bound
+[DomainClock], dispatched from the audio thread. Because the engine owns
+<em>when</em> every event fires, playback does not jitter under UI-isolate load
+the way a timer-driven <cite>noteOn</cite>/<cite>noteOff</cite> over FFI does.</p>
+<p>Wire a clip to one or more sinks — external MIDI-out ports via
+[connectMidiOut] (and the [ClipTransport.new] <cite>midiOut</cite> shortcut). Route
+the playback with [setEvents] (replaceable while playing; the engine swaps
+the list at the next audio-block boundary and still delivers note-offs for
+notes sounding across the swap), then [play] / [stop].</p>
+<p>Threading (CLAUDE.md): construct and drive this from the [System] isolate.
+The audio thread performs the actual dispatch; MIDI sends run on a
+dedicated sender thread, so the audio callback never touches the device.</p>
+<p>The internal-synth sink (<cite>yse_clip_connect_synth</cite>) is intentionally not
+surfaced yet — it needs the <cite>YSE::synth</cite> wrapper tracked by epic #23 to
+supply a typed handle. It will be added alongside that wrapper.</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ChannelType</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">ClipTransport</span><span class="p">(</span><span class="n">DomainClock</span><span class="w"> </span><span class="n">clock</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">MidiOut</span><span class="o">?</span><span class="w"> </span><span class="n">midiOut</span><span class="p">})</span>
 </pre></div>
 </div>
+<p>Create a clip bound to [clock], optionally connecting [midiOut] as a
+sink in one step.</p>
+<p>Throws [YseException] if the native clip cannot be created or if no live
+clock owns <cite>clock.name</cite>.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseChannelType</span><span class="w"> </span><span class="kd">native</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isPlaying</span>
 </pre></div>
 </div>
-<p>The raw FFI enum value passed to the C ABI.</p>
+<p>Whether the clip is currently playing.</p>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">bind</span><span class="p">(</span><span class="n">DomainClock</span><span class="w"> </span><span class="n">clock</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Bind (or re-bind) the clip to a live domain [clock] by name. The bound
+clock must outlive the clip.</p>
+<p>Throws [YseException] if no live clock owns <cite>clock.name</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">connectMidiOut</span><span class="p">(</span><span class="n">MidiOut</span><span class="w"> </span><span class="n">out</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Route this clip’s playback to an external MIDI output port. [out] must
+already have opened a port. May be called for several ports.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">disconnectMidiOut</span><span class="p">(</span><span class="n">MidiOut</span><span class="w"> </span><span class="n">out</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Stop routing this clip to [out].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setEvents</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">ClipEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">loopBeats</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Replace the note-event list and set the loop length in one call.</p>
+<p>The swap is safe while [isPlaying]: the engine applies the new list at
+the next audio-block boundary and still delivers note-offs for notes
+sounding across the swap. [loopBeats] is the loop length in beats; a
+value <cite>&lt;= 0</cite> disables looping (the events fire once). Passing an empty
+[events] list clears the clip.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">play</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Start (or resume) playback.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Stop playback.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Destroy the underlying native clip and detach the finalizer.</p>
 </section>
 </section>
 
@@ -510,9 +535,9 @@ the underlying C enum.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
   </nav></div>
 

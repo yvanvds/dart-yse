@@ -47,6 +47,16 @@ Constructors
 
    OutType(this.native)
 
+Static methods
+--------------
+
+.. code-block:: dart
+
+   static OutType fromNative(raw.YseOutType native)
+
+Maps a raw C-side [raw.YseOutType] to its Dart enum, defaulting to
+[OutType.invalid] for unknown values.
+
 Properties
 ----------
 

@@ -15,6 +15,10 @@ Type-safe Dart enums that wrap the engine's C-side enum values.
 
 .. include:: _generated/out_type.rst
 
+.. include:: _generated/p_category.rst
+
+.. include:: _generated/inlet_accepts.rst
+
 .. include:: _generated/delay_tap.rst
 
 .. include:: _generated/reverb_preset.rst

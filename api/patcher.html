@@ -211,6 +211,11 @@
 
 
 
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="patcher_objects.html">Patcher object reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">Utilities</a></li>
 
@@ -222,6 +227,8 @@
 <li class="toctree-l2"><a class="reference internal" href="live_coding.html">LiveCoding</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="enums.html">Enums</a></li>
+
+
 
 
 
@@ -447,13 +454,40 @@
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-outtype">enum OutType</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registry-introspection">Registry introspection</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcherregistry">PatcherRegistry</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Static methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcherobjecttype">PatcherObjectType</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcherinlet">PatcherInlet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcheroutlet">PatcherOutlet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcherparam">PatcherParam</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#object-type-constants">Object type constants</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#obj">Obj</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Static accessors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Static methods</a></li>
 </ul>
 </li>
 </ul>
@@ -706,9 +740,246 @@ by the [PHandle] going out of scope.</p>
 </pre></div>
 </div>
 </section>
+<section id="static-methods">
+<h2>Static methods<a class="headerlink" href="#static-methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">OutType</span><span class="w"> </span><span class="n">fromNative</span><span class="p">(</span><span class="n">raw</span><span class="p">.</span><span class="n">YseOutType</span><span class="w"> </span><span class="kd">native</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Maps a raw C-side [raw.YseOutType] to its Dart enum, defaulting to
+[OutType.invalid] for unknown values.</p>
+</section>
 <section id="id7">
 <h2>Properties<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseOutType</span><span class="w"> </span><span class="kd">native</span>
+</pre></div>
+</div>
+</section>
+<section id="registry-introspection">
+<h2>Registry introspection<a class="headerlink" href="#registry-introspection" title="Link to this heading">#</a></h2>
+<p>Read-only access to the engine’s patcher object <em>registry</em> — the same
+in-code documentation that drives the <a class="reference internal" href="patcher_objects.html"><span class="doc">Patcher object reference</span></a> reference.
+Use <code class="xref py py-class docutils literal notranslate"><span class="pre">PatcherRegistry</span></code> to enumerate the registered object types and,
+per type, read the description, category, and inlet / outlet / parameter
+schema without hard-coding the catalogue.</p>
+</section>
+</section>
+<section id="patcherregistry">
+<h1>PatcherRegistry<a class="headerlink" href="#patcherregistry" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">PatcherRegistry</span>
+</pre></div>
+</div>
+<p>Read-only registry of every patcher object type the engine knows about.</p>
+<p>The registry is the introspection surface behind the engine’s own
+patcher reference: it enumerates the object types
+[Patcher.createObject] accepts and, per type, the documentation
+metadata (description, category, and the inlet / outlet / parameter
+schema). Use it to build a node palette or generate documentation
+without hard-coding the catalogue.</p>
+<p>All members are static; there is a single process-wide registry.</p>
+<p>Threading: main-thread only, and <strong>not</strong> real-time safe — never call
+from the audio callback (CLAUDE.md Boundaries). The engine builds its
+metadata cache lazily on the first call and keeps it for the life of
+the process.</p>
+<section id="static-accessors">
+<h2>Static accessors<a class="headerlink" href="#static-accessors" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">typeCount</span>
+</pre></div>
+</div>
+<p>Number of registered object types.</p>
+</section>
+<section id="id8">
+<h2>Static methods<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">typeNameAt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Type identifier at [index] in the registry (0-based, lexicographic).</p>
+<p>Returns the empty string when [index] is out of range.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">typeNames</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Every registered type identifier, in registry (lexicographic) order.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">PatcherObjectType</span><span class="o">?</span><span class="w"> </span><span class="n">type</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">typeName</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Metadata handle for [typeName], or <cite>null</cite> if the registry has no such
+type. Compare against [Obj] constants, e.g. <cite>PatcherRegistry.type(Obj.dSine)</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">PatcherObjectType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">types</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Every registered type as a metadata handle, in registry order.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">metadataJson</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A fresh JSON snapshot of every registered object’s full metadata.</p>
+<p>The engine allocates the buffer per call; this getter releases it
+through <cite>yse_free_string</cite> before returning, so no native memory
+leaks. Returns the empty string if the engine reports an allocation
+failure.</p>
+</section>
+</section>
+<section id="patcherobjecttype">
+<h1>PatcherObjectType<a class="headerlink" href="#patcherobjecttype" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">PatcherObjectType</span>
+</pre></div>
+</div>
+<p>Read-only metadata for one registered patcher object type.</p>
+<p>Obtain one from [PatcherRegistry.type] / [PatcherRegistry.types]. Every
+accessor reads live from the engine registry; the strings returned are
+copied out of engine-owned storage (never freed by the caller).</p>
+<section id="id9">
+<h2>Properties<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">name</span>
+</pre></div>
+</div>
+<p>The type identifier (matches one of the [Obj] constants).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">description</span>
+</pre></div>
+</div>
+<p>One-line human-readable description of the object.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PCategory</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">category</span>
+</pre></div>
+</div>
+<p>Documentation category the object is filed under.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isDsp</span>
+</pre></div>
+</div>
+<p>Whether this is a DSP / audio-rate object (the <cite>~</cite> prefix convention).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">inletCount</span>
+</pre></div>
+</div>
+<p>Number of inlets on this object type.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">outletCount</span>
+</pre></div>
+</div>
+<p>Number of outlets on this object type.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">paramCount</span>
+</pre></div>
+</div>
+<p>Number of creation parameters this object type documents.</p>
+</section>
+<section id="id10">
+<h2>Methods<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PatcherInlet</span><span class="w"> </span><span class="n">inletAt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Metadata for the inlet at [idx] (0-based).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">PatcherInlet</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inlets</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Metadata for every inlet, in order.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PatcherOutlet</span><span class="w"> </span><span class="n">outletAt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Metadata for the outlet at [idx] (0-based).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">PatcherOutlet</span><span class="o">&gt;</span><span class="w"> </span><span class="n">outlets</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Metadata for every outlet, in order.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PatcherParam</span><span class="w"> </span><span class="n">paramAt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Metadata for the creation parameter at [idx] (0-based).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">PatcherParam</span><span class="o">&gt;</span><span class="w"> </span><span class="n">params</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Metadata for every creation parameter, in order.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="patcherinlet">
+<h1>PatcherInlet<a class="headerlink" href="#patcherinlet" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">PatcherInlet</span>
+</pre></div>
+</div>
+<p>Documentation for one inlet of a [PatcherObjectType].</p>
+<section id="id11">
+<h2>Properties<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">label</span>
+</pre></div>
+</div>
+<p>Short inlet label (e.g. <cite>freq</cite>).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">doc</span>
+</pre></div>
+</div>
+<p>Longer human-readable description.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">range</span>
+</pre></div>
+</div>
+<p>Documented value range (free-form text, may be empty).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">InletAccepts</span><span class="o">&gt;</span><span class="w"> </span><span class="n">accepts</span>
+</pre></div>
+</div>
+<p>The set of message kinds this inlet accepts.</p>
+</section>
+<section id="id12">
+<h2>Methods<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="patcheroutlet">
+<h1>PatcherOutlet<a class="headerlink" href="#patcheroutlet" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">PatcherOutlet</span>
+</pre></div>
+</div>
+<p>Documentation for one outlet of a [PatcherObjectType].</p>
+<section id="id13">
+<h2>Properties<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">label</span>
+</pre></div>
+</div>
+<p>Short outlet label (e.g. <cite>out</cite>).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">doc</span>
+</pre></div>
+</div>
+<p>Longer human-readable description.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">range</span>
+</pre></div>
+</div>
+<p>Documented value range (free-form text, may be empty).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">OutType</span><span class="w"> </span><span class="n">type</span>
+</pre></div>
+</div>
+<p>The data type this outlet emits.</p>
+</section>
+<section id="id14">
+<h2>Methods<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="patcherparam">
+<h1>PatcherParam<a class="headerlink" href="#patcherparam" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">PatcherParam</span>
+</pre></div>
+</div>
+<p>Documentation for one creation parameter of a [PatcherObjectType].</p>
+<section id="id15">
+<h2>Properties<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">name</span>
+</pre></div>
+</div>
+<p>Parameter name (e.g. <cite>frequency</cite>).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">doc</span>
+</pre></div>
+</div>
+<p>Longer human-readable description.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">defaultValue</span>
+</pre></div>
+</div>
+<p>Documented default value (free-form text, may be empty).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">range</span>
+</pre></div>
+</div>
+<p>Documented value range (free-form text, may be empty).</p>
+</section>
+<section id="id16">
+<h2>Methods<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
@@ -736,8 +1007,8 @@ objects, <code class="docutils literal notranslate"><span class="pre">.</span></
 literals. The <cite>~</cite> prefix marks DSP / audio-rate objects, <cite>.</cite> marks
 control-rate objects. Mirrors <cite>YSE::OBJ</cite> in
 <cite>patcher/pObjectList.hpp</cite>.</p>
-<section id="static-accessors">
-<h2>Static accessors<a class="headerlink" href="#static-accessors" title="Link to this heading">#</a></h2>
+<section id="id17">
+<h2>Static accessors<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">patcher</span>
 </pre></div>
 </div>
@@ -877,8 +1148,8 @@ control-rate objects. Mirrors <cite>YSE::OBJ</cite> in
 </pre></div>
 </div>
 </section>
-<section id="static-methods">
-<h2>Static methods<a class="headerlink" href="#static-methods" title="Link to this heading">#</a></h2>
+<section id="id18">
+<h2>Static methods<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">isValid</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">type</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -953,13 +1224,40 @@ control-rate objects. Mirrors <cite>YSE::OBJ</cite> in
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#enum-outtype">enum OutType</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registry-introspection">Registry introspection</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcherregistry">PatcherRegistry</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Static methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcherobjecttype">PatcherObjectType</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcherinlet">PatcherInlet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcheroutlet">PatcherOutlet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#patcherparam">PatcherParam</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#object-type-constants">Object type constants</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#obj">Obj</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Static accessors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Static methods</a></li>
 </ul>
 </li>
 </ul>

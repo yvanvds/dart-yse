@@ -10,6 +10,7 @@ import 'exception.dart';
 import 'library.dart';
 import 'patcher.dart';
 import 'pos.dart';
+import 'synth.dart';
 
 /// A playable instance of an audio source.
 ///
@@ -90,10 +91,7 @@ class Sound implements Finalizable {
     final s = Sound._(b, h);
     try {
       final chHandle = channel?.handle ?? nullptr;
-      checkStatus(
-        b.sound_load_patcher(h, patcher.handle, chHandle, volume),
-        b,
-      );
+      checkStatus(b.sound_load_patcher(h, patcher.handle, chHandle, volume), b);
       return s;
     } catch (_) {
       s.dispose();
@@ -123,6 +121,42 @@ class Sound implements Finalizable {
       final chHandle = channel?.handle ?? nullptr;
       checkStatus(
         b.sound_load_buffer(h, buffer.handle, chHandle, loop ? 1 : 0, volume),
+        b,
+      );
+      return s;
+    } catch (_) {
+      s.dispose();
+      rethrow;
+    }
+  }
+
+  /// Construct a positioned sound that renders a [Synth]'s voice pool.
+  ///
+  /// Mirrors the engine's `YSE::sound::create(synth&, channel*, volume)`: the
+  /// sound supplies the single 3D position, [channel] routing and master
+  /// play/stop intent for every voice. Build the synth's voices (with its
+  /// `add*Voices` methods) before constructing this sound.
+  ///
+  /// **Lifetime contract:** [synth] must outlive this sound — the audio thread
+  /// renders its voices on every callback. Dispose this sound before the
+  /// synth. Pass `null` for [channel] to route through the master mix.
+  ///
+  /// Throws [YseException] if the sound cannot be created.
+  factory Sound.fromSynth(
+    Synth synth, {
+    Channel? channel,
+    double volume = 1.0,
+  }) {
+    final b = bindings;
+    final h = b.sound_create();
+    if (h.address == 0) {
+      throw YseException('yse_sound_create returned null');
+    }
+    final s = Sound._(b, h);
+    try {
+      final chHandle = channel?.handle ?? nullptr;
+      checkStatus(
+        b.synth_attach_to_sound(synth.handle, h, chHandle, volume),
         b,
       );
       return s;
@@ -174,8 +208,8 @@ class Sound implements Finalizable {
   /// Position of this sound in the virtual scene.
   Pos get position => Pos.fromNative(_b.sound_get_pos(_handle));
   set position(Pos value) => using((arena) {
-        _b.sound_set_pos(_handle, value.toNative(arena));
-      });
+    _b.sound_set_pos(_handle, value.toNative(arena));
+  });
 
   /// Volume in the range [0.0, 1.0].
   double get volume => _b.sound_get_volume(_handle);

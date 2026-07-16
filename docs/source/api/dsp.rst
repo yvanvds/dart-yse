@@ -29,3 +29,5 @@ or a sound (:meth:`Sound.setDsp`) exactly like the base modules. The inherited
 .. include:: _generated/plate_reverb.rst
 
 .. include:: _generated/feedback_delay.rst
+
+.. include:: _generated/morphing_reverb.rst

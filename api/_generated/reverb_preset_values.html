@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>enum ReverbPreset &#8212; dart-yse 0.1</title>
+    <title>ReverbPresetValues &#8212; dart-yse 0.1</title>
   
   
   
@@ -43,7 +43,7 @@
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/reverb_preset';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/reverb_preset_values';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -320,7 +320,7 @@
       
       
       
-      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/reverb_preset.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/reverb_preset_values.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -350,7 +350,7 @@
       
       
       
-      <li><a href="../../_sources/api/_generated/reverb_preset.rst" target="_blank"
+      <li><a href="../../_sources/api/_generated/reverb_preset_values.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -426,7 +426,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>enum ReverbPreset</h1>
+    <h1>ReverbPresetValues</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -436,9 +436,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
             </nav>
         </div>
@@ -450,39 +450,75 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="enum-reverbpreset">
-<h1>enum ReverbPreset<a class="headerlink" href="#enum-reverbpreset" title="Link to this heading">#</a></h1>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">ReverbPreset</span>
+  <section id="reverbpresetvalues">
+<h1>ReverbPresetValues<a class="headerlink" href="#reverbpresetvalues" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">ReverbPresetValues</span>
 </pre></div>
 </div>
-<p>Named reverb-tail presets for [Reverb.preset].</p>
-<p>Values match <cite>YSE::REVERB_PRESET</cite>.</p>
-<section id="values">
-<h2>Values<a class="headerlink" href="#values" title="Link to this heading">#</a></h2>
-<p id="reverb-preset-off"><code class="docutils literal notranslate"><span class="pre">off</span></code></p>
-<p id="reverb-preset-generic"><code class="docutils literal notranslate"><span class="pre">generic</span></code></p>
-<p id="reverb-preset-padded"><code class="docutils literal notranslate"><span class="pre">padded</span></code></p>
-<p id="reverb-preset-room"><code class="docutils literal notranslate"><span class="pre">room</span></code></p>
-<p id="reverb-preset-bathroom"><code class="docutils literal notranslate"><span class="pre">bathroom</span></code></p>
-<p id="reverb-preset-stoneroom"><code class="docutils literal notranslate"><span class="pre">stoneroom</span></code></p>
-<p id="reverb-preset-largeroom"><code class="docutils literal notranslate"><span class="pre">largeroom</span></code></p>
-<p id="reverb-preset-hall"><code class="docutils literal notranslate"><span class="pre">hall</span></code></p>
-<p id="reverb-preset-cave"><code class="docutils literal notranslate"><span class="pre">cave</span></code></p>
-<p id="reverb-preset-sewerpipe"><code class="docutils literal notranslate"><span class="pre">sewerpipe</span></code></p>
-<p id="reverb-preset-underwater"><code class="docutils literal notranslate"><span class="pre">underwater</span></code></p>
-</section>
+<p>A complete reverb parameter set — the full payload behind a named
+[ReverbPreset], and the custom endpoint type for a [MorphingReverb] slot.</p>
+<p>Immutable value type. Mirrors the C <cite>YseReverbPresetValues</cite> (itself a
+plain-data mirror of <cite>YSE::REVERB::presetValues</cite>). [earlyTimes] and
+[earlyGains] each describe the four early reflections and are always
+length 4.</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ReverbPreset</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ReverbPresetValues</span><span class="p">({</span><span class="k">this</span><span class="p">.</span><span class="n">roomSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">damping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">dry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">wet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">modulationFrequency</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">modulationWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;?</span><span class="w"> </span><span class="n">earlyTimes</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;?</span><span class="w"> </span><span class="n">earlyGains</span><span class="p">})</span>
 </pre></div>
 </div>
+<p>Construct a parameter set. [earlyTimes] and [earlyGains], when supplied,
+must each have exactly four elements; both default to all-zero.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">ReverbPresetValues</span><span class="p">.</span><span class="n">fromNative</span><span class="p">(</span><span class="n">YseReverbPresetValues</span><span class="w"> </span><span class="kd">native</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read a native <cite>YseReverbPresetValues</cite> struct into a Dart value.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseReverbPreset</span><span class="w"> </span><span class="kd">native</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">roomSize</span>
 </pre></div>
 </div>
-<p>The raw FFI enum value passed to the C ABI.</p>
+<p>Simulated room size, <cite>[0, 1]</cite>. Larger values give longer tails.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">damping</span>
+</pre></div>
+</div>
+<p>High-frequency damping, <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dry</span>
+</pre></div>
+</div>
+<p>Unprocessed (dry) signal level, <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">wet</span>
+</pre></div>
+</div>
+<p>Reverberated (wet) signal level, <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">modulationFrequency</span>
+</pre></div>
+</div>
+<p>Tail modulation rate in Hz (<cite>0</cite> = off).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">modulationWidth</span>
+</pre></div>
+</div>
+<p>Tail modulation depth (<cite>0</cite> = off).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">earlyTimes</span>
+</pre></div>
+</div>
+<p>The four early-reflection delay times, in samples (<cite>[0, 2999]</cite>).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">earlyGains</span>
+</pre></div>
+</div>
+<p>The four early-reflection gains, <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hashCode</span>
+</pre></div>
+</div>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="o">==</span><span class="p">(</span><span class="kt">Object</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -515,9 +551,9 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
   </nav></div>
 

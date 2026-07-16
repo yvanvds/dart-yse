@@ -65,6 +65,28 @@ messages until re-created.
 
 .. code-block:: dart
 
+   void connectSynth(Synth synth, {int channelFilter = 0})
+
+Route incoming device MIDI into an internal [synth] (upstream #371).
+
+Every channel-voice message received on the open port is mapped to the
+synth's normalized note API and pushed onto its inbox on RtMidi's input
+thread. [channelFilter] is a `1..16` MIDI channel to accept, or `0` (the
+default) for every channel. May be called for several synths (up to a
+small fixed cap); re-connecting an already-connected synth just updates
+its channel filter. [synth] must outlive the connection —
+[disconnectSynth] it (or close/dispose this port) before disposing the
+synth.
+
+.. code-block:: dart
+
+   void disconnectSynth(Synth synth)
+
+Stop routing incoming device MIDI into [synth]. Safe to call for a synth
+that was never connected.
+
+.. code-block:: dart
+
    void dispose()
 
 Destroy the underlying native port and detach the finalizer.

@@ -97,6 +97,18 @@ Granular synthesis — pool of recent input, spawn short grains.
 (default ~5s at 44.1kHz). [maxGrains] is the maximum number of
 grains alive simultaneously.
 
+.. code-block:: dart
+
+   factory DspObject.patcherInsert(Patcher patcher)
+
+Wrap a [Patcher] graph as a chainable insert effect (upstream #370).
+
+The insert feeds the host buffer to the graph's `~adc` objects and copies
+the summed `~dac` output back over it, so [patcher] should contain at
+least one of each. The insert *borrows* [patcher] — it never owns or
+destroys it, so [patcher] must outlive this object. Drive it with the
+inherited control surface ([bypass], [impact], ...).
+
 Properties
 ----------
 

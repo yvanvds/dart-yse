@@ -178,7 +178,9 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../reverb.html">Reverb</a></li>
 
+
 <li class="toctree-l2"><a class="reference internal" href="../dsp.html">DSP</a></li>
+
 
 
 
@@ -477,6 +479,21 @@ on failure.</p>
 </pre></div>
 </div>
 <p>Stop playback and rewind to the start.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">connectSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Route this file’s playback into an internal [synth] (upstream #372).</p>
+<p>While the file plays, every note / controller / pitch-bend event it
+contains is delivered to [synth] block-accurately on the audio thread.
+May be called for several synths (up to a small fixed cap) to drive them
+together; re-connecting an already-connected synth is a no-op. [synth]
+must outlive the connection — [disconnectSynth] it (or dispose this file)
+before disposing the synth.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">disconnectSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Stop routing this file’s playback into [synth]. Safe to call for a synth
+that was never connected.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>

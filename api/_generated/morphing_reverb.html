@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>enum ReverbPreset &#8212; dart-yse 0.1</title>
+    <title>MorphingReverb &#8212; dart-yse 0.1</title>
   
   
   
@@ -43,7 +43,7 @@
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/reverb_preset';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_generated/morphing_reverb';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -320,7 +320,7 @@
       
       
       
-      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/reverb_preset.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/_generated/morphing_reverb.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -350,7 +350,7 @@
       
       
       
-      <li><a href="../../_sources/api/_generated/reverb_preset.rst" target="_blank"
+      <li><a href="../../_sources/api/_generated/morphing_reverb.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -426,7 +426,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>enum ReverbPreset</h1>
+    <h1>MorphingReverb</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -436,7 +436,6 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 </ul>
@@ -450,39 +449,62 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="enum-reverbpreset">
-<h1>enum ReverbPreset<a class="headerlink" href="#enum-reverbpreset" title="Link to this heading">#</a></h1>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span><span class="w"> </span><span class="n">ReverbPreset</span>
+  <section id="morphingreverb">
+<h1>MorphingReverb<a class="headerlink" href="#morphingreverb" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">MorphingReverb</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">DspObject</span>
 </pre></div>
 </div>
-<p>Named reverb-tail presets for [Reverb.preset].</p>
-<p>Values match <cite>YSE::REVERB_PRESET</cite>.</p>
-<section id="values">
-<h2>Values<a class="headerlink" href="#values" title="Link to this heading">#</a></h2>
-<p id="reverb-preset-off"><code class="docutils literal notranslate"><span class="pre">off</span></code></p>
-<p id="reverb-preset-generic"><code class="docutils literal notranslate"><span class="pre">generic</span></code></p>
-<p id="reverb-preset-padded"><code class="docutils literal notranslate"><span class="pre">padded</span></code></p>
-<p id="reverb-preset-room"><code class="docutils literal notranslate"><span class="pre">room</span></code></p>
-<p id="reverb-preset-bathroom"><code class="docutils literal notranslate"><span class="pre">bathroom</span></code></p>
-<p id="reverb-preset-stoneroom"><code class="docutils literal notranslate"><span class="pre">stoneroom</span></code></p>
-<p id="reverb-preset-largeroom"><code class="docutils literal notranslate"><span class="pre">largeroom</span></code></p>
-<p id="reverb-preset-hall"><code class="docutils literal notranslate"><span class="pre">hall</span></code></p>
-<p id="reverb-preset-cave"><code class="docutils literal notranslate"><span class="pre">cave</span></code></p>
-<p id="reverb-preset-sewerpipe"><code class="docutils literal notranslate"><span class="pre">sewerpipe</span></code></p>
-<p id="reverb-preset-underwater"><code class="docutils literal notranslate"><span class="pre">underwater</span></code></p>
-</section>
+<p>The engine’s zone/global reverb core packaged as a chainable insert whose
+preset blend is a control input (upstream #369) — a mix-grade [DspObject].</p>
+<p>Two endpoints, slot A and slot B, are each either a named [ReverbPreset]
+(via [presetA] / [presetB]) or a custom [ReverbPresetValues] (via
+[presetAValues] / [presetBValues]). [morph] linearly interpolates between
+them (<cite>0</cite> = pure A, <cite>1</cite> = pure B, clamped to <cite>[0, 1]</cite>). Defaults are
+A = [ReverbPreset.generic], B = [ReverbPreset.hall], [morph] = 0.</p>
+<p>[morph] is a control-rate signal: writes are allocation- and click-free, so
+any control thread may sweep it. Its wet/dry balance rides the morphed
+presets (each carries its own <cite>dry</cite>/<cite>wet</cite>), so the inherited [impact] is
+<strong>not</strong> applied — for send/return use, give both slots custom values with
+<cite>dry = 0</cite>, <cite>wet = 1</cite>. Attach with <cite>Channel.dsp</cite> or [Sound.setDsp].</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ReverbPreset</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="kd">native</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">MorphingReverb</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>Construct a morphing reverb (A = generic, B = hall, morph = 0).</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">YseReverbPreset</span><span class="w"> </span><span class="kd">native</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">presetA</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The raw FFI enum value passed to the C ABI.</p>
+<p>Set slot A from a named [ReverbPreset].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">presetB</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set slot B from a named [ReverbPreset].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">presetAValues</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">presetAValues</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Slot A’s current parameter set.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">presetBValues</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">presetBValues</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Slot B’s current parameter set.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">morph</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">morph</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The morph control input: <cite>0</cite> = pure slot A, <cite>1</cite> = pure slot B, clamped
+to <cite>[0, 1]</cite>.</p>
 </section>
 </section>
 
@@ -515,7 +537,6 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#values">Values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 </ul>

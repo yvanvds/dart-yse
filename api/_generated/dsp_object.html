@@ -178,7 +178,9 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../reverb.html">Reverb</a></li>
 
+
 <li class="toctree-l2"><a class="reference internal" href="../dsp.html">DSP</a></li>
+
 
 
 
@@ -516,6 +518,15 @@ without an RTTI check.</p>
 <p>[poolSize] is the size of the circular input buffer in samples
 (default ~5s at 44.1kHz). [maxGrains] is the maximum number of
 grains alive simultaneously.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspObject</span><span class="p">.</span><span class="n">patcherInsert</span><span class="p">(</span><span class="n">Patcher</span><span class="w"> </span><span class="n">patcher</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Wrap a [Patcher] graph as a chainable insert effect (upstream #370).</p>
+<p>The insert feeds the host buffer to the graph’s <cite>~adc</cite> objects and copies
+the summed <cite>~dac</cite> output back over it, so [patcher] should contain at
+least one of each. The insert <em>borrows</em> [patcher] — it never owns or
+destroys it, so [patcher] must outlive this object. Drive it with the
+inherited control surface ([bypass], [impact], …).</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>

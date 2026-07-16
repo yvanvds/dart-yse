@@ -178,7 +178,9 @@
 
 <li class="toctree-l2"><a class="reference internal" href="reverb.html">Reverb</a></li>
 
+
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">DSP</a></li>
+
 
 
 
@@ -473,6 +475,11 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Properties</a></li>
 </ul>
 </li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#morphingreverb">MorphingReverb</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Properties</a></li>
+</ul>
+</li>
 </ul>
 
             </nav>
@@ -710,6 +717,15 @@ without an RTTI check.</p>
 <p>[poolSize] is the size of the circular input buffer in samples
 (default ~5s at 44.1kHz). [maxGrains] is the maximum number of
 grains alive simultaneously.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspObject</span><span class="p">.</span><span class="n">patcherInsert</span><span class="p">(</span><span class="n">Patcher</span><span class="w"> </span><span class="n">patcher</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Wrap a [Patcher] graph as a chainable insert effect (upstream #370).</p>
+<p>The insert feeds the host buffer to the graph’s <cite>~adc</cite> objects and copies
+the summed <cite>~dac</cite> output back over it, so [patcher] should contain at
+least one of each. The insert <em>borrows</em> [patcher] — it never owns or
+destroys it, so [patcher] must outlive this object. Drive it with the
+inherited control surface ([bypass], [impact], …).</p>
 </section>
 <section id="id2">
 <h2>Properties<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
@@ -1121,6 +1137,64 @@ echoes-only (send use). Attach with <cite>Channel.dsp</cite> or [Sound.setDsp].<
 <p>Cross-feed between the channel pair for ping-pong echoes.</p>
 </section>
 </section>
+<section id="morphingreverb">
+<h1>MorphingReverb<a class="headerlink" href="#morphingreverb" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">MorphingReverb</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">DspObject</span>
+</pre></div>
+</div>
+<p>The engine’s zone/global reverb core packaged as a chainable insert whose
+preset blend is a control input (upstream #369) — a mix-grade [DspObject].</p>
+<p>Two endpoints, slot A and slot B, are each either a named [ReverbPreset]
+(via [presetA] / [presetB]) or a custom [ReverbPresetValues] (via
+[presetAValues] / [presetBValues]). [morph] linearly interpolates between
+them (<cite>0</cite> = pure A, <cite>1</cite> = pure B, clamped to <cite>[0, 1]</cite>). Defaults are
+A = [ReverbPreset.generic], B = [ReverbPreset.hall], [morph] = 0.</p>
+<p>[morph] is a control-rate signal: writes are allocation- and click-free, so
+any control thread may sweep it. Its wet/dry balance rides the morphed
+presets (each carries its own <cite>dry</cite>/<cite>wet</cite>), so the inherited [impact] is
+<strong>not</strong> applied — for send/return use, give both slots custom values with
+<cite>dry = 0</cite>, <cite>wet = 1</cite>. Attach with <cite>Channel.dsp</cite> or [Sound.setDsp].</p>
+<section id="id14">
+<h2>Constructors<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">MorphingReverb</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Construct a morphing reverb (A = generic, B = hall, morph = 0).</p>
+</section>
+<section id="id15">
+<h2>Properties<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">presetA</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set slot A from a named [ReverbPreset].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">presetB</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set slot B from a named [ReverbPreset].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">presetAValues</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">presetAValues</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Slot A’s current parameter set.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">presetBValues</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">presetBValues</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Slot B’s current parameter set.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">morph</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">morph</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The morph control input: <cite>0</cite> = pure slot A, <cite>1</cite> = pure slot B, clamped
+to <cite>[0, 1]</cite>.</p>
+</section>
+</section>
 
 
                 </article>
@@ -1206,6 +1280,11 @@ echoes-only (send use). Attach with <cite>Channel.dsp</cite> or [Sound.setDsp].<
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#feedbackdelay">FeedbackDelay</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Properties</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#morphingreverb">MorphingReverb</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Properties</a></li>
 </ul>
 </li>
 </ul>

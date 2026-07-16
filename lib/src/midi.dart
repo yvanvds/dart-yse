@@ -7,6 +7,7 @@ import 'package:ffi/ffi.dart';
 import 'bindings/yse_bindings.g.dart';
 import 'exception.dart';
 import 'library.dart';
+import 'synth.dart';
 
 /// Standard MIDI-file playback.
 ///
@@ -54,6 +55,22 @@ class MidiFile implements Finalizable {
   /// Stop playback and rewind to the start.
   void stop() => _b.midi_file_stop(_handle);
 
+  /// Route this file's playback into an internal [synth] (upstream #372).
+  ///
+  /// While the file plays, every note / controller / pitch-bend event it
+  /// contains is delivered to [synth] block-accurately on the audio thread.
+  /// May be called for several synths (up to a small fixed cap) to drive them
+  /// together; re-connecting an already-connected synth is a no-op. [synth]
+  /// must outlive the connection — [disconnectSynth] it (or dispose this file)
+  /// before disposing the synth.
+  void connectSynth(Synth synth) =>
+      _b.midi_file_connect_synth(_handle, synth.handle);
+
+  /// Stop routing this file's playback into [synth]. Safe to call for a synth
+  /// that was never connected.
+  void disconnectSynth(Synth synth) =>
+      _b.midi_file_disconnect_synth(_handle, synth.handle);
+
   /// Destroy the underlying native file and detach the finalizer.
   void dispose() {
     if (_handle.address == 0) return;
@@ -85,23 +102,30 @@ class MidiOut implements Finalizable {
     final h = b.midi_out_create();
     if (h.address == 0) {
       throw YseException(
-          'yse_midi_out_create returned null (Windows/Linux only)');
+        'yse_midi_out_create returned null (Windows/Linux only)',
+      );
     }
     b.midi_out_open(h, port);
     return MidiOut._(b, h);
   }
 
   /// Send Note-On. [channel] is 0..15, [pitch] is 0..127.
-  void noteOn({required int channel, required int pitch, required int velocity}) =>
-      _b.midi_out_note_on(_handle, channel, pitch, velocity);
+  void noteOn({
+    required int channel,
+    required int pitch,
+    required int velocity,
+  }) => _b.midi_out_note_on(_handle, channel, pitch, velocity);
 
   /// Send Note-Off.
   void noteOff({required int channel, required int pitch, int velocity = 0}) =>
       _b.midi_out_note_off(_handle, channel, pitch, velocity);
 
   /// Send polyphonic key-pressure (aftertouch).
-  void polyPressure({required int channel, required int pitch, required int value}) =>
-      _b.midi_out_poly_pressure(_handle, channel, pitch, value);
+  void polyPressure({
+    required int channel,
+    required int pitch,
+    required int value,
+  }) => _b.midi_out_poly_pressure(_handle, channel, pitch, value);
 
   /// Send channel-pressure.
   void channelPressure({required int channel, required int value}) =>
@@ -112,8 +136,11 @@ class MidiOut implements Finalizable {
       _b.midi_out_program_change(_handle, channel, value);
 
   /// Send control-change.
-  void controlChange({required int channel, required int controller, required int value}) =>
-      _b.midi_out_control_change(_handle, channel, controller, value);
+  void controlChange({
+    required int channel,
+    required int controller,
+    required int value,
+  }) => _b.midi_out_control_change(_handle, channel, controller, value);
 
   /// Send All-Notes-Off on a specific [channel].
   void allNotesOff({int? channel}) {
@@ -243,7 +270,8 @@ class MidiIn implements Finalizable {
     final h = b.midi_in_create();
     if (h.address == 0) {
       throw YseException(
-          'yse_midi_in_create returned null (Windows/Linux only)');
+        'yse_midi_in_create returned null (Windows/Linux only)',
+      );
     }
     b.midi_in_open(h, port);
     return MidiIn._(b, h);
@@ -255,6 +283,24 @@ class MidiIn implements Finalizable {
   /// Close the port. The instance remains valid but emits no further
   /// messages until re-created.
   void close() => _b.midi_in_close(_handle);
+
+  /// Route incoming device MIDI into an internal [synth] (upstream #371).
+  ///
+  /// Every channel-voice message received on the open port is mapped to the
+  /// synth's normalized note API and pushed onto its inbox on RtMidi's input
+  /// thread. [channelFilter] is a `1..16` MIDI channel to accept, or `0` (the
+  /// default) for every channel. May be called for several synths (up to a
+  /// small fixed cap); re-connecting an already-connected synth just updates
+  /// its channel filter. [synth] must outlive the connection —
+  /// [disconnectSynth] it (or close/dispose this port) before disposing the
+  /// synth.
+  void connectSynth(Synth synth, {int channelFilter = 0}) =>
+      _b.midi_in_connect_synth(_handle, synth.handle, channelFilter);
+
+  /// Stop routing incoming device MIDI into [synth]. Safe to call for a synth
+  /// that was never connected.
+  void disconnectSynth(Synth synth) =>
+      _b.midi_in_disconnect_synth(_handle, synth.handle);
 
   /// Broadcast stream of raw MIDI messages. Lazily installs the native
   /// callback on first subscription and uninstalls when the last
@@ -310,8 +356,7 @@ class MidiIn implements Finalizable {
         _parsedController = null;
       },
     );
-    final callable =
-        NativeCallable<YseMidiInParsedCallbackFunction>.listener((
+    final callable = NativeCallable<YseMidiInParsedCallbackFunction>.listener((
       double ts,
       int status,
       int channel,

@@ -34,6 +34,7 @@ export 'src/dsp_object.dart'
         Compressor,
         DspObject,
         FeedbackDelay,
+        MorphingReverb,
         ParametricEq,
         PlateReverb;
 export 'src/enums.dart'
@@ -69,7 +70,7 @@ export 'src/patcher.dart'
         PatcherParam,
         PatcherRegistry;
 export 'src/pos.dart' show Pos;
-export 'src/reverb.dart' show Reverb;
+export 'src/reverb.dart' show Reverb, ReverbPresetValues;
 export 'src/sound.dart' show Sound;
 export 'src/synth.dart' show Dx7Bank, PositionHandler, SfzInstrument, Synth;
 export 'src/system.dart' show DomainClock, System;

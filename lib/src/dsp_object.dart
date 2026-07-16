@@ -1,9 +1,13 @@
 import 'dart:ffi';
 
+import 'package:ffi/ffi.dart';
+
 import 'bindings/yse_bindings.g.dart';
 import 'enums.dart';
 import 'exception.dart';
 import 'library.dart';
+import 'patcher.dart';
+import 'reverb.dart';
 
 /// A chainable DSP effect module — wraps `YSE::DSP::dspObject` and its
 /// concrete subclasses (filters, delays, modulators).
@@ -93,11 +97,22 @@ class DspObject implements Finalizable {
   factory DspObject.granulator({
     int poolSize = 44100 * 5,
     int maxGrains = 16,
-  }) =>
-      _wrap(
-        bindings.dsp_granulator_create(poolSize, maxGrains),
-        _DspKind.granulator,
-      );
+  }) => _wrap(
+    bindings.dsp_granulator_create(poolSize, maxGrains),
+    _DspKind.granulator,
+  );
+
+  /// Wrap a [Patcher] graph as a chainable insert effect (upstream #370).
+  ///
+  /// The insert feeds the host buffer to the graph's `~adc` objects and copies
+  /// the summed `~dac` output back over it, so [patcher] should contain at
+  /// least one of each. The insert *borrows* [patcher] — it never owns or
+  /// destroys it, so [patcher] must outlive this object. Drive it with the
+  /// inherited control surface ([bypass], [impact], ...).
+  factory DspObject.patcherInsert(Patcher patcher) => _wrap(
+    bindings.dsp_patcher_insert_create(patcher.handle),
+    _DspKind.patcherInsert,
+  );
 
   /// Internal: native handle (used by `Sound.setDsp`).
   Pointer<YseDspObject> get handle => _handle;
@@ -115,9 +130,9 @@ class DspObject implements Finalizable {
 
   /// Built-in modulation LFO shape. [LfoType.none] disables modulation.
   LfoType get lfoType => LfoType.values.firstWhere(
-        (e) => e.native == _b.dsp_object_get_lfo_type(_handle),
-        orElse: () => LfoType.none,
-      );
+    (e) => e.native == _b.dsp_object_get_lfo_type(_handle),
+    orElse: () => LfoType.none,
+  );
   set lfoType(LfoType value) =>
       _b.dsp_object_set_lfo_type(_handle, value.native);
 
@@ -134,14 +149,22 @@ class DspObject implements Finalizable {
   /// Cutoff (lowpass/highpass) or centre (bandpass/sweep) frequency in Hz.
   double get frequency {
     switch (_kind) {
-      case _DspKind.lowpass:       return _b.dsp_lowpass_get_frequency(_handle);
-      case _DspKind.highpass:      return _b.dsp_highpass_get_frequency(_handle);
-      case _DspKind.bandpass:      return _b.dsp_bandpass_get_frequency(_handle);
-      case _DspKind.phaser:        return _b.dsp_phaser_get_frequency(_handle);
-      case _DspKind.ringModulator: return _b.dsp_ring_modulator_get_frequency(_handle);
-      case _DspKind.difference:    return _b.dsp_difference_get_frequency(_handle);
-      case _DspKind.lowpassDelay:  return _b.dsp_lowpass_delay_get_frequency(_handle);
-      case _DspKind.highpassDelay: return _b.dsp_highpass_delay_get_frequency(_handle);
+      case _DspKind.lowpass:
+        return _b.dsp_lowpass_get_frequency(_handle);
+      case _DspKind.highpass:
+        return _b.dsp_highpass_get_frequency(_handle);
+      case _DspKind.bandpass:
+        return _b.dsp_bandpass_get_frequency(_handle);
+      case _DspKind.phaser:
+        return _b.dsp_phaser_get_frequency(_handle);
+      case _DspKind.ringModulator:
+        return _b.dsp_ring_modulator_get_frequency(_handle);
+      case _DspKind.difference:
+        return _b.dsp_difference_get_frequency(_handle);
+      case _DspKind.lowpassDelay:
+        return _b.dsp_lowpass_delay_get_frequency(_handle);
+      case _DspKind.highpassDelay:
+        return _b.dsp_highpass_delay_get_frequency(_handle);
       // sweep frequency is int 0..100 — see [sweepCentre].
       case _DspKind.sweep:
       case _DspKind.basicDelay:
@@ -153,20 +176,38 @@ class DspObject implements Finalizable {
       case _DspKind.chorus:
       case _DspKind.plateReverb:
       case _DspKind.feedbackDelay:
+      case _DspKind.morphingReverb:
+      case _DspKind.patcherInsert:
         throw YseException('frequency getter not supported for $_kind');
     }
   }
 
   set frequency(double value) {
     switch (_kind) {
-      case _DspKind.lowpass:       _b.dsp_lowpass_set_frequency(_handle, value); break;
-      case _DspKind.highpass:      _b.dsp_highpass_set_frequency(_handle, value); break;
-      case _DspKind.bandpass:      _b.dsp_bandpass_set_frequency(_handle, value); break;
-      case _DspKind.phaser:        _b.dsp_phaser_set_frequency(_handle, value); break;
-      case _DspKind.ringModulator: _b.dsp_ring_modulator_set_frequency(_handle, value); break;
-      case _DspKind.difference:    _b.dsp_difference_set_frequency(_handle, value); break;
-      case _DspKind.lowpassDelay:  _b.dsp_lowpass_delay_set_frequency(_handle, value); break;
-      case _DspKind.highpassDelay: _b.dsp_highpass_delay_set_frequency(_handle, value); break;
+      case _DspKind.lowpass:
+        _b.dsp_lowpass_set_frequency(_handle, value);
+        break;
+      case _DspKind.highpass:
+        _b.dsp_highpass_set_frequency(_handle, value);
+        break;
+      case _DspKind.bandpass:
+        _b.dsp_bandpass_set_frequency(_handle, value);
+        break;
+      case _DspKind.phaser:
+        _b.dsp_phaser_set_frequency(_handle, value);
+        break;
+      case _DspKind.ringModulator:
+        _b.dsp_ring_modulator_set_frequency(_handle, value);
+        break;
+      case _DspKind.difference:
+        _b.dsp_difference_set_frequency(_handle, value);
+        break;
+      case _DspKind.lowpassDelay:
+        _b.dsp_lowpass_delay_set_frequency(_handle, value);
+        break;
+      case _DspKind.highpassDelay:
+        _b.dsp_highpass_delay_set_frequency(_handle, value);
+        break;
       case _DspKind.sweep:
       case _DspKind.basicDelay:
       case _DspKind.granulator:
@@ -175,6 +216,8 @@ class DspObject implements Finalizable {
       case _DspKind.chorus:
       case _DspKind.plateReverb:
       case _DspKind.feedbackDelay:
+      case _DspKind.morphingReverb:
+      case _DspKind.patcherInsert:
         throw YseException('frequency setter not supported for $_kind');
     }
   }
@@ -200,8 +243,11 @@ class DspObject implements Finalizable {
   // ─── delays ───────────────────────────────────────────────────────────
 
   /// basicDelay / lowpassDelay / highpassDelay: configure one of three taps.
-  void setDelayTap(DelayTap tap, {required double timeMs, required double gain}) =>
-      _b.dsp_basic_delay_set_tap(_handle, tap.native, timeMs, gain);
+  void setDelayTap(
+    DelayTap tap, {
+    required double timeMs,
+    required double gain,
+  }) => _b.dsp_basic_delay_set_tap(_handle, tap.native, timeMs, gain);
 
   /// Current delay time of [tap] in milliseconds.
   double delayTime(DelayTap tap) =>
@@ -271,18 +317,18 @@ class DspObject implements Finalizable {
 /// moves click-free.
 class Compressor extends DspObject {
   Compressor._(Pointer<YseDspObject> handle)
-      : super._(bindings, handle, _DspKind.compressor);
+    : super._(bindings, handle, _DspKind.compressor);
 
   /// Construct a compressor with the engine's default curve.
   factory Compressor() => Compressor._(
-        _created(bindings.dsp_compressor_create(), 'yse_dsp_compressor_create'),
-      );
+    _created(bindings.dsp_compressor_create(), 'yse_dsp_compressor_create'),
+  );
 
   /// Level-detector mode (peak vs. RMS).
   CompressorDetector get detector => CompressorDetector.values.firstWhere(
-        (e) => e.native == _b.dsp_compressor_get_detector(_handle),
-        orElse: () => CompressorDetector.peak,
-      );
+    (e) => e.native == _b.dsp_compressor_get_detector(_handle),
+    orElse: () => CompressorDetector.peak,
+  );
   set detector(CompressorDetector value) =>
       _b.dsp_compressor_set_detector(_handle, value.native);
 
@@ -319,7 +365,7 @@ class Compressor extends DspObject {
 /// is flat (bypassed). Attach with `Channel.dsp` or [Sound.setDsp].
 class ParametricEq extends DspObject {
   ParametricEq._(Pointer<YseDspObject> handle)
-      : super._(bindings, handle, _DspKind.eq);
+    : super._(bindings, handle, _DspKind.eq);
 
   /// Construct a flat four-band parametric EQ.
   factory ParametricEq() =>
@@ -356,7 +402,7 @@ class ParametricEq extends DspObject {
 /// wet/dry balance.
 class Chorus extends DspObject {
   Chorus._(Pointer<YseDspObject> handle)
-      : super._(bindings, handle, _DspKind.chorus);
+    : super._(bindings, handle, _DspKind.chorus);
 
   /// Construct a chorus module (defaults to [ChorusMode.chorus]).
   factory Chorus() =>
@@ -364,9 +410,9 @@ class Chorus extends DspObject {
 
   /// Chorus vs. flanger character.
   ChorusMode get mode => ChorusMode.values.firstWhere(
-        (e) => e.native == _b.dsp_chorus_get_mode(_handle),
-        orElse: () => ChorusMode.chorus,
-      );
+    (e) => e.native == _b.dsp_chorus_get_mode(_handle),
+    orElse: () => ChorusMode.chorus,
+  );
   set mode(ChorusMode value) => _b.dsp_chorus_set_mode(_handle, value.native);
 
   /// LFO rate in Hz.
@@ -394,15 +440,12 @@ class Chorus extends DspObject {
 /// with `Channel.dsp` or [Sound.setDsp].
 class PlateReverb extends DspObject {
   PlateReverb._(Pointer<YseDspObject> handle)
-      : super._(bindings, handle, _DspKind.plateReverb);
+    : super._(bindings, handle, _DspKind.plateReverb);
 
   /// Construct a plate reverb with the engine's default tail.
   factory PlateReverb() => PlateReverb._(
-        _created(
-          bindings.dsp_plate_reverb_create(),
-          'yse_dsp_plate_reverb_create',
-        ),
-      );
+    _created(bindings.dsp_plate_reverb_create(), 'yse_dsp_plate_reverb_create'),
+  );
 
   /// Tail decay (feedback) in `[0.0, 1.0)`.
   double get decay => _b.dsp_plate_reverb_get_decay(_handle);
@@ -425,15 +468,15 @@ class PlateReverb extends DspObject {
 /// echoes-only (send use). Attach with `Channel.dsp` or [Sound.setDsp].
 class FeedbackDelay extends DspObject {
   FeedbackDelay._(Pointer<YseDspObject> handle)
-      : super._(bindings, handle, _DspKind.feedbackDelay);
+    : super._(bindings, handle, _DspKind.feedbackDelay);
 
   /// Construct a feedback delay with the engine's default timing.
   factory FeedbackDelay() => FeedbackDelay._(
-        _created(
-          bindings.dsp_feedback_delay_create(),
-          'yse_dsp_feedback_delay_create',
-        ),
-      );
+    _created(
+      bindings.dsp_feedback_delay_create(),
+      'yse_dsp_feedback_delay_create',
+    ),
+  );
 
   /// Delay time in milliseconds.
   double get time => _b.dsp_feedback_delay_get_time(_handle);
@@ -454,14 +497,92 @@ class FeedbackDelay extends DspObject {
       _b.dsp_feedback_delay_set_crossfeed(_handle, amount);
 }
 
+/// The engine's zone/global reverb core packaged as a chainable insert whose
+/// preset blend is a control input (upstream #369) — a mix-grade [DspObject].
+///
+/// Two endpoints, slot A and slot B, are each either a named [ReverbPreset]
+/// (via [presetA] / [presetB]) or a custom [ReverbPresetValues] (via
+/// [presetAValues] / [presetBValues]). [morph] linearly interpolates between
+/// them (`0` = pure A, `1` = pure B, clamped to `[0, 1]`). Defaults are
+/// A = [ReverbPreset.generic], B = [ReverbPreset.hall], [morph] = 0.
+///
+/// [morph] is a control-rate signal: writes are allocation- and click-free, so
+/// any control thread may sweep it. Its wet/dry balance rides the morphed
+/// presets (each carries its own `dry`/`wet`), so the inherited [impact] is
+/// **not** applied — for send/return use, give both slots custom values with
+/// `dry = 0`, `wet = 1`. Attach with `Channel.dsp` or [Sound.setDsp].
+class MorphingReverb extends DspObject {
+  MorphingReverb._(Pointer<YseDspObject> handle)
+    : super._(bindings, handle, _DspKind.morphingReverb);
+
+  /// Construct a morphing reverb (A = generic, B = hall, morph = 0).
+  factory MorphingReverb() => MorphingReverb._(
+    _created(
+      bindings.dsp_morphing_reverb_create(),
+      'yse_dsp_morphing_reverb_create',
+    ),
+  );
+
+  /// Set slot A from a named [ReverbPreset].
+  set presetA(ReverbPreset value) =>
+      _b.dsp_morphing_reverb_set_preset_a(_handle, value.native);
+
+  /// Set slot B from a named [ReverbPreset].
+  set presetB(ReverbPreset value) =>
+      _b.dsp_morphing_reverb_set_preset_b(_handle, value.native);
+
+  /// Slot A's current parameter set.
+  ReverbPresetValues get presetAValues => using((arena) {
+    final out = arena<YseReverbPresetValues>();
+    _b.dsp_morphing_reverb_get_preset_a(_handle, out);
+    return ReverbPresetValues.fromNative(out.ref);
+  });
+
+  /// Set slot A from a custom parameter set.
+  set presetAValues(ReverbPresetValues values) => using((arena) {
+    _b.dsp_morphing_reverb_set_preset_a_values(_handle, values.toNative(arena));
+  });
+
+  /// Slot B's current parameter set.
+  ReverbPresetValues get presetBValues => using((arena) {
+    final out = arena<YseReverbPresetValues>();
+    _b.dsp_morphing_reverb_get_preset_b(_handle, out);
+    return ReverbPresetValues.fromNative(out.ref);
+  });
+
+  /// Set slot B from a custom parameter set.
+  set presetBValues(ReverbPresetValues values) => using((arena) {
+    _b.dsp_morphing_reverb_set_preset_b_values(_handle, values.toNative(arena));
+  });
+
+  /// The morph control input: `0` = pure slot A, `1` = pure slot B, clamped
+  /// to `[0, 1]`.
+  double get morph => _b.dsp_morphing_reverb_get_morph(_handle);
+  set morph(double value) => _b.dsp_morphing_reverb_set_morph(_handle, value);
+}
+
 Pointer<YseDspObject> _created(Pointer<YseDspObject> handle, String fn) {
   if (handle.address == 0) throw YseException('$fn returned null');
   return handle;
 }
 
 enum _DspKind {
-  lowpass, highpass, bandpass, sweep,
-  basicDelay, lowpassDelay, highpassDelay,
-  phaser, ringModulator, difference, granulator,
-  compressor, eq, chorus, plateReverb, feedbackDelay,
+  lowpass,
+  highpass,
+  bandpass,
+  sweep,
+  basicDelay,
+  lowpassDelay,
+  highpassDelay,
+  phaser,
+  ringModulator,
+  difference,
+  granulator,
+  compressor,
+  eq,
+  chorus,
+  plateReverb,
+  feedbackDelay,
+  morphingReverb,
+  patcherInsert,
 }

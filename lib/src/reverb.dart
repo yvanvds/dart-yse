@@ -55,8 +55,8 @@ class Reverb implements Finalizable {
   /// Position of the zone in the scene.
   Pos get position => Pos.fromNative(_b.reverb_get_position(_handle));
   set position(Pos value) => using((arena) {
-        _b.reverb_set_position(_handle, value.toNative(arena));
-      });
+    _b.reverb_set_position(_handle, value.toNative(arena));
+  });
 
   /// Radius within which the reverb is at full strength.
   double get size => _b.reverb_get_size(_handle);
@@ -103,8 +103,11 @@ class Reverb implements Finalizable {
   double get modulationWidth => _b.reverb_get_modulation_width(_handle);
 
   /// Configure one of the four early reflections (index 0..3).
-  void setReflection(int reflection, {required int time, required double gain}) =>
-      _b.reverb_set_reflection(_handle, reflection, time, gain);
+  void setReflection(
+    int reflection, {
+    required int time,
+    required double gain,
+  }) => _b.reverb_set_reflection(_handle, reflection, time, gain);
 
   /// Delay time of the early reflection at [reflection] (0..3).
   int getReflectionTime(int reflection) =>
@@ -115,8 +118,7 @@ class Reverb implements Finalizable {
       _b.reverb_get_reflection_gain(_handle, reflection);
 
   /// Apply a named preset.
-  set preset(ReverbPreset value) =>
-      _b.reverb_set_preset(_handle, value.native);
+  set preset(ReverbPreset value) => _b.reverb_set_preset(_handle, value.native);
 
   /// Destroy the underlying native reverb and detach the finalizer.
   ///
@@ -126,5 +128,135 @@ class Reverb implements Finalizable {
     _finalizer.detach(this);
     _b.reverb_destroy(_handle);
     _handle = nullptr;
+  }
+}
+
+/// A complete reverb parameter set — the full payload behind a named
+/// [ReverbPreset], and the custom endpoint type for a [MorphingReverb] slot.
+///
+/// Immutable value type. Mirrors the C `YseReverbPresetValues` (itself a
+/// plain-data mirror of `YSE::REVERB::presetValues`). [earlyTimes] and
+/// [earlyGains] each describe the four early reflections and are always
+/// length 4.
+final class ReverbPresetValues {
+  /// Simulated room size, `[0, 1]`. Larger values give longer tails.
+  final double roomSize;
+
+  /// High-frequency damping, `[0, 1]`.
+  final double damping;
+
+  /// Unprocessed (dry) signal level, `[0, 1]`.
+  final double dry;
+
+  /// Reverberated (wet) signal level, `[0, 1]`.
+  final double wet;
+
+  /// Tail modulation rate in Hz (`0` = off).
+  final double modulationFrequency;
+
+  /// Tail modulation depth (`0` = off).
+  final double modulationWidth;
+
+  /// The four early-reflection delay times, in samples (`[0, 2999]`).
+  final List<double> earlyTimes;
+
+  /// The four early-reflection gains, `[0, 1]`.
+  final List<double> earlyGains;
+
+  /// Construct a parameter set. [earlyTimes] and [earlyGains], when supplied,
+  /// must each have exactly four elements; both default to all-zero.
+  ReverbPresetValues({
+    this.roomSize = 0,
+    this.damping = 0,
+    this.dry = 0,
+    this.wet = 0,
+    this.modulationFrequency = 0,
+    this.modulationWidth = 0,
+    List<double>? earlyTimes,
+    List<double>? earlyGains,
+  }) : earlyTimes = List<double>.unmodifiable(
+         earlyTimes ?? const [0.0, 0.0, 0.0, 0.0],
+       ),
+       earlyGains = List<double>.unmodifiable(
+         earlyGains ?? const [0.0, 0.0, 0.0, 0.0],
+       ) {
+    if (this.earlyTimes.length != 4 || this.earlyGains.length != 4) {
+      throw ArgumentError(
+        'earlyTimes and earlyGains must each contain exactly 4 elements',
+      );
+    }
+  }
+
+  /// Read a native `YseReverbPresetValues` struct into a Dart value.
+  factory ReverbPresetValues.fromNative(YseReverbPresetValues native) =>
+      ReverbPresetValues(
+        roomSize: native.roomsize,
+        damping: native.damp,
+        dry: native.dry,
+        wet: native.wet,
+        modulationFrequency: native.mod_frequency,
+        modulationWidth: native.mod_width,
+        earlyTimes: [for (var i = 0; i < 4; i++) native.early_time[i]],
+        earlyGains: [for (var i = 0; i < 4; i++) native.early_gain[i]],
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      other is ReverbPresetValues &&
+      other.roomSize == roomSize &&
+      other.damping == damping &&
+      other.dry == dry &&
+      other.wet == wet &&
+      other.modulationFrequency == modulationFrequency &&
+      other.modulationWidth == modulationWidth &&
+      _listEq(other.earlyTimes, earlyTimes) &&
+      _listEq(other.earlyGains, earlyGains);
+
+  @override
+  int get hashCode => Object.hash(
+    roomSize,
+    damping,
+    dry,
+    wet,
+    modulationFrequency,
+    modulationWidth,
+    Object.hashAll(earlyTimes),
+    Object.hashAll(earlyGains),
+  );
+
+  @override
+  String toString() =>
+      'ReverbPresetValues(roomSize: $roomSize, damping: $damping, '
+      'dry: $dry, wet: $wet, modulationFrequency: $modulationFrequency, '
+      'modulationWidth: $modulationWidth, earlyTimes: $earlyTimes, '
+      'earlyGains: $earlyGains)';
+
+  static bool _listEq(List<double> a, List<double> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+}
+
+/// Helpers for crossing a [ReverbPresetValues] into native memory.
+extension ReverbPresetValuesNative on ReverbPresetValues {
+  /// Allocate a `YseReverbPresetValues` in [arena] and populate it from this
+  /// value. The pointer is valid until [arena] is released.
+  Pointer<YseReverbPresetValues> toNative(Allocator arena) {
+    final ptr = arena<YseReverbPresetValues>();
+    ptr.ref
+      ..roomsize = roomSize
+      ..damp = damping
+      ..dry = dry
+      ..wet = wet
+      ..mod_frequency = modulationFrequency
+      ..mod_width = modulationWidth;
+    for (var i = 0; i < 4; i++) {
+      ptr.ref.early_time[i] = earlyTimes[i];
+      ptr.ref.early_gain[i] = earlyGains[i];
+    }
+    return ptr;
   }
 }

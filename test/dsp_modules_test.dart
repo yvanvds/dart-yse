@@ -130,6 +130,87 @@ void main() {
     });
   });
 
+  group('MorphingReverb (issue #38)', () {
+    test('constructs, round-trips custom endpoint values and morph', () {
+      final rev = MorphingReverb();
+      addTearDown(rev.dispose);
+
+      final a = ReverbPresetValues(
+        roomSize: 0.8,
+        damping: 0.3,
+        dry: 0.0,
+        wet: 1.0,
+        modulationFrequency: 1.5,
+        modulationWidth: 0.2,
+        earlyTimes: [100, 200, 300, 400],
+        earlyGains: [0.9, 0.7, 0.5, 0.3],
+      );
+      rev.presetAValues = a;
+
+      final readback = rev.presetAValues;
+      expect(readback.roomSize, closeTo(0.8, 1e-3));
+      expect(readback.damping, closeTo(0.3, 1e-3));
+      expect(readback.dry, closeTo(0.0, 1e-3));
+      expect(readback.wet, closeTo(1.0, 1e-3));
+      expect(readback.modulationFrequency, closeTo(1.5, 1e-3));
+      expect(readback.modulationWidth, closeTo(0.2, 1e-3));
+      expect(readback.earlyTimes[0], closeTo(100, 1e-1));
+      expect(readback.earlyTimes[3], closeTo(400, 1e-1));
+      expect(readback.earlyGains[0], closeTo(0.9, 1e-3));
+      expect(readback.earlyGains[3], closeTo(0.3, 1e-3));
+
+      // Named-preset setters take effect on both slots.
+      rev.presetA = ReverbPreset.cave;
+      rev.presetB = ReverbPreset.bathroom;
+
+      // Morph control round-trips and clamps to [0, 1].
+      rev.morph = 0.35;
+      expect(rev.morph, closeTo(0.35, 1e-3));
+      rev.morph = 2.0;
+      expect(rev.morph, closeTo(1.0, 1e-3));
+    });
+
+    test('attaches to a channel and renders', () {
+      final ch = Channel.create('morph-fx', parent: Channel.master);
+      addTearDown(ch.dispose);
+      final rev = MorphingReverb();
+      addTearDown(rev.dispose);
+
+      rev.presetB = ReverbPreset.hall;
+      rev.morph = 0.5;
+
+      ch.dsp = rev;
+      expect(ch.dsp, same(rev));
+      sys.renderOffline(128);
+      ch.dsp = null;
+      expect(ch.dsp, isNull);
+    });
+  });
+
+  group('Patcher-insert DSP module (issue #38)', () {
+    test('wraps a patcher graph, attaches to a channel and renders', () {
+      final patcher = Patcher();
+      addTearDown(patcher.dispose);
+      // A minimal pass-through graph: host buffer → ~adc → ~dac → host buffer.
+      final adc = patcher.createObject(Obj.dAdc);
+      final dac = patcher.createObject(Obj.dDac);
+      patcher.connect(adc, outlet: 0, to: dac, inlet: 0);
+
+      // The insert borrows the patcher — registered first so it is disposed
+      // last (teardown is LIFO), keeping the patcher alive under the insert.
+      final insert = DspObject.patcherInsert(patcher);
+      addTearDown(insert.dispose);
+
+      final ch = Channel.create('patcher-fx', parent: Channel.master);
+      addTearDown(ch.dispose);
+      ch.dsp = insert;
+      expect(ch.dsp, same(insert));
+      sys.renderOffline(128);
+      ch.dsp = null;
+      expect(ch.dsp, isNull);
+    });
+  });
+
   group('Granulator getters (issue #25)', () {
     test('grainLength and grainTranspose round-trip', () {
       final gran = DspObject.granulator();

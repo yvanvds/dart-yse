@@ -62,3 +62,27 @@ above is the one exception: it fires synchronously during ``run``
 rather than on a later ``update``.
 
 .. include:: _generated/live_coding.rst
+
+Host bus tap
+------------
+
+:py:meth:`LiveCoding.bus` subscribes the host to the engine's global named
+bus by address *prefix*, returning a broadcast :class:`Stream` of
+``(address, value)`` frames. Every engine-side publish whose address starts
+with the prefix — a script's ``yse.send``, a patcher ``gSend`` outlet, or any
+other producer — arrives as a typed :py:class:`BusValue`. The tap installs on
+the first subscription and is destroyed (``yse_bus_tap_destroy``) when the
+last listener cancels, with the same isolate-safe, main-thread delivery model
+as :py:attr:`LiveCoding.errors`.
+
+.. include:: _generated/bus_value.rst
+
+.. include:: _generated/bus_bang.rst
+
+.. include:: _generated/bus_int.rst
+
+.. include:: _generated/bus_float.rst
+
+.. include:: _generated/bus_string.rst
+
+.. include:: _generated/bus_list.rst

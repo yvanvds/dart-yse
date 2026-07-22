@@ -111,6 +111,18 @@ Start (or resume) playback.
 
 Stop playback.
 
+On stop the engine flushes note-offs for exactly the notes this transport
+still has sounding — its own `(channel, pitch)` pairs — to every connected
+sink (synths and MIDI-out ports). This is the per-transport equivalent of
+the note-off delivery [setEvents] guarantees across a swap: no note this
+transport started is left hanging.
+
+The release is scoped to this transport — it is *not* a global
+all-notes-off. On a [MidiOut] shared with other concurrent clips, stopping
+one clip never silences notes the others started, even when they share a
+MIDI channel. A consumer routing several clips through one port therefore
+does not need its own `allNotesOff` safety net on stop.
+
 .. code-block:: dart
 
    void dispose()

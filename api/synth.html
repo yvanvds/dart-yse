@@ -611,26 +611,38 @@ build layered or split keyboards. [attack], [decay] and [release] are in
 seconds; [sustain] is a level in <cite>[0, 1]</cite>.</p>
 <p>Must be called before the synth is played. Throws [YseException] if the
 group is rejected.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addSamplerVoices</span><span class="p">(</span><span class="n">SfzInstrument</span><span class="w"> </span><span class="n">instrument</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addSamplerVoices</span><span class="p">(</span><span class="n">SfzInstrument</span><span class="w"> </span><span class="n">instrument</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lowestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">highestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>Add a group of [count] SFZ sampler voices rendering [instrument].</p>
+<p>Add a group of [count] SFZ sampler voices rendering [instrument],
+responding to note numbers in <cite>[lowestNote, highestNote]</cite> on [channel]
+(<cite>0</cite> = omni). Filtering by [channel] lets a sampler pool respond only to
+events broadcast on its MIDI channel — e.g. per-voice routing from a
+[ClipTransport].</p>
 <p>The instrument’s region table and PCM are shared with the voice group,
 which retains its own reference — so [instrument] may be disposed right
 after this returns. Throws [YseException] if the group is rejected.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addVaVoices</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addVaVoices</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lowestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">highestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Add a group of [count] virtual-analog + wavetable voices with a fresh
-default patch. Establishes the synth’s VA patch, which the <cite>setVa*</cite>
-setters steer. Call once per synth. Throws [YseException] on failure.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addFmVoices</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">)</span>
+default patch, responding to note numbers in <cite>[lowestNote, highestNote]</cite>
+on [channel] (<cite>0</cite> = omni). Filtering by [channel] lets a VA pool respond
+only to events broadcast on its MIDI channel — e.g. per-voice routing
+from a [ClipTransport].</p>
+<p>Establishes the synth’s VA patch, which the <cite>setVa*</cite> setters steer. Call
+once per synth. Throws [YseException] on failure.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addFmVoices</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lowestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">highestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Add a group of [count] DX7-class 6-operator FM voices with the built-in
-sine test patch. Establishes the synth’s FM patch — select a DX7 voice
-into it with [setFmPatch], or dial the headline params with the <cite>setFm*</cite>
-setters. Call once per synth. Throws [YseException] on failure.</p>
+sine test patch, responding to note numbers in <cite>[lowestNote, highestNote]</cite>
+on [channel] (<cite>0</cite> = omni). Filtering by [channel] lets an FM pool respond
+only to events broadcast on its MIDI channel — e.g. per-voice routing
+from a [ClipTransport].</p>
+<p>Establishes the synth’s FM patch — select a DX7 voice into it with
+[setFmPatch], or dial the headline params with the <cite>setFm*</cite> setters. Call
+once per synth. Throws [YseException] on failure.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">noteOn</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">noteNumber</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">})</span>
 </pre></div>
 </div>

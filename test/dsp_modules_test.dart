@@ -211,6 +211,50 @@ void main() {
     });
   });
 
+  group('DspObject.link(null) detach (issue #42)', () {
+    test('link(null) / unlink() do not throw and let a chain re-order', () {
+      final head = DspObject.lowpass();
+      addTearDown(head.dispose);
+      final mid = DspObject.highpass();
+      addTearDown(mid.dispose);
+      final tail = DspObject.bandpass();
+      addTearDown(tail.dispose);
+
+      // Original order: head → mid → tail.
+      head.link(mid);
+      mid.link(tail);
+
+      // Detach the forward edges so no stale `next` survives the re-order.
+      // Passing null (and the unlink() convenience) must not throw.
+      expect(() => mid.link(null), returnsNormally);
+      expect(() => tail.unlink(), returnsNormally);
+
+      // Re-link into a new order: head → tail → mid, terminating at mid.
+      head.link(tail);
+      tail.link(mid);
+      mid.link(null);
+
+      // The engine walks the re-linked chain (no cycle from a stale edge).
+      final ch = Channel.create('relink-fx', parent: Channel.master);
+      addTearDown(ch.dispose);
+      ch.dsp = head;
+      expect(ch.dsp, same(head));
+      sys.renderOffline(128);
+      ch.dsp = null;
+      expect(ch.dsp, isNull);
+    });
+
+    test(
+      'link(null) on a standalone object is a no-op that does not throw',
+      () {
+        final fx = DspObject.lowpass();
+        addTearDown(fx.dispose);
+        expect(() => fx.link(null), returnsNormally);
+        expect(() => fx.unlink(), returnsNormally);
+      },
+    );
+  });
+
   group('Granulator getters (issue #25)', () {
     test('grainLength and grainTranspose round-trip', () {
       final gran = DspObject.granulator();

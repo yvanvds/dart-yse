@@ -142,7 +142,19 @@ class DspObject implements Finalizable {
       _b.dsp_object_set_lfo_frequency(_handle, value);
 
   /// Insert [next] after this object in the processing chain.
-  void link(DspObject next) => _b.dsp_object_link(_handle, next._handle);
+  ///
+  /// Passing `null` detaches this object's forward edge, terminating the
+  /// chain at this object (tail termination). This is what lets a chain be
+  /// re-linked into a new order without a former non-tail element keeping a
+  /// stale `next` that closes a cycle when the engine walks it (upstream
+  /// yvanvds/yse-soundengine#391).
+  void link(DspObject? next) =>
+      _b.dsp_object_link(_handle, next?._handle ?? nullptr);
+
+  /// Detach this object's forward edge, terminating the chain here.
+  ///
+  /// Convenience for `link(null)` — see [link].
+  void unlink() => _b.dsp_object_link(_handle, nullptr);
 
   // ─── filter modules ────────────────────────────────────────────────────
 

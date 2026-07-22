@@ -279,6 +279,12 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
 
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
 
 
@@ -553,6 +559,31 @@ that drives <cite>yse_system_update()</cite> — the main isolate.</p>
 thread. Returns immediately; the engine takes its own copy, so the
 marshalled buffer is freed on return. Uncaught errors arrive later
 through [errors] (during [System].`update()`).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">Stream</span><span class="o">&lt;</span><span class="n">BusFrame</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bus</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">prefix</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Broadcast stream of <cite>(address, value)</cite> frames for every publish on the
+engine’s global named bus whose address starts with [prefix] (a plain
+byte-wise prefix match; the empty string matches every address).</p>
+<p>This taps the host-side view of the bus: a script’s <cite>yse.send(…)</cite>, a
+patcher <cite>gSend</cite> outlet, or any other engine-side publish under [prefix]
+arrives here as a typed [BusValue]. A prefix tap adds no audio-thread
+cost — the match happens on the engine’s control thread.</p>
+<p>Each distinct [prefix] gets its own shared broadcast bridge, mirroring
+[errors]: the first subscription installs a native <cite>yse_bus_tap</cite>, and it
+is torn down (<cite>yse_bus_tap_destroy</cite>) when the last listener cancels. A
+later subscription reinstalls a fresh tap.</p>
+<p>Isolate-safety matches [errors] exactly. The callback’s <cite>address</cite>,
+string, and list buffers are <strong>owned by the engine and valid only for
+the duration of the call</strong> — there is no free function. So this uses
+<cite>NativeCallable.isolateLocal</cite>, copying every payload out (<cite>toDartString</cite>
+/ a typed-list copy) synchronously before the C call returns. Safe
+because the engine fires the tap on the thread that drives
+<cite>yse_system_update()</cite> — the main isolate.</p>
+<p>Create the tap after <cite>System.init</cite> / <cite>System.initOffline</cite>; a
+<cite>System.close()</cite> invalidates it, and it does not reattach across a
+re-init (re-subscribe after the next init). If the engine rejects the
+tap (e.g. called before init), a [StateError] is thrown.</p>
 </section>
 </section>
 

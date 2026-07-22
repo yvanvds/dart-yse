@@ -57,3 +57,34 @@ thread. Returns immediately; the engine takes its own copy, so the
 marshalled buffer is freed on return. Uncaught errors arrive later
 through [errors] (during [System].`update()`).
 
+.. code-block:: dart
+
+   static Stream<BusFrame> bus(String prefix)
+
+Broadcast stream of `(address, value)` frames for every publish on the
+engine's global named bus whose address starts with [prefix] (a plain
+byte-wise prefix match; the empty string matches every address).
+
+This taps the host-side view of the bus: a script's `yse.send(...)`, a
+patcher `gSend` outlet, or any other engine-side publish under [prefix]
+arrives here as a typed [BusValue]. A prefix tap adds no audio-thread
+cost — the match happens on the engine's control thread.
+
+Each distinct [prefix] gets its own shared broadcast bridge, mirroring
+[errors]: the first subscription installs a native `yse_bus_tap`, and it
+is torn down (`yse_bus_tap_destroy`) when the last listener cancels. A
+later subscription reinstalls a fresh tap.
+
+Isolate-safety matches [errors] exactly. The callback's `address`,
+string, and list buffers are **owned by the engine and valid only for
+the duration of the call** — there is no free function. So this uses
+`NativeCallable.isolateLocal`, copying every payload out (`toDartString`
+/ a typed-list copy) synchronously before the C call returns. Safe
+because the engine fires the tap on the thread that drives
+`yse_system_update()` — the main isolate.
+
+Create the tap after `System.init` / `System.initOffline`; a
+`System.close()` invalidates it, and it does not reattach across a
+re-init (re-subscribe after the next init). If the engine rejects the
+tap (e.g. called before init), a [StateError] is thrown.
+

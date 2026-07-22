@@ -279,6 +279,12 @@
 
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">LiveCoding</a></li>
 
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="enums.html">Enums</a></li>
 
 
@@ -503,6 +509,41 @@
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">LiveCoding</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#host-bus-tap">Host bus tap</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busvalue">BusValue</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busbang">BusBang</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busint">BusInt</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busfloat">BusFloat</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busstring">BusString</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#buslist">BusList</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Methods</a></li>
 </ul>
 </li>
 </ul>
@@ -619,6 +660,222 @@ that drives <cite>yse_system_update()</cite> — the main isolate.</p>
 thread. Returns immediately; the engine takes its own copy, so the
 marshalled buffer is freed on return. Uncaught errors arrive later
 through [errors] (during [System].`update()`).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">Stream</span><span class="o">&lt;</span><span class="n">BusFrame</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bus</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">prefix</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Broadcast stream of <cite>(address, value)</cite> frames for every publish on the
+engine’s global named bus whose address starts with [prefix] (a plain
+byte-wise prefix match; the empty string matches every address).</p>
+<p>This taps the host-side view of the bus: a script’s <cite>yse.send(…)</cite>, a
+patcher <cite>gSend</cite> outlet, or any other engine-side publish under [prefix]
+arrives here as a typed [BusValue]. A prefix tap adds no audio-thread
+cost — the match happens on the engine’s control thread.</p>
+<p>Each distinct [prefix] gets its own shared broadcast bridge, mirroring
+[errors]: the first subscription installs a native <cite>yse_bus_tap</cite>, and it
+is torn down (<cite>yse_bus_tap_destroy</cite>) when the last listener cancels. A
+later subscription reinstalls a fresh tap.</p>
+<p>Isolate-safety matches [errors] exactly. The callback’s <cite>address</cite>,
+string, and list buffers are <strong>owned by the engine and valid only for
+the duration of the call</strong> — there is no free function. So this uses
+<cite>NativeCallable.isolateLocal</cite>, copying every payload out (<cite>toDartString</cite>
+/ a typed-list copy) synchronously before the C call returns. Safe
+because the engine fires the tap on the thread that drives
+<cite>yse_system_update()</cite> — the main isolate.</p>
+<p>Create the tap after <cite>System.init</cite> / <cite>System.initOffline</cite>; a
+<cite>System.close()</cite> invalidates it, and it does not reattach across a
+re-init (re-subscribe after the next init). If the engine rejects the
+tap (e.g. called before init), a [StateError] is thrown.</p>
+</section>
+<section id="host-bus-tap">
+<h2>Host bus tap<a class="headerlink" href="#host-bus-tap" title="Link to this heading">#</a></h2>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LiveCoding.bus()</span></code> subscribes the host to the engine’s global named
+bus by address <em>prefix</em>, returning a broadcast <code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code> of
+<code class="docutils literal notranslate"><span class="pre">(address,</span> <span class="pre">value)</span></code> frames. Every engine-side publish whose address starts
+with the prefix — a script’s <code class="docutils literal notranslate"><span class="pre">yse.send</span></code>, a patcher <code class="docutils literal notranslate"><span class="pre">gSend</span></code> outlet, or any
+other producer — arrives as a typed <code class="xref py py-class docutils literal notranslate"><span class="pre">BusValue</span></code>. The tap installs on
+the first subscription and is destroyed (<code class="docutils literal notranslate"><span class="pre">yse_bus_tap_destroy</span></code>) when the
+last listener cancels, with the same isolate-safe, main-thread delivery model
+as <code class="xref py py-attr docutils literal notranslate"><span class="pre">LiveCoding.errors</span></code>.</p>
+</section>
+</section>
+<section id="busvalue">
+<h1>BusValue<a class="headerlink" href="#busvalue" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">BusValue</span>
+</pre></div>
+</div>
+<p>A value carried on the engine’s global named bus, delivered through
+[LiveCoding.bus].</p>
+<p>The concrete subtype encodes which of the engine’s five bus payload kinds
+arrived — [BusBang], [BusInt], [BusFloat], [BusString], or [BusList].
+Because the type is sealed, an exhaustive <cite>switch</cite> over a [BusValue] needs
+no default case; pattern-match each subtype to read its payload
+(<cite>value</cite> for the scalar kinds, <cite>values</cite> for [BusList]).</p>
+<section id="constructors">
+<h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">BusValue</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="busbang">
+<h1>BusBang<a class="headerlink" href="#busbang" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">BusBang</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BusValue</span>
+</pre></div>
+</div>
+<p>A valueless trigger (<cite>YSE_BUS_BANG</cite>) — e.g. a patcher <cite>gSend</cite> bang outlet.</p>
+<section id="id2">
+<h2>Constructors<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">BusBang</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Const constructor — all bangs are equal and carry no payload.</p>
+</section>
+<section id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hashCode</span>
+</pre></div>
+</div>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="o">==</span><span class="p">(</span><span class="kt">Object</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="busint">
+<h1>BusInt<a class="headerlink" href="#busint" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">BusInt</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BusValue</span>
+</pre></div>
+</div>
+<p>A 32-bit integer bus value (<cite>YSE_BUS_INT</cite>).</p>
+<section id="id3">
+<h2>Constructors<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">BusInt</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Wrap an integer bus payload.</p>
+</section>
+<section id="id4">
+<h2>Properties<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span>
+</pre></div>
+</div>
+<p>The published integer.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hashCode</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h2>Methods<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="o">==</span><span class="p">(</span><span class="kt">Object</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="busfloat">
+<h1>BusFloat<a class="headerlink" href="#busfloat" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">BusFloat</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BusValue</span>
+</pre></div>
+</div>
+<p>A 32-bit float bus value (<cite>YSE_BUS_FLOAT</cite>).</p>
+<section id="id6">
+<h2>Constructors<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">BusFloat</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Wrap a float bus payload.</p>
+</section>
+<section id="id7">
+<h2>Properties<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">value</span>
+</pre></div>
+</div>
+<p>The published float, widened to a Dart [double].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hashCode</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h2>Methods<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="o">==</span><span class="p">(</span><span class="kt">Object</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="busstring">
+<h1>BusString<a class="headerlink" href="#busstring" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">BusString</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BusValue</span>
+</pre></div>
+</div>
+<p>A string bus value (<cite>YSE_BUS_STRING</cite>, NUL-terminated UTF-8 engine-side).</p>
+<section id="id9">
+<h2>Constructors<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">BusString</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Wrap a string bus payload.</p>
+</section>
+<section id="id10">
+<h2>Properties<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">value</span>
+</pre></div>
+</div>
+<p>The published string, copied out of engine-owned memory.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hashCode</span>
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h2>Methods<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="o">==</span><span class="p">(</span><span class="kt">Object</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="buslist">
+<h1>BusList<a class="headerlink" href="#buslist" title="Link to this heading">#</a></h1>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">BusList</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BusValue</span>
+</pre></div>
+</div>
+<p>A list of 32-bit floats (<cite>YSE_BUS_LIST</cite>).</p>
+<section id="id12">
+<h2>Constructors<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">BusList</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Wrap a float-list bus payload.</p>
+</section>
+<section id="id13">
+<h2>Properties<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">values</span>
+</pre></div>
+</div>
+<p>The published floats, copied out of engine-owned memory. May be empty.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hashCode</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h2>Methods<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="o">==</span><span class="p">(</span><span class="kt">Object</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">toString</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -678,6 +935,41 @@ through [errors] (during [System].`update()`).</p>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">LiveCoding</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#host-bus-tap">Host bus tap</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busvalue">BusValue</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busbang">BusBang</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busint">BusInt</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busfloat">BusFloat</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#busstring">BusString</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Methods</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#buslist">BusList</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Methods</a></li>
 </ul>
 </li>
 </ul>

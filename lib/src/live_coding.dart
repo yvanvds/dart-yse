@@ -210,17 +210,9 @@ typedef BusFrame = ({String address, BusValue value});
 ///
 /// The concrete subtype encodes which of the engine's five bus payload kinds
 /// arrived — [BusBang], [BusInt], [BusFloat], [BusString], or [BusList].
-/// Pattern-match to read the payload:
-///
-/// ```dart
-/// switch (value) {
-///   case BusBang():             /* a valueless trigger */
-///   case BusInt(:final value):  /* an int */
-///   case BusFloat(:final value):
-///   case BusString(:final value):
-///   case BusList(:final values):
-/// }
-/// ```
+/// Because the type is sealed, an exhaustive `switch` over a [BusValue] needs
+/// no default case; pattern-match each subtype to read its payload
+/// (`value` for the scalar kinds, `values` for [BusList]).
 sealed class BusValue {
   const BusValue();
 }

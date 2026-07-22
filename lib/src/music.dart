@@ -47,8 +47,7 @@ class Note implements Finalizable {
     double volume = 1.0,
     double length = 0,
     int channel = 1,
-  }) =>
-      _b.note_set(_handle, pitch, volume, length, channel);
+  }) => _b.note_set(_handle, pitch, volume, length, channel);
 
   /// MIDI pitch (60 = middle C).
   double get pitch => _b.note_get_pitch(_handle);
@@ -310,20 +309,28 @@ class Player implements Finalizable {
   bool get isPlaying => _b.player_is_playing(_handle) != 0;
 
   /// Set the lowest pitch the player may produce (0..126). [fade] interpolates.
-  void setMinimumPitch(double target, {Duration fade = Duration.zero}) =>
-      _b.player_set_minimum_pitch(_handle, target, fade.inMilliseconds / 1000.0);
+  void setMinimumPitch(double target, {Duration fade = Duration.zero}) => _b
+      .player_set_minimum_pitch(_handle, target, fade.inMilliseconds / 1000.0);
 
   /// Set the highest pitch the player may produce (1..127). [fade] interpolates.
-  void setMaximumPitch(double target, {Duration fade = Duration.zero}) =>
-      _b.player_set_maximum_pitch(_handle, target, fade.inMilliseconds / 1000.0);
+  void setMaximumPitch(double target, {Duration fade = Duration.zero}) => _b
+      .player_set_maximum_pitch(_handle, target, fade.inMilliseconds / 1000.0);
 
   /// Set the lowest velocity (0..0.999999). [fade] interpolates.
   void setMinimumVelocity(double target, {Duration fade = Duration.zero}) =>
-      _b.player_set_minimum_velocity(_handle, target, fade.inMilliseconds / 1000.0);
+      _b.player_set_minimum_velocity(
+        _handle,
+        target,
+        fade.inMilliseconds / 1000.0,
+      );
 
   /// Set the highest velocity (0.000001..1). [fade] interpolates.
   void setMaximumVelocity(double target, {Duration fade = Duration.zero}) =>
-      _b.player_set_maximum_velocity(_handle, target, fade.inMilliseconds / 1000.0);
+      _b.player_set_maximum_velocity(
+        _handle,
+        target,
+        fade.inMilliseconds / 1000.0,
+      );
 
   /// Set the minimum gap between successive notes / motifs, in seconds.
   void setMinimumGap(double target, {Duration fade = Duration.zero}) =>
@@ -334,12 +341,12 @@ class Player implements Finalizable {
       _b.player_set_maximum_gap(_handle, target, fade.inMilliseconds / 1000.0);
 
   /// Set the minimum note length, in seconds (used when no motif is active).
-  void setMinimumLength(double target, {Duration fade = Duration.zero}) =>
-      _b.player_set_minimum_length(_handle, target, fade.inMilliseconds / 1000.0);
+  void setMinimumLength(double target, {Duration fade = Duration.zero}) => _b
+      .player_set_minimum_length(_handle, target, fade.inMilliseconds / 1000.0);
 
   /// Set the maximum note length, in seconds (used when no motif is active).
-  void setMaximumLength(double target, {Duration fade = Duration.zero}) =>
-      _b.player_set_maximum_length(_handle, target, fade.inMilliseconds / 1000.0);
+  void setMaximumLength(double target, {Duration fade = Duration.zero}) => _b
+      .player_set_maximum_length(_handle, target, fade.inMilliseconds / 1000.0);
 
   /// Number of simultaneous voices.
   void setVoices(int target, {Duration fade = Duration.zero}) =>
@@ -357,7 +364,8 @@ class Player implements Finalizable {
       _b.player_add_motif(_handle, motif.handle, weight);
 
   /// Remove a previously added motif.
-  void removeMotif(Motif motif) => _b.player_remove_motif(_handle, motif.handle);
+  void removeMotif(Motif motif) =>
+      _b.player_remove_motif(_handle, motif.handle);
 
   /// Adjust the selection weight of an already-added motif.
   void adjustMotifWeight(Motif motif, int weight) =>
@@ -365,7 +373,11 @@ class Player implements Finalizable {
 
   /// Probability that the player plays only part of a motif (0..1).
   void playPartialMotifs(double target, {Duration fade = Duration.zero}) =>
-      _b.player_play_partial_motifs(_handle, target, fade.inMilliseconds / 1000.0);
+      _b.player_play_partial_motifs(
+        _handle,
+        target,
+        fade.inMilliseconds / 1000.0,
+      );
 
   /// Probability that the player draws notes from a motif vs. random (0..1).
   void playMotifs(double target, {Duration fade = Duration.zero}) =>
@@ -373,7 +385,11 @@ class Player implements Finalizable {
 
   /// Probability that motif notes are quantised to the active scale (0..1).
   void fitMotifsToScale(double target, {Duration fade = Duration.zero}) =>
-      _b.player_fit_motifs_to_scale(_handle, target, fade.inMilliseconds / 1000.0);
+      _b.player_fit_motifs_to_scale(
+        _handle,
+        target,
+        fade.inMilliseconds / 1000.0,
+      );
 
   /// Destroy the underlying native player and detach the finalizer.
   void dispose() {

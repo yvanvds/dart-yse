@@ -43,7 +43,8 @@ class BufferIO implements Finalizable {
   factory BufferIO({bool storeCopy = false}) {
     final b = bindings;
     final h = b.buffer_io_create(storeCopy ? 1 : 0);
-    if (h.address == 0) throw YseException('yse_buffer_io_create returned null');
+    if (h.address == 0)
+      throw YseException('yse_buffer_io_create returned null');
     return BufferIO._(b, h);
   }
 
@@ -53,9 +54,9 @@ class BufferIO implements Finalizable {
 
   /// Whether an asset is registered under [id].
   bool exists(String id) => using((arena) {
-        final cstr = id.toNativeUtf8(allocator: arena);
-        return _b.buffer_io_name_exists(_handle, cstr.cast()) != 0;
-      });
+    final cstr = id.toNativeUtf8(allocator: arena);
+    return _b.buffer_io_name_exists(_handle, cstr.cast()) != 0;
+  });
 
   /// Register [bytes] under [id]. Sounds can then be created by passing
   /// [id] where a filename would normally go.
@@ -81,9 +82,9 @@ class BufferIO implements Finalizable {
 
   /// Unregister the asset at [id]. Returns true if it was registered.
   bool removeAsset(String id) => using((arena) {
-        final cstr = id.toNativeUtf8(allocator: arena);
-        return _b.buffer_io_remove_by_name(_handle, cstr.cast()) != 0;
-      });
+    final cstr = id.toNativeUtf8(allocator: arena);
+    return _b.buffer_io_remove_by_name(_handle, cstr.cast()) != 0;
+  });
 
   /// Destroy the underlying native layer, detach the finalizer, and
   /// free every wrapper-owned asset buffer.

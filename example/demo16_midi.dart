@@ -13,12 +13,14 @@ import 'dart:io';
 
 import 'package:yse/yse.dart';
 
-String _resource(String name) => File([
-      'third_party',
-      'yse-soundengine',
-      'TestResources',
-      name,
-    ].join(Platform.pathSeparator)).absolute.path;
+String _resource(String name) => File(
+  [
+    'third_party',
+    'yse-soundengine',
+    'TestResources',
+    name,
+  ].join(Platform.pathSeparator),
+).absolute.path;
 
 Future<void> main() async {
   final sys = System.instance;
@@ -40,7 +42,10 @@ Future<void> main() async {
   final mid = MidiFile(_resource('demo.mid'));
   mid.play();
   print('Playing demo.mid for 5 s...');
-  for (var i = 0; i < 300; i++) { sys.update(); sys.sleep(16); }
+  for (var i = 0; i < 300; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
   mid.stop();
 
   // 3) Send a couple of raw MIDI messages to the first output port,
@@ -51,7 +56,10 @@ Future<void> main() async {
     out.noteOn(channel: 0, pitch: 60, velocity: 90);
     out.noteOn(channel: 0, pitch: 64, velocity: 90);
     out.noteOn(channel: 0, pitch: 67, velocity: 90);
-    for (var i = 0; i < 100; i++) { sys.update(); sys.sleep(16); }
+    for (var i = 0; i < 100; i++) {
+      sys.update();
+      sys.sleep(16);
+    }
     out.allNotesOff();
     out.dispose();
   }

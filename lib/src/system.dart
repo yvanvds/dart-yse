@@ -137,14 +137,12 @@ class System {
   void closeCurrentDevice() => _b.system_close_current_device(_handle);
 
   /// Name of the platform-default audio device.
-  String get defaultDevice => fetchString(
-        (buf, cap) => _b.system_default_device(_handle, buf, cap),
-      );
+  String get defaultDevice =>
+      fetchString((buf, cap) => _b.system_default_device(_handle, buf, cap));
 
   /// Name of the platform-default audio host (WASAPI, ALSA, ...).
-  String get defaultHost => fetchString(
-        (buf, cap) => _b.system_default_host(_handle, buf, cap),
-      );
+  String get defaultHost =>
+      fetchString((buf, cap) => _b.system_default_host(_handle, buf, cap));
 
   /// Engine session sample rate in Hz. Stays constant from [init] until
   /// [close], including across [pause] / [resume] cycles where
@@ -181,13 +179,13 @@ class System {
 
   /// Name of the MIDI input device at [id].
   String midiInDeviceName(int id) => fetchString(
-        (buf, cap) => _b.system_midi_in_device_name(_handle, id, buf, cap),
-      );
+    (buf, cap) => _b.system_midi_in_device_name(_handle, id, buf, cap),
+  );
 
   /// Name of the MIDI output device at [id]. Pair with [MidiOut.open].
   String midiOutDeviceName(int id) => fetchString(
-        (buf, cap) => _b.system_midi_out_device_name(_handle, id, buf, cap),
-      );
+    (buf, cap) => _b.system_midi_out_device_name(_handle, id, buf, cap),
+  );
 
   // ─── global reverb ──────────────────────────────────────────────────────
 
@@ -214,7 +212,9 @@ class System {
   ///
   /// Cancels any previously started timer first. Stopped automatically by
   /// [close]; call [stopUpdateTimer] manually to stop without closing.
-  void startUpdateTimer([Duration interval = const Duration(milliseconds: 16)]) {
+  void startUpdateTimer([
+    Duration interval = const Duration(milliseconds: 16),
+  ]) {
     stopUpdateTimer();
     _updateTimer = Timer.periodic(interval, (_) => update());
   }
@@ -280,9 +280,9 @@ class DomainClock {
 
   /// Whether a live clock with this [name] currently exists in the engine.
   bool get exists => using((arena) {
-        final cname = name.toNativeUtf8(allocator: arena);
-        return _b.system_clock_exists(_sys, cname.cast()) != 0;
-      });
+    final cname = name.toNativeUtf8(allocator: arena);
+    return _b.system_clock_exists(_sys, cname.cast()) != 0;
+  });
 
   /// Ramp the tempo toward [target] BPM over [ramp] (zero = instant).
   ///
@@ -302,16 +302,16 @@ class DomainClock {
   /// Current beat position — the running integral of tempo. Returns 0 for a
   /// disposed or otherwise unknown clock.
   double get beatPosition => using((arena) {
-        final cname = name.toNativeUtf8(allocator: arena);
-        return _b.system_beat_position(_sys, cname.cast());
-      });
+    final cname = name.toNativeUtf8(allocator: arena);
+    return _b.system_beat_position(_sys, cname.cast());
+  });
 
   /// Current tempo in BPM. Returns 0 for a disposed or otherwise unknown
   /// clock.
   double get currentTempo => using((arena) {
-        final cname = name.toNativeUtf8(allocator: arena);
-        return _b.system_current_tempo(_sys, cname.cast());
-      });
+    final cname = name.toNativeUtf8(allocator: arena);
+    return _b.system_current_tempo(_sys, cname.cast());
+  });
 
   /// Destroy the named clock in the engine. Idempotent. Dispose every
   /// [ClipTransport] bound to this clock first.

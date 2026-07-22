@@ -29,10 +29,10 @@ class YseSampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'yse Android sample',
-        theme: ThemeData(useMaterial3: true),
-        home: const YsePlaybackPage(),
-      );
+    title: 'yse Android sample',
+    theme: ThemeData(useMaterial3: true),
+    home: const YsePlaybackPage(),
+  );
 }
 
 class YsePlaybackPage extends StatefulWidget {
@@ -74,13 +74,12 @@ class _YsePlaybackPageState extends State<YsePlaybackPage> {
       _sound = sound;
 
       // Pump the engine on the UI isolate every 16 ms.
-      _ticker = Stream<DateTime>.periodic(
-        const Duration(milliseconds: 16),
-        (_) {
-          _sys.update();
-          return DateTime.now();
-        },
-      );
+      _ticker = Stream<DateTime>.periodic(const Duration(milliseconds: 16), (
+        _,
+      ) {
+        _sys.update();
+        return DateTime.now();
+      });
 
       setState(() => _status = 'Playing drone.ogg on loop');
     } catch (e, st) {

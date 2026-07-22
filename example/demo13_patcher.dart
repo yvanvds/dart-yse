@@ -27,18 +27,26 @@ Future<void> main() async {
   final recv = p.createObject(Obj.gReceive, args: 'freq');
   p.connect(recv, outlet: 0, to: sine, inlet: 0);
 
-  print('Patcher has ${p.objects} objects, sine.type=${sine.type}, '
-      'sine.inputs=${sine.inputs}, sine.outputs=${sine.outputs}');
+  print(
+    'Patcher has ${p.objects} objects, sine.type=${sine.type}, '
+    'sine.inputs=${sine.inputs}, sine.outputs=${sine.outputs}',
+  );
 
   final sound = Sound.fromPatcher(p, volume: 0.3);
   sound.play();
   print('Playing 220 Hz sine...');
-  for (var i = 0; i < 100; i++) { sys.update(); sys.sleep(16); }
+  for (var i = 0; i < 100; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
 
   // Send a new frequency through the named receiver.
   final ok = p.passFloat(440, 'freq');
   print('passFloat(440, "freq") = $ok — should be A4 now');
-  for (var i = 0; i < 100; i++) { sys.update(); sys.sleep(16); }
+  for (var i = 0; i < 100; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
 
   // Round-trip via JSON: dump the current graph, parse into a fresh
   // patcher, count objects.

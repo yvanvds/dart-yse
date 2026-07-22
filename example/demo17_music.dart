@@ -26,22 +26,26 @@ Future<void> main() async {
 
   // Build a small motif: an arpeggio of C-E-G-C across one second.
   final motif = Motif();
-  motif.add(PNote(position: 0.0,  pitch: 60, length: 0.2));
+  motif.add(PNote(position: 0.0, pitch: 60, length: 0.2));
   motif.add(PNote(position: 0.25, pitch: 64, length: 0.2));
-  motif.add(PNote(position: 0.5,  pitch: 67, length: 0.2));
+  motif.add(PNote(position: 0.5, pitch: 67, length: 0.2));
   motif.add(PNote(position: 0.75, pitch: 72, length: 0.2));
   motif.autoSetLength();
-  print('Motif: ${motif.size} notes, length=${motif.length.toStringAsFixed(2)}s');
+  print(
+    'Motif: ${motif.size} notes, length=${motif.length.toStringAsFixed(2)}s',
+  );
 
   // C-pentatonic scale across all octaves (octaveStep=12 replicates).
   final scale = Scale()
-    ..add(60)   // C
-    ..add(62)   // D
-    ..add(64)   // E
-    ..add(67)   // G
-    ..add(69);  // A
-  print('Scale: ${scale.size} pitches in MIDI range; '
-      'nearest to 63 (Eb) = ${scale.nearest(63)} (E)');
+    ..add(60) // C
+    ..add(62) // D
+    ..add(64) // E
+    ..add(67) // G
+    ..add(69); // A
+  print(
+    'Scale: ${scale.size} pitches in MIDI range; '
+    'nearest to 63 (Eb) = ${scale.nearest(63)} (E)',
+  );
   print('Has 60 (C)?  ${scale.has(60)}');
   print('Has 61 (C#)? ${scale.has(61)}');
 
@@ -53,8 +57,10 @@ Future<void> main() async {
 
   // Plain Note arithmetic is fine without the player.
   final root = Note(pitch: 60, volume: 0.8, length: 0.5);
-  print('Root note: pitch=${root.pitch}, volume=${root.volume}, '
-      'length=${root.length}s, channel=${root.channel}');
+  print(
+    'Root note: pitch=${root.pitch}, volume=${root.volume}, '
+    'length=${root.length}s, channel=${root.channel}',
+  );
 
   // Restrict the motif's legal start pitches to the scale.
   motif.setFirstPitch(scale);

@@ -28,15 +28,20 @@ Future<void> main() async {
 
   log.sendMessage('Hello from the Dart side');
   // Give the engine update loop a chance to process the message queue.
-  for (var i = 0; i < 10; i++) { sys.update(); sys.sleep(16); }
+  for (var i = 0; i < 10; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
 
   // BufferIO: read drone.ogg as bytes, register, then play by ID.
-  final resourceFile = File([
-    'third_party',
-    'yse-soundengine',
-    'TestResources',
-    'drone.ogg',
-  ].join(Platform.pathSeparator)).absolute;
+  final resourceFile = File(
+    [
+      'third_party',
+      'yse-soundengine',
+      'TestResources',
+      'drone.ogg',
+    ].join(Platform.pathSeparator),
+  ).absolute;
   final bytes = await resourceFile.readAsBytes();
   print('Loaded ${bytes.length} bytes of drone.ogg into Dart memory');
 
@@ -47,7 +52,10 @@ Future<void> main() async {
   final sound = Sound.fromFile('drone-asset', loop: true, volume: 0.5);
   sound.play();
   print('Playing buffer-IO-backed sound for 3 s...');
-  for (var i = 0; i < 180; i++) { sys.update(); sys.sleep(16); }
+  for (var i = 0; i < 180; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
 
   print('Done. (missed callbacks=${sys.missedCallbacks})');
   sound.stop();

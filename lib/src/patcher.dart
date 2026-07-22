@@ -89,9 +89,9 @@ class Obj {
 
   /// Whether [type] is a known object type identifier.
   static bool isValid(String type) => using((arena) {
-        final cstr = type.toNativeUtf8(allocator: arena);
-        return bindings.patcher_is_valid_object(cstr.cast()) != 0;
-      });
+    final cstr = type.toNativeUtf8(allocator: arena);
+    return bindings.patcher_is_valid_object(cstr.cast()) != 0;
+  });
 }
 
 /// Modular DSP/event graph (Max/MSP-style patcher).
@@ -136,41 +136,49 @@ class Patcher implements Finalizable {
   /// The returned [PHandle] is owned by the patcher — release with
   /// [deleteObject], never directly.
   PHandle createObject(String type, {String args = ''}) => using((arena) {
-        final typePtr = type.toNativeUtf8(allocator: arena);
-        final argsPtr = args.toNativeUtf8(allocator: arena);
-        final h = _b.patcher_create_object(_handle, typePtr.cast(), argsPtr.cast());
-        if (h.address == 0) {
-          throw StateError('createObject("$type", "$args") returned null');
-        }
-        return PHandle._(h);
-      });
+    final typePtr = type.toNativeUtf8(allocator: arena);
+    final argsPtr = args.toNativeUtf8(allocator: arena);
+    final h = _b.patcher_create_object(_handle, typePtr.cast(), argsPtr.cast());
+    if (h.address == 0) {
+      throw StateError('createObject("$type", "$args") returned null');
+    }
+    return PHandle._(h);
+  });
 
   /// Remove [obj] from the patcher.
-  void deleteObject(PHandle obj) => _b.patcher_delete_object(_handle, obj._handle);
+  void deleteObject(PHandle obj) =>
+      _b.patcher_delete_object(_handle, obj._handle);
 
   /// Remove every object from the patcher.
   void clear() => _b.patcher_clear(_handle);
 
   /// Connect [from]'s [outlet] to [to]'s [inlet].
-  void connect(PHandle from, {required int outlet, required PHandle to, required int inlet}) =>
-      _b.patcher_connect(_handle, from._handle, outlet, to._handle, inlet);
+  void connect(
+    PHandle from, {
+    required int outlet,
+    required PHandle to,
+    required int inlet,
+  }) => _b.patcher_connect(_handle, from._handle, outlet, to._handle, inlet);
 
   /// Remove the connection from [from]'s [outlet] to [to]'s [inlet].
-  void disconnect(PHandle from, {required int outlet, required PHandle to, required int inlet}) =>
-      _b.patcher_disconnect(_handle, from._handle, outlet, to._handle, inlet);
+  void disconnect(
+    PHandle from, {
+    required int outlet,
+    required PHandle to,
+    required int inlet,
+  }) => _b.patcher_disconnect(_handle, from._handle, outlet, to._handle, inlet);
 
   // ─── persistence ───────────────────────────────────────────────────────
 
   /// Serialise the current graph to JSON.
-  String dumpJson() => fetchString(
-        (buf, cap) => _b.patcher_dump_json(_handle, buf, cap),
-      );
+  String dumpJson() =>
+      fetchString((buf, cap) => _b.patcher_dump_json(_handle, buf, cap));
 
   /// Replace the current graph with the contents of a JSON dump.
   void parseJson(String content) => using((arena) {
-        final cstr = content.toNativeUtf8(allocator: arena);
-        _b.patcher_parse_json(_handle, cstr.cast());
-      });
+    final cstr = content.toNativeUtf8(allocator: arena);
+    _b.patcher_parse_json(_handle, cstr.cast());
+  });
 
   // ─── enumeration ───────────────────────────────────────────────────────
 
@@ -190,28 +198,28 @@ class Patcher implements Finalizable {
   /// Send a bang to the named `.r` receive object. Returns false if no
   /// such receiver exists.
   bool passBang(String to) => using((arena) {
-        final cstr = to.toNativeUtf8(allocator: arena);
-        return _b.patcher_pass_bang(_handle, cstr.cast()) != 0;
-      });
+    final cstr = to.toNativeUtf8(allocator: arena);
+    return _b.patcher_pass_bang(_handle, cstr.cast()) != 0;
+  });
 
   /// Send an integer to a named receiver.
   bool passInt(int value, String to) => using((arena) {
-        final cstr = to.toNativeUtf8(allocator: arena);
-        return _b.patcher_pass_int(_handle, value, cstr.cast()) != 0;
-      });
+    final cstr = to.toNativeUtf8(allocator: arena);
+    return _b.patcher_pass_int(_handle, value, cstr.cast()) != 0;
+  });
 
   /// Send a float to a named receiver.
   bool passFloat(double value, String to) => using((arena) {
-        final cstr = to.toNativeUtf8(allocator: arena);
-        return _b.patcher_pass_float(_handle, value, cstr.cast()) != 0;
-      });
+    final cstr = to.toNativeUtf8(allocator: arena);
+    return _b.patcher_pass_float(_handle, value, cstr.cast()) != 0;
+  });
 
   /// Send a string to a named receiver.
   bool passString(String value, String to) => using((arena) {
-        final valPtr = value.toNativeUtf8(allocator: arena);
-        final toPtr = to.toNativeUtf8(allocator: arena);
-        return _b.patcher_pass_string(_handle, valPtr.cast(), toPtr.cast()) != 0;
-      });
+    final valPtr = value.toNativeUtf8(allocator: arena);
+    final toPtr = to.toNativeUtf8(allocator: arena);
+    return _b.patcher_pass_string(_handle, valPtr.cast(), toPtr.cast()) != 0;
+  });
 
   /// Destroy the underlying native patcher and detach the finalizer.
   void dispose() {
@@ -231,25 +239,22 @@ class PHandle {
   PHandle._(this._handle);
 
   /// Type identifier of the underlying object (matches one of [Obj]).
-  String get type => fetchString(
-        (buf, cap) => bindings.phandle_get_type(_handle, buf, cap),
-      );
+  String get type =>
+      fetchString((buf, cap) => bindings.phandle_get_type(_handle, buf, cap));
 
   /// Display name set in the patcher source.
-  String get name => fetchString(
-        (buf, cap) => bindings.phandle_get_name(_handle, buf, cap),
-      );
+  String get name =>
+      fetchString((buf, cap) => bindings.phandle_get_name(_handle, buf, cap));
 
   /// Original creation argument string.
-  String get params => fetchString(
-        (buf, cap) => bindings.phandle_get_params(_handle, buf, cap),
-      );
+  String get params =>
+      fetchString((buf, cap) => bindings.phandle_get_params(_handle, buf, cap));
 
   /// Current GUI display value for objects that have one
   /// (sliders, toggles, ...).
   String get guiValue => fetchString(
-        (buf, cap) => bindings.phandle_get_gui_value(_handle, buf, cap),
-      );
+    (buf, cap) => bindings.phandle_get_gui_value(_handle, buf, cap),
+  );
 
   /// Patcher-assigned unique ID.
   int get id => bindings.phandle_get_id(_handle);
@@ -261,13 +266,14 @@ class PHandle {
   int get outputs => bindings.phandle_get_outputs(_handle);
 
   /// Whether [inlet] accepts an audio signal.
-  bool isDspInput(int inlet) => bindings.phandle_is_dsp_input(_handle, inlet) != 0;
+  bool isDspInput(int inlet) =>
+      bindings.phandle_is_dsp_input(_handle, inlet) != 0;
 
   /// Data type produced by [pin].
   OutType outputDataType(int pin) => OutType.values.firstWhere(
-        (e) => e.native == bindings.phandle_output_data_type(_handle, pin),
-        orElse: () => OutType.invalid,
-      );
+    (e) => e.native == bindings.phandle_output_data_type(_handle, pin),
+    orElse: () => OutType.invalid,
+  );
 
   /// Number of connections leaving [outlet].
   int connectionCount(int outlet) =>
@@ -285,7 +291,8 @@ class PHandle {
   void sendBang(int inlet) => bindings.phandle_set_bang(_handle, inlet);
 
   /// Send an integer to [inlet].
-  void sendInt(int inlet, int value) => bindings.phandle_set_int(_handle, inlet, value);
+  void sendInt(int inlet, int value) =>
+      bindings.phandle_set_int(_handle, inlet, value);
 
   /// Send a float to [inlet].
   void sendFloat(int inlet, double value) =>
@@ -293,30 +300,30 @@ class PHandle {
 
   /// Send a string/list to [inlet].
   void sendList(int inlet, String value) => using((arena) {
-        final cstr = value.toNativeUtf8(allocator: arena);
-        bindings.phandle_set_list(_handle, inlet, cstr.cast());
-      });
+    final cstr = value.toNativeUtf8(allocator: arena);
+    bindings.phandle_set_list(_handle, inlet, cstr.cast());
+  });
 
   /// Reconfigure the object with a new argument string.
   void setParams(String args) => using((arena) {
-        final cstr = args.toNativeUtf8(allocator: arena);
-        bindings.phandle_set_params(_handle, cstr.cast());
-      });
+    final cstr = args.toNativeUtf8(allocator: arena);
+    bindings.phandle_set_params(_handle, cstr.cast());
+  });
 
   /// Read a GUI property by [key].
   String getGuiProperty(String key) => fetchString(
-        (buf, cap) => using((arena) {
-          final cstr = key.toNativeUtf8(allocator: arena);
-          return bindings.phandle_get_gui_property(_handle, cstr.cast(), buf, cap);
-        }),
-      );
+    (buf, cap) => using((arena) {
+      final cstr = key.toNativeUtf8(allocator: arena);
+      return bindings.phandle_get_gui_property(_handle, cstr.cast(), buf, cap);
+    }),
+  );
 
   /// Write a GUI property.
   void setGuiProperty(String key, String value) => using((arena) {
-        final keyPtr = key.toNativeUtf8(allocator: arena);
-        final valPtr = value.toNativeUtf8(allocator: arena);
-        bindings.phandle_set_gui_property(_handle, keyPtr.cast(), valPtr.cast());
-      });
+    final keyPtr = key.toNativeUtf8(allocator: arena);
+    final valPtr = value.toNativeUtf8(allocator: arena);
+    bindings.phandle_set_gui_property(_handle, keyPtr.cast(), valPtr.cast());
+  });
 }
 
 /// Reads an engine-owned `const char*` into a Dart string.
@@ -356,8 +363,9 @@ class PatcherRegistry {
       _ownedString(bindings.patcher_get_type_name(index));
 
   /// Every registered type identifier, in registry (lexicographic) order.
-  static List<String> typeNames() =>
-      [for (var i = 0; i < typeCount; i++) typeNameAt(i)];
+  static List<String> typeNames() => [
+    for (var i = 0; i < typeCount; i++) typeNameAt(i),
+  ];
 
   /// Metadata handle for [typeName], or `null` if the registry has no such
   /// type. Compare against [Obj] constants, e.g. `PatcherRegistry.type(Obj.dSine)`.
@@ -369,8 +377,9 @@ class PatcherRegistry {
   }
 
   /// Every registered type as a metadata handle, in registry order.
-  static List<PatcherObjectType> types() =>
-      [for (final n in typeNames()) PatcherObjectType._(n)];
+  static List<PatcherObjectType> types() => [
+    for (final n in typeNames()) PatcherObjectType._(n),
+  ];
 
   /// A fresh JSON snapshot of every registered object's full metadata.
   ///
@@ -402,122 +411,125 @@ class PatcherObjectType {
 
   /// One-line human-readable description of the object.
   String get description => using((arena) {
-        final namePtr = name.toNativeUtf8(allocator: arena);
-        return _ownedString(bindings.patcher_get_type_description(namePtr.cast()));
-      });
+    final namePtr = name.toNativeUtf8(allocator: arena);
+    return _ownedString(bindings.patcher_get_type_description(namePtr.cast()));
+  });
 
   /// Documentation category the object is filed under.
   PCategory get category => using((arena) {
-        final namePtr = name.toNativeUtf8(allocator: arena);
-        return PCategory.fromNative(
-          bindings.patcher_get_type_category(namePtr.cast()),
-        );
-      });
+    final namePtr = name.toNativeUtf8(allocator: arena);
+    return PCategory.fromNative(
+      bindings.patcher_get_type_category(namePtr.cast()),
+    );
+  });
 
   /// Whether this is a DSP / audio-rate object (the `~` prefix convention).
   bool get isDsp => using((arena) {
-        final namePtr = name.toNativeUtf8(allocator: arena);
-        return bindings.patcher_get_type_is_dsp(namePtr.cast()) != 0;
-      });
+    final namePtr = name.toNativeUtf8(allocator: arena);
+    return bindings.patcher_get_type_is_dsp(namePtr.cast()) != 0;
+  });
 
   /// Number of inlets on this object type.
   int get inletCount => using((arena) {
-        final namePtr = name.toNativeUtf8(allocator: arena);
-        return bindings.patcher_get_inlet_count(namePtr.cast());
-      });
+    final namePtr = name.toNativeUtf8(allocator: arena);
+    return bindings.patcher_get_inlet_count(namePtr.cast());
+  });
 
   /// Number of outlets on this object type.
   int get outletCount => using((arena) {
-        final namePtr = name.toNativeUtf8(allocator: arena);
-        return bindings.patcher_get_outlet_count(namePtr.cast());
-      });
+    final namePtr = name.toNativeUtf8(allocator: arena);
+    return bindings.patcher_get_outlet_count(namePtr.cast());
+  });
 
   /// Number of creation parameters this object type documents.
   int get paramCount => using((arena) {
-        final namePtr = name.toNativeUtf8(allocator: arena);
-        return bindings.patcher_get_param_count(namePtr.cast());
-      });
+    final namePtr = name.toNativeUtf8(allocator: arena);
+    return bindings.patcher_get_param_count(namePtr.cast());
+  });
 
   /// Metadata for the inlet at [idx] (0-based).
   PatcherInlet inletAt(int idx) => using((arena) {
-        final namePtr = name.toNativeUtf8(allocator: arena);
-        final label = arena<Pointer<Char>>();
-        final doc = arena<Pointer<Char>>();
-        final range = arena<Pointer<Char>>();
-        final accepts = arena<UnsignedInt>();
-        bindings.patcher_get_inlet_info(
-          namePtr.cast(),
-          idx,
-          label,
-          doc,
-          range,
-          accepts,
-        );
-        return PatcherInlet._(
-          label: _ownedString(label.value),
-          doc: _ownedString(doc.value),
-          range: _ownedString(range.value),
-          accepts: InletAccepts.fromBitmask(accepts.value),
-        );
-      });
+    final namePtr = name.toNativeUtf8(allocator: arena);
+    final label = arena<Pointer<Char>>();
+    final doc = arena<Pointer<Char>>();
+    final range = arena<Pointer<Char>>();
+    final accepts = arena<UnsignedInt>();
+    bindings.patcher_get_inlet_info(
+      namePtr.cast(),
+      idx,
+      label,
+      doc,
+      range,
+      accepts,
+    );
+    return PatcherInlet._(
+      label: _ownedString(label.value),
+      doc: _ownedString(doc.value),
+      range: _ownedString(range.value),
+      accepts: InletAccepts.fromBitmask(accepts.value),
+    );
+  });
 
   /// Metadata for every inlet, in order.
-  List<PatcherInlet> inlets() =>
-      [for (var i = 0; i < inletCount; i++) inletAt(i)];
+  List<PatcherInlet> inlets() => [
+    for (var i = 0; i < inletCount; i++) inletAt(i),
+  ];
 
   /// Metadata for the outlet at [idx] (0-based).
   PatcherOutlet outletAt(int idx) => using((arena) {
-        final namePtr = name.toNativeUtf8(allocator: arena);
-        final label = arena<Pointer<Char>>();
-        final doc = arena<Pointer<Char>>();
-        final range = arena<Pointer<Char>>();
-        final type = arena<UnsignedInt>();
-        bindings.patcher_get_outlet_info(
-          namePtr.cast(),
-          idx,
-          label,
-          doc,
-          range,
-          type,
-        );
-        return PatcherOutlet._(
-          label: _ownedString(label.value),
-          doc: _ownedString(doc.value),
-          range: _ownedString(range.value),
-          type: OutType.fromNative(YseOutType.fromValue(type.value)),
-        );
-      });
+    final namePtr = name.toNativeUtf8(allocator: arena);
+    final label = arena<Pointer<Char>>();
+    final doc = arena<Pointer<Char>>();
+    final range = arena<Pointer<Char>>();
+    final type = arena<UnsignedInt>();
+    bindings.patcher_get_outlet_info(
+      namePtr.cast(),
+      idx,
+      label,
+      doc,
+      range,
+      type,
+    );
+    return PatcherOutlet._(
+      label: _ownedString(label.value),
+      doc: _ownedString(doc.value),
+      range: _ownedString(range.value),
+      type: OutType.fromNative(YseOutType.fromValue(type.value)),
+    );
+  });
 
   /// Metadata for every outlet, in order.
-  List<PatcherOutlet> outlets() =>
-      [for (var i = 0; i < outletCount; i++) outletAt(i)];
+  List<PatcherOutlet> outlets() => [
+    for (var i = 0; i < outletCount; i++) outletAt(i),
+  ];
 
   /// Metadata for the creation parameter at [idx] (0-based).
   PatcherParam paramAt(int idx) => using((arena) {
-        final namePtr = name.toNativeUtf8(allocator: arena);
-        final pName = arena<Pointer<Char>>();
-        final doc = arena<Pointer<Char>>();
-        final defaultValue = arena<Pointer<Char>>();
-        final range = arena<Pointer<Char>>();
-        bindings.patcher_get_param_info(
-          namePtr.cast(),
-          idx,
-          pName,
-          doc,
-          defaultValue,
-          range,
-        );
-        return PatcherParam._(
-          name: _ownedString(pName.value),
-          doc: _ownedString(doc.value),
-          defaultValue: _ownedString(defaultValue.value),
-          range: _ownedString(range.value),
-        );
-      });
+    final namePtr = name.toNativeUtf8(allocator: arena);
+    final pName = arena<Pointer<Char>>();
+    final doc = arena<Pointer<Char>>();
+    final defaultValue = arena<Pointer<Char>>();
+    final range = arena<Pointer<Char>>();
+    bindings.patcher_get_param_info(
+      namePtr.cast(),
+      idx,
+      pName,
+      doc,
+      defaultValue,
+      range,
+    );
+    return PatcherParam._(
+      name: _ownedString(pName.value),
+      doc: _ownedString(doc.value),
+      defaultValue: _ownedString(defaultValue.value),
+      range: _ownedString(range.value),
+    );
+  });
 
   /// Metadata for every creation parameter, in order.
-  List<PatcherParam> params() =>
-      [for (var i = 0; i < paramCount; i++) paramAt(i)];
+  List<PatcherParam> params() => [
+    for (var i = 0; i < paramCount; i++) paramAt(i),
+  ];
 
   @override
   String toString() => 'PatcherObjectType($name)';

@@ -73,8 +73,13 @@ String _resolveLibDirectory() {
 
   final pkgRoot = _resolveYsePackageRoot();
   final base = pkgRoot ?? Directory.current.path;
-  return [base, 'third_party', 'yse-soundengine', 'build', 'bin']
-      .join(Platform.pathSeparator);
+  return [
+    base,
+    'third_party',
+    'yse-soundengine',
+    'build',
+    'bin',
+  ].join(Platform.pathSeparator);
 }
 
 /// Finds the on-disk root of the `yse` package by reading the consumer's
@@ -92,7 +97,8 @@ String? _resolveYsePackageRoot() {
     if (cfg.existsSync()) {
       try {
         final json = jsonDecode(cfg.readAsStringSync()) as Map<String, dynamic>;
-        final packages = (json['packages'] as List).cast<Map<String, dynamic>>();
+        final packages = (json['packages'] as List)
+            .cast<Map<String, dynamic>>();
         for (final pkg in packages) {
           if (pkg['name'] == 'yse') {
             final rootUri = pkg['rootUri'] as String?;
@@ -114,9 +120,10 @@ String? _resolveYsePackageRoot() {
 void _setDllDirectory(String dir) {
   final kernel32 = DynamicLibrary.open('kernel32.dll');
   final setDllDirectoryW = kernel32
-      .lookupFunction<Int32 Function(Pointer<Utf16>), int Function(Pointer<Utf16>)>(
-    'SetDllDirectoryW',
-  );
+      .lookupFunction<
+        Int32 Function(Pointer<Utf16>),
+        int Function(Pointer<Utf16>)
+      >('SetDllDirectoryW');
   final native = dir.toNativeUtf16();
   try {
     setDllDirectoryW(native);

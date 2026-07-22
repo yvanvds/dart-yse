@@ -28,16 +28,20 @@ Future<void> main() async {
   // (which calls fopen internally on Windows) so absolute paths are the
   // safest bet — they sidestep any working-directory mismatch between Dart
   // and the audio thread.
-  final resourceFile = File([
-    'third_party',
-    'yse-soundengine',
-    'TestResources',
-    'drone.ogg',
-  ].join(Platform.pathSeparator)).absolute;
+  final resourceFile = File(
+    [
+      'third_party',
+      'yse-soundengine',
+      'TestResources',
+      'drone.ogg',
+    ].join(Platform.pathSeparator),
+  ).absolute;
 
   if (!resourceFile.existsSync()) {
     print('Could not find test sound at ${resourceFile.path}');
-    print('Run from the dart-yse package root; ensure the submodule is initialised.');
+    print(
+      'Run from the dart-yse package root; ensure the submodule is initialised.',
+    );
     sys.close();
     exitCode = 1;
     return;
@@ -45,8 +49,10 @@ Future<void> main() async {
   final resourcePath = resourceFile.path;
 
   final sound = Sound.fromFile(resourcePath, loop: true, volume: 0.6);
-  print('Loaded ${File(resourcePath).path} '
-      '(streaming=${sound.isStreaming})');
+  print(
+    'Loaded ${File(resourcePath).path} '
+    '(streaming=${sound.isStreaming})',
+  );
 
   sound.play();
   print('Playing for 3 seconds...');

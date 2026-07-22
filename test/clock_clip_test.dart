@@ -71,10 +71,7 @@ void main() {
     test('duplicate name is rejected (first registration wins)', () {
       final name = freshName('dup');
       final a = DomainClock(name, tempo: 100);
-      expect(
-        () => DomainClock(name, tempo: 200),
-        throwsA(isA<YseException>()),
-      );
+      expect(() => DomainClock(name, tempo: 200), throwsA(isA<YseException>()));
       a.dispose();
     });
 
@@ -89,7 +86,8 @@ void main() {
       expect(
         after,
         greaterThan(start),
-        reason: 'a positive-tempo clock must integrate forward as blocks render',
+        reason:
+            'a positive-tempo clock must integrate forward as blocks render',
       );
     });
 
@@ -132,20 +130,17 @@ void main() {
 
       expect(clip.isPlaying, isFalse);
 
-      clip.setEvents(
-        const [
-          ClipEvent(startBeat: 0, durationBeats: 1, channel: 1, pitch: 60),
-          ClipEvent(
-            startBeat: 1,
-            durationBeats: 1,
-            channel: 1,
-            pitch: 64,
-            velocity: 0.5,
-            pitchBend: 0.25,
-          ),
-        ],
-        loopBeats: 4,
-      );
+      clip.setEvents(const [
+        ClipEvent(startBeat: 0, durationBeats: 1, channel: 1, pitch: 60),
+        ClipEvent(
+          startBeat: 1,
+          durationBeats: 1,
+          channel: 1,
+          pitch: 64,
+          velocity: 0.5,
+          pitchBend: 0.25,
+        ),
+      ], loopBeats: 4);
 
       clip.play();
       expect(clip.isPlaying, isTrue);
@@ -162,21 +157,17 @@ void main() {
       final clip = ClipTransport(clock);
       addTearDown(clip.dispose);
 
-      clip.setEvents(
-        const [ClipEvent(startBeat: 0, durationBeats: 2, channel: 1, pitch: 48)],
-        loopBeats: 2,
-      );
+      clip.setEvents(const [
+        ClipEvent(startBeat: 0, durationBeats: 2, channel: 1, pitch: 48),
+      ], loopBeats: 2);
       clip.play();
       sys.renderOffline(128);
 
       // Swap the list mid-flight — must not throw and playback continues.
-      clip.setEvents(
-        const [
-          ClipEvent(startBeat: 0, durationBeats: 1, channel: 2, pitch: 72),
-          ClipEvent(startBeat: 1, durationBeats: 1, channel: 2, pitch: 76),
-        ],
-        loopBeats: 2,
-      );
+      clip.setEvents(const [
+        ClipEvent(startBeat: 0, durationBeats: 1, channel: 2, pitch: 72),
+        ClipEvent(startBeat: 1, durationBeats: 1, channel: 2, pitch: 76),
+      ], loopBeats: 2);
       sys.renderOffline(128);
       expect(clip.isPlaying, isTrue);
 
@@ -191,10 +182,7 @@ void main() {
     test('binding to a nonexistent clock throws', () {
       final clock = DomainClock(freshName('temp'), tempo: 120);
       clock.dispose(); // clock no longer live
-      expect(
-        () => ClipTransport(clock),
-        throwsA(isA<YseException>()),
-      );
+      expect(() => ClipTransport(clock), throwsA(isA<YseException>()));
     });
 
     test('dispose is idempotent', () {

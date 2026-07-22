@@ -23,7 +23,9 @@ Future<void> main() async {
   final sub = LiveCoding.errors.listen((tb) => print('[script error] $tb'));
 
   sys.init();
-  print('Engine initialised. Python live-coding enabled: ${LiveCoding.enabled}');
+  print(
+    'Engine initialised. Python live-coding enabled: ${LiveCoding.enabled}',
+  );
 
   // A deliberately broken script: on an ON build this produces a real
   // Python traceback; on an OFF build it is a no-op beyond the sentinel

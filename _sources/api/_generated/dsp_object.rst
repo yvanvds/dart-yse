@@ -268,9 +268,23 @@ Methods
 
 .. code-block:: dart
 
-   void link(DspObject next)
+   void link(DspObject? next)
 
 Insert [next] after this object in the processing chain.
+
+Passing `null` detaches this object's forward edge, terminating the
+chain at this object (tail termination). This is what lets a chain be
+re-linked into a new order without a former non-tail element keeping a
+stale `next` that closes a cycle when the engine walks it (upstream
+yvanvds/yse-soundengine#391).
+
+.. code-block:: dart
+
+   void unlink()
+
+Detach this object's forward edge, terminating the chain here.
+
+Convenience for `link(null)` — see [link].
 
 .. code-block:: dart
 

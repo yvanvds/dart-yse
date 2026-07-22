@@ -697,10 +697,20 @@ last passed to [setGrainLength], without the per-grain randomisation).</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">link</span><span class="p">(</span><span class="n">DspObject</span><span class="w"> </span><span class="n">next</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">link</span><span class="p">(</span><span class="n">DspObject</span><span class="o">?</span><span class="w"> </span><span class="n">next</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Insert [next] after this object in the processing chain.</p>
+<p>Passing <cite>null</cite> detaches this object’s forward edge, terminating the
+chain at this object (tail termination). This is what lets a chain be
+re-linked into a new order without a former non-tail element keeping a
+stale <cite>next</cite> that closes a cycle when the engine walks it (upstream
+yvanvds/yse-soundengine#391).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">unlink</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Detach this object’s forward edge, terminating the chain here.</p>
+<p>Convenience for <cite>link(null)</cite> — see [link].</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setDelayTap</span><span class="p">(</span><span class="n">DelayTap</span><span class="w"> </span><span class="n">tap</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">timeMs</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">gain</span><span class="p">})</span>
 </pre></div>
 </div>

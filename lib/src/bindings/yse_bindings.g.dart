@@ -3250,6 +3250,20 @@ class YseBindings {
   late final _dsp_object_get_lfo_frequency = _dsp_object_get_lfo_frequencyPtr
       .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
 
+  /// Insert `next` after `head` in a processing chain (dspObject::link): with
+  /// head->X already linked, the result is head->next->X. Pass NULL as `next` to
+  /// detach the forward edge instead (dspObject::unlink, #391): head's next
+  /// pointer is cleared and the detached neighbour's back-pointer severed, so the
+  /// neighbour becomes a standalone chain again. Detaching never touches head's
+  /// own attachment to a sound/channel (that is yse_sound_set_dsp /
+  /// yse_channel_set_dsp territory).
+  /// RT-safety: the audio thread walks these links lock-free every block. To
+  /// restructure a chain attached to a live sound or channel, detach the chain
+  /// from its owner first (yse_channel_set_dsp(ch, NULL) / yse_sound_set_dsp(s,
+  /// NULL) — a pointer swap applied on the audio thread), re-link the objects
+  /// into the new order, then re-attach the new head. That keeps the audio
+  /// thread from ever observing a half-rewired chain; effect DSP state survives
+  /// because the objects themselves are untouched.
   void dsp_object_link(
     ffi.Pointer<YseDspObject> head,
     ffi.Pointer<YseDspObject> next,
@@ -7344,6 +7358,35 @@ class YseBindings {
   late final _synth_is_valid = _synth_is_validPtr
       .asFunction<int Function(ffi.Pointer<YseSynth>)>();
 
+  /// Assign a bus-addressable name to the synth (mirrors YSE::synth::name, issue
+  /// #388). Once named "foo", the engine subscribes it to the global named bus
+  /// addresses synth.foo.note / .off / .cc / .bend / .aftertouch / .alloff, so
+  /// note and controller events published by name reach the synth engine-side
+  /// with no host round-trip. Payload shapes are locked by
+  /// docs/design/live_coding_dsl.md ("Mapping to synth events"); delivery
+  /// reuses the same RT-safe message inbox as the note/controller functions
+  /// above. Anonymous synths (the default) are not addressable.
+  ///
+  /// NULL or "" clears the name and removes the subscriptions; renaming
+  /// re-subscribes under the new name. Names are unique per synth: a duplicate
+  /// is rejected and logged engine-side (first registration wins — there is no
+  /// error return, matching the C++ API). Only effective while the engine is
+  /// between init and close.
+  void synth_set_name(ffi.Pointer<YseSynth> h, ffi.Pointer<ffi.Char> name) {
+    return _synth_set_name(h, name);
+  }
+
+  late final _synth_set_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_synth_set_name');
+  late final _synth_set_name = _synth_set_namePtr
+      .asFunction<
+        void Function(ffi.Pointer<YseSynth>, ffi.Pointer<ffi.Char>)
+      >();
+
   /// Add a group of `num_voices` built-in sine voices (sine oscillator shaped
   /// by an ADSR envelope) responding to note numbers in
   /// [lowest_note, highest_note] on `channel` (0 = omni). May be called several
@@ -7418,9 +7461,19 @@ class YseBindings {
     ffi.Pointer<YseSynth> h,
     ffi.Pointer<YseSfzInstrument> instrument,
     int num_voices,
+    int channel,
+    int lowest_note,
+    int highest_note,
   ) {
     return YseStatus.fromValue(
-      _synth_add_voices_sampler(h, instrument, num_voices),
+      _synth_add_voices_sampler(
+        h,
+        instrument,
+        num_voices,
+        channel,
+        lowest_note,
+        highest_note,
+      ),
     );
   }
 
@@ -7431,47 +7484,85 @@ class YseBindings {
             ffi.Pointer<YseSynth>,
             ffi.Pointer<YseSfzInstrument>,
             ffi.Int,
+            ffi.Int,
+            ffi.Int,
+            ffi.Int,
           )
         >
       >('yse_synth_add_voices_sampler');
   late final _synth_add_voices_sampler = _synth_add_voices_samplerPtr
       .asFunction<
-        int Function(ffi.Pointer<YseSynth>, ffi.Pointer<YseSfzInstrument>, int)
+        int Function(
+          ffi.Pointer<YseSynth>,
+          ffi.Pointer<YseSfzInstrument>,
+          int,
+          int,
+          int,
+          int,
+        )
       >();
 
   /// Add a group of virtual-analog + wavetable voices with a fresh default patch.
   /// This establishes the synth's VA patch; the yse_synth_va_set_* setters below
   /// steer it. Call once per synth (a second call replaces which patch the setters
   /// target — layering multiple VA groups is out of scope for the C API).
-  YseStatus synth_add_voices_va(ffi.Pointer<YseSynth> h, int num_voices) {
-    return YseStatus.fromValue(_synth_add_voices_va(h, num_voices));
+  YseStatus synth_add_voices_va(
+    ffi.Pointer<YseSynth> h,
+    int num_voices,
+    int channel,
+    int lowest_note,
+    int highest_note,
+  ) {
+    return YseStatus.fromValue(
+      _synth_add_voices_va(h, num_voices, channel, lowest_note, highest_note),
+    );
   }
 
   late final _synth_add_voices_vaPtr =
       _lookup<
         ffi.NativeFunction<
-          ffi.UnsignedInt Function(ffi.Pointer<YseSynth>, ffi.Int)
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSynth>,
+            ffi.Int,
+            ffi.Int,
+            ffi.Int,
+            ffi.Int,
+          )
         >
       >('yse_synth_add_voices_va');
   late final _synth_add_voices_va = _synth_add_voices_vaPtr
-      .asFunction<int Function(ffi.Pointer<YseSynth>, int)>();
+      .asFunction<int Function(ffi.Pointer<YseSynth>, int, int, int, int)>();
 
   /// Add a group of DX7-class 6-operator FM voices with the built-in sine test
   /// patch. This establishes the synth's FM patch; select a DX7 voice into it with
   /// yse_synth_fm_set_patch, or dial the headline params with yse_synth_fm_set_*.
   /// Call once per synth (see add_voices_va's note).
-  YseStatus synth_add_voices_fm(ffi.Pointer<YseSynth> h, int num_voices) {
-    return YseStatus.fromValue(_synth_add_voices_fm(h, num_voices));
+  YseStatus synth_add_voices_fm(
+    ffi.Pointer<YseSynth> h,
+    int num_voices,
+    int channel,
+    int lowest_note,
+    int highest_note,
+  ) {
+    return YseStatus.fromValue(
+      _synth_add_voices_fm(h, num_voices, channel, lowest_note, highest_note),
+    );
   }
 
   late final _synth_add_voices_fmPtr =
       _lookup<
         ffi.NativeFunction<
-          ffi.UnsignedInt Function(ffi.Pointer<YseSynth>, ffi.Int)
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSynth>,
+            ffi.Int,
+            ffi.Int,
+            ffi.Int,
+            ffi.Int,
+          )
         >
       >('yse_synth_add_voices_fm');
   late final _synth_add_voices_fm = _synth_add_voices_fmPtr
-      .asFunction<int Function(ffi.Pointer<YseSynth>, int)>();
+      .asFunction<int Function(ffi.Pointer<YseSynth>, int, int, int, int)>();
 
   /// ─── VA patch parameters (issue #178) ─────────────────────────────────────
   /// Steer the synth's VA patch (established by yse_synth_add_voices_va). Every
@@ -8676,6 +8767,59 @@ class YseBindings {
   late final _set_script_error_callback = _set_script_error_callbackPtr
       .asFunction<void Function(yse_script_error_cb, ffi.Pointer<ffi.Void>)>();
 
+  /// Subscribe `cb` to every bus publish whose address starts with `prefix`
+  /// (plain byte-wise prefix match; an empty string matches every address).
+  /// Returns NULL — with the reason in yse_last_error() — if `prefix` or `cb`
+  /// is NULL, or if the engine is not initialised: create taps after
+  /// yse_system_init / yse_system_init_offline.
+  ///
+  /// Lifecycle: yse_system_close() invalidates every live tap — the engine-side
+  /// subscription dies with the bus, and no callback fires after close returns.
+  /// The YseBusTap handle itself stays safe to destroy (before or after a
+  /// re-init), but it does not reattach: re-create taps after the next init.
+  ///
+  /// Threading: call create and destroy on the control thread (the one driving
+  /// yse_system_update()). That guarantees no callback fires after destroy
+  /// returns.
+  ffi.Pointer<YseBusTap> bus_tap_create(
+    ffi.Pointer<ffi.Char> prefix,
+    yse_bus_tap_cb cb,
+    ffi.Pointer<ffi.Void> user_data,
+  ) {
+    return _bus_tap_create(prefix, cb, user_data);
+  }
+
+  late final _bus_tap_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseBusTap> Function(
+            ffi.Pointer<ffi.Char>,
+            yse_bus_tap_cb,
+            ffi.Pointer<ffi.Void>,
+          )
+        >
+      >('yse_bus_tap_create');
+  late final _bus_tap_create = _bus_tap_createPtr
+      .asFunction<
+        ffi.Pointer<YseBusTap> Function(
+          ffi.Pointer<ffi.Char>,
+          yse_bus_tap_cb,
+          ffi.Pointer<ffi.Void>,
+        )
+      >();
+
+  /// Unsubscribe and release the tap. Null-safe no-op.
+  void bus_tap_destroy(ffi.Pointer<YseBusTap> tap) {
+    return _bus_tap_destroy(tap);
+  }
+
+  late final _bus_tap_destroyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseBusTap>)>>(
+        'yse_bus_tap_destroy',
+      );
+  late final _bus_tap_destroy = _bus_tap_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseBusTap>)>();
+
   late final addresses = _SymbolAddresses(this);
 }
 
@@ -8728,6 +8872,8 @@ class _SymbolAddresses {
   get synth_destroy => _library._synth_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseBufferIO>)>>
   get buffer_io_destroy => _library._buffer_io_destroyPtr;
+  ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseBusTap>)>>
+  get bus_tap_destroy => _library._bus_tap_destroyPtr;
 }
 
 enum YseStatus {
@@ -9448,3 +9594,67 @@ typedef Dartyse_script_error_cbFunction =
 /// for the duration of the call — copy it if you need to retain it.
 typedef yse_script_error_cb =
     ffi.Pointer<ffi.NativeFunction<yse_script_error_cbFunction>>;
+
+final class YseBusTap extends ffi.Opaque {}
+
+/// Payload kind of a bus value. The bus carries five kinds: bang (a valueless
+/// trigger, published e.g. by a patcher gSend bang outlet), int, float, string,
+/// and float list. Bus int/float are 32-bit.
+enum YseBusValueKind {
+  YSE_BUS_BANG(0),
+  YSE_BUS_INT(1),
+  YSE_BUS_FLOAT(2),
+  YSE_BUS_STRING(3),
+  YSE_BUS_LIST(4);
+
+  final int value;
+  const YseBusValueKind(this.value);
+
+  static YseBusValueKind fromValue(int value) => switch (value) {
+    0 => YSE_BUS_BANG,
+    1 => YSE_BUS_INT,
+    2 => YSE_BUS_FLOAT,
+    3 => YSE_BUS_STRING,
+    4 => YSE_BUS_LIST,
+    _ => throw ArgumentError('Unknown value for YseBusValueKind: $value'),
+  };
+}
+
+typedef yse_bus_tap_cbFunction =
+    ffi.Void Function(
+      ffi.Pointer<ffi.Char> address,
+      ffi.UnsignedInt kind,
+      ffi.Int i,
+      ffi.Float f,
+      ffi.Pointer<ffi.Char> str,
+      ffi.Pointer<ffi.Float> list,
+      ffi.Size list_len,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef Dartyse_bus_tap_cbFunction =
+    void Function(
+      ffi.Pointer<ffi.Char> address,
+      YseBusValueKind kind,
+      int i,
+      double f,
+      ffi.Pointer<ffi.Char> str,
+      ffi.Pointer<ffi.Float> list,
+      int list_len,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+
+/// Receives one (address, value) frame per matching publish. Exactly one of
+/// the payload parameters is meaningful, selected by `kind`:
+///
+/// YSE_BUS_BANG   — no payload (i, f, str, list are all zero/NULL)
+/// YSE_BUS_INT    — `i`
+/// YSE_BUS_FLOAT  — `f`
+/// YSE_BUS_STRING — `str` (NUL-terminated UTF-8)
+/// YSE_BUS_LIST   — `list` + `list_len` (list may be NULL when list_len
+/// is 0)
+///
+/// `address`, `str` and `list` are owned by the engine and valid ONLY for the
+/// duration of the call — copy anything you need to retain before returning.
+/// There is no free function (same contract as yse_script_error_cb).
+typedef yse_bus_tap_cb =
+    ffi.Pointer<ffi.NativeFunction<yse_bus_tap_cbFunction>>;

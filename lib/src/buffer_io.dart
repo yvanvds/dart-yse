@@ -43,8 +43,9 @@ class BufferIO implements Finalizable {
   factory BufferIO({bool storeCopy = false}) {
     final b = bindings;
     final h = b.buffer_io_create(storeCopy ? 1 : 0);
-    if (h.address == 0)
+    if (h.address == 0) {
       throw YseException('yse_buffer_io_create returned null');
+    }
     return BufferIO._(b, h);
   }
 

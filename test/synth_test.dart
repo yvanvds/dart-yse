@@ -275,6 +275,57 @@ void main() {
     });
   });
 
+  group('Per-channel voice pools (#41)', () {
+    // The channel + key-range arguments thread straight through the C ABI to
+    // the engine's voice filter. These are smoke-level: they confirm each pool
+    // kind accepts a non-omni channel and still clones + plays. Whether the
+    // filter actually gates notes by channel is validated by the engine's own
+    // tests, not here (CLAUDE.md: don't re-test engine-only behaviour).
+    test('VA / FM / sampler pools build on a specific channel and clone', () {
+      final inst = SfzInstrument.fromSample(
+        samplePath,
+        name: 'probe',
+        root: 60,
+        low: 48,
+        high: 72,
+      );
+
+      final synth = Synth();
+      addTearDown(synth.dispose);
+
+      // Split three pools across three channels + key ranges — the point of
+      // #41 is that each non-sine pool can register on its own MIDI channel.
+      synth.addVaVoices(2, channel: 1, lowestNote: 0, highestNote: 59);
+      synth.addFmVoices(2, channel: 2, lowestNote: 60, highestNote: 71);
+      synth.addSamplerVoices(
+        inst,
+        2,
+        channel: 3,
+        lowestNote: 72,
+        highestNote: 127,
+      );
+      // The sampler group retains its own share, so disposing here is safe.
+      inst.dispose();
+
+      final sound = Sound.fromSynth(synth);
+      addTearDown(sound.dispose);
+
+      // Six voices across the three channel-scoped pools.
+      expect(pumpVoices(sys, synth, 6), 6);
+
+      // A note on each pool's channel renders without throwing.
+      synth.noteOn(48, channel: 1);
+      synth.noteOn(64, channel: 2);
+      synth.noteOn(80, channel: 3);
+      sys.renderOffline(256);
+      synth.noteOff(48, channel: 1);
+      synth.noteOff(64, channel: 2);
+      synth.noteOff(80, channel: 3);
+
+      expect(synth.voiceCount, 6);
+    });
+  });
+
   group('Per-note position handlers', () {
     test('attaching handlers and steering positions never throws', () {
       final synth = Synth();

@@ -374,31 +374,74 @@ class Synth implements Finalizable {
     );
   }
 
-  /// Add a group of [count] SFZ sampler voices rendering [instrument].
+  /// Add a group of [count] SFZ sampler voices rendering [instrument],
+  /// responding to note numbers in `[lowestNote, highestNote]` on [channel]
+  /// (`0` = omni). Filtering by [channel] lets a sampler pool respond only to
+  /// events broadcast on its MIDI channel — e.g. per-voice routing from a
+  /// [ClipTransport].
   ///
   /// The instrument's region table and PCM are shared with the voice group,
   /// which retains its own reference — so [instrument] may be disposed right
   /// after this returns. Throws [YseException] if the group is rejected.
-  void addSamplerVoices(SfzInstrument instrument, int count) {
+  void addSamplerVoices(
+    SfzInstrument instrument,
+    int count, {
+    int channel = 0,
+    int lowestNote = 0,
+    int highestNote = 127,
+  }) {
     checkStatus(
-      _b.synth_add_voices_sampler(_handle, instrument.handle, count),
+      _b.synth_add_voices_sampler(
+        _handle,
+        instrument.handle,
+        count,
+        channel,
+        lowestNote,
+        highestNote,
+      ),
       _b,
     );
   }
 
   /// Add a group of [count] virtual-analog + wavetable voices with a fresh
-  /// default patch. Establishes the synth's VA patch, which the `setVa*`
-  /// setters steer. Call once per synth. Throws [YseException] on failure.
-  void addVaVoices(int count) {
-    checkStatus(_b.synth_add_voices_va(_handle, count), _b);
+  /// default patch, responding to note numbers in `[lowestNote, highestNote]`
+  /// on [channel] (`0` = omni). Filtering by [channel] lets a VA pool respond
+  /// only to events broadcast on its MIDI channel — e.g. per-voice routing
+  /// from a [ClipTransport].
+  ///
+  /// Establishes the synth's VA patch, which the `setVa*` setters steer. Call
+  /// once per synth. Throws [YseException] on failure.
+  void addVaVoices(
+    int count, {
+    int channel = 0,
+    int lowestNote = 0,
+    int highestNote = 127,
+  }) {
+    checkStatus(
+      _b.synth_add_voices_va(_handle, count, channel, lowestNote, highestNote),
+      _b,
+    );
   }
 
   /// Add a group of [count] DX7-class 6-operator FM voices with the built-in
-  /// sine test patch. Establishes the synth's FM patch — select a DX7 voice
-  /// into it with [setFmPatch], or dial the headline params with the `setFm*`
-  /// setters. Call once per synth. Throws [YseException] on failure.
-  void addFmVoices(int count) {
-    checkStatus(_b.synth_add_voices_fm(_handle, count), _b);
+  /// sine test patch, responding to note numbers in `[lowestNote, highestNote]`
+  /// on [channel] (`0` = omni). Filtering by [channel] lets an FM pool respond
+  /// only to events broadcast on its MIDI channel — e.g. per-voice routing
+  /// from a [ClipTransport].
+  ///
+  /// Establishes the synth's FM patch — select a DX7 voice into it with
+  /// [setFmPatch], or dial the headline params with the `setFm*` setters. Call
+  /// once per synth. Throws [YseException] on failure.
+  void addFmVoices(
+    int count, {
+    int channel = 0,
+    int lowestNote = 0,
+    int highestNote = 127,
+  }) {
+    checkStatus(
+      _b.synth_add_voices_fm(_handle, count, channel, lowestNote, highestNote),
+      _b,
+    );
   }
 
   // ─── notes and control ────────────────────────────────────────────────────

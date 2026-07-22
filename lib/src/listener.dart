@@ -31,8 +31,8 @@ class Listener {
   /// Call once per frame to keep velocity-derived effects (doppler, motion
   /// panning) accurate.
   set position(Pos value) => using((arena) {
-        _b.listener_set_pos(_handle, value.toNative(arena));
-      });
+    _b.listener_set_pos(_handle, value.toNative(arena));
+  });
 
   /// Velocity derived from successive [position] updates. Cannot be set directly.
   Pos get velocity => Pos.fromNative(_b.listener_get_vel(_handle));
@@ -47,6 +47,10 @@ class Listener {
   ///
   /// [up] defaults to (0, 1, 0) — rotation confined to a horizontal plane.
   void orient(Pos forward, {Pos up = const Pos(0, 1, 0)}) => using((arena) {
-        _b.listener_set_orient(_handle, forward.toNative(arena), up.toNative(arena));
-      });
+    _b.listener_set_orient(
+      _handle,
+      forward.toNative(arena),
+      up.toNative(arena),
+    );
+  });
 }

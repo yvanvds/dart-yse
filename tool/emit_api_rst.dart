@@ -124,7 +124,11 @@ class _MemberInfo {
   final String label;
   final String signature;
   final String? doc;
-  _MemberInfo({required this.label, required this.signature, required this.doc});
+  _MemberInfo({
+    required this.label,
+    required this.signature,
+    required this.doc,
+  });
 }
 
 class _EnumValueInfo {
@@ -147,9 +151,8 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
       name: name,
       doc: _commentText(node.documentationComment),
       extendsClause: node.extendsClause?.superclass.toString(),
-      implementsClause: node.implementsClause?.interfaces
-              .map((t) => t.toString())
-              .toList() ??
+      implementsClause:
+          node.implementsClause?.interfaces.map((t) => t.toString()).toList() ??
           const [],
       isAbstract: node.abstractKeyword != null,
       isEnum: false,
@@ -191,14 +194,14 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
       // Skip private named constructors (._ etc).
       final ctorName = member.name?.lexeme;
       if (ctorName != null && ctorName.startsWith('_')) return;
-      final label = ctorName == null
-          ? info.name
-          : '${info.name}.$ctorName';
-      info.constructors.add(_MemberInfo(
-        label: label,
-        signature: _constructorSignature(info.name, member),
-        doc: _commentText(member.documentationComment),
-      ));
+      final label = ctorName == null ? info.name : '${info.name}.$ctorName';
+      info.constructors.add(
+        _MemberInfo(
+          label: label,
+          signature: _constructorSignature(info.name, member),
+          doc: _commentText(member.documentationComment),
+        ),
+      );
     } else if (member is MethodDeclaration) {
       final memberName = member.name.lexeme;
       if (memberName.startsWith('_')) return;
@@ -233,7 +236,8 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
           if (isFinal) 'final',
           if (member.fields.isConst) 'const',
         ].join(' ');
-        final sig = '${modifiers.isEmpty ? '' : '$modifiers '}'
+        final sig =
+            '${modifiers.isEmpty ? '' : '$modifiers '}'
             '$type $name';
         final entry = _MemberInfo(
           label: name,
@@ -395,7 +399,10 @@ void _renderSection(StringBuffer buf, String title, List<_MemberInfo> items) {
     }
     final doc = variants
         .map((v) => v.doc)
-        .firstWhere((d) => d != null && d.trim().isNotEmpty, orElse: () => null);
+        .firstWhere(
+          (d) => d != null && d.trim().isNotEmpty,
+          orElse: () => null,
+        );
     if (doc != null) {
       for (final line in doc.split('\n')) {
         buf.writeln(line);

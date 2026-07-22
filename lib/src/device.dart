@@ -24,14 +24,12 @@ class Device {
   Pointer<YseDevice> get handle => _handle;
 
   /// Device name as reported by the host.
-  String get name => fetchString(
-        (buf, cap) => _b.device_get_name(_handle, buf, cap),
-      );
+  String get name =>
+      fetchString((buf, cap) => _b.device_get_name(_handle, buf, cap));
 
   /// Host (driver) name: `ASIO`, `WASAPI`, `ALSA`, `JACK`, ...
-  String get hostName => fetchString(
-        (buf, cap) => _b.device_get_type_name(_handle, buf, cap),
-      );
+  String get hostName =>
+      fetchString((buf, cap) => _b.device_get_type_name(_handle, buf, cap));
 
   /// Output channel names.
   List<String> get outputChannelNames {
@@ -90,7 +88,8 @@ class Device {
   int get id => _b.device_get_id(_handle);
 
   @override
-  String toString() => 'Device($name on $hostName, '
+  String toString() =>
+      'Device($name on $hostName, '
       '${outputChannelNames.length}out/${inputChannelNames.length}in)';
 }
 
@@ -133,7 +132,8 @@ class DeviceSetup implements Finalizable {
   set output(Device value) => _b.device_setup_set_output(_handle, value.handle);
 
   /// Override the device's default sample rate.
-  set sampleRate(double value) => _b.device_setup_set_sample_rate(_handle, value);
+  set sampleRate(double value) =>
+      _b.device_setup_set_sample_rate(_handle, value);
 
   /// Override the device's default buffer size.
   set bufferSize(int value) => _b.device_setup_set_buffer_size(_handle, value);

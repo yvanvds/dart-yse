@@ -13,12 +13,14 @@ import 'dart:io';
 
 import 'package:yse/yse.dart';
 
-String _resource(String name) => File([
-      'third_party',
-      'yse-soundengine',
-      'TestResources',
-      name,
-    ].join(Platform.pathSeparator)).absolute.path;
+String _resource(String name) => File(
+  [
+    'third_party',
+    'yse-soundengine',
+    'TestResources',
+    name,
+  ].join(Platform.pathSeparator),
+).absolute.path;
 
 Future<void> main() async {
   final sys = System.instance;
@@ -33,14 +35,19 @@ Future<void> main() async {
     ..lfoFrequency = 0.5;
   sound.dsp = lp;
   sound.play();
-  print('Playing through LFO-modulated lowpass (cutoff=800Hz, 0.5Hz sine LFO)...');
-  for (var i = 0; i < 200; i++) { sys.update(); sys.sleep(16); }
+  print(
+    'Playing through LFO-modulated lowpass (cutoff=800Hz, 0.5Hz sine LFO)...',
+  );
+  for (var i = 0; i < 200; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
 
   // 2) Swap to a 3-tap delay → phaser chain.
   final delay = DspObject.basicDelay()
-    ..setDelayTap(DelayTap.first,  timeMs: 250, gain: 0.5)
+    ..setDelayTap(DelayTap.first, timeMs: 250, gain: 0.5)
     ..setDelayTap(DelayTap.second, timeMs: 500, gain: 0.3)
-    ..setDelayTap(DelayTap.third,  timeMs: 750, gain: 0.2);
+    ..setDelayTap(DelayTap.third, timeMs: 750, gain: 0.2);
   final phaser = DspObject.phaser()
     ..frequency = 0.3
     ..phaserRange = 0.1;
@@ -48,7 +55,10 @@ Future<void> main() async {
 
   sound.dsp = delay;
   print('Swapped to basicDelay → phaser chain...');
-  for (var i = 0; i < 200; i++) { sys.update(); sys.sleep(16); }
+  for (var i = 0; i < 200; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
 
   // 3) Granulator on the same sound.
   final gran = DspObject.granulator(poolSize: 44100, maxGrains: 24)
@@ -58,7 +68,10 @@ Future<void> main() async {
     ..grainGain = 0.8;
   sound.dsp = gran;
   print('Swapped to granulator (30 grains/s)...');
-  for (var i = 0; i < 200; i++) { sys.update(); sys.sleep(16); }
+  for (var i = 0; i < 200; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
 
   print('Done. (missed callbacks=${sys.missedCallbacks})');
 
@@ -69,7 +82,10 @@ Future<void> main() async {
   // allocations at process exit — explicit dispose() in the wrong order
   // can race the audio thread's last reads.
   sound.dsp = null;
-  for (var i = 0; i < 30; i++) { sys.update(); sys.sleep(16); }
+  for (var i = 0; i < 30; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
   sound.stop();
   sys.close();
 

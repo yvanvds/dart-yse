@@ -42,6 +42,11 @@ jobs:
       - name: dart pub get
         run: dart pub get
 
+      # Strict format gate: fails the build on any unformatted file so the
+      # tree can't drift out of `dart format` shape again.
+      - name: dart format --set-exit-if-changed
+        run: dart format --output=none --set-exit-if-changed .
+
       - name: dart analyze
         run: dart analyze
 

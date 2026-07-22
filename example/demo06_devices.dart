@@ -33,7 +33,9 @@ Future<void> main() async {
     print('    input channels : ${d.inputChannelNames.length}');
     print('    sample rates   : $sr');
     print('    buffer sizes   : $bs (default ${d.defaultBufferSize})');
-    print('    latency        : in=${d.inputLatency} out=${d.outputLatency} samples');
+    print(
+      '    latency        : in=${d.inputLatency} out=${d.outputLatency} samples',
+    );
     print('    id             : ${d.id}');
   }
 

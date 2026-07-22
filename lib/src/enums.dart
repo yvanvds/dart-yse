@@ -122,9 +122,9 @@ enum OutType {
   /// Maps a raw C-side [raw.YseOutType] to its Dart enum, defaulting to
   /// [OutType.invalid] for unknown values.
   static OutType fromNative(raw.YseOutType native) => values.firstWhere(
-        (e) => e.native == native,
-        orElse: () => OutType.invalid,
-      );
+    (e) => e.native == native,
+    orElse: () => OutType.invalid,
+  );
 }
 
 /// Documentation category a patcher object type is filed under
@@ -164,9 +164,9 @@ enum PCategory {
   /// Maps a raw C-side [raw.YsePCategory] to its Dart enum, defaulting to
   /// [PCategory.unset] for unknown values.
   static PCategory fromNative(raw.YsePCategory native) => values.firstWhere(
-        (e) => e.native == native,
-        orElse: () => PCategory.unset,
-      );
+    (e) => e.native == native,
+    orElse: () => PCategory.unset,
+  );
 }
 
 /// One message kind a patcher inlet accepts ([PatcherInlet.accepts]).
@@ -194,8 +194,10 @@ enum InletAccepts {
   const InletAccepts(this.native);
 
   /// Decodes an engine `accepts` bitmask into the set of flags it encodes.
-  static Set<InletAccepts> fromBitmask(int mask) =>
-      {for (final a in values) if (mask & a.native.value != 0) a};
+  static Set<InletAccepts> fromBitmask(int mask) => {
+    for (final a in values)
+      if (mask & a.native.value != 0) a,
+  };
 }
 
 /// One of the three delay taps on a [DspObject.basicDelay] (and its

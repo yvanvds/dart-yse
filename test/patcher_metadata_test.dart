@@ -54,10 +54,7 @@ void main() {
 
     test('types() mirrors typeNames()', () {
       final types = PatcherRegistry.types();
-      expect(
-        types.map((t) => t.name).toList(),
-        PatcherRegistry.typeNames(),
-      );
+      expect(types.map((t) => t.name).toList(), PatcherRegistry.typeNames());
     });
 
     test('unknown type resolves to null', () {

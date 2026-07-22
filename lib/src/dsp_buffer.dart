@@ -158,7 +158,11 @@ class DspBuffer implements Finalizable {
   /// Fill the range `[start, stop]` with [value].
   ///
   /// Throws [YseException] if this buffer is not a drawable subclass.
-  void drawFlat({required int start, required int stop, required double value}) {
+  void drawFlat({
+    required int start,
+    required int stop,
+    required double value,
+  }) {
     checkStatus(_b.dsp_buffer_draw_flat(_handle, start, stop, value), _b);
   }
 
@@ -196,7 +200,10 @@ class DspBuffer implements Finalizable {
 
   /// Fill the wavetable with a band-limited triangle wave.
   void createTriangle({required int harmonics, required int length}) {
-    checkStatus(_b.dsp_wavetable_create_triangle(_handle, harmonics, length), _b);
+    checkStatus(
+      _b.dsp_wavetable_create_triangle(_handle, harmonics, length),
+      _b,
+    );
   }
 
   /// Destroy the underlying native buffer and detach the finalizer.
@@ -207,4 +214,3 @@ class DspBuffer implements Finalizable {
     _handle = nullptr;
   }
 }
-

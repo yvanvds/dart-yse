@@ -33,9 +33,9 @@ class Log {
   /// Send an application-level message to the YSE log. Emitted at
   /// error-level so it survives filters set above [LogLevel.debug].
   void sendMessage(String message) => using((arena) {
-        final cstr = message.toNativeUtf8(allocator: arena);
-        _b.log_send_message(_handle, cstr.cast());
-      });
+    final cstr = message.toNativeUtf8(allocator: arena);
+    _b.log_send_message(_handle, cstr.cast());
+  });
 
   /// Current log-level filter. Messages above the chosen level are dropped.
   LogLevel get level {
@@ -45,18 +45,18 @@ class Log {
       orElse: () => LogLevel.none,
     );
   }
+
   set level(LogLevel value) => _b.log_set_level(_handle, value.native);
 
   /// Path of the default log file (defaults to `YSElog.txt` in the
   /// process working directory). Has no effect after [messages] has
   /// been subscribed.
-  String get logfile => fetchString(
-        (buf, cap) => _b.log_get_logfile(_handle, buf, cap),
-      );
+  String get logfile =>
+      fetchString((buf, cap) => _b.log_get_logfile(_handle, buf, cap));
   set logfile(String path) => using((arena) {
-        final cstr = path.toNativeUtf8(allocator: arena);
-        _b.log_set_logfile(_handle, cstr.cast());
-      });
+    final cstr = path.toNativeUtf8(allocator: arena);
+    _b.log_set_logfile(_handle, cstr.cast());
+  });
 
   static StreamController<String>? _controller;
   static NativeCallable<Void Function(Pointer<Char>, Pointer<Void>)>? _callable;
@@ -87,16 +87,19 @@ class Log {
       },
     );
     final freeFn = _b.log_free_message;
-    final callable = NativeCallable<Void Function(Pointer<Char>, Pointer<Void>)>
-        .listener((Pointer<Char> msg, Pointer<Void> _) {
-      // The bridge transferred ownership of the malloc'd string.
-      // Decode then release before bubbling it up.
-      try {
-        controller.add(msg.cast<Utf8>().toDartString());
-      } finally {
-        freeFn(msg);
-      }
-    });
+    final callable =
+        NativeCallable<Void Function(Pointer<Char>, Pointer<Void>)>.listener((
+          Pointer<Char> msg,
+          Pointer<Void> _,
+        ) {
+          // The bridge transferred ownership of the malloc'd string.
+          // Decode then release before bubbling it up.
+          try {
+            controller.add(msg.cast<Utf8>().toDartString());
+          } finally {
+            freeFn(msg);
+          }
+        });
     _b.log_set_callback(_handle, callable.nativeFunction, nullptr);
     _callable = callable;
     _controller = controller;

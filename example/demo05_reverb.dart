@@ -13,12 +13,14 @@ import 'dart:io';
 
 import 'package:yse/yse.dart';
 
-String _resource(String name) => File([
-      'third_party',
-      'yse-soundengine',
-      'TestResources',
-      name,
-    ].join(Platform.pathSeparator)).absolute.path;
+String _resource(String name) => File(
+  [
+    'third_party',
+    'yse-soundengine',
+    'TestResources',
+    name,
+  ].join(Platform.pathSeparator),
+).absolute.path;
 
 Future<void> main() async {
   final sys = System.instance;

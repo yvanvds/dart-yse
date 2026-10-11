@@ -361,6 +361,155 @@ void main() {
     });
   });
 
+  group('kind-specific accessor guards (issue #72)', () {
+    // Every kind the wrapper can construct, by label.
+    final factories = <String, DspObject Function()>{
+      'lowpass': DspObject.lowpass,
+      'highpass': DspObject.highpass,
+      'bandpass': DspObject.bandpass,
+      'sweep': DspObject.sweep,
+      'basicDelay': DspObject.basicDelay,
+      'lowpassDelay': DspObject.lowpassDelay,
+      'highpassDelay': DspObject.highpassDelay,
+      'phaser': DspObject.phaser,
+      'ringModulator': DspObject.ringModulator,
+      'difference': DspObject.difference,
+      'granulator': () => DspObject.granulator(poolSize: 4800, maxGrains: 4),
+      'compressor': Compressor.new,
+      'eq': ParametricEq.new,
+      'chorus': Chorus.new,
+      'plateReverb': PlateReverb.new,
+      'feedbackDelay': FeedbackDelay.new,
+      'morphingReverb': MorphingReverb.new,
+      'underwater': Underwater.new,
+    };
+
+    // Every kind-specific base-class accessor, with the kinds whose C entry
+    // point it may legally reach (they all static_cast the handle).
+    const delays = {'basicDelay', 'lowpassDelay', 'highpassDelay'};
+    final accessors = <String, (Set<String>, void Function(DspObject))>{
+      'q get': ({'bandpass'}, (fx) => fx.q),
+      'q set': ({'bandpass'}, (fx) => fx.q = 2.0),
+      'sweepSpeed get': ({'sweep'}, (fx) => fx.sweepSpeed),
+      'sweepSpeed set': ({'sweep'}, (fx) => fx.sweepSpeed = 1.0),
+      'sweepDepth get': ({'sweep'}, (fx) => fx.sweepDepth),
+      'sweepDepth set': ({'sweep'}, (fx) => fx.sweepDepth = 50),
+      'sweepCentre get': ({'sweep'}, (fx) => fx.sweepCentre),
+      'sweepCentre set': ({'sweep'}, (fx) => fx.sweepCentre = 50),
+      'setDelayTap': (
+        delays,
+        (fx) => fx.setDelayTap(DelayTap.first, timeMs: 100, gain: 0.5),
+      ),
+      'delayTime': (delays, (fx) => fx.delayTime(DelayTap.first)),
+      'delayGain': (delays, (fx) => fx.delayGain(DelayTap.first)),
+      'phaserRange get': ({'phaser'}, (fx) => fx.phaserRange),
+      'phaserRange set': ({'phaser'}, (fx) => fx.phaserRange = 0.5),
+      'differenceAmplitude get': (
+        {'difference'},
+        (fx) => fx.differenceAmplitude,
+      ),
+      'differenceAmplitude set': (
+        {'difference'},
+        (fx) => fx.differenceAmplitude = 0.5,
+      ),
+      'grainFrequency get': ({'granulator'}, (fx) => fx.grainFrequency),
+      'grainFrequency set': ({'granulator'}, (fx) => fx.grainFrequency = 20),
+      'setGrainLength': (
+        {'granulator'},
+        (fx) => fx.setGrainLength(samples: 512),
+      ),
+      'grainLength': ({'granulator'}, (fx) => fx.grainLength),
+      'setGrainTranspose': (
+        {'granulator'},
+        (fx) => fx.setGrainTranspose(pitch: 1.5),
+      ),
+      'grainTranspose': ({'granulator'}, (fx) => fx.grainTranspose),
+      'grainGain get': ({'granulator'}, (fx) => fx.grainGain),
+      'grainGain set': ({'granulator'}, (fx) => fx.grainGain = 0.5),
+    };
+
+    for (final MapEntry(key: name, value: (allowed, call))
+        in accessors.entries) {
+      test('$name throws on every wrong kind, before any native call', () {
+        for (final MapEntry(key: kind, value: make) in factories.entries) {
+          if (allowed.contains(kind)) continue;
+          final fx = make();
+          addTearDown(fx.dispose);
+          // The guard runs while the C call's arguments are evaluated, so a
+          // throw here means the static_cast entry point was never reached.
+          expect(
+            () => call(fx),
+            throwsA(isA<YseException>()),
+            reason: '$name on $kind',
+          );
+        }
+      });
+
+      test('$name still reaches the engine on its own kind(s)', () {
+        for (final kind in allowed) {
+          final fx = factories[kind]!();
+          addTearDown(fx.dispose);
+          expect(() => call(fx), returnsNormally, reason: '$name on $kind');
+        }
+      });
+    }
+
+    test('the patcher insert rejects kind-specific accessors too', () {
+      final patcher = Patcher();
+      addTearDown(patcher.dispose);
+      final insert = DspObject.patcherInsert(patcher);
+      addTearDown(insert.dispose);
+      for (final MapEntry(key: name, value: (_, call)) in accessors.entries) {
+        expect(() => call(insert), throwsA(isA<YseException>()), reason: name);
+      }
+    });
+
+    test('right kinds round-trip their values', () {
+      final band = DspObject.bandpass();
+      addTearDown(band.dispose);
+      band.q = 3.0;
+      expect(band.q, closeTo(3.0, 1e-3));
+
+      final sweep = DspObject.sweep();
+      addTearDown(sweep.dispose);
+      sweep.sweepSpeed = 2.5;
+      sweep.sweepDepth = 40;
+      sweep.sweepCentre = 60;
+      expect(sweep.sweepSpeed, closeTo(2.5, 1e-3));
+      expect(sweep.sweepDepth, 40);
+      expect(sweep.sweepCentre, 60);
+
+      for (final make in [
+        DspObject.basicDelay,
+        DspObject.lowpassDelay,
+        DspObject.highpassDelay,
+      ]) {
+        final delay = make();
+        addTearDown(delay.dispose);
+        delay.setDelayTap(DelayTap.second, timeMs: 120, gain: 0.4);
+        expect(delay.delayTime(DelayTap.second), closeTo(120, 1e-2));
+        expect(delay.delayGain(DelayTap.second), closeTo(0.4, 1e-3));
+      }
+
+      final phaser = DspObject.phaser();
+      addTearDown(phaser.dispose);
+      phaser.phaserRange = 0.3;
+      expect(phaser.phaserRange, closeTo(0.3, 1e-3));
+
+      final diff = DspObject.difference();
+      addTearDown(diff.dispose);
+      diff.differenceAmplitude = 0.3;
+      expect(diff.differenceAmplitude, closeTo(0.3, 1e-3));
+
+      final gran = DspObject.granulator(poolSize: 4800, maxGrains: 4);
+      addTearDown(gran.dispose);
+      gran.grainFrequency = 25;
+      gran.grainGain = 0.6;
+      expect(gran.grainFrequency, 25);
+      expect(gran.grainGain, closeTo(0.6, 1e-3));
+    });
+  });
+
   group('Channel insert integration', () {
     test('a mixed chain of new modules attaches and renders on a channel', () {
       final ch = Channel.create('mix-fx', parent: Channel.master);

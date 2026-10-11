@@ -255,6 +255,17 @@
     never matches anyway. `exists` / `removeAsset` cover the same need by
     ID.
 
+- **`DspObject` kind-specific accessors check the kind** (#72). Every
+  kind-specific `yse_dsp_*` C entry point in libYSE 3 `static_cast`s the
+  shared handle with no RTTI check, so e.g. `DspObject.lowpass().q = 2.0`
+  wrote through a mistyped pointer (undefined behaviour). `q`, the `sweep*`
+  accessors, `setDelayTap` / `delayTime` / `delayGain`, `phaserRange`,
+  `differenceAmplitude` and every granulator accessor now throw
+  `YseException` on the wrong kind before calling into native code, as
+  `frequency` already did. Behaviour on the right kind is unchanged. The
+  mix-grade modules (`Compressor`, `ParametricEq`, ...) were already safe
+  because they are typed subclasses.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

@@ -239,6 +239,9 @@
 
 
 
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
 
 
@@ -601,6 +604,8 @@ load one from a JSON dump via [parseJson]. Drive it directly with
 </pre></div>
 </div>
 <p>Construct a patcher with [mainOutputs] audio output channels.</p>
+<p>Throws [YseException] if the engine rejects the configuration (e.g. a
+negative [mainOutputs]).</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
@@ -615,7 +620,7 @@ load one from a JSON dump via [parseJson]. Drive it directly with
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PHandle</span><span class="w"> </span><span class="n">createObject</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">String</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">})</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PHandle</span><span class="w"> </span><span class="n">createObject</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">String</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Add an object of [type] to the patcher (see [Obj] for constants).</p>
@@ -645,7 +650,12 @@ The returned [PHandle] is owned by the patcher — release with
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">parseJson</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">content</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Replace the current graph with the contents of a JSON dump.</p>
+<p>Load a JSON dump (as produced by [dumpJson]) into this patcher.</p>
+<p>Loading <strong>adds to</strong> the current graph: objects already in the patcher
+are kept and the loaded ones are created next to them. Call [clear]
+first to replace the patch.</p>
+<p>Throws [YseException] if [content] is malformed JSON or not a patch.
+A failed load is rolled back: the patcher is left exactly as it was.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PHandle</span><span class="w"> </span><span class="n">getHandleAt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -714,10 +724,16 @@ by the [PHandle] going out of scope.</p>
 </div>
 <p>Current GUI display value for objects that have one
 (sliders, toggles, …).</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">id</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">id</span>
 </pre></div>
 </div>
-<p>Patcher-assigned unique ID.</p>
+<p>Patcher-assigned ID, or <cite>null</cite> when this handle refers to no object
+(the engine’s <cite>YSE_PATCHER_ID_NONE</cite>).</p>
+<p>IDs start at 0 in every patcher, so 0 is a real ID. They are dense and
+<strong>reused</strong>: deleting an object frees its number for the next object
+created, so an ID identifies an object only while that object is
+alive. Keep the [PHandle] if you need a reference that outlives the
+number.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">inputs</span>
 </pre></div>
 </div>
@@ -741,14 +757,17 @@ by the [PHandle] going out of scope.</p>
 </pre></div>
 </div>
 <p>Number of connections leaving [outlet].</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">connectionTargetId</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">connection</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">connectionTargetId</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">connection</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>ID of the target object of one [connection] from [outlet].</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">connectionTargetInlet</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">connection</span><span class="p">)</span>
+<p>ID of the target object of one [connection] from [outlet], or <cite>null</cite>
+when there is no such edge (the engine’s <cite>YSE_PATCHER_ID_NONE</cite>: an
+outlet or connection index out of range). See [id] for ID lifetime.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">connectionTargetInlet</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">connection</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Inlet on the target reached by [connection] from [outlet].</p>
+<p>Inlet on the target reached by [connection] from [outlet], or <cite>null</cite>
+when there is no such edge (the engine’s <cite>YSE_PATCHER_INLET_NONE</cite>).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">sendBang</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">inlet</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1082,9 +1101,6 @@ control-rate objects. Mirrors <cite>YSE::OBJ</cite> in
 </pre></div>
 </div>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">dAdc</span>
-</pre></div>
-</div>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">dOut</span>
 </pre></div>
 </div>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">dLine</span>

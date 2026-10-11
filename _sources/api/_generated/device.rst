@@ -88,7 +88,8 @@ Reported input latency in samples.
 
    int get id
 
-Host-assigned device ID.
+Host-assigned device ID, or `-1` when this descriptor refers to no
+device.
 
 Methods
 -------

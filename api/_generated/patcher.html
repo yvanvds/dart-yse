@@ -239,6 +239,9 @@
 
 
 
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -531,6 +534,8 @@ load one from a JSON dump via [parseJson]. Drive it directly with
 </pre></div>
 </div>
 <p>Construct a patcher with [mainOutputs] audio output channels.</p>
+<p>Throws [YseException] if the engine rejects the configuration (e.g. a
+negative [mainOutputs]).</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
@@ -545,7 +550,7 @@ load one from a JSON dump via [parseJson]. Drive it directly with
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PHandle</span><span class="w"> </span><span class="n">createObject</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">String</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">})</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PHandle</span><span class="w"> </span><span class="n">createObject</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">String</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Add an object of [type] to the patcher (see [Obj] for constants).</p>
@@ -575,7 +580,12 @@ The returned [PHandle] is owned by the patcher — release with
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">parseJson</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">content</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Replace the current graph with the contents of a JSON dump.</p>
+<p>Load a JSON dump (as produced by [dumpJson]) into this patcher.</p>
+<p>Loading <strong>adds to</strong> the current graph: objects already in the patcher
+are kept and the loaded ones are created next to them. Call [clear]
+first to replace the patch.</p>
+<p>Throws [YseException] if [content] is malformed JSON or not a patch.
+A failed load is rolled back: the patcher is left exactly as it was.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PHandle</span><span class="w"> </span><span class="n">getHandleAt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">)</span>
 </pre></div>
 </div>

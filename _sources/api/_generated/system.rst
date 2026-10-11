@@ -34,7 +34,7 @@ Borrowed singleton accessor — every call returns the same instance.
 
    static String get version
 
-libYSE version string (e.g. "2.0.1").
+libYSE version string (e.g. "3.1.0").
 
 Properties
 ----------

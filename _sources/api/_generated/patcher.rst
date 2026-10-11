@@ -22,6 +22,9 @@ Constructors
 
 Construct a patcher with [mainOutputs] audio output channels.
 
+Throws [YseException] if the engine rejects the configuration (e.g. a
+negative [mainOutputs]).
+
 Properties
 ----------
 
@@ -84,7 +87,14 @@ Serialise the current graph to JSON.
 
    void parseJson(String content)
 
-Replace the current graph with the contents of a JSON dump.
+Load a JSON dump (as produced by [dumpJson]) into this patcher.
+
+Loading **adds to** the current graph: objects already in the patcher
+are kept and the loaded ones are created next to them. Call [clear]
+first to replace the patch.
+
+Throws [YseException] if [content] is malformed JSON or not a patch.
+A failed load is rolled back: the patcher is left exactly as it was.
 
 .. code-block:: dart
 

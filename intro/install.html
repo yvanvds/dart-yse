@@ -239,6 +239,9 @@
 
 
 
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../api/midi.html">MIDI</a></li>
 
 
@@ -546,7 +549,7 @@ tree.</p>
 <p>Point <code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code> at the directory containing <code class="docutils literal notranslate"><span class="pre">libyse.dll</span></code> (the
 loader walks up from the package root by default — so when running
 from the repository the env var is optional):</p>
-<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nv">$env:YSE_DLL_PATH</span> <span class="p">=</span> <span class="s2">&quot;$PWD\third_party\yse-soundengine\build\bin&quot;</span>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nv">$env:YSE_DLL_PATH</span> <span class="p">=</span> <span class="s2">"$PWD\third_party\yse-soundengine\build\bin"</span>
 <span class="n">dart</span> <span class="n">run</span> <span class="n">example</span><span class="p">/</span><span class="n">hello_sound</span><span class="p">.</span><span class="n">dart</span>
 </pre></div>
 </div>
@@ -570,7 +573,7 @@ dart<span class="w"> </span>pub<span class="w"> </span>get
 <p>The upstream CMake build embeds <code class="docutils literal notranslate"><span class="pre">$ORIGIN</span></code> in the <code class="docutils literal notranslate"><span class="pre">.so</span></code>’s RPATH, so
 sibling shared libraries are discovered automatically — no
 <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> setup needed.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">YSE_DLL_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/third_party/yse-soundengine/build/bin&quot;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">YSE_DLL_PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">/third_party/yse-soundengine/build/bin"</span>
 dart<span class="w"> </span>run<span class="w"> </span>example/hello_sound.dart
 </pre></div>
 </div>

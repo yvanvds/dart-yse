@@ -239,6 +239,9 @@
 
 
 
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../api/midi.html">MIDI</a></li>
 
 
@@ -517,13 +520,13 @@
 <h1>Hello, sound<a class="headerlink" href="#hello-sound" title="Link to this heading">#</a></h1>
 <p>The smallest <code class="docutils literal notranslate"><span class="pre">dart-yse</span></code> program — init the engine, play an audio
 file, wait, shut down.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:yse/yse.dart&#39;</span><span class="p">;</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="s1">'package:yse/yse.dart'</span><span class="p">;</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">sys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="n">instance</span><span class="p">;</span>
 <span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
 
-<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromFile</span><span class="p">(</span><span class="s1">&#39;drone.ogg&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">loop:</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromFile</span><span class="p">(</span><span class="s1">'drone.ogg'</span><span class="p">,</span><span class="w"> </span><span class="nl">loop:</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
 <span class="w">  </span><span class="n">sound</span><span class="p">.</span><span class="n">play</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">// Pump the engine for 3 seconds.</span>

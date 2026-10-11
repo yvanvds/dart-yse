@@ -29,10 +29,6 @@ Static accessors
 
 .. code-block:: dart
 
-   static const String dOut
-
-.. code-block:: dart
-
    static const String dLine
 
 .. code-block:: dart

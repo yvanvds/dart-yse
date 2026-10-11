@@ -239,6 +239,9 @@
 
 
 
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../api/midi.html">MIDI</a></li>
 
 
@@ -587,9 +590,9 @@ constant on <code class="xref py py-class docutils literal notranslate"><span cl
 interchangeable — <code class="xref py py-attr docutils literal notranslate"><span class="pre">Obj.dSine</span></code> literally is the string
 <code class="docutils literal notranslate"><span class="pre">'~sine'</span></code> at runtime. Use whichever style reads better at the call
 site.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">sine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dSine</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">&#39;220&#39;</span><span class="p">);</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">sine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dSine</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">'220'</span><span class="p">);</span>
 <span class="kd">final</span><span class="w"> </span><span class="n">dac</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dDac</span><span class="p">);</span>
-<span class="kd">final</span><span class="w"> </span><span class="n">recv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">gReceive</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">&#39;freq&#39;</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">recv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">gReceive</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">'freq'</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The optional <code class="docutils literal notranslate"><span class="pre">args</span></code> parameter to <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> is
@@ -617,8 +620,8 @@ Each one has a name; calling
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passString()</span></code> /
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.passBang()</span></code> on the patcher delivers the value to
 every <code class="docutils literal notranslate"><span class="pre">.r</span></code> registered under that name.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">passFloat</span><span class="p">(</span><span class="m">440</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;freq&#39;</span><span class="p">);</span><span class="w">     </span><span class="c1">// change pitch to A4</span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">ok</span><span class="p">)</span><span class="w"> </span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;No receiver named &quot;freq&quot; — graph not wired correctly&#39;</span><span class="p">);</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">passFloat</span><span class="p">(</span><span class="m">440</span><span class="p">,</span><span class="w"> </span><span class="s1">'freq'</span><span class="p">);</span><span class="w">     </span><span class="c1">// change pitch to A4</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">ok</span><span class="p">)</span><span class="w"> </span><span class="n">print</span><span class="p">(</span><span class="s1">'No receiver named "freq" — graph not wired correctly'</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Return value of every <code class="docutils literal notranslate"><span class="pre">pass*</span></code> method is <code class="docutils literal notranslate"><span class="pre">false</span></code> when no receiver
@@ -677,7 +680,7 @@ specific inlet.</p>
 handle to each one by index or by ID:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">objects</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">getHandleAt</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-<span class="w">  </span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">id</span><span class="si">}</span><span class="s1">: </span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">type</span><span class="si">}</span><span class="s1"> (</span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">inputs</span><span class="si">}</span><span class="s1"> in, </span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">outputs</span><span class="si">}</span><span class="s1"> out)&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">print</span><span class="p">(</span><span class="s1">'</span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">id</span><span class="si">}</span><span class="s1">: </span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">type</span><span class="si">}</span><span class="s1"> (</span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">inputs</span><span class="si">}</span><span class="s1"> in, </span><span class="si">${</span><span class="n">h</span><span class="p">.</span><span class="n">outputs</span><span class="si">}</span><span class="s1"> out)'</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -691,14 +694,14 @@ serialised to JSON with <code class="xref py py-meth docutils literal notranslat
 plain UTF-8 text, suitable for writing to disk or shipping as a
 preset:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">dumpJson</span><span class="p">();</span>
-<span class="n">File</span><span class="p">(</span><span class="s1">&#39;mypatch.yap&#39;</span><span class="p">).</span><span class="n">writeAsStringSync</span><span class="p">(</span><span class="n">json</span><span class="p">);</span>
+<span class="n">File</span><span class="p">(</span><span class="s1">'mypatch.yap'</span><span class="p">).</span><span class="n">writeAsStringSync</span><span class="p">(</span><span class="n">json</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Reloading is the inverse — read the file, hand the contents to
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.parseJson()</span></code>, and the patcher rebuilds itself in
 place:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Patcher</span><span class="p">(</span><span class="nl">mainOutputs:</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
-<span class="n">p2</span><span class="p">.</span><span class="n">parseJson</span><span class="p">(</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;mypatch.yap&#39;</span><span class="p">).</span><span class="n">readAsStringSync</span><span class="p">());</span>
+<span class="n">p2</span><span class="p">.</span><span class="n">parseJson</span><span class="p">(</span><span class="n">File</span><span class="p">(</span><span class="s1">'mypatch.yap'</span><span class="p">).</span><span class="n">readAsStringSync</span><span class="p">());</span>
 </pre></div>
 </div>
 <p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.parseJson()</span></code> replaces the current graph wholesale —

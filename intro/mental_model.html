@@ -239,6 +239,9 @@
 
 
 
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../api/midi.html">MIDI</a></li>
 
 
@@ -598,7 +601,7 @@ together by inlets and outlets. Use it when a sound is not a file to
 play but a network to evaluate — procedural synthesis, parameter
 mapping, generative MIDI.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Patcher</span><span class="p">(</span><span class="nl">mainOutputs:</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
-<span class="kd">final</span><span class="w"> </span><span class="n">osc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dSine</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">&#39;440&#39;</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">osc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dSine</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">'440'</span><span class="p">);</span>
 <span class="kd">final</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dDac</span><span class="p">);</span>
 <span class="n">p</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">osc</span><span class="p">,</span><span class="w"> </span><span class="nl">outlet:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="nl">to:</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="nl">inlet:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
 <span class="kd">final</span><span class="w"> </span><span class="n">sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromPatcher</span><span class="p">(</span><span class="n">p</span><span class="p">);</span><span class="w">    </span><span class="c1">// play the patcher as a sound</span>

@@ -239,6 +239,9 @@
 
 
 
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -540,10 +543,16 @@ by the [PHandle] going out of scope.</p>
 </div>
 <p>Current GUI display value for objects that have one
 (sliders, toggles, …).</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">id</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">id</span>
 </pre></div>
 </div>
-<p>Patcher-assigned unique ID.</p>
+<p>Patcher-assigned ID, or <cite>null</cite> when this handle refers to no object
+(the engine’s <cite>YSE_PATCHER_ID_NONE</cite>).</p>
+<p>IDs start at 0 in every patcher, so 0 is a real ID. They are dense and
+<strong>reused</strong>: deleting an object frees its number for the next object
+created, so an ID identifies an object only while that object is
+alive. Keep the [PHandle] if you need a reference that outlives the
+number.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">inputs</span>
 </pre></div>
 </div>
@@ -567,14 +576,17 @@ by the [PHandle] going out of scope.</p>
 </pre></div>
 </div>
 <p>Number of connections leaving [outlet].</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">connectionTargetId</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">connection</span><span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">connectionTargetId</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">connection</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>ID of the target object of one [connection] from [outlet].</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">connectionTargetInlet</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">connection</span><span class="p">)</span>
+<p>ID of the target object of one [connection] from [outlet], or <cite>null</cite>
+when there is no such edge (the engine’s <cite>YSE_PATCHER_ID_NONE</cite>: an
+outlet or connection index out of range). See [id] for ID lifetime.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">connectionTargetInlet</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">connection</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Inlet on the target reached by [connection] from [outlet].</p>
+<p>Inlet on the target reached by [connection] from [outlet], or <cite>null</cite>
+when there is no such edge (the engine’s <cite>YSE_PATCHER_INLET_NONE</cite>).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">sendBang</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">inlet</span><span class="p">)</span>
 </pre></div>
 </div>

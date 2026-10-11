@@ -63,6 +63,72 @@ Values
 
    MIDI message objects.
 
+.. _p_category.routing:
+
+``routing``
+
+   Message steering (`.gate`, `.route`, `.sel`, ...).
+
+.. _p_category.control:
+
+``control``
+
+   Control flow and ordering (`.trigger`, `.uzi`, ...).
+
+.. _p_category.list:
+
+``list``
+
+   Building and taking apart lists (`.pack`, `.zl`, ...).
+
+.. _p_category.string:
+
+``string``
+
+   Symbols and text (`.sprintf`, `.regexp`, ...).
+
+.. _p_category.collection:
+
+``collection``
+
+   Stores (`.coll`, `.table`, `.bag`, ...).
+
+.. _p_category.dict:
+
+``dict``
+
+   The `.dict` family.
+
+.. _p_category.array:
+
+``array``
+
+   The `.array` family.
+
+.. _p_category.random:
+
+``random``
+
+   Random and probabilistic sources.
+
+.. _p_category.io:
+
+``io``
+
+   Audio and host I/O (`~adc`, `~dac`, `.s`, `.r`, `.print`, ...).
+
+.. _p_category.encapsulation:
+
+``encapsulation``
+
+   Subpatchers and their inlets / outlets.
+
+.. _p_category.sequence:
+
+``sequence``
+
+   Timed recorders / players (`.seq`, `.mtr`, `.qlist`).
+
 Constructors
 ------------
 

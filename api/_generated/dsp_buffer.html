@@ -239,6 +239,9 @@
 
 
 
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -521,42 +524,36 @@
 </div>
 <p>Single-channel float audio buffer — the fundamental container for
 sample-level audio data in libYSE.</p>
-<dl class="simple">
-<dt>Construct via the factory matching the subclass you need:</dt><dd><ul class="simple">
-<li><p>[DspBuffer.plain] — bare storage; pass to [Sound.fromBuffer].</p></li>
-<li><p>[DspBuffer.drawable] — adds <cite>drawLine</cite> and envelope shaping.</p></li>
-<li><p>[DspBuffer.file] — adds [loadFile] / [saveFile].</p></li>
-<li><p>[DspBuffer.wavetable] — single-cycle wavetable + classic waveform
-generators (saw/square/triangle).</p></li>
+<p>The engine’s buffer classes form a single inheritance chain, mirrored
+here so the type system decides which operations a buffer supports:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>[DspBuffer] ([DspBuffer.plain]) — bare storage; pass to
+[Sound.fromBuffer].</p></li>
+<li><p>[DrawableBuffer] — adds [DrawableBuffer.drawLine] /
+[DrawableBuffer.drawFlat].</p></li>
+<li><p>[FileBuffer] — a drawable buffer that adds [FileBuffer.loadFile] /
+[FileBuffer.saveFile].</p></li>
+<li><p>[Wavetable] — a file buffer that adds the band-limited waveform
+generators (saw / square / triangle).</p></li>
 </ul>
-</dd>
-</dl>
-<p>Subclass-specific methods throw [YseException] if the underlying
-handle isn’t of the expected type.</p>
+</div></blockquote>
+<p>The C API cannot check a buffer’s subclass at runtime (it <cite>static_cast`s
+the handle and trusts the caller), so calling a subclass entry point on
+a narrower buffer would write through a mistyped pointer. Each wrapper
+class is only ever constructed around a handle from its own native
+constructor, so a [DspBuffer.plain] simply has no `drawLine</cite>.</p>
 <p><strong>Lifetime:</strong> the buffer must outlive any [Sound] created from it.
 The engine keeps a reference for as long as the sound is live.</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspBuffer</span><span class="p">.</span><span class="n">plain</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">length</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">overflow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">})</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">DspBuffer</span><span class="p">.</span><span class="n">plain</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">length</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">overflow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Plain single-channel buffer.</p>
 <p>[overflow] is extra samples appended past the end, used by sources
 that need a wrap-around copy of the first samples at the tail
 (wavetables set this internally).</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspBuffer</span><span class="p">.</span><span class="n">drawable</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">length</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">overflow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Buffer with drawing primitives (drawLine, envelope shaping).</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspBuffer</span><span class="p">.</span><span class="n">file</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">length</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">overflow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Drawable buffer with built-in file load and save.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspBuffer</span><span class="p">.</span><span class="n">wavetable</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">length</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Pre-computed single-cycle wavetable. Use the [createSaw] /
-[createSquare] / [createTriangle] methods to populate it.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
@@ -626,37 +623,6 @@ rate.</p>
 <p>Copy [samples] into the buffer starting at [offset].</p>
 <p>Returns the number of samples actually written (clamped to the
 buffer length).</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">drawLine</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">stop</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">startValue</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">stopValue</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Draw a linear ramp from <cite>(start, startValue)</cite> to <cite>(stop, stopValue)</cite>.</p>
-<p>Throws [YseException] if this buffer is not a drawable subclass.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">drawFlat</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">stop</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Fill the range <cite>[start, stop]</cite> with [value].</p>
-<p>Throws [YseException] if this buffer is not a drawable subclass.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">loadFile</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Load one channel from an audio file.</p>
-<p>Throws [YseException] on failure (file missing, wrong channel, etc.).</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">saveFile</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Save the contents to a mono WAV file.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">createSaw</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">harmonics</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">length</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Fill the wavetable with a band-limited sawtooth wave.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">createSquare</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">harmonics</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">length</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Fill the wavetable with a band-limited square wave.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">createTriangle</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">harmonics</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">length</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>Fill the wavetable with a band-limited triangle wave.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>

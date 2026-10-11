@@ -716,8 +716,11 @@ class System {
 ///
 /// Clocks are keyed by [name], not by an owned pointer: the engine holds the
 /// clock and the *first* registration of a name wins. Bind a [ClipTransport]
-/// to a clock by that same [name]; the clock must outlive every clip bound to
-/// it.
+/// to a clock by that same [name]. A bound clip shares the clock's lifetime,
+/// so a clock and its clips may be disposed in any order.
+///
+/// Clocks advance once per rendered audio block (not once per device
+/// callback), so beat timing stays block-accurate on large device buffers.
 ///
 /// Threading (CLAUDE.md): construct, [dispose] and [setTempo] are
 /// control-thread calls made from the [System] isolate; [beatPosition] and
@@ -788,8 +791,10 @@ class DomainClock {
     return _b.system_current_tempo(_sys, cname.cast());
   });
 
-  /// Destroy the named clock in the engine. Idempotent. Dispose every
-  /// [ClipTransport] bound to this clock first.
+  /// Destroy the named clock in the engine. Idempotent.
+  ///
+  /// Safe while [ClipTransport]s are still bound: the clock stops advancing
+  /// and those clips simply stop firing until re-bound to a live clock.
   void dispose() {
     if (!_alive) return;
     _alive = false;

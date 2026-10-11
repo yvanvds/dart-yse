@@ -120,6 +120,37 @@ class Reverb implements Finalizable {
   /// Apply a named preset.
   set preset(ReverbPreset value) => _b.reverb_set_preset(_handle, value.native);
 
+  /// Apply a complete parameter set — room size, damping, dry/wet balance,
+  /// modulation and the four early reflections — exactly as [preset] applies
+  /// a named one. Each reflection time is truncated to whole samples.
+  ///
+  /// Pair with [ReverbPresetValues.lerp] to place a zone part-way between two
+  /// presets:
+  ///
+  /// ```dart
+  /// zone.applyValues(ReverbPresetValues.lerp(
+  ///   ReverbPresetValues.fromPreset(ReverbPreset.room),
+  ///   ReverbPresetValues.fromPreset(ReverbPreset.hall),
+  ///   0.3,
+  /// ));
+  /// ```
+  void applyValues(ReverbPresetValues values) {
+    roomSize = values.roomSize;
+    damping = values.damping;
+    setDryWetBalance(dry: values.dry, wet: values.wet);
+    setModulation(
+      frequency: values.modulationFrequency,
+      width: values.modulationWidth,
+    );
+    for (var i = 0; i < 4; i++) {
+      setReflection(
+        i,
+        time: values.earlyTimes[i].toInt(),
+        gain: values.earlyGains[i],
+      );
+    }
+  }
+
   /// Destroy the underlying native reverb and detach the finalizer.
   ///
   /// No-op for the borrowed global reverb. Idempotent.
@@ -199,6 +230,29 @@ final class ReverbPresetValues {
         earlyTimes: [for (var i = 0; i < 4; i++) native.early_time[i]],
         earlyGains: [for (var i = 0; i < 4; i++) native.early_gain[i]],
       );
+
+  /// The exact parameter set that `Reverb.preset = preset` applies, read from
+  /// the engine's preset table. Needs the library but no engine session.
+  factory ReverbPresetValues.fromPreset(ReverbPreset preset) => using((arena) {
+    final out = arena<YseReverbPresetValues>();
+    bindings.reverb_preset_get_values(preset.native, out);
+    return ReverbPresetValues.fromNative(out.ref);
+  });
+
+  /// Linear blend of [a] and [b]: every field is interpolated with [t]
+  /// clamped to `[0, 1]`, so `t == 0` returns [a] and `t == 1` returns [b]
+  /// exactly. Delegates to the engine's own morph core, so the result is
+  /// bit-identical to what a [MorphingReverb] computes. Needs the library but
+  /// no engine session.
+  static ReverbPresetValues lerp(
+    ReverbPresetValues a,
+    ReverbPresetValues b,
+    double t,
+  ) => using((arena) {
+    final out = arena<YseReverbPresetValues>();
+    bindings.reverb_preset_morph(a.toNative(arena), b.toNative(arena), t, out);
+    return ReverbPresetValues.fromNative(out.ref);
+  });
 
   @override
   bool operator ==(Object other) =>

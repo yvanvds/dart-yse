@@ -24,9 +24,12 @@ import 'reverb.dart';
 /// lifetime contract, also outlive the slow-pool delete tick that
 /// follows the sound's destruction).
 ///
-/// Subclass-specific setters are unsafe to call on the wrong subclass:
-/// just like the C++ API, the underlying type is `static_cast`-ed
-/// without an RTTI check.
+/// Kind-specific accessors (e.g. [q], [sweepSpeed], [setDelayTap],
+/// [grainGain]) throw [YseException] when called on the wrong kind of
+/// effect. The underlying C entry points `static_cast` the handle without an
+/// RTTI check, so the wrapper checks the kind before calling into native
+/// code. Mix-grade modules ([Compressor], [ParametricEq], ...) are typed
+/// subclasses, so their own accessors exist only on the right type.
 class DspObject implements Finalizable {
   static final _finalizer = NativeFinalizer(
     bindings.addresses.dsp_object_destroy.cast(),
@@ -36,8 +39,22 @@ class DspObject implements Finalizable {
   Pointer<YseDspObject> _handle;
   final _DspKind _kind;
 
+  /// Native address → live wrapper, so [next] can hand back the *existing*
+  /// Dart object for a linked handle instead of minting a second owning
+  /// wrapper (which would double-free through the finalizer). Weak, so the
+  /// registry never keeps an effect alive on its own.
+  static final _live = <int, WeakReference<DspObject>>{};
+
+  /// Drops a collected wrapper's registry entry — unless its address has
+  /// since been reused by a newer object.
+  static final _registryCleaner = Finalizer<int>((address) {
+    if (_live[address]?.target == null) _live.remove(address);
+  });
+
   DspObject._(this._b, this._handle, this._kind) {
     _finalizer.attach(this, _handle.cast(), detach: this);
+    _live[_handle.address] = WeakReference(this);
+    _registryCleaner.attach(this, _handle.address, detach: this);
   }
 
   static DspObject _wrap(Pointer<YseDspObject> handle, _DspKind kind) {
@@ -158,6 +175,34 @@ class DspObject implements Finalizable {
   /// Convenience for `link(null)` — see [link].
   void unlink() => _b.dsp_object_link(_handle, nullptr);
 
+  /// The object linked after this one in its processing chain, or `null` at
+  /// the end of the chain — so a chain can be walked:
+  ///
+  /// ```dart
+  /// for (DspObject? fx = head; fx != null; fx = fx.next) { ... }
+  /// ```
+  ///
+  /// The result is the *same* Dart object that was passed to [link]
+  /// (`identical(a.next, b)` after `a.link(b)`), with its subclass intact —
+  /// never a new wrapper. It is read from the engine, so it reflects the
+  /// engine's own relinking: [link] inserts *between* this object and its
+  /// old successor, and disposing a chained object splices it out.
+  ///
+  /// Throws [StateError] if the engine reports a successor that no live
+  /// [DspObject] wraps (only possible if that successor's wrapper is being
+  /// garbage-collected concurrently — keep chained effects reachable).
+  DspObject? get next {
+    final p = _b.dsp_object_get_next(_handle);
+    if (p.address == 0) return null;
+    final wrapper = _live[p.address]?.target;
+    if (wrapper == null || wrapper._handle.address != p.address) {
+      throw StateError(
+        'yse_dsp_object_get_next returned a handle with no live DspObject',
+      );
+    }
+    return wrapper;
+  }
+
   // ─── filter modules ────────────────────────────────────────────────────
 
   /// Cutoff (lowpass/highpass) or centre (bandpass/sweep) frequency in Hz.
@@ -191,6 +236,7 @@ class DspObject implements Finalizable {
       case _DspKind.plateReverb:
       case _DspKind.feedbackDelay:
       case _DspKind.morphingReverb:
+      case _DspKind.underwater:
       case _DspKind.patcherInsert:
         throw YseException('frequency getter not supported for $_kind');
     }
@@ -231,92 +277,158 @@ class DspObject implements Finalizable {
       case _DspKind.plateReverb:
       case _DspKind.feedbackDelay:
       case _DspKind.morphingReverb:
+      case _DspKind.underwater:
       case _DspKind.patcherInsert:
         throw YseException('frequency setter not supported for $_kind');
     }
   }
 
+  /// Kind guard for the kind-specific accessors below.
+  ///
+  /// The matching `yse_dsp_<kind>_*` C entry points `static_cast` the shared
+  /// handle to the concrete C++ module without an RTTI check, so calling one
+  /// on the wrong kind is undefined behaviour (a mistyped read or write), not
+  /// an error status. This throws *before* any native call instead.
+  Pointer<YseDspObject> _as(Set<_DspKind> kinds, String accessor) {
+    if (!kinds.contains(_kind)) {
+      throw YseException('$accessor not supported for $_kind');
+    }
+    return _handle;
+  }
+
+  static const _bandpass = {_DspKind.bandpass};
+  static const _sweep = {_DspKind.sweep};
+  static const _delays = {
+    _DspKind.basicDelay,
+    _DspKind.lowpassDelay,
+    _DspKind.highpassDelay,
+  };
+  static const _phaser = {_DspKind.phaser};
+  static const _difference = {_DspKind.difference};
+  static const _granulator = {_DspKind.granulator};
+
   /// Bandpass-only: filter resonance (Q factor).
-  double get q => _b.dsp_bandpass_get_q(_handle);
-  set q(double value) => _b.dsp_bandpass_set_q(_handle, value);
+  ///
+  /// Throws [YseException] on any other kind.
+  double get q => _b.dsp_bandpass_get_q(_as(_bandpass, 'q'));
+  set q(double value) => _b.dsp_bandpass_set_q(_as(_bandpass, 'q'), value);
 
   // ─── sweep ────────────────────────────────────────────────────────────
 
-  /// Sweep-only: LFO speed in Hz.
-  double get sweepSpeed => _b.dsp_sweep_get_speed(_handle);
-  set sweepSpeed(double value) => _b.dsp_sweep_set_speed(_handle, value);
+  /// Sweep-only: LFO speed in Hz. Throws [YseException] on any other kind.
+  double get sweepSpeed => _b.dsp_sweep_get_speed(_as(_sweep, 'sweepSpeed'));
+  set sweepSpeed(double value) =>
+      _b.dsp_sweep_set_speed(_as(_sweep, 'sweepSpeed'), value);
 
-  /// Sweep-only: depth as 0..100.
-  int get sweepDepth => _b.dsp_sweep_get_depth(_handle);
-  set sweepDepth(int value) => _b.dsp_sweep_set_depth(_handle, value);
+  /// Sweep-only: depth as 0..100. Throws [YseException] on any other kind.
+  int get sweepDepth => _b.dsp_sweep_get_depth(_as(_sweep, 'sweepDepth'));
+  set sweepDepth(int value) =>
+      _b.dsp_sweep_set_depth(_as(_sweep, 'sweepDepth'), value);
 
-  /// Sweep-only: centre frequency as 0..100.
-  int get sweepCentre => _b.dsp_sweep_get_frequency(_handle);
-  set sweepCentre(int value) => _b.dsp_sweep_set_frequency(_handle, value);
+  /// Sweep-only: centre frequency as 0..100. Throws [YseException] on any
+  /// other kind.
+  int get sweepCentre => _b.dsp_sweep_get_frequency(_as(_sweep, 'sweepCentre'));
+  set sweepCentre(int value) =>
+      _b.dsp_sweep_set_frequency(_as(_sweep, 'sweepCentre'), value);
 
   // ─── delays ───────────────────────────────────────────────────────────
 
   /// basicDelay / lowpassDelay / highpassDelay: configure one of three taps.
+  ///
+  /// Throws [YseException] on any other kind.
   void setDelayTap(
     DelayTap tap, {
     required double timeMs,
     required double gain,
-  }) => _b.dsp_basic_delay_set_tap(_handle, tap.native, timeMs, gain);
+  }) => _b.dsp_basic_delay_set_tap(
+    _as(_delays, 'setDelayTap'),
+    tap.native,
+    timeMs,
+    gain,
+  );
 
-  /// Current delay time of [tap] in milliseconds.
+  /// Current delay time of [tap] in milliseconds (delay kinds only).
   double delayTime(DelayTap tap) =>
-      _b.dsp_basic_delay_get_time(_handle, tap.native);
+      _b.dsp_basic_delay_get_time(_as(_delays, 'delayTime'), tap.native);
 
-  /// Current gain of [tap].
+  /// Current gain of [tap] (delay kinds only).
   double delayGain(DelayTap tap) =>
-      _b.dsp_basic_delay_get_gain(_handle, tap.native);
+      _b.dsp_basic_delay_get_gain(_as(_delays, 'delayGain'), tap.native);
 
   // ─── phaser ───────────────────────────────────────────────────────────
 
-  /// Phaser-only: sweep range coefficient.
-  double get phaserRange => _b.dsp_phaser_get_range(_handle);
-  set phaserRange(double value) => _b.dsp_phaser_set_range(_handle, value);
+  /// Phaser-only: sweep range coefficient. Throws [YseException] on any
+  /// other kind.
+  double get phaserRange =>
+      _b.dsp_phaser_get_range(_as(_phaser, 'phaserRange'));
+  set phaserRange(double value) =>
+      _b.dsp_phaser_set_range(_as(_phaser, 'phaserRange'), value);
 
   // ─── difference ──────────────────────────────────────────────────────
 
-  /// Difference-only: carrier amplitude.
-  double get differenceAmplitude => _b.dsp_difference_get_amplitude(_handle);
-  set differenceAmplitude(double value) =>
-      _b.dsp_difference_set_amplitude(_handle, value);
+  /// Difference-only: carrier amplitude. Throws [YseException] on any other
+  /// kind.
+  double get differenceAmplitude =>
+      _b.dsp_difference_get_amplitude(_as(_difference, 'differenceAmplitude'));
+  set differenceAmplitude(double value) => _b.dsp_difference_set_amplitude(
+    _as(_difference, 'differenceAmplitude'),
+    value,
+  );
 
   // ─── granulator ───────────────────────────────────────────────────────
+  //
+  // Every granulator accessor throws [YseException] on any other kind.
 
   /// Granulator: spawn rate in grains per second.
-  int get grainFrequency => _b.dsp_granulator_get_grain_frequency(_handle);
-  set grainFrequency(int value) =>
-      _b.dsp_granulator_set_grain_frequency(_handle, value);
+  int get grainFrequency =>
+      _b.dsp_granulator_get_grain_frequency(_as(_granulator, 'grainFrequency'));
+  set grainFrequency(int value) => _b.dsp_granulator_set_grain_frequency(
+    _as(_granulator, 'grainFrequency'),
+    value,
+  );
 
   /// Granulator: grain length in samples. [random] adds variation
   /// around [samples].
   void setGrainLength({required int samples, int random = 0}) =>
-      _b.dsp_granulator_set_grain_length(_handle, samples, random);
+      _b.dsp_granulator_set_grain_length(
+        _as(_granulator, 'setGrainLength'),
+        samples,
+        random,
+      );
 
   /// Granulator: the base grain length in samples (the [samples] argument
   /// last passed to [setGrainLength], without the per-grain randomisation).
-  int get grainLength => _b.dsp_granulator_get_grain_length(_handle);
+  int get grainLength =>
+      _b.dsp_granulator_get_grain_length(_as(_granulator, 'grainLength'));
 
   /// Granulator: pitch shift (1.0 = unchanged, 2.0 = octave up).
   /// [random] adds variation.
   void setGrainTranspose({required double pitch, double random = 0}) =>
-      _b.dsp_granulator_set_grain_transpose(_handle, pitch, random);
+      _b.dsp_granulator_set_grain_transpose(
+        _as(_granulator, 'setGrainTranspose'),
+        pitch,
+        random,
+      );
 
   /// Granulator: the base pitch shift (the [pitch] argument last passed to
   /// [setGrainTranspose], without the per-grain randomisation).
-  double get grainTranspose => _b.dsp_granulator_get_grain_transpose(_handle);
+  double get grainTranspose =>
+      _b.dsp_granulator_get_grain_transpose(_as(_granulator, 'grainTranspose'));
 
   /// Granulator: output gain.
-  double get grainGain => _b.dsp_granulator_get_gain(_handle);
-  set grainGain(double value) => _b.dsp_granulator_set_gain(_handle, value);
+  double get grainGain =>
+      _b.dsp_granulator_get_gain(_as(_granulator, 'grainGain'));
+  set grainGain(double value) =>
+      _b.dsp_granulator_set_gain(_as(_granulator, 'grainGain'), value);
 
   /// Destroy the underlying native effect and detach the finalizer.
   void dispose() {
     if (_handle.address == 0) return;
     _finalizer.detach(this);
+    _registryCleaner.detach(this);
+    if (identical(_live[_handle.address]?.target, this)) {
+      _live.remove(_handle.address);
+    }
     _b.dsp_object_destroy(_handle);
     _handle = nullptr;
   }
@@ -575,6 +687,33 @@ class MorphingReverb extends DspObject {
   set morph(double value) => _b.dsp_morphing_reverb_set_morph(_handle, value);
 }
 
+/// The engine's underwater treatment as an ordinary chainable insert — a
+/// mix-grade [DspObject] that mixes every channel toward a position-neutral,
+/// low-passed average as [depth] grows.
+///
+/// [depth] is the distance below the water surface in world units: `<= 1`
+/// is transparent, `1..5` crossfades, `>= 5` is fully neutral, and negative
+/// values clamp to 0. Writes are allocation- and wait-free.
+///
+/// The wet/dry balance is inherent in [depth], so the inherited [impact] is
+/// **not** applied by this module. It is independent of the engine's own
+/// instance driven by [System.underwaterFx] / [System.underwaterDepth]:
+/// use this one to put the treatment anywhere in your own insert chain.
+/// Attach with `Channel.dsp` or [Sound.setDsp].
+class Underwater extends DspObject {
+  Underwater._(Pointer<YseDspObject> handle)
+    : super._(bindings, handle, _DspKind.underwater);
+
+  /// Construct an underwater insert at depth 0 (transparent).
+  factory Underwater() => Underwater._(
+    _created(bindings.dsp_underwater_create(), 'yse_dsp_underwater_create'),
+  );
+
+  /// Distance below the water surface, in world units (negative clamps to 0).
+  double get depth => _b.dsp_underwater_get_depth(_handle);
+  set depth(double value) => _b.dsp_underwater_set_depth(_handle, value);
+}
+
 Pointer<YseDspObject> _created(Pointer<YseDspObject> handle, String fn) {
   if (handle.address == 0) throw YseException('$fn returned null');
   return handle;
@@ -598,5 +737,6 @@ enum _DspKind {
   plateReverb,
   feedbackDelay,
   morphingReverb,
+  underwater,
   patcherInsert,
 }

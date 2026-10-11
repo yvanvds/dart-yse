@@ -8,6 +8,10 @@ from the audio thread — so the Dart side never has to time a ``noteOn`` /
 swaps it at the next audio-block boundary), and playback routes to one or
 more :class:`MidiOut` sinks.
 
+A clip and its clock may be disposed in either order: a clip whose clock is
+gone simply stops firing. Stopping or disposing a clip releases every note it
+still has sounding.
+
 Upstream: :yse-cpp:`api/clip.html <YSE::clip>`.
 
 .. include:: _generated/clip_transport.rst

@@ -84,6 +84,16 @@ class MidiFile implements Finalizable {
 ///
 /// Enumerate device counts with [System.midiOutDeviceCount] and names
 /// with [System.midiOutDeviceName], then open one with [MidiOut.open].
+///
+/// Channels here are **wire-level, 0-based** (`0..15`) — the low nibble of
+/// the status byte. The musical layer ([Synth], [ClipEvent], `Note`) counts
+/// `1..16` instead, so MIDI channel 1 is `0` here and `1` there. A channel
+/// outside `0..15` is clamped into that range by the engine (libYSE 3.0.1)
+/// rather than spilling into the status nibble, so `-1` sends on channel 0
+/// and `16` on channel 15.
+///
+/// To send a message the typed helpers don't cover — a SysEx dump, or any
+/// other complete message — use [raw].
 class MidiOut implements Finalizable {
   static final _finalizer = NativeFinalizer(
     bindings.addresses.midi_out_destroy.cast(),
@@ -97,6 +107,11 @@ class MidiOut implements Finalizable {
   }
 
   /// Open the MIDI device at [port].
+  ///
+  /// When [port] does not exist or the MIDI backend cannot start, the engine
+  /// reports the RtMidi error through [Log] and the port stays unopened:
+  /// every send on it is then a silent no-op. Check [port] against
+  /// [System.midiOutDeviceCount] first.
   factory MidiOut.open(int port) {
     final b = bindings;
     final h = b.midi_out_create();
@@ -142,7 +157,8 @@ class MidiOut implements Finalizable {
     required int value,
   }) => _b.midi_out_control_change(_handle, channel, controller, value);
 
-  /// Send All-Notes-Off on a specific [channel].
+  /// Send All-Notes-Off on a specific [channel] (`0..15`), or on every
+  /// channel when null.
   void allNotesOff({int? channel}) {
     if (channel == null) {
       _b.midi_out_all_notes_off(_handle);
@@ -170,7 +186,58 @@ class MidiOut implements Finalizable {
   set poly(bool on) => _b.midi_out_poly(_handle, on ? 1 : 0);
 
   /// Send three raw MIDI bytes.
+  ///
+  /// Always sends exactly three bytes, so it only suits three-byte messages
+  /// (note on/off, poly pressure, control change, pitch bend). For anything
+  /// else — a two-byte program change or channel pressure, a one-byte
+  /// realtime message, SysEx — use [raw], which sends the message as given.
   void raw3(int a, int b, int c) => _b.midi_out_raw3(_handle, a, b, c);
+
+  /// Send one complete MIDI message, byte for byte — no padding and no
+  /// truncation (libYSE #748 / #903).
+  ///
+  /// This is the way to send two-byte messages (program change, channel
+  /// pressure), single-byte system realtime messages, and System Exclusive
+  /// dumps of any length:
+  ///
+  /// ```dart
+  /// out.raw([0xC0, 5]);                               // program change
+  /// out.raw([0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7]);    // GM System On
+  /// ```
+  ///
+  /// [bytes] is copied into native memory for the call, so it may be
+  /// reused or modified straight afterwards. An empty list is a no-op.
+  ///
+  /// The message is checked before anything reaches the engine, and an
+  /// [ArgumentError] is thrown when:
+  ///
+  /// * a value is outside `0..255`;
+  /// * the first byte is not a status byte (`>= 0x80`) — running status
+  ///   is not supported, every message carries its own status;
+  /// * a data byte has its high bit set (`>= 0x80`);
+  /// * the length doesn't match the status: 3 bytes for note off/on, poly
+  ///   pressure, control change, pitch bend and song position; 2 for
+  ///   program change, channel pressure, MTC quarter frame and song
+  ///   select; 1 for tune request and system realtime (`0xF8..0xFF`);
+  /// * a SysEx message (`0xF0`) doesn't end with `0xF7`;
+  /// * the status is `0xF4` / `0xF5` (undefined) or a stray `0xF7`.
+  ///
+  /// Unlike the typed helpers, the channel nibble of a raw status byte is
+  /// sent as given — there is nothing to clamp.
+  ///
+  /// On a port that isn't open (see [MidiOut.open]) or after [dispose] this
+  /// is a silent no-op, like every other send. A send RtMidi refuses is
+  /// reported through [Log] and dropped; it never throws across the FFI
+  /// boundary.
+  void raw(List<int> bytes) {
+    if (bytes.isEmpty) return;
+    validateMidiRaw(bytes);
+    using((arena) {
+      final native = arena.allocate<UnsignedChar>(bytes.length);
+      native.cast<Uint8>().asTypedList(bytes.length).setAll(0, bytes);
+      _b.midi_out_raw(_handle, native, bytes.length);
+    });
+  }
 
   /// Internal: the raw native handle, for wiring this port as a
   /// [ClipTransport] sink. Not part of the public surface.
@@ -182,6 +249,90 @@ class MidiOut implements Finalizable {
     _finalizer.detach(this);
     _b.midi_out_destroy(_handle);
     _handle = nullptr;
+  }
+}
+
+/// Check that [bytes] is one complete, well-formed MIDI message for
+/// [MidiOut.raw]; throws [ArgumentError] otherwise. [bytes] must not be
+/// empty.
+///
+/// Internal (not exported): the engine sends whatever it is handed, so this
+/// is the only line of defence against a malformed message, and the tests
+/// exercise it without a MIDI device.
+void validateMidiRaw(List<int> bytes) {
+  for (var i = 0; i < bytes.length; i++) {
+    final v = bytes[i];
+    if (v < 0 || v > 0xFF) {
+      throw ArgumentError.value(v, 'bytes[$i]', 'not a byte (0..255)');
+    }
+  }
+  final status = bytes[0];
+  String hex(int v) => '0x${v.toRadixString(16).toUpperCase().padLeft(2, '0')}';
+  if (status < 0x80) {
+    throw ArgumentError.value(
+      bytes,
+      'bytes',
+      'first byte ${hex(status)} is not a status byte (running status is not '
+          'supported)',
+    );
+  }
+
+  if (status == 0xF0) {
+    if (bytes.length < 2 || bytes.last != 0xF7) {
+      throw ArgumentError.value(
+        bytes,
+        'bytes',
+        'SysEx message must end with 0xF7',
+      );
+    }
+    for (var i = 1; i < bytes.length - 1; i++) {
+      if (bytes[i] >= 0x80) {
+        throw ArgumentError.value(
+          bytes,
+          'bytes',
+          'SysEx data byte ${hex(bytes[i])} at index $i has its high bit set',
+        );
+      }
+    }
+    return;
+  }
+
+  final int expected;
+  if (status < 0xF0) {
+    // Channel voice: program change (0xC_) and channel pressure (0xD_) carry
+    // one data byte, everything else two.
+    final kind = status & 0xF0;
+    expected = (kind == 0xC0 || kind == 0xD0) ? 2 : 3;
+  } else {
+    expected = switch (status) {
+      0xF1 || 0xF3 => 2, // MTC quarter frame, song select
+      0xF2 => 3, // song position pointer
+      0xF6 || >= 0xF8 => 1, // tune request, system realtime
+      _ => throw ArgumentError.value(
+        bytes,
+        'bytes',
+        status == 0xF7
+            ? 'stray end-of-SysEx 0xF7 without a 0xF0'
+            : 'undefined status byte ${hex(status)}',
+      ),
+    };
+  }
+  if (bytes.length != expected) {
+    throw ArgumentError.value(
+      bytes,
+      'bytes',
+      'status ${hex(status)} takes a $expected-byte message, got '
+          '${bytes.length} bytes',
+    );
+  }
+  for (var i = 1; i < bytes.length; i++) {
+    if (bytes[i] >= 0x80) {
+      throw ArgumentError.value(
+        bytes,
+        'bytes',
+        'data byte ${hex(bytes[i])} at index $i has its high bit set',
+      );
+    }
   }
 }
 
@@ -214,7 +365,8 @@ class MidiInParsedMessage {
   /// Status nibble (`0x80`..`0xF0`) — Note-On, CC, etc.
   final int status;
 
-  /// MIDI channel (`0`..`15`).
+  /// Wire-level MIDI channel, 0-based (`0`..`15`). Add one to address the
+  /// same channel on a [Synth] or [ClipEvent], which count `1..16`.
   final int channel;
 
   /// First data byte (e.g. pitch for Note-On, controller for CC).
@@ -243,6 +395,12 @@ class MidiInParsedMessage {
 ///   * [rawMessages] — full message bytes as a [Uint8List].
 ///   * [parsedMessages] — pre-decoded channel-voice scalars.
 ///
+/// Channel numbering has two bases. The parsed stream reports the
+/// **wire-level, 0-based** channel (`0..15`, see
+/// [MidiInParsedMessage.channel]), while [connectSynth]'s `channelFilter`
+/// uses the musical layer's **1-based** numbering (`1..16`, `0` = every
+/// channel) shared with [Synth] and [ClipEvent].
+///
 /// Native callbacks fire on RtMidi's internal input thread.
 /// `NativeCallable.listener` posts each event back to the isolate that
 /// created this `MidiIn`, so Dart code only ever sees messages
@@ -256,7 +414,7 @@ class MidiIn implements Finalizable {
   Pointer<YseMidiIn> _handle;
 
   StreamController<MidiInRawMessage>? _rawController;
-  NativeCallable<YseMidiInRawCallbackFunction>? _rawCallable;
+  MidiInRawBridge? _rawBridge;
   StreamController<MidiInParsedMessage>? _parsedController;
   NativeCallable<YseMidiInParsedCallbackFunction>? _parsedCallable;
 
@@ -288,8 +446,9 @@ class MidiIn implements Finalizable {
   ///
   /// Every channel-voice message received on the open port is mapped to the
   /// synth's normalized note API and pushed onto its inbox on RtMidi's input
-  /// thread. [channelFilter] is a `1..16` MIDI channel to accept, or `0` (the
-  /// default) for every channel. May be called for several synths (up to a
+  /// thread. [channelFilter] is a 1-based `1..16` MIDI channel to accept, or
+  /// `0` (the default) for every channel — note the parsed stream reports the
+  /// same channel 0-based, so channel 1 there is filter `1` here. May be called for several synths (up to a
   /// small fixed cap); re-connecting an already-connected synth just updates
   /// its channel filter. [synth] must outlive the connection —
   /// [disconnectSynth] it (or close/dispose this port) before disposing the
@@ -305,37 +464,30 @@ class MidiIn implements Finalizable {
   /// Broadcast stream of raw MIDI messages. Lazily installs the native
   /// callback on first subscription and uninstalls when the last
   /// subscriber cancels.
+  ///
+  /// Messages still queued when the last subscriber cancels (or the port
+  /// is [dispose]d) are not delivered, but their native buffers are still
+  /// released.
   Stream<MidiInRawMessage> get rawMessages {
     final existing = _rawController;
     if (existing != null) return existing.stream;
     final controller = StreamController<MidiInRawMessage>.broadcast(
       onCancel: () {
         if (_rawController?.hasListener ?? false) return;
+        // Every call made before the clear is queued ahead of the drain
+        // marker. Upstream yvanvds/yse-soundengine#1176: the clear does
+        // not yet wait for a dispatch that already copied the old
+        // callback, so one in-flight message can still race the marker.
         _b.midi_in_set_raw_callback(_handle, nullptr, nullptr);
-        _rawCallable?.close();
-        _rawCallable = null;
+        _rawBridge?.retire();
+        _rawBridge = null;
         _rawController?.close();
         _rawController = null;
       },
     );
-    final freeFn = _b.midi_in_free_message;
-    final callable = NativeCallable<YseMidiInRawCallbackFunction>.listener((
-      double ts,
-      Pointer<UnsignedChar> bytes,
-      int len,
-      Pointer<Void> _,
-    ) {
-      try {
-        // Engine transferred ownership of `bytes`. Copy the contents into a
-        // Dart-owned buffer before releasing the malloc'd allocation.
-        final copy = Uint8List.fromList(bytes.cast<Uint8>().asTypedList(len));
-        controller.add(MidiInRawMessage(ts, copy));
-      } finally {
-        freeFn(bytes);
-      }
-    });
-    _b.midi_in_set_raw_callback(_handle, callable.nativeFunction, nullptr);
-    _rawCallable = callable;
+    final bridge = MidiInRawBridge(controller.add);
+    _b.midi_in_set_raw_callback(_handle, bridge.nativeFunction, nullptr);
+    _rawBridge = bridge;
     _rawController = controller;
     return controller.stream;
   }
@@ -373,20 +525,99 @@ class MidiIn implements Finalizable {
   }
 
   /// Destroy the underlying native port and detach the finalizer.
+  ///
+  /// Also clears both callbacks and closes [rawMessages] and
+  /// [parsedMessages] (listeners get `onDone`).
   void dispose() {
     if (_handle.address == 0) return;
     _finalizer.detach(this);
     _b.midi_in_set_raw_callback(_handle, nullptr, nullptr);
     _b.midi_in_set_parsed_callback(_handle, nullptr, nullptr);
-    _rawCallable?.close();
-    _rawCallable = null;
+    // Destroying the port stops RtMidi's input thread, so after this no
+    // call can still be on its way into either callable.
+    _b.midi_in_destroy(_handle);
+    _handle = nullptr;
+    _rawBridge?.retire();
+    _rawBridge = null;
     _parsedCallable?.close();
     _parsedCallable = null;
     _rawController?.close();
     _rawController = null;
     _parsedController?.close();
     _parsedController = null;
-    _b.midi_in_destroy(_handle);
-    _handle = nullptr;
+  }
+}
+
+/// How many raw MIDI-in buffers [MidiInRawBridge]s have released in this
+/// isolate, delivered or dropped. Internal (not exported): lets the tests
+/// prove no native block leaks.
+int get midiInMessagesFreed => MidiInRawBridge._freed;
+
+/// The `NativeCallable.listener` behind one installation of a [MidiIn]'s
+/// raw callback. Internal to `lib/src/` (not exported); public only so the
+/// tests can drive it without a MIDI device.
+///
+/// The engine hands over a malloc'd copy of each message; the listener
+/// copies the bytes and frees the buffer with `yse_midi_in_free_message`,
+/// exactly once.
+///
+/// Closing a listener drops the calls still queued on its port, which
+/// would leak their buffers. So [retire] does not close it: it detaches
+/// the sink and posts a drain marker (a NULL buffer, which the engine never
+/// sends) through the same port. Port messages arrive in order, so when the
+/// marker arrives every earlier call has been freed, and only then is the
+/// callable closed. Same scheme as the patcher send bridge (#62).
+class MidiInRawBridge {
+  static int _freed = 0;
+
+  void Function(MidiInRawMessage)? _sink;
+  final void Function(Pointer<UnsignedChar>) _free;
+  late final NativeCallable<YseMidiInRawCallbackFunction> _callable;
+
+  /// Deliver every message to [sink] until [retire]. [free] releases each
+  /// buffer and defaults to `yse_midi_in_free_message`; tests that post
+  /// their own buffers pass the matching deallocator.
+  MidiInRawBridge(
+    void Function(MidiInRawMessage) sink, {
+    void Function(Pointer<UnsignedChar>)? free,
+  }) : _sink = sink,
+       _free = free ?? bindings.midi_in_free_message {
+    _callable = NativeCallable<YseMidiInRawCallbackFunction>.listener(_onCall);
+  }
+
+  /// The function pointer to install as the native raw callback.
+  Pointer<NativeFunction<YseMidiInRawCallbackFunction>> get nativeFunction =>
+      _callable.nativeFunction;
+
+  void _onCall(
+    double ts,
+    Pointer<UnsignedChar> bytes,
+    int len,
+    Pointer<Void> _,
+  ) {
+    if (bytes.address == 0) {
+      _callable.close(); // drain marker: nothing is queued behind it
+      return;
+    }
+    final Uint8List copy;
+    try {
+      copy = Uint8List.fromList(bytes.cast<Uint8>().asTypedList(len));
+    } finally {
+      _free(bytes);
+      _freed++;
+    }
+    _sink?.call(MidiInRawMessage(ts, copy));
+  }
+
+  /// Stop delivering and close the callable once its queue has drained.
+  /// Call only after the engine can no longer invoke it.
+  void retire() {
+    _sink = null;
+    _callable.nativeFunction.asFunction<DartYseMidiInRawCallbackFunction>()(
+      0,
+      nullptr,
+      0,
+      nullptr,
+    );
   }
 }

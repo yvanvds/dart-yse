@@ -11,6 +11,8 @@ library;
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/sound_ready.dart';
+
 void main() {
   late System sys;
 
@@ -253,6 +255,7 @@ void main() {
         ..position = const Pos(0, 0, 1)
         ..play();
       addTearDown(sound.dispose);
+      pumpUntilReady(sys, sound);
 
       expect(renderPeak(), greaterThan(0.01), reason: 'signal crosses');
 

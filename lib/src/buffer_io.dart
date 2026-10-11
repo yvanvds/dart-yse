@@ -87,6 +87,23 @@ class BufferIO implements Finalizable {
     return _b.buffer_io_remove_by_name(_handle, cstr.cast()) != 0;
   });
 
+  // Intentionally NOT wrapped (#68): `yse_buffer_io_exists` /
+  // `yse_buffer_io_remove` (libYSE #909, `BufferIO::BufferExists` /
+  // `RemoveBuffer`) look a registration up by the *address* the host passed
+  // to `yse_buffer_io_add`, not by its ID.
+  //
+  //  * A Dart caller never holds that address. [addAsset] copies the bytes
+  //    into a native block it allocates itself (a `Uint8List`'s storage can
+  //    move under the GC, so it can't be registered directly), and that
+  //    pointer never leaves this class.
+  //  * With `storeCopy = true` the engine registers its own copy instead, so
+  //    the host address never matches and both calls always return 0.
+  //  * Exposing an `id -> pointer` lookup to drive them would only re-spell
+  //    what [exists] and [removeAsset] already do by ID.
+  //
+  // Revisit only if a zero-copy `addAsset` that registers caller-owned
+  // native memory is ever added; then the caller would hold the address.
+
   /// Destroy the underlying native layer, detach the finalizer, and
   /// free every wrapper-owned asset buffer.
   void dispose() {

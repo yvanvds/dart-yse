@@ -166,6 +166,122 @@
   `test/gen_patcher_snapshot_test.dart` fails when it drifts. The page
   moved from `api/patcher_objects.html` to `api/patcher_objects/`.
 
+- **Buffer math, copy / swap, file rate and multichannel buffers** (#65,
+  upstream yse-soundengine#909):
+  - New `DspBuffer.addBuffer` / `subBuffer` / `mulBuffer` / `divBuffer`:
+    sample-wise math against another buffer over the shorter length;
+    dividing by a zero sample gives 0.
+  - New `DspBuffer.copyFrom(src, srcPos:, dstPos:, count:)`. An
+    out-of-range span throws `YseException` (the engine would skip it
+    silently); a negative argument throws `RangeError`; overlapping ranges
+    within one buffer throw `ArgumentError`.
+  - New `DspBuffer.swap(other)` exchanges samples between buffers of equal
+    length (`YseException` otherwise); each keeps its class and rate.
+  - New `FileBuffer.fileSampleRate`: the native rate of the last loaded
+    file, 0 before a load, unchanged by a re-init at another rate. It is
+    `FileBuffer`-only, since the C entry point trusts the subclass.
+  - New `DspMultiBuffer(List<DspBuffer>)` (copies its channels; finalized
+    natively) with `channelCount`, and `Sound.fromMultiBuffer` to play it
+    as a stereo / surround source.
+  - `Sound.fromBuffer` and `Sound.fromMultiBuffer` now hold a reference to
+    their source, so garbage collection no longer frees a buffer under a
+    live sound. `FileBuffer.saveFile` dartdoc states the format (mono
+    32-bit float WAV at the file's rate) and that it fails while a custom
+    `BufferIO` is active.
+
+- **Underwater insert, chain walking, reverb preset values + morph** (#66,
+  upstream yse-soundengine#909):
+  - New `Underwater` `DspObject` subclass with a `depth` get/set (world
+    units below the surface: `<= 1` transparent, `1..5` crossfades, `>= 5`
+    fully neutral, negative clamps to 0). The inherited `impact` is not
+    applied. Independent of `System.underwaterFx` / `underwaterDepth`.
+  - New `DspObject.next`: the object linked after this one, or `null`. It
+    returns the *existing* Dart wrapper (via a weak native-address
+    registry), so `identical(a.next, b)` after `a.link(b)` and no second
+    owning wrapper is ever created. It reads the engine, so it follows
+    `link`'s insert-between semantics and a disposed object being spliced
+    out.
+  - New `ReverbPresetValues.fromPreset(preset)` (the exact values
+    `Reverb.preset` applies) and `ReverbPresetValues.lerp(a, b, t)` (the
+    engine's morph core, `t` clamped to `[0, 1]`, exact at both ends).
+    Neither needs an engine session.
+  - New `Reverb.applyValues(values)` applies a full parameter set to a
+    zone, exactly as `Reverb.preset` does for a named one.
+
+- **DX7 banks from memory, patch lookup, Note-driven synth calls,
+  `PNote.channel`** (#67, upstream yse-soundengine#909):
+  - New `Dx7Bank.fromBytes(Uint8List)` parses a bank already in memory
+    (Flutter assets, Android APKs). The bytes are copied for the call only.
+  - New `Dx7Bank.indexOf(name)`: the index of the first patch whose
+    space-trimmed name matches exactly (case-sensitive), or `null`. Pairs
+    with `Synth.setFmPatch`.
+  - New `Synth.playNote(Note)` / `Synth.releaseNote(Note)`: the note's
+    channel is the channel, its pitch rounded to the nearest integer is the
+    note number, and its volume is the velocity.
+  - New `PNote.channel` get/set.
+  - Docs: MIDI channel numbering has two bases. `MidiOut` and parsed
+    `MidiIn` messages use wire-level `0..15`; `Synth`, `ClipEvent`,
+    `Note` / `PNote` and the `MidiIn.connectSynth` filter use `1..16`, with
+    `0` meaning omni on a synth call. Stated on each class and in a table
+    on the MIDI docs page. The wrapper's defaults already match.
+  - Docs: a `DomainClock` and its `ClipTransport`s may now be disposed in
+    any order (a clip on a destroyed clock stops firing), disposing a clip
+    releases its sounding notes, a clip survives `System.close()`, and
+    clocks advance per rendered block. `ClipTransport.stop()` was already a
+    plain pass-through to the engine's own note-off flush, so nothing in
+    the wrapper became redundant.
+
+- **`MidiOut.raw` for two-byte messages and SysEx** (#68, upstream
+  yse-soundengine#748 / #903):
+  - New `MidiOut.raw(List<int> bytes)` sends one complete message exactly
+    as given — no padding, no truncation — so program change, channel
+    pressure, single-byte realtime messages and SysEx of any length can be
+    sent. The bytes are copied for the call; an empty list is a no-op. The
+    message is checked in Dart first and an `ArgumentError` names the
+    problem: a value outside `0..255`, a missing status byte (no running
+    status), a data byte with the high bit set, a length that doesn't match
+    the status, a SysEx without its closing `0xF7`, or an undefined status.
+  - `raw3` is unchanged; its docs now point at `raw` for anything that isn't
+    a three-byte message.
+  - Docs: an out-of-range `MidiOut` channel is clamped to `0..15` by the
+    engine (libYSE 3.0.1, upstream #1014) instead of corrupting the status
+    byte, and `MidiOut.open` on a port that doesn't exist leaves the port
+    unopened, so every send is a silent no-op.
+  - `BufferIO` deliberately does not wrap `yse_buffer_io_exists` /
+    `yse_buffer_io_remove` (upstream #909). They look a buffer up by the
+    native address passed at registration, which a Dart caller never holds:
+    `addAsset` registers a copy the wrapper allocates itself, and with
+    `storeCopy = true` the engine registers its own copy, so the address
+    never matches anyway. `exists` / `removeAsset` cover the same need by
+    ID.
+
+- **`DspObject` kind-specific accessors check the kind** (#72). Every
+  kind-specific `yse_dsp_*` C entry point in libYSE 3 `static_cast`s the
+  shared handle with no RTTI check, so e.g. `DspObject.lowpass().q = 2.0`
+  wrote through a mistyped pointer (undefined behaviour). `q`, the `sweep*`
+  accessors, `setDelayTap` / `delayTime` / `delayGain`, `phaserRange`,
+  `differenceAmplitude` and every granulator accessor now throw
+  `YseException` on the wrong kind before calling into native code, as
+  `frequency` already did. Behaviour on the right kind is unchanged. The
+  mix-grade modules (`Compressor`, `ParametricEq`, ...) were already safe
+  because they are typed subclasses.
+
+- **`Log.messages` and `MidiIn.rawMessages` no longer leak queued
+  messages at teardown** (#76). Both used to close their
+  `NativeCallable.listener` straight after clearing the native callback.
+  That dropped the calls still queued on its port, so the engine-malloc'd
+  string or byte buffer of every message emitted just before the last
+  cancel (or `MidiIn.dispose`) was never freed. They now use the
+  drain-marker teardown from `Patcher.messages` (#62): clear the callback,
+  post a NULL marker through the same port, and close the callable only
+  when the marker arrives. Every buffer is freed exactly once, and
+  messages still queued are dropped rather than delivered.
+  `MidiIn.dispose` now destroys the port before it retires the callbacks.
+  The parsed MIDI stream carries no native buffers and is unchanged.
+  Clearing a MIDI-in callback upstream does not yet wait for a dispatch
+  already in progress, which leaves one in-flight message able to race
+  the marker (upstream yse-soundengine#1176).
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

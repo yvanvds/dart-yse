@@ -26,6 +26,12 @@ class Sound implements Finalizable {
   final YseBindings _b;
   Pointer<YseSound> _handle;
 
+  /// The in-memory source the engine reads while this sound plays
+  /// ([DspBuffer] or [DspMultiBuffer]). Holding it keeps the source's
+  /// finalizer from freeing it under a live sound.
+  // ignore: unused_field
+  Object? _source;
+
   Sound._(this._b, this._handle) {
     _finalizer.attach(this, _handle.cast(), detach: this);
   }
@@ -103,9 +109,9 @@ class Sound implements Finalizable {
   /// Construct a sound backed by an in-memory [DspBuffer].
   ///
   /// **Lifetime contract:** [buffer] must outlive this sound — the audio
-  /// thread reads from it on every callback. Keep a Dart reference to the
-  /// buffer for as long as the sound exists; don't `.dispose()` the
-  /// buffer before disposing the sound.
+  /// thread reads from it on every callback. The sound holds a Dart
+  /// reference to it, so garbage collection never frees the buffer under a
+  /// live sound; don't `.dispose()` the buffer before disposing the sound.
   factory Sound.fromBuffer(
     DspBuffer buffer, {
     Channel? channel,
@@ -124,6 +130,56 @@ class Sound implements Finalizable {
         b.sound_load_buffer(h, buffer.handle, chHandle, loop ? 1 : 0, volume),
         b,
       );
+      s._source = buffer;
+      return s;
+    } catch (_) {
+      s.dispose();
+      rethrow;
+    }
+  }
+
+  /// Construct a sound backed by an in-memory [DspMultiBuffer] — a stereo
+  /// or surround source with one buffer per channel.
+  ///
+  /// The sound plays the length of the shortest channel. Set [spread] to
+  /// fan the source channels out around the sound's position (at 1, a
+  /// stereo source straight ahead plays channel 0 left and channel 1
+  /// right); at the default spread of 0 every channel pans to the same
+  /// point. [channel] routes it through that mixer node; pass `null` for
+  /// the master mix.
+  ///
+  /// **Lifetime contract:** [buffer] must outlive this sound — the audio
+  /// thread reads from it on every callback. The sound holds a Dart
+  /// reference to it, so garbage collection never frees it under a live
+  /// sound; don't `.dispose()` it before disposing the sound.
+  ///
+  /// Throws [YseException] if the sound cannot be created or loaded (for
+  /// example from a disposed [buffer]).
+  factory Sound.fromMultiBuffer(
+    DspMultiBuffer buffer, {
+    Channel? channel,
+    bool loop = false,
+    double volume = 1.0,
+  }) {
+    final b = bindings;
+    final h = b.sound_create();
+    if (h.address == 0) {
+      throw YseException('yse_sound_create returned null');
+    }
+    final s = Sound._(b, h);
+    try {
+      final chHandle = channel?.handle ?? nullptr;
+      checkStatus(
+        b.sound_load_multi_buffer(
+          h,
+          buffer.handle,
+          chHandle,
+          loop ? 1 : 0,
+          volume,
+        ),
+        b,
+      );
+      s._source = buffer;
       return s;
     } catch (_) {
       s.dispose();

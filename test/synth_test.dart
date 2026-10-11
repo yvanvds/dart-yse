@@ -77,6 +77,42 @@ String writeSampleWav(String dir) {
   return path;
 }
 
+/// Build a framed 32-voice packed DX7 bulk dump
+/// (`F0 43 00 09 20 00` + 4096 payload bytes + checksum + `F7`).
+///
+/// Every voice is zeroed except its 10-byte, space-padded name (packed bytes
+/// 118..127), which is [names] at that index or `VOICE nn`.
+Uint8List buildDx7Bank(Map<int, String> names) {
+  const voiceSize = 128;
+  final payload = Uint8List(32 * voiceSize);
+  for (var v = 0; v < 32; v++) {
+    final name = (names[v] ?? 'VOICE ${(v + 1).toString().padLeft(2, '0')}')
+        .padRight(10);
+    for (var i = 0; i < 10; i++) {
+      payload[v * voiceSize + 118 + i] = name.codeUnitAt(i);
+    }
+  }
+  final sum = payload.fold<int>(0, (a, b) => a + b);
+  final checksum = (0x80 - (sum & 0x7f)) & 0x7f;
+  return Uint8List.fromList([
+    0xF0, 0x43, 0x00, 0x09, 0x20, 0x00, //
+    ...payload,
+    checksum,
+    0xF7,
+  ]);
+}
+
+/// Render in small chunks until [done] holds, or [maxBlocks] blocks have
+/// rendered. Returns whether [done] was reached.
+bool renderUntil(System sys, bool Function() done, {int maxBlocks = 4000}) {
+  for (var rendered = 0; rendered < maxBlocks; rendered += 4) {
+    if (done()) return true;
+    sys.update();
+    sys.renderOffline(4);
+  }
+  return done();
+}
+
 void main() {
   // ── Pure-Dart unit coverage (no engine required) ───────────────────────────
 
@@ -376,6 +412,124 @@ void main() {
     });
   });
 
+  group('DX7 bank from memory + patch lookup (#67)', () {
+    late Uint8List bankBytes;
+    late String bankPath;
+
+    setUpAll(() {
+      bankBytes = buildDx7Bank({4: 'E.PIANO 1', 31: 'BRASS'});
+      bankPath = '${tmpDir.path}${Platform.pathSeparator}bank.syx';
+      File(bankPath).writeAsBytesSync(bankBytes);
+    });
+
+    test('fromBytes matches load: patch count and every patch name', () {
+      final fromFile = Dx7Bank.load(bankPath);
+      addTearDown(fromFile.dispose);
+      final fromMem = Dx7Bank.fromBytes(File(bankPath).readAsBytesSync());
+      addTearDown(fromMem.dispose);
+
+      expect(fromMem.patchCount, 32);
+      expect(fromMem.patchCount, fromFile.patchCount);
+      for (var i = 0; i < fromFile.patchCount; i++) {
+        expect(fromMem.patchName(i), fromFile.patchName(i), reason: 'patch $i');
+      }
+      expect(fromMem.patchName(4), 'E.PIANO 1');
+    });
+
+    test('fromBytes does not retain the caller buffer', () {
+      final copy = Uint8List.fromList(bankBytes);
+      final bank = Dx7Bank.fromBytes(copy);
+      addTearDown(bank.dispose);
+      copy.fillRange(0, copy.length, 0); // scribble over the source
+      expect(bank.patchName(31), 'BRASS');
+    });
+
+    test('fromBytes rejects empty and corrupt input', () {
+      expect(
+        () => Dx7Bank.fromBytes(Uint8List(0)),
+        throwsA(isA<YseException>()),
+      );
+      final corrupt = Uint8List.fromList(bankBytes);
+      corrupt[corrupt.length - 2] ^= 0x01; // break the checksum
+      expect(() => Dx7Bank.fromBytes(corrupt), throwsA(isA<YseException>()));
+    });
+
+    test('indexOf finds an existing name and maps a miss to null', () {
+      final bank = Dx7Bank.fromBytes(bankBytes);
+      addTearDown(bank.dispose);
+      expect(bank.indexOf('E.PIANO 1'), 4);
+      expect(bank.indexOf('BRASS'), 31);
+      expect(bank.indexOf('VOICE 01'), 0);
+      expect(bank.indexOf('NO SUCH'), isNull);
+      expect(bank.indexOf('e.piano 1'), isNull, reason: 'case-sensitive');
+    });
+
+    test('an indexOf result selects the patch into an FM synth', () {
+      final bank = Dx7Bank.fromBytes(bankBytes);
+      addTearDown(bank.dispose);
+      final synth = Synth();
+      addTearDown(synth.dispose);
+      synth.addFmVoices(2);
+      synth.setFmPatch(bank, bank.indexOf('E.PIANO 1')!);
+      // Attach before disposing: destroying a never-attached VA/FM synth
+      // crashes the next synth attach (yvanvds/yse-soundengine#1175).
+      final sound = Sound.fromSynth(synth);
+      addTearDown(sound.dispose);
+      expect(pumpVoices(sys, synth, 2), 2);
+    });
+  });
+
+  group('Note-driven playNote / releaseNote (#67)', () {
+    const where = Pos(1, 2, 3);
+
+    test('channel, rounded pitch and release map through to the voice', () {
+      final synth = Synth();
+      addTearDown(synth.dispose);
+      synth.addSineVoices(4, channel: 0, attack: 0.001, release: 0.005);
+      // A fixed handler parks every sounding voice at `where`, so
+      // getVoicePosition doubles as a "is (channel, note) sounding" probe.
+      synth.setPositionHandler(const PositionHandler.fixed(1, 2, 3));
+      final sound = Sound.fromSynth(synth);
+      addTearDown(sound.dispose);
+      // The voices only render (and so only report a position) while the
+      // wrapping sound plays.
+      sound.play();
+      expect(pumpVoices(sys, synth, 4), 4);
+
+      final note = Note(pitch: 60.6, volume: 0.8, channel: 2);
+      addTearDown(note.dispose);
+
+      synth.playNote(note);
+      expect(
+        renderUntil(
+          sys,
+          () => synth.getVoicePosition(61, channel: 2) != const Pos.zero(),
+          maxBlocks: 400,
+        ),
+        isTrue,
+        reason: 'playNote must start a voice',
+      );
+      expect(
+        synth.getVoicePosition(61, channel: 2),
+        where,
+        reason: 'pitch 60.6 rounds to note 61 on the note\'s channel',
+      );
+      expect(synth.getVoicePosition(60, channel: 2), const Pos.zero());
+      expect(synth.getVoicePosition(61, channel: 1), const Pos.zero());
+
+      synth.releaseNote(note);
+      expect(
+        renderUntil(
+          sys,
+          () => synth.getVoicePosition(61, channel: 2) == const Pos.zero(),
+          maxBlocks: 400,
+        ),
+        isTrue,
+        reason: 'releaseNote must end the voice',
+      );
+    });
+  });
+
   group('ClipTransport → Synth sink', () {
     test('a clip connects and disconnects an internal synth', () {
       final clock = DomainClock('synth-clip', tempo: 120);
@@ -401,6 +555,54 @@ void main() {
       clip.disconnectSynth(synth);
       clip.stop();
       expect(clip.isPlaying, isFalse);
+    });
+
+    test('a clock disposed before its clip: no crash, the clip stops '
+        'firing (#67)', () {
+      final synth = Synth();
+      addTearDown(synth.dispose);
+      synth.addSineVoices(2, channel: 0, attack: 0.001, release: 0.005);
+      synth.setPositionHandler(const PositionHandler.fixed(1, 2, 3));
+      final sound = Sound.fromSynth(synth);
+      addTearDown(sound.dispose);
+      sound.play();
+      expect(pumpVoices(sys, synth, 2), 2);
+
+      bool sounding() =>
+          synth.getVoicePosition(60, channel: 1) != const Pos.zero();
+
+      final clock = DomainClock('clock-first', tempo: 240);
+      var clockDisposed = false;
+      addTearDown(() {
+        if (!clockDisposed) clock.dispose();
+      });
+      final clip = ClipTransport(clock);
+      clip.connectSynth(synth);
+      clip.setEvents(const [
+        ClipEvent(startBeat: 0, durationBeats: 0.5, channel: 1, pitch: 60),
+      ], loopBeats: 1);
+      clip.play();
+
+      // Positive control: the clip fires, then releases inside each loop.
+      expect(renderUntil(sys, sounding), isTrue, reason: 'clip fires');
+      expect(renderUntil(sys, () => !sounding()), isTrue, reason: 'note-off');
+
+      // Dispose the clock while the clip is still bound and playing, in the
+      // silent half of the loop so no note is left held by a frozen clock.
+      clock.dispose();
+      clockDisposed = true;
+
+      // A live clock would retrigger the note every loop (a quarter second
+      // at 240 BPM); several loops' worth of rendering must stay silent.
+      expect(
+        renderUntil(sys, sounding, maxBlocks: 1000),
+        isFalse,
+        reason: 'a clip on a destroyed clock must stop firing',
+      );
+
+      // And the clip itself is still safe to drive and dispose afterwards.
+      clip.stop();
+      clip.dispose();
     });
   });
 }

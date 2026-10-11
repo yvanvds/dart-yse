@@ -2,8 +2,20 @@ Sound
 =====
 
 Sound playback. Construct one :class:`Sound` per voice in the scene
-via :py:meth:`Sound.fromFile`, :py:meth:`Sound.fromBuffer`, or
-:py:meth:`Sound.fromPatcher`.
+via one of its loaders:
+
+- :py:meth:`Sound.fromFile` — an audio file, in memory or streamed.
+- :py:meth:`Sound.fromBuffer` — a mono in-memory :class:`DspBuffer`.
+- :py:meth:`Sound.fromMultiBuffer` — a stereo or surround in-memory
+  :class:`DspMultiBuffer`, one buffer per channel. With a non-zero
+  :py:attr:`Sound.spread` the source channels fan out around the sound's
+  position; at the default spread of 0 they all pan to the same point.
+- :py:meth:`Sound.fromPatcher` — the ``~dac`` output of a :class:`Patcher`.
+- :py:meth:`Sound.fromSynth` — a :class:`Synth` voice pool.
+
+A buffer or multi-buffer source must outlive the sound. The sound holds a
+Dart reference to it, so garbage collection never frees it under a live
+sound; call the source's ``dispose()`` only after disposing the sound.
 
 Upstream: :yse-cpp:`api/sounds.html <YSE::sound>`.
 

@@ -11,12 +11,14 @@ Build pipeline:
    walks every class re-exported from `lib/yse.dart` and emits one
    RST file per class into `docs/source/api/_generated/`. Dartdoc
    comments stay the canonical source of truth.
-2. The Sphinx `builder-inited` hook in `source/conf.py` renders
-   `source/api/patcher_objects.rst` from
-   `source/_data/patcher_objects.json` via the Jinja template at
-   `source/_templates/patcher_objects.rst.j2`. The JSON snapshot is
-   shipped from the upstream libYSE engine — both bindings call the
-   same `patcher::CreateObject` so the object list is identical.
+2. The Sphinx `builder-inited` hook in `source/conf.py` renders the
+   patcher object reference — `source/api/patcher_objects/index.rst`
+   plus one page per category — from `source/_data/patcher_objects.json`
+   via the Jinja templates `patcher_objects_index.rst.j2` and
+   `patcher_objects_category.rst.j2` in `source/_templates/` (ported
+   from upstream libYSE). The JSON snapshot is generated from the bound
+   engine's registry by `tool/gen_patcher_snapshot.dart` and committed,
+   so the docs build needs no engine.
 3. Sphinx + the `sphinx-book-theme` render the static site into
    `build/html/`.
 
@@ -53,12 +55,13 @@ docs/
 ├── make.bat              # Windows entry point
 ├── requirements.txt      # Python build deps (sphinx, sphinx-book-theme, myst-parser)
 └── source/
-    ├── conf.py           # Sphinx config + patcher_objects.rst render hook
+    ├── conf.py           # Sphinx config + patcher object reference render hook
     ├── index.rst         # Top-level TOC
     ├── _data/
-    │   └── patcher_objects.json   # Upstream snapshot — patcher type metadata
+    │   └── patcher_objects.json   # Registry snapshot — patcher type metadata
     ├── _templates/
-    │   └── patcher_objects.rst.j2 # Jinja template for the rendered reference page
+    │   ├── patcher_objects_index.rst.j2     # Object reference index page
+    │   └── patcher_objects_category.rst.j2  # One page per category
     ├── _static/
     ├── intro/            # What is dart-yse? — install, mental_model, hello_sound
     ├── tutorials/        # Phase-by-phase walk-throughs (patcher fully written up)
@@ -66,27 +69,32 @@ docs/
         ├── index.rst
         ├── _generated/   # Class pages emitted by tool/emit_api_rst.dart (gitignored)
         ├── patcher.rst   # Patcher / PHandle / Obj — hand-authored intro + includes
-        ├── patcher_objects.rst   # Rendered from JSON snapshot (gitignored)
+        ├── patcher_objects/      # Rendered from JSON snapshot (gitignored)
         └── ...           # core / sounds / channels / dsp / midi / music / ...
 ```
 
 ## Updating the patcher object reference
 
-`source/_data/patcher_objects.json` is a snapshot of the upstream
-engine's patcher metadata. To refresh it after upstream adds or
-modifies an object:
+`source/_data/patcher_objects.json` is a snapshot of the patcher
+registry of the `libyse` this package binds (the same JSON
+`PatcherRegistry.metadataJson()` returns, with sorted keys). It is the
+layout upstream's `python yse.py dump-patcher-meta` writes, so the two
+diff cleanly. After an engine update:
 
-1. In the `yse-soundengine` repository, run
-   `python yse.py dump-patcher-meta` to regenerate
-   `documentation/source/_data/patcher_objects.json` there.
-2. Copy that file into `docs/source/_data/patcher_objects.json` in
-   this repo.
+1. Build the engine and point `YSE_DLL_PATH` at it (see the top-level
+   README).
+2. From the package root, run
+   `dart run tool/gen_patcher_snapshot.dart` to rewrite the snapshot
+   (and `dart run tool/gen_obj_constants.dart` for the `Obj`
+   constants the reference pages show).
 3. Rebuild (`make html`). The Sphinx hook re-renders
-   `source/api/patcher_objects.rst` from the new snapshot.
+   `source/api/patcher_objects/` from the new snapshot.
 
-There is no need to keep a separate Dart-side dumper: the engine's
-patcher object list is the same regardless of which binding calls
-`createObject`.
+`test/gen_patcher_snapshot_test.dart` fails when the committed snapshot
+no longer matches the bound registry (object count, type names, or any
+byte of the content), and when `_PATCHER_CATEGORIES` in `conf.py` misses
+a `PCategory`. The docs build itself warns (failing `-W`) on an object
+whose category `conf.py` does not know, or that has no `Obj` constant.
 
 ## Hosting
 

@@ -12,7 +12,7 @@ Upstream: :yse-cpp:`api/patcher.html <YSE::patcher>` /
 
 For an end-to-end walk-through, see :doc:`/tutorials/05_patcher`. The
 list of object types ``createObject`` accepts is on the
-:doc:`patcher_objects` reference page.
+:doc:`patcher_objects/index` reference page.
 
 Patcher
 -------
@@ -115,7 +115,7 @@ Registry introspection
 ----------------------
 
 Read-only access to the engine's patcher object *registry* — the same
-in-code documentation that drives the :doc:`patcher_objects` reference.
+in-code documentation that drives the :doc:`patcher_objects/index` reference.
 Use :class:`PatcherRegistry` to enumerate the registered object types and,
 per type, read the description, category, and inlet / outlet / parameter
 schema without hard-coding the catalogue.
@@ -148,7 +148,7 @@ recognises, e.g. ``Obj.dSine == '~sine'``. The ``~`` / ``.`` prefix
 convention is the same as upstream: ``~`` marks audio-rate (DSP)
 objects, ``.`` marks control-rate (event) objects.
 
-Refer to :doc:`patcher_objects` for the full per-object documentation
+Refer to :doc:`patcher_objects/index` for the full per-object documentation
 (inlets, outlets, parameters, ranges).
 
 .. include:: _generated/obj.rst

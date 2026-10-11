@@ -155,6 +155,17 @@
     atomic, and GUI properties are persisted decoration, not live state.
     New "GUI controls" section in the patcher API docs.
 
+- **Patcher object reference covers all 305 objects** (#69). The docs
+  site's object reference listed the 42 objects of a stale upstream 2.x
+  snapshot. It is now an index plus one page per category (templates
+  ported from upstream libYSE), with each object's 3.x summary, its `Obj`
+  constant, and a *MIDI device only* flag for the objects that are not
+  available on macOS / Android. The snapshot
+  (`docs/source/_data/patcher_objects.json`) is now generated from the
+  bound registry by `tool/gen_patcher_snapshot.dart`, and
+  `test/gen_patcher_snapshot_test.dart` fails when it drifts. The page
+  moved from `api/patcher_objects.html` to `api/patcher_objects/`.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

@@ -124,7 +124,7 @@ Graphs can be serialised with :py:meth:`Patcher.dumpJson` and rebuilt
 with :py:meth:`Patcher.parseJson` — pair the engine with an external
 editor or ship presets as plain text. The full set of registered
 object types — every inlet, outlet, parameter, and accepted message
-type — is on the :doc:`/api/patcher_objects` reference page,
+type — is on the :doc:`/api/patcher_objects/index` reference page,
 generated directly from the C++ engine source so it can never drift.
 
 Putting it together

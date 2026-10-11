@@ -27,7 +27,7 @@ serve:
 	@cd $(BUILDDIR)/html && python -m http.server 8000
 
 clean:
-	rm -rf "$(BUILDDIR)" "$(SOURCEDIR)/api/_generated" "$(SOURCEDIR)/api/patcher_objects.rst"
+	rm -rf "$(BUILDDIR)" "$(SOURCEDIR)/api/_generated" "$(SOURCEDIR)/api/patcher_objects"
 
 help:
 	@echo "Targets: html, api, sphinx, serve, clean"

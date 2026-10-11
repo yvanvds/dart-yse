@@ -40,7 +40,7 @@ The full list of supported types is exposed as constants on the
 :class:`Obj` class — pass any of them to
 :py:meth:`Patcher.createObject` in place of raw string literals.
 Every object's accepted inlets, outlets, parameters, and message
-types are listed on the :doc:`/api/patcher_objects` reference page,
+types are listed on the :doc:`/api/patcher_objects/index` reference page,
 generated directly from the engine source so it can never drift from
 what ``createObject`` actually accepts.
 
@@ -323,10 +323,10 @@ Where to find the full object reference
 
 The full set of registered object types — every inlet, outlet,
 parameter, and accepted message type — is on the
-:doc:`/api/patcher_objects` reference page. That page is generated
-directly from the engine source (the same JSON snapshot the upstream
-libYSE docs render), so it can never drift from what
-:py:meth:`Patcher.createObject` actually accepts.
+:doc:`/api/patcher_objects/index` reference, one page per category.
+Those pages are generated from the registry of the engine this package
+binds (a JSON snapshot that a test keeps in step with the registry), so
+they list exactly what :py:meth:`Patcher.createObject` accepts.
 
 What you learned
 ----------------
@@ -349,6 +349,6 @@ Next
 
 - :doc:`/api/patcher` — the full :class:`Patcher` and
   :class:`PHandle` class reference.
-- :doc:`/api/patcher_objects` — every patcher object, with inlets,
+- :doc:`/api/patcher_objects/index` — every patcher object, with inlets,
   outlets, parameters, and value ranges.
 - :doc:`/tutorials/index` — index of remaining tutorials.

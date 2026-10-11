@@ -56,7 +56,7 @@ goto end
 :clean
 if exist "%BUILDDIR%" rmdir /s /q "%BUILDDIR%"
 if exist "%SOURCEDIR%\api\_generated" rmdir /s /q "%SOURCEDIR%\api\_generated"
-if exist "%SOURCEDIR%\api\patcher_objects.rst" del /q "%SOURCEDIR%\api\patcher_objects.rst"
+if exist "%SOURCEDIR%\api\patcher_objects" rmdir /s /q "%SOURCEDIR%\api\patcher_objects"
 goto end
 
 :help

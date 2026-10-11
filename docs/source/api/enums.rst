@@ -5,6 +5,8 @@ Type-safe Dart enums that wrap the engine's C-side enum values.
 
 .. include:: _generated/channel_type.rst
 
+.. include:: _generated/reconnect_state.rst
+
 .. include:: _generated/lfo_type.rst
 
 .. include:: _generated/va_waveform.rst

@@ -305,6 +305,17 @@
   keep them reachable. Explicitly disposing a source before its sound is
   still unsupported; the docs now say so for every loader.
 
+- **Late voice groups throw instead of vanishing** (#81, upstream
+  yse-soundengine#1177). `Synth.addSineVoices` / `addVaVoices` /
+  `addFmVoices` / `addSamplerVoices` and `Synth.setPositionHandler` throw
+  `StateError` once `voiceCount` is non-zero. The engine drops these calls
+  after the voice pool is built and only logs a warning. The `Synth` docs
+  now describe an engine race in libYSE v3.1.0: a synth setup job can
+  build a new synth before its voices are added, and that synth keeps 0
+  voices with no error. Add voice groups right after `Synth()`. The wrapper
+  cannot detect this case because the C API reports success and has no
+  status to query, so the real fix belongs in the engine.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

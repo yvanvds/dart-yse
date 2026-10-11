@@ -280,15 +280,18 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
 
+<li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
 
-
-
-
-
-
-
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
 
 
 
@@ -573,6 +576,24 @@ playable.</p>
 </div>
 <p>Raw native handle, for sibling wrappers within <cite>lib/src/</cite> (e.g.
 <cite>ClipTransport.connectSynth</cite>). Not part of the public API surface.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">busName</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">busName</span><span class="p">(</span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The name this synth answers to on the global bus, or <cite>null</cite> when it is
+anonymous (the default).</p>
+<p>Once named <cite>foo</cite>, the engine subscribes the synth to <cite>synth.foo.note</cite>,
+<cite>.off</cite>, <cite>.cc</cite>, <cite>.bend</cite>, <cite>.aftertouch</cite> and <cite>.alloff</cite>, so a <cite>Bus.publish</cite>
+(or a script’s <cite>yse.send</cite>, or a patcher <cite>.s</cite>) drives it with no host
+round-trip. <cite>synth.foo.note</cite> takes a <cite>BusList</cite> of
+<cite>[channel, note, velocity]</cite>; see the bus page for the other payloads.</p>
+<p>Setting <cite>null</cite> or <cite>‘’</cite> clears the name and its subscriptions; renaming
+re-subscribes. Names are unique per synth — a duplicate is rejected and
+logged by the engine, with no error here. Only effective while the
+engine is between init and close. There is no native getter: this
+returns the last value set through this wrapper.</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>

@@ -70,6 +70,29 @@ playable.
 Raw native handle, for sibling wrappers within `lib/src/` (e.g.
 `ClipTransport.connectSynth`). Not part of the public API surface.
 
+.. code-block:: dart
+
+   String? get busName
+
+.. code-block:: dart
+
+   set busName(String? name)
+
+The name this synth answers to on the global bus, or `null` when it is
+anonymous (the default).
+
+Once named `foo`, the engine subscribes the synth to `synth.foo.note`,
+`.off`, `.cc`, `.bend`, `.aftertouch` and `.alloff`, so a `Bus.publish`
+(or a script's `yse.send`, or a patcher `.s`) drives it with no host
+round-trip. `synth.foo.note` takes a `BusList` of
+`[channel, note, velocity]`; see the bus page for the other payloads.
+
+Setting `null` or `''` clears the name and its subscriptions; renaming
+re-subscribes. Names are unique per synth — a duplicate is rejected and
+logged by the engine, with no error here. Only effective while the
+engine is between init and close. There is no native getter: this
+returns the last value set through this wrapper.
+
 Methods
 -------
 

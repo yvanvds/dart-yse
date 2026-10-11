@@ -23,7 +23,7 @@ Properties
 
    final String value
 
-The published string, copied out of engine-owned memory.
+The string payload.
 
 .. code-block:: dart
 

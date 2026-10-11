@@ -280,15 +280,18 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../api/log.html">Log</a></li>
 
+<li class="toctree-l2"><a class="reference internal" href="../api/bus.html">Bus</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../api/live_coding.html">LiveCoding</a></li>
 
-
-
-
-
-
-
 <li class="toctree-l2"><a class="reference internal" href="../api/enums.html">Enums</a></li>
+
 
 
 
@@ -541,6 +544,26 @@ internal worker threads, and the scheduler that turns
 <strong>Threading constraint:</strong> every call into <code class="docutils literal notranslate"><span class="pre">yse</span></code> must happen on the
 same isolate that called <code class="docutils literal notranslate"><span class="pre">init()</span></code>. The audio callback runs on a
 private thread the wrapper never exposes.</p>
+<p><strong>Rendering.</strong> The engine renders audio in fixed blocks of
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">System.blockSize</span></code> frames (128), whatever the device’s
+callback size; <code class="xref py py-meth docutils literal notranslate"><span class="pre">System.renderOffline()</span></code> takes a count of these
+blocks. Each block runs through a task-graph scheduler: the audio
+thread renders, and worker threads pick up independent parts of the mix
+(channels, sounds) in parallel. <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.renderThreads</span></code> sets how
+many workers there are — <code class="docutils literal notranslate"><span class="pre">-1</span></code> (default) for auto (physical cores
+minus one, at most 8), <code class="docutils literal notranslate"><span class="pre">0</span></code> to render on the audio thread alone (the
+right choice on Android and other constrained hardware), or an exact
+count. Set it before <code class="docutils literal notranslate"><span class="pre">init()</span></code>; during a device session a new value
+waits for the next init, and it survives <code class="docutils literal notranslate"><span class="pre">close()</span></code>. The worker count
+never changes how the mix is summed, so the output is bit-identical at
+any setting. <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeRenderThreads</span></code> reports the workers
+running now.</p>
+<p><strong>Randomness.</strong> The engine’s random generator (behind <code class="docutils literal notranslate"><span class="pre">.random</span></code>,
+granulator jitter and the LFO random shapes) starts from a fixed seed,
+so a patch renders the same output every run. Call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">System.randomSeed()</span></code> for a different repeatable stream or
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">System.randomize()</span></code> to seed from the clock, before building the
+patch or sounds.</p>
 </section>
 <section id="listener">
 <h2>Listener<a class="headerlink" href="#listener" title="Link to this heading">#</a></h2>
@@ -567,9 +590,10 @@ same file is loaded into multiple sounds.</p>
 <h2>Channel<a class="headerlink" href="#channel" title="Link to this heading">#</a></h2>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">Channel</span></code> is a node in a mixing tree. Every sound is attached
 to a channel; channels can themselves be attached to a parent channel,
-forming a tree rooted at <code class="xref py py-attr docutils literal notranslate"><span class="pre">Channel.master</span></code>. Child channels
-dispatch their DSP work to a thread pool — spreading sounds across
-channels lets the engine parallelise mixing across CPU cores.</p>
+forming a tree rooted at <code class="xref py py-attr docutils literal notranslate"><span class="pre">Channel.master</span></code>. The render
+scheduler (see <a class="reference internal" href="#system">System</a>) can mix independent channels on different
+worker threads, so spreading sounds across channels lets the engine
+parallelise mixing across CPU cores.</p>
 <p>A small set of pre-built channels (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Channel.master</span></code>,
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">Channel.music</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">Channel.ambient</span></code>,
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">Channel.voice</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">Channel.gui</span></code>,

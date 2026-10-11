@@ -280,15 +280,18 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
 
+<li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
 
-
-
-
-
-
-
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
 
 
 
@@ -578,13 +581,15 @@ without an RTTI check.</p>
 </pre></div>
 </div>
 <p>FM difference-tone synthesis (clipper + sine carrier).</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspObject</span><span class="p">.</span><span class="n">granulator</span><span class="p">({</span><span class="kt">int</span><span class="w"> </span><span class="n">poolSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">44100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">maxGrains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="p">})</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspObject</span><span class="p">.</span><span class="n">granulator</span><span class="p">({</span><span class="kt">int</span><span class="w"> </span><span class="n">poolSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">48000</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">maxGrains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Granular synthesis — pool of recent input, spawn short grains.</p>
 <p>[poolSize] is the size of the circular input buffer in samples
-(default ~5s at 44.1kHz). [maxGrains] is the maximum number of
-grains alive simultaneously.</p>
+(default 5 s at 48 kHz, the libYSE 3 default session rate; size it
+from <cite>System.sessionSampleRate</cite> when the session runs at another
+rate). [maxGrains] is the maximum number of grains alive
+simultaneously.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspObject</span><span class="p">.</span><span class="n">patcherInsert</span><span class="p">(</span><span class="n">Patcher</span><span class="w"> </span><span class="n">patcher</span><span class="p">)</span>
 </pre></div>
 </div>

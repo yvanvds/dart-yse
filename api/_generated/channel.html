@@ -280,15 +280,18 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
 
+<li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
 
-
-
-
-
-
-
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
 
 
 
@@ -617,7 +620,37 @@ runs out of voices.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">name</span>
 </pre></div>
 </div>
-<p>Channel name (the value passed to [Channel.create]).</p>
+<p>The channel’s <em>log</em> name: the value passed to [Channel.create] (or
+[Channel.createWithSends] / [Channel.createReturn]), or the engine’s
+own name for a pre-built singleton. It labels the channel in engine log
+output and is fixed for the channel’s lifetime.</p>
+<p>This is <strong>not</strong> the bus address — see [busName]. The engine keeps the
+two independent on purpose: creating a channel named <cite>“drums”</cite> does not
+put it on the bus, and naming it <cite>drums</cite> on the bus does not change this
+value.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">busName</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">busName</span><span class="p">(</span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The name this channel answers to on the global bus, or <cite>null</cite> when it is
+anonymous (the default).</p>
+<p>Once named <cite>foo</cite>, the engine subscribes the channel to
+<cite>channel.foo.volume</cite> (a <cite>BusFloat</cite>, or a <cite>BusInt</cite>), so a <cite>Bus.publish</cite>
+(or a script’s <cite>yse.send</cite>, or a patcher <cite>.s</cite>) sets its [volume] with no
+host round-trip. The value applies when the engine drains its bus queue
+— on the control thread, so it is visible after the publish (or the next
+<cite>System.update()</cite> for a publish from another thread).</p>
+<p>Independent of [name], the log name given at create: setting one never
+touches the other.</p>
+<p>Setting <cite>null</cite> or <cite>‘’</cite> clears the name and its subscription; renaming
+re-subscribes. Names are unique per channel — a duplicate is rejected
+and logged by the engine, with no error here (this getter still reports
+the requested name). Only effective while the engine is between init and
+close; <cite>System.close()</cite> forgets every channel bus name. There is no
+native getter: this returns the last value set through the wrapper API
+for this native channel.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">numOutputs</span>
 </pre></div>
 </div>

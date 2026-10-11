@@ -280,15 +280,18 @@
 
 <li class="toctree-l2"><a class="reference internal" href="log.html">Log</a></li>
 
+<li class="toctree-l2"><a class="reference internal" href="bus.html">Bus</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="live_coding.html">LiveCoding</a></li>
 
-
-
-
-
-
-
 <li class="toctree-l2"><a class="reference internal" href="enums.html">Enums</a></li>
+
 
 
 
@@ -503,7 +506,10 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Sound</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Sound</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#occlusion">Occlusion</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Sound</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
@@ -528,6 +534,25 @@
 via <code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromFile()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromBuffer()</span></code>, or
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromPatcher()</span></code>.</p>
 <p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::sound">api/sounds.html</a>.</p>
+<section id="occlusion">
+<h2>Occlusion<a class="headerlink" href="#occlusion" title="Link to this heading">#</a></h2>
+<p>A sound with <code class="xref py py-attr docutils literal notranslate"><span class="pre">Sound.occlusion</span></code> enabled is ducked by geometry
+between it and the listener. The application supplies the amount through
+one process-wide callback, <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.occlusion</span></code>, which receives the
+sound and listener positions (already scaled by the distance factor) and
+returns 0 (clear line of sight) to 1 (fully blocked):</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">System</span><span class="p">.</span><span class="n">instance</span><span class="p">.</span><span class="n">occlusion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="n">lis</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">world</span><span class="p">.</span><span class="n">raycast</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="n">lis</span><span class="p">);</span>
+<span class="n">sound</span><span class="p">.</span><span class="n">occlusion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The engine calls it once per occlusion-enabled sound during every
+<code class="docutils literal notranslate"><span class="pre">System.update()</span></code>, synchronously on the calling isolate and never on the
+audio thread, so the callback may query a physics engine or allocate. Keep
+<code class="docutils literal notranslate"><span class="pre">update()</span></code> on the isolate that installed it. Set <code class="docutils literal notranslate"><span class="pre">null</span></code> to remove it;
+sounds then keep the last value they received. <code class="docutils literal notranslate"><span class="pre">System.close()</span></code> removes it
+as well. An exception thrown by the callback counts as 0 for that update and
+is reported to the zone the callback was installed in.</p>
+</section>
 </section>
 <section id="id1">
 <h1>Sound<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
@@ -674,8 +699,11 @@ Negative plays backwards (not supported for streaming sounds).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">occlusion</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Whether occlusion is active for this sound. Requires a
-callback installed via the engine’s occlusion hook.</p>
+<p>Whether occlusion is active for this sound.</p>
+<p>An occlusion-enabled sound is ducked by the value the
+[System.occlusion] callback returns for it on every
+[System.update] (<cite>gain *= 1 - occlusion</cite>). With no callback installed
+the sound keeps the last value it received (0 initially).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">time</span>
 </pre></div>
 </div>
@@ -694,6 +722,30 @@ callback installed via the engine’s occlusion hook.</p>
 <p>Pass <cite>null</cite> to clear. The engine holds a borrowed reference to [dsp]
 for as long as the sound is live; [dsp] must outlive this sound and
 the engine’s slow-pool delete tick that follows its destruction.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">busName</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">busName</span><span class="p">(</span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The name this sound answers to on the global bus, or <cite>null</cite> when it is
+anonymous (the default).</p>
+<p>Once named <cite>foo</cite>, the engine subscribes the sound to:</p>
+<ul class="simple">
+<li><p><cite>sound.foo.volume</cite> — a <cite>BusFloat</cite> (or <cite>BusInt</cite>), as [volume];</p></li>
+<li><p><cite>sound.foo.speed</cite> — a <cite>BusFloat</cite> (or <cite>BusInt</cite>), as [speed];</p></li>
+<li><p><cite>sound.foo.position</cite> — a <cite>BusList</cite> of three floats <cite>[x, y, z]</cite>, as
+[position].</p></li>
+</ul>
+<p>so a <cite>Bus.publish</cite> (or a script’s <cite>yse.send</cite>, or a patcher <cite>.s</cite>) drives
+it with no host round-trip. Values that arrive before the sound’s load
+has succeeded are dropped.</p>
+<p>Setting <cite>null</cite> or <cite>‘’</cite> clears the name and its subscriptions; renaming
+re-subscribes. Names are unique per sound — a duplicate is rejected and
+logged by the engine, with no error here (this getter still reports the
+requested name). Only effective while the engine is between init and
+close. There is no native getter: this returns the last value set
+through this wrapper, matching <cite>Synth.busName</cite>.</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
@@ -784,7 +836,10 @@ the engine’s slow-pool delete tick that follows its destruction.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Sound</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Sound</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#occlusion">Occlusion</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Sound</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>

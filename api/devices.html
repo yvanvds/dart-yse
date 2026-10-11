@@ -280,15 +280,18 @@
 
 <li class="toctree-l2"><a class="reference internal" href="log.html">Log</a></li>
 
+<li class="toctree-l2"><a class="reference internal" href="bus.html">Bus</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="live_coding.html">LiveCoding</a></li>
 
-
-
-
-
-
-
 <li class="toctree-l2"><a class="reference internal" href="enums.html">Enums</a></li>
+
 
 
 
@@ -545,6 +548,9 @@ plus the owned <code class="xref py py-class docutils literal notranslate"><span
 by [System.devices]. Inspect [name], [hostName], the channel-name
 lists, supported sample rates, and buffer sizes; then build a
 [DeviceSetup] from one and pass it to [System.openDevice].</p>
+<p>The getters are bound-checked by the engine: the indexed lists stop at
+the counts the device reports, and the scalar getters always return a
+defined value (0 for an unreported size or latency, -1 for [id]).</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Device</span><span class="p">.</span><span class="n">borrowed</span><span class="p">(</span><span class="n">Pointer</span><span class="o">&lt;</span><span class="n">YseDevice</span><span class="o">&gt;</span><span class="w"> </span><span class="n">handle</span><span class="p">)</span>
@@ -585,7 +591,12 @@ lists, supported sample rates, and buffer sizes; then build a
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">defaultBufferSize</span>
 </pre></div>
 </div>
-<p>Default buffer size for this device.</p>
+<p>Default buffer size for this device, in frames.</p>
+<p>0 means “the host does not advertise one”, not “zero frames”; passed
+on to [DeviceSetup.bufferSize] it asks the backend to choose. The
+PortAudio enumerator (desktop) reports 0 for every device, so read the
+negotiated size back from [System.activeBufferSize] once the device is
+open.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">outputLatency</span>
 </pre></div>
 </div>
@@ -599,6 +610,8 @@ lists, supported sample rates, and buffer sizes; then build a
 </div>
 <p>Host-assigned device ID, or <cite>-1</cite> when this descriptor refers to no
 device.</p>
+<p>Every device in [System.devices] carries a real, non-negative index.
+[System.openDevice] refuses a setup whose output device reads -1.</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
@@ -614,8 +627,9 @@ device.</p>
 </div>
 <p>Configuration passed to [System.openDevice].</p>
 <p>Build one by selecting an output [Device], optionally an input [Device],
-and (also optionally) explicit sample-rate / buffer-size overrides. The
-engine falls back to the device’s defaults for fields you don’t set.</p>
+and (also optionally) a buffer size. The engine falls back to the
+device’s defaults for fields you don’t set. A setup with no output
+device is refused by [System.openDevice].</p>
 <section id="id1">
 <h2>Constructors<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DeviceSetup</span><span class="p">()</span>
@@ -642,11 +656,24 @@ engine falls back to the device’s defaults for fields you don’t set.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">sampleRate</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Override the device’s default sample rate.</p>
+<p>Sample rate in Hz to open the device at; 0 (the default) means no
+request.</p>
+<p>This does <strong>not</strong> change a running session’s rate. The session rate is
+fixed from [System.init] / [System.initOffline] until [System.close]:
+when this value differs from [System.sessionSampleRate],
+[System.openDevice] logs a warning and opens the stream at the session
+rate anyway (and throws if the device refuses that rate). To run at a
+given rate, set [System.requestedSampleRate] before init instead.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">bufferSize</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Override the device’s default buffer size.</p>
+<p>Device buffer size in frames per callback. 0 lets the backend choose.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">outputChannels</span>
+</pre></div>
+</div>
+<p>Output channel count of the device selected with [output] — the count
+[System.openDevice] opens the stream with. 0 before an output device
+is set.</p>
 </section>
 <section id="id3">
 <h2>Methods<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>

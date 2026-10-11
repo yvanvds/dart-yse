@@ -23,6 +23,28 @@ Between init and close the engine is alive and accepting commands.
 same isolate that called ``init()``. The audio callback runs on a
 private thread the wrapper never exposes.
 
+**Rendering.** The engine renders audio in fixed blocks of
+:py:attr:`System.blockSize` frames (128), whatever the device's
+callback size; :py:meth:`System.renderOffline` takes a count of these
+blocks. Each block runs through a task-graph scheduler: the audio
+thread renders, and worker threads pick up independent parts of the mix
+(channels, sounds) in parallel. :py:attr:`System.renderThreads` sets how
+many workers there are — ``-1`` (default) for auto (physical cores
+minus one, at most 8), ``0`` to render on the audio thread alone (the
+right choice on Android and other constrained hardware), or an exact
+count. Set it before ``init()``; during a device session a new value
+waits for the next init, and it survives ``close()``. The worker count
+never changes how the mix is summed, so the output is bit-identical at
+any setting. :py:attr:`System.activeRenderThreads` reports the workers
+running now.
+
+**Randomness.** The engine's random generator (behind ``.random``,
+granulator jitter and the LFO random shapes) starts from a fixed seed,
+so a patch renders the same output every run. Call
+:py:meth:`System.randomSeed` for a different repeatable stream or
+:py:meth:`System.randomize` to seed from the clock, before building the
+patch or sounds.
+
 Listener
 --------
 
@@ -52,9 +74,10 @@ Channel
 
 :class:`Channel` is a node in a mixing tree. Every sound is attached
 to a channel; channels can themselves be attached to a parent channel,
-forming a tree rooted at :py:attr:`Channel.master`. Child channels
-dispatch their DSP work to a thread pool — spreading sounds across
-channels lets the engine parallelise mixing across CPU cores.
+forming a tree rooted at :py:attr:`Channel.master`. The render
+scheduler (see `System`_) can mix independent channels on different
+worker threads, so spreading sounds across channels lets the engine
+parallelise mixing across CPU cores.
 
 A small set of pre-built channels (:py:attr:`Channel.master`,
 :py:attr:`Channel.music`, :py:attr:`Channel.ambient`,

@@ -5,7 +5,8 @@ BusList
 
    class BusList extends BusValue
 
-A list of 32-bit floats (`YSE_BUS_LIST`).
+A list of 32-bit floats (`YSE_BUS_LIST`) — e.g. the
+`[channel, note, velocity]` payload of `synth.<name>.note`.
 
 Constructors
 ------------
@@ -23,7 +24,7 @@ Properties
 
    final List<double> values
 
-The published floats, copied out of engine-owned memory. May be empty.
+The float payload. May be empty.
 
 .. code-block:: dart
 

@@ -280,15 +280,18 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
 
+<li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
 
-
-
-
-
-
-
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
 
 
 
@@ -662,8 +665,11 @@ Negative plays backwards (not supported for streaming sounds).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">occlusion</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Whether occlusion is active for this sound. Requires a
-callback installed via the engine’s occlusion hook.</p>
+<p>Whether occlusion is active for this sound.</p>
+<p>An occlusion-enabled sound is ducked by the value the
+[System.occlusion] callback returns for it on every
+[System.update] (<cite>gain *= 1 - occlusion</cite>). With no callback installed
+the sound keeps the last value it received (0 initially).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">time</span>
 </pre></div>
 </div>
@@ -682,6 +688,30 @@ callback installed via the engine’s occlusion hook.</p>
 <p>Pass <cite>null</cite> to clear. The engine holds a borrowed reference to [dsp]
 for as long as the sound is live; [dsp] must outlive this sound and
 the engine’s slow-pool delete tick that follows its destruction.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">busName</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">busName</span><span class="p">(</span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The name this sound answers to on the global bus, or <cite>null</cite> when it is
+anonymous (the default).</p>
+<p>Once named <cite>foo</cite>, the engine subscribes the sound to:</p>
+<ul class="simple">
+<li><p><cite>sound.foo.volume</cite> — a <cite>BusFloat</cite> (or <cite>BusInt</cite>), as [volume];</p></li>
+<li><p><cite>sound.foo.speed</cite> — a <cite>BusFloat</cite> (or <cite>BusInt</cite>), as [speed];</p></li>
+<li><p><cite>sound.foo.position</cite> — a <cite>BusList</cite> of three floats <cite>[x, y, z]</cite>, as
+[position].</p></li>
+</ul>
+<p>so a <cite>Bus.publish</cite> (or a script’s <cite>yse.send</cite>, or a patcher <cite>.s</cite>) drives
+it with no host round-trip. Values that arrive before the sound’s load
+has succeeded are dropped.</p>
+<p>Setting <cite>null</cite> or <cite>‘’</cite> clears the name and its subscriptions; renaming
+re-subscribes. Names are unique per sound — a duplicate is rejected and
+logged by the engine, with no error here (this getter still reports the
+requested name). Only effective while the engine is between init and
+close. There is no native getter: this returns the last value set
+through this wrapper, matching <cite>Synth.busName</cite>.</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>

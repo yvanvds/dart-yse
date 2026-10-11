@@ -137,7 +137,44 @@ Whether this channel has a live implementation.
 
    String get name
 
-Channel name (the value passed to [Channel.create]).
+The channel's *log* name: the value passed to [Channel.create] (or
+[Channel.createWithSends] / [Channel.createReturn]), or the engine's
+own name for a pre-built singleton. It labels the channel in engine log
+output and is fixed for the channel's lifetime.
+
+This is **not** the bus address — see [busName]. The engine keeps the
+two independent on purpose: creating a channel named `"drums"` does not
+put it on the bus, and naming it `drums` on the bus does not change this
+value.
+
+.. code-block:: dart
+
+   String? get busName
+
+.. code-block:: dart
+
+   set busName(String? name)
+
+The name this channel answers to on the global bus, or `null` when it is
+anonymous (the default).
+
+Once named `foo`, the engine subscribes the channel to
+`channel.foo.volume` (a `BusFloat`, or a `BusInt`), so a `Bus.publish`
+(or a script's `yse.send`, or a patcher `.s`) sets its [volume] with no
+host round-trip. The value applies when the engine drains its bus queue
+— on the control thread, so it is visible after the publish (or the next
+`System.update()` for a publish from another thread).
+
+Independent of [name], the log name given at create: setting one never
+touches the other.
+
+Setting `null` or `''` clears the name and its subscription; renaming
+re-subscribes. Names are unique per channel — a duplicate is rejected
+and logged by the engine, with no error here (this getter still reports
+the requested name). Only effective while the engine is between init and
+close; `System.close()` forgets every channel bus name. There is no
+native getter: this returns the last value set through the wrapper API
+for this native channel.
 
 .. code-block:: dart
 

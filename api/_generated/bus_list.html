@@ -280,15 +280,18 @@
 
 <li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
 
+<li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
 
-
-
-
-
-
-
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
 
 
 
@@ -522,7 +525,8 @@
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">BusList</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BusValue</span>
 </pre></div>
 </div>
-<p>A list of 32-bit floats (<cite>YSE_BUS_LIST</cite>).</p>
+<p>A list of 32-bit floats (<cite>YSE_BUS_LIST</cite>) — e.g. the
+<cite>[channel, note, velocity]</cite> payload of <cite>synth.&lt;name&gt;.note</cite>.</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">BusList</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">values</span><span class="p">)</span>
@@ -535,7 +539,7 @@
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">values</span>
 </pre></div>
 </div>
-<p>The published floats, copied out of engine-owned memory. May be empty.</p>
+<p>The float payload. May be empty.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hashCode</span>
 </pre></div>
 </div>

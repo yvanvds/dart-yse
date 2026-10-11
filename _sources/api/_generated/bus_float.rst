@@ -23,7 +23,8 @@ Properties
 
    final double value
 
-The published float, widened to a Dart [double].
+The float payload, widened to a Dart [double] (narrowed to 32 bits on
+publish).
 
 .. code-block:: dart
 

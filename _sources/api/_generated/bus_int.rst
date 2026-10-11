@@ -23,7 +23,7 @@ Properties
 
    final int value
 
-The published integer.
+The integer payload. Published values must fit a signed 32-bit int.
 
 .. code-block:: dart
 

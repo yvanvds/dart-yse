@@ -614,7 +614,9 @@ dart<span class="w"> </span>run<span class="w"> </span>example/hello_sound.dart
 <p>The submodule is pinned to the libYSE release this package binds
 (<strong>v3.1.0</strong> for <code class="docutils literal notranslate"><span class="pre">package:yse</span></code> 0.2.0); <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.version</span></code> reports
 the library you actually loaded. The bindings follow that pin, so build
-the submodule as checked out rather than another engine version.</p>
+the submodule as checked out rather than another engine version. In a
+clone made without <code class="docutils literal notranslate"><span class="pre">--recurse-submodules</span></code>, run
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">update</span> <span class="pre">--init</span></code> first.</p>
 <p>Two upstream CMake options change what the wrapper can do:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">-DYSE_ENABLE_PYTHON=ON</span></code> (default <code class="docutils literal notranslate"><span class="pre">OFF</span></code>, desktop only) embeds the

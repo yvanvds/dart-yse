@@ -71,7 +71,9 @@ Engine version and build options
 The submodule is pinned to the libYSE release this package binds
 (**v3.1.0** for ``package:yse`` 0.2.0); :py:attr:`System.version` reports
 the library you actually loaded. The bindings follow that pin, so build
-the submodule as checked out rather than another engine version.
+the submodule as checked out rather than another engine version. In a
+clone made without ``--recurse-submodules``, run
+``git submodule update --init`` first.
 
 Two upstream CMake options change what the wrapper can do:
 

@@ -53,7 +53,15 @@ jobs:
       # `dart test` exits 65 when test/ is missing, so guard the call.
       # The step stays wired so it starts running the suite the day it
       # lands without needing a workflow edit.
+      #
+      # YSE_DLL_PATH keeps the suite on the engine built from the submodule
+      # above. Without it the loader would prefer the prebuilt release the
+      # native-assets build hook bundles (#95); the suite still covers that
+      # path in test/library_load_test.dart, and the consumer smoke below
+      # runs it end to end.
       - name: dart test
+        env:
+          YSE_DLL_PATH: ${{ github.workspace }}/third_party/yse-soundengine/build/bin
         run: |
           if [ -d test ]; then
             dart test
@@ -74,3 +82,28 @@ jobs:
         env:
           YSE_DLL_PATH: ${{ github.workspace }}/third_party/yse-soundengine/build/bin
         run: dart run tool/linux_smoke.dart
+
+      # The package as a user gets it (#95): a fresh project outside the
+      # checkout with a path dependency on it and no YSE_DLL_PATH, so libyse
+      # comes from the build hook (the pinned release, sha256-checked). The
+      # runtime libraries it links (libportaudio2, libsndfile1, librtmidi6)
+      # are already installed by the -dev packages above.
+      - name: Consumer smoke (engine from the build hook)
+        run: |
+          expected=$(sed -n "s/^const engineTag = 'v\(.*\)';$/\1/p" lib/src/engine_release.dart)
+          consumer="$RUNNER_TEMP/consumer"
+          mkdir -p "$consumer/bin"
+          cd "$consumer"
+          printf 'name: consumer\npublish_to: none\nenvironment:\n  sdk: ^3.10.0\n' > pubspec.yaml
+          cat > bin/main.dart <<'EOF'
+          import 'package:yse/yse.dart';
+
+          void main() {
+            System.instance.initOffline();
+            print('libYSE ${System.version}');
+            System.instance.close();
+          }
+          EOF
+          dart pub add "yse:{path: $GITHUB_WORKSPACE}"
+          dart run bin/main.dart | tee out.txt
+          grep -qx "libYSE $expected" out.txt

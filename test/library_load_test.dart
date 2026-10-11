@@ -1,18 +1,22 @@
-// Loader smoke tests (#92): YSE_DLL_PATH as a user sets it, in a fresh
-// process per case (the loaded library is a process-wide singleton, and the
-// environment can't change inside the test process).
+// Loader smoke tests (#92, #95): YSE_DLL_PATH as a user sets it, and the engine
+// the native-assets build hook bundles when it is unset, in a fresh process per
+// case (the loaded library is a process-wide singleton, and the environment
+// can't change inside the test process).
 //
-// Needs an engine: YSE_DLL_PATH must point at one (e.g. the path
-// `dart run tool/fetch_engine.dart` prints), inside this checkout so that a
-// relative form of it exists.
+// The bundled-engine case needs the hook's download (cached under .dart_tool/
+// after the first run). The YSE_DLL_PATH cases need YSE_DLL_PATH to point at
+// an engine (e.g. the path `dart run tool/fetch_engine.dart` prints), inside
+// this checkout so that a relative form of it exists.
 @TestOn('windows || linux')
 library;
 
 import 'dart:io';
 
 import 'package:test/test.dart';
+import 'package:yse/src/engine_release.dart' show engineTag;
 
 import '../tool/engine_pin.dart';
+import 'support/dart_script.dart';
 
 const _probe = 'test/support/relative_load_probe.dart';
 
@@ -20,12 +24,11 @@ String get _libName => Platform.isWindows ? 'libyse.dll' : 'libyse.so';
 
 /// Runs the probe with [dllPath] as YSE_DLL_PATH from the repo root. A
 /// non-null [path] replaces PATH.
-Future<ProcessResult> _runProbe(String dllPath, {String? path}) => Process.run(
-  Platform.resolvedExecutable,
-  ['run', _probe],
-  workingDirectory: Directory.current.path,
-  environment: {'YSE_DLL_PATH': dllPath, 'PATH': ?path},
-);
+Future<ProcessResult> _runProbe(String dllPath, {String? path}) =>
+    runDartScript(
+      _probe,
+      environment: {'YSE_DLL_PATH': dllPath, 'PATH': ?path},
+    );
 
 /// [path] relative to the current directory, or null when it is not below it.
 String? _relativeToCwd(String path) {
@@ -101,6 +104,65 @@ void main() {
         : (relDir == null
               ? 'YSE_DLL_PATH ($absDir) is not inside the working directory'
               : false),
+  );
+
+  test(
+    'without YSE_DLL_PATH the engine the build hook bundles is loaded',
+    () async {
+      // An empty YSE_DLL_PATH counts as unset. On Windows the PATH is cut
+      // down to the system directories and the Dart SDK, so the runtime DLLs
+      // can only come from the bundle, not from a toolchain such as MSYS2.
+      // The probe resolves the asset the hook bundled for this `dart test`
+      // run, wherever the SDK put it (see support/dart_script.dart).
+      final sysRoot = Platform.environment['SystemRoot'] ?? r'C:\Windows';
+      final result = await _runProbe(
+        '',
+        path: Platform.isWindows
+            ? [
+                '$sysRoot\\System32',
+                sysRoot,
+                File(Platform.resolvedExecutable).parent.path,
+              ].join(';')
+            : null,
+      );
+      expect(
+        result.exitCode,
+        0,
+        reason: 'stdout:\n${result.stdout}\nstderr:\n${result.stderr}',
+      );
+      final out = (result.stdout as String).split(RegExp(r'\r?\n'));
+      String field(String key) => out
+          .firstWhere((l) => l.startsWith('$key='))
+          .substring(key.length + 1);
+      expect(field('bundled'), 'true');
+      expect(versionMatchesTag(field('version'), engineTag), isTrue);
+      final dir = field('dir');
+      expect(Directory(dir).isAbsolute, isTrue, reason: dir);
+      expect(
+        File('$dir${Platform.pathSeparator}$_libName').existsSync(),
+        isTrue,
+      );
+
+      // The unreleased-engine check (#89) is silent for the bundled release.
+      String? tag;
+      try {
+        tag = await readPinnedTag(Directory.current.path);
+      } on PinError {
+        tag = null;
+      }
+      expect(
+        unpinnedEngineNotice(
+          version: field('version'),
+          libDir: dir,
+          root: Directory.current.path,
+          tag: tag,
+          bundledTag: engineTag,
+          caseSensitive: !Platform.isWindows,
+        ),
+        isNull,
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 5)),
   );
 
   test('a missing relative YSE_DLL_PATH names the resolved path', () async {

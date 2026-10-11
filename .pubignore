@@ -1,8 +1,8 @@
 # The yse-soundengine submodule contains the C++ source tree (~9 MB)
-# and is only consumed at build time. v0.x consumers point YSE_DLL_PATH
-# at a locally-built libyse.dll per the README; the native-assets build
-# hook (which will publish-time pull pre-built DLLs) lands in a later
-# release.
+# and is only consumed by dart-yse's own tooling (ffigen headers, drift
+# tests). Package users get the prebuilt engine from the native-assets
+# build hook (hook/build.dart), which downloads the release pinned in
+# lib/src/engine_release.dart.
 third_party/
 
 # Local Claude IDE config — never publish.

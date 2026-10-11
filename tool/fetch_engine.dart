@@ -40,63 +40,14 @@ import 'dart:ffi' show Abi;
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:yse/src/engine_release.dart';
 
 import 'engine_pin.dart';
 
-/// GitHub `owner/repo` the engine releases are published under.
-const engineRepo = 'yvanvds/yse-soundengine';
-
-/// Platforms the engine publishes release binaries for.
-enum ReleasePlatform {
-  /// Windows x86_64 — `libyse-<tag>-windows-x64.zip`, libraries in `bin/`.
-  windowsX64('windows-x64', 'zip', 'bin', ['libyse.dll']),
-
-  /// Linux x86_64 — `libyse-<tag>-linux-x64.tar.gz`, library in `lib/`.
-  linuxX64('linux-x64', 'tar.gz', 'lib', ['libyse.so']),
-
-  /// Android — `libyse-<tag>-android.tar.gz`, one `lib/<abi>/libyse.so` per
-  /// ABI the yse_flutter_libs plugin packages (#91).
-  android('android', 'tar.gz', 'lib', [
-    'arm64-v8a/libyse.so',
-    'x86_64/libyse.so',
-  ]);
-
-  const ReleasePlatform(
-    this.slug,
-    this.extension,
-    this.libSubdir,
-    this.libFiles,
-  );
-
-  /// Platform part of the asset name (`windows-x64`); also the value of
-  /// `--platform`.
-  final String slug;
-
-  /// Archive extension of the asset (`zip`, `tar.gz`).
-  final String extension;
-
-  /// Directory inside the archive's top folder holding the engine library.
-  final String libSubdir;
-
-  /// The engine libraries, relative to [libSubdir] with `/` separators.
-  final List<String> libFiles;
-
-  /// The desktop platform for a Dart [Abi], or null when no release asset
-  /// exists for it.
-  static ReleasePlatform? fromAbi(Abi abi) => switch (abi) {
-    Abi.windowsX64 => windowsX64,
-    Abi.linuxX64 => linuxX64,
-    _ => null,
-  };
-
-  /// The platform whose [slug] is [name], or null.
-  static ReleasePlatform? fromSlug(String name) {
-    for (final p in values) {
-      if (p.slug == name) return p;
-    }
-    return null;
-  }
-}
+// The release platforms and asset naming are shared with the package's
+// native-assets build hook (#95).
+export 'package:yse/src/engine_release.dart'
+    show ReleasePlatform, archiveTopDir, assetName, assetUrl, engineRepo;
 
 /// Parsed command line of the tool.
 class FetchOptions {
@@ -144,20 +95,6 @@ FetchOptions parseArgs(List<String> args) {
   }
   return FetchOptions(force: force, platform: platform);
 }
-
-/// Name of the top folder inside the archive, e.g. `libyse-v3.1.0-windows-x64`.
-String archiveTopDir(String tag, ReleasePlatform platform) =>
-    'libyse-$tag-${platform.slug}';
-
-/// File name of the release asset, e.g. `libyse-v3.1.0-windows-x64.zip`.
-String assetName(String tag, ReleasePlatform platform) =>
-    '${archiveTopDir(tag, platform)}.${platform.extension}';
-
-/// Public download URL of the release asset (no `gh` or token needed).
-Uri assetUrl(String tag, ReleasePlatform platform) => Uri.https(
-  'github.com',
-  '/$engineRepo/releases/download/$tag/${assetName(tag, platform)}',
-);
 
 /// GitHub API URL describing the release, including each asset's digest.
 Uri releaseApiUrl(String tag) =>

@@ -13,6 +13,7 @@ import 'dart:io';
 import 'package:test/test.dart';
 
 import '../tool/port_patcher_notes.dart';
+import 'support/dart_script.dart';
 
 const _upstreamSource = 'third_party/yse-soundengine/documentation/source';
 
@@ -186,11 +187,10 @@ void main() {
     test(
       'the committed notes match a fresh port',
       () async {
-        final r = await Process.run(Platform.resolvedExecutable, [
-          'run',
+        final r = await runDartScript(
           'tool/port_patcher_notes.dart',
-          '--check',
-        ]);
+          args: ['--check'],
+        );
         expect(r.exitCode, 0, reason: '${r.stdout}\n${r.stderr}');
       },
       skip: skip,

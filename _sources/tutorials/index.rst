@@ -88,7 +88,8 @@ the dart-yse repository root:
    dart run example/demo13_patcher.dart
    # ...
 
-The Windows-on-MSYS2 build leaves ``libyse.dll`` and its dependencies
-in ``third_party/yse-soundengine/build/bin/``; the wrapper finds them
-automatically when run from the repository root. From elsewhere set
-``YSE_DLL_PATH`` to that directory before running.
+Set ``YSE_DLL_PATH`` to the directory holding ``libyse`` first. With the
+prebuilt engine that is the path ``dart run tool/fetch_engine.dart``
+prints (see :doc:`/intro/install`). An engine built from source lands in
+``third_party/yse-soundengine/build/bin/``, which the wrapper also finds
+without the variable when run from the repository root.

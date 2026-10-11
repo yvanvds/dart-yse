@@ -1,20 +1,61 @@
 Install
 =======
 
-``dart-yse`` is a pure Dart FFI package that depends on a locally-built
-``libyse`` shared library. Until the Dart native-assets build hook
-lands you build the native side yourself; the package looks up
-``libyse`` at runtime via ``YSE_DLL_PATH`` or by walking the source
-tree.
+``dart-yse`` is a pure Dart FFI package that loads the ``libyse`` shared
+library at runtime, from the directory in ``YSE_DLL_PATH`` or, failing
+that, from ``third_party/yse-soundengine/build/bin/`` in the source tree.
+Until the Dart native-assets build hook lands you provide that library
+yourself. The easiest way is the engine's prebuilt release.
 
-Requirements:
+Prebuilt engine (Windows x64, Linux x64)
+----------------------------------------
+
+``tool/fetch_engine.dart`` reads the release tag the engine submodule
+pins, downloads that release's binaries for your platform from the
+yse-soundengine GitHub releases, checks the sha256 digest GitHub reports
+for them, and unpacks them into the gitignored ``.engine/<tag>/``. It
+needs the Dart SDK, ``git`` and ``tar`` (built into Windows 10+ and
+Linux); no C++ toolchain. A tag already present is not downloaded
+again.
+
+.. code-block:: powershell
+
+   # Windows
+   git clone --recurse-submodules https://github.com/yvanvds/dart-yse
+   cd dart-yse
+   dart pub get
+   dart run tool/fetch_engine.dart
+   $env:YSE_DLL_PATH = "$PWD\.engine\v3.1.0\libyse-v3.1.0-windows-x64\bin"
+   dart run example/hello_sound.dart
+
+.. code-block:: sh
+
+   # Linux: runtime libraries only
+   sudo apt-get install -y libportaudio2 libsndfile1 librtmidi6
+
+   git clone --recurse-submodules https://github.com/yvanvds/dart-yse
+   cd dart-yse
+   dart pub get
+   dart run tool/fetch_engine.dart
+   export YSE_DLL_PATH="$PWD/.engine/v3.1.0/libyse-v3.1.0-linux-x64/lib"
+   dart run example/hello_sound.dart
+
+The tool prints the ``YSE_DLL_PATH`` for the pinned tag as its last line.
+The release binaries are built with the default options listed under
+*Engine version and build options* below (MIDI device I/O on, Python off).
+
+Building from source
+--------------------
+
+Build the engine yourself for another platform, or to change build
+options. Requirements:
 
 - Dart SDK ≥ 3.8
 - CMake ≥ 3.20 + Ninja
 - A C/C++ toolchain per platform (see below)
 
 Windows (MSYS2 Clang64)
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: powershell
 
@@ -39,7 +80,7 @@ from the repository the env var is optional):
    dart run example/hello_sound.dart
 
 Linux (Ubuntu 24.04)
---------------------
+~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: sh
 
@@ -70,10 +111,17 @@ Engine version and build options
 
 The submodule is pinned to the libYSE release this package binds
 (**v3.1.0** for ``package:yse`` 0.2.0); :py:attr:`System.version` reports
-the library you actually loaded. The bindings follow that pin, so build
-the submodule as checked out rather than another engine version. In a
+the library you actually loaded. The bindings follow that pin, so fetch
+or build the submodule's tag rather than another engine version. In a
 clone made without ``--recurse-submodules``, run
 ``git submodule update --init`` first.
+
+To try an engine change that has no release yet, point ``YSE_DLL_PATH``
+at a build of your own yse-soundengine clone (not the submodule, which
+stays on its tag). This is an opt-in mode for wrapper development: the
+test suite then prints an ``UNRELEASED ENGINE`` banner in every engine
+suite, and the bindings committed to the repository still come from the
+pinned tag. See *Unreleased engine (opt-in)* in the project README.
 
 Two upstream CMake options change what the wrapper can do:
 
@@ -91,8 +139,7 @@ Android (via yse_flutter_libs)
 ------------------------------
 
 Android consumers add a second package — the sibling Flutter plugin
-``yse_flutter_libs`` — which cross-compiles ``libyse.so`` with the NDK
-and bundles it into the APK / AAB:
+``yse_flutter_libs`` — which bundles ``libyse.so`` into the APK / AAB:
 
 .. code-block:: yaml
 
@@ -100,9 +147,17 @@ and bundles it into the APK / AAB:
      yse: ^0.2.0
      yse_flutter_libs: ^0.2.0
 
-Requirements: Flutter ≥ 3.22, Android NDK 27.0.12077973 (must match
-the engine's CMake config), AGP ≥ 8.5, ``minSdk`` 26 (so Oboe can
-negotiate AAudio). Default ABIs are ``arm64-v8a`` and ``x86_64``.
+The plugin packages the engine's prebuilt Android release
+(``libyse-<tag>-android.tar.gz``). Gradle downloads it on the first
+build, checks its sha256 and caches it under the Gradle user home, so no
+NDK build of the engine is needed. For offline builds, set the Gradle
+property ``yse.engineDir`` to an unpacked copy of the asset. Compiling
+the engine with the NDK instead is opt-in (``yse.buildFromSource=true``,
+NDK 27.0.12077973); the plugin's README describes both.
+
+Requirements: Flutter ≥ 3.22, AGP ≥ 8.5, ``minSdk`` 26 (so Oboe can
+negotiate AAudio). The ABIs are ``arm64-v8a`` and ``x86_64``, the ones
+the engine's Android release ships.
 
 See the project README for the end-to-end Flutter sample under
 ``example/android_sample/``.

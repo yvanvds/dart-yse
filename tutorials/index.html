@@ -633,10 +633,11 @@ dart<span class="w"> </span>run<span class="w"> </span>example/demo13_patcher.da
 <span class="c1"># ...</span>
 </pre></div>
 </div>
-<p>The Windows-on-MSYS2 build leaves <code class="docutils literal notranslate"><span class="pre">libyse.dll</span></code> and its dependencies
-in <code class="docutils literal notranslate"><span class="pre">third_party/yse-soundengine/build/bin/</span></code>; the wrapper finds them
-automatically when run from the repository root. From elsewhere set
-<code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code> to that directory before running.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code> to the directory holding <code class="docutils literal notranslate"><span class="pre">libyse</span></code> first. With the
+prebuilt engine that is the path <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">run</span> <span class="pre">tool/fetch_engine.dart</span></code>
+prints (see <a class="reference internal" href="../intro/install.html"><span class="doc">Install</span></a>). An engine built from source lands in
+<code class="docutils literal notranslate"><span class="pre">third_party/yse-soundengine/build/bin/</span></code>, which the wrapper also finds
+without the variable when run from the repository root.</p>
 </section>
 </section>
 

@@ -475,6 +475,15 @@ new Dart code for every change below (#70).
   keeps the NDK source build as an opt-in for unreleased engines.
   `test/flutter_libs_engine_test.dart` fails when `engine.properties`
   drifts from the submodule pin.
+- **A relative `YSE_DLL_PATH` loads on Windows** (#92). The loader now
+  resolves `YSE_DLL_PATH` against the working directory before loading.
+  Before, a relative path failed with error 126: `SetDllDirectoryW` takes
+  the working directory out of the DLL search order, and `LoadLibrary`
+  looks a relative path up along that order, so `libyse.dll` itself was
+  not found. A failed load now throws a `YseException` that names the
+  resolved path and the likely cause (a missing dependency library).
+  `test/library_load_test.dart` loads the engine through a relative path
+  in a fresh process.
 
 ### Known upstream issues
 

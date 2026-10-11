@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>GUI controls &#8212; dart-yse 0.1</title>
+    <title>GUI controls &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="MIDI" href="midi.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -572,9 +575,11 @@
 <p>25 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/gui.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/gui.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#b" id="id1"><code class="docutils literal notranslate"><span class="pre">.b</span></code></a></p></li>
@@ -615,6 +620,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Every bang, int or float sends a bang, whatever the number.</p>
+<p>The GUI value is <code class="docutils literal notranslate"><span class="pre">on</span></code> once after a press and <code class="docutils literal notranslate"><span class="pre">off</span></code> otherwise. Reading it
+clears the press, so poll it from one place only, or presses get lost. The
+value cannot be written back, and <code class="docutils literal notranslate"><span class="pre">.preset</span></code> skips the button. For a
+momentary control whose value can be saved, use <code class="docutils literal notranslate"><span class="pre">.led</span> <span class="pre">momentary</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.textbutton</span> <span class="pre">momentary</span></code>. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/gui.html">GUI controls and presets</a>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -681,6 +692,25 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The inlet takes the knob position from 0 to 1, as <code class="docutils literal notranslate"><span class="pre">.slider</span></code> does, and the
+outlet sends that position mapped onto the range:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>out = minimum + (maximum - minimum) * position ^ exponent
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.dial 20 20000 3]   0.5  =&gt;  2517.5
+</pre></div>
+</div>
+<p>An exponent above 1 gives finer control at the bottom of the range, which
+suits a frequency or a gain; one below 1 does the opposite. The range may run
+from high to low. When <code class="docutils literal notranslate"><span class="pre">minimum</span></code> equals <code class="docutils literal notranslate"><span class="pre">maximum</span></code> the dial sends
+<code class="docutils literal notranslate"><span class="pre">minimum</span></code>, and a result that is not a finite number sends 0. With
+<code class="docutils literal notranslate"><span class="pre">intMode</span></code> set to 1 the result is rounded to the nearest whole number (a
+half rounds away from 0) and sent as an int.</p>
+<p>With the default arguments (0, 1, exponent 1, float) the dial behaves exactly
+like <code class="docutils literal notranslate"><span class="pre">.slider</span></code>.</p>
+<p>The GUI value is the position, not the mapped value, so a host that displays
+“440 Hz” needs the arguments as well. Restoring the value works as described
+under <code class="docutils literal notranslate"><span class="pre">.slider</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -786,6 +816,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The right inlet stores a number without sending it; send a bang to the left
+inlet to send it later. An int becomes a float. Restoring the value works as
+described under <code class="docutils literal notranslate"><span class="pre">.slider</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -882,6 +915,59 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A function holds up to <code class="docutils literal notranslate"><span class="pre">points</span></code> breakpoints. Each point has an x, a y and a
+curve. The points are kept sorted by x, and there is one point per x.</p>
+<ul class="simple">
+<li><p>x is never below 0: a negative x is stored as 0.</p></li>
+<li><p>y is clamped to the range set by the arguments, 0 to 1 by default.</p></li>
+<li><p>The curve is clamped to -1 to 1.</p></li>
+</ul>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a number: the x to look up. The y at that x leaves the left outlet. Below
+the first point the first y is sent, past the last point the last y. An
+empty function sends nothing.</p></li>
+<li><p>bang: send the whole function from the middle outlet (see below).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span></code>: add a point with curve 0. A point already at that x is
+replaced.</p></li>
+<li><p>three numbers per point, <code class="docutils literal notranslate"><span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span> <span class="pre">&lt;curve&gt;</span> <span class="pre">...</span></code>: replace every point.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;index&gt;</span> <span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span> <span class="pre">[&lt;curve&gt;]</span></code>: rewrite the point at that position,
+counted from 0 in x order. Without a curve it keeps its curve. The point
+moves to its new place in the order.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setcurve</span> <span class="pre">&lt;index&gt;</span> <span class="pre">&lt;curve&gt;</span></code>: change one point’s curve.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nth</span> <span class="pre">&lt;index&gt;</span></code>: send that point’s y from the left outlet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: remove every point. <code class="docutils literal notranslate"><span class="pre">clear</span> <span class="pre">&lt;index&gt;</span></code>: remove one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send every point from the right outlet as
+<code class="docutils literal notranslate"><span class="pre">&lt;index&gt;</span> <span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span> <span class="pre">&lt;curve&gt;</span></code>, in x order.</p></li>
+</ul>
+<p>Edits send nothing, so drawing into a function that feeds a <code class="docutils literal notranslate"><span class="pre">.line</span></code> does
+not restart the ramp. A list of any other length is ignored. When the
+function is full, a new point is ignored.</p>
+<p><strong>Curves</strong></p>
+<p>A segment is shaped by the curve of the point at its right end; the first
+point’s curve is not used. Between two points, at a fraction <code class="docutils literal notranslate"><span class="pre">t</span></code> of the way
+along, the y moves by <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">^</span> <span class="pre">((1</span> <span class="pre">+</span> <span class="pre">c)</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">-</span> <span class="pre">c))</span></code> of the distance. A curve of
+0 is a straight line. A positive curve leaves the first value slowly and
+moves late; a negative one moves early and arrives slowly. A curve of 1
+holds the first value until the end of the segment, and -1 jumps at once.</p>
+<p><strong>The ramp</strong></p>
+<p>A bang sends the function as <code class="docutils literal notranslate"><span class="pre">&lt;y&gt;</span> <span class="pre">&lt;time&gt;</span></code> pairs, the form <code class="docutils literal notranslate"><span class="pre">.line</span></code> and
+<code class="docutils literal notranslate"><span class="pre">.bline</span></code> read. The first time is 0, so the ramp jumps to the first y; each
+later time is the distance in x from the point before.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.function]   0 0,  100 1,  300 0.5,  bang  =&gt;  0. 0. 1. 100. 0.5 200.
+              50  =&gt;  0.5
+</pre></div>
+</div>
+<p>The ramp is made of straight segments: curves only shape the values sent for
+a looked-up x.</p>
+<p><strong>Saving</strong></p>
+<p>The points are saved with the patch and come back when it loads (see
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/gui.html#gui-saved">What is saved with the patch</a>). The GUI value has one cell per point, <code class="docutils literal notranslate"><span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span> <span class="pre">&lt;curve&gt;</span></code>;
+an empty function reports the word <code class="docutils literal notranslate"><span class="pre">clear</span></code>. Writing that value back to the
+inlet restores the points and sends nothing.</p>
+<p>A message that arrives while another thread is changing the points is
+ignored, and a GUI read at that moment comes back empty (see
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/gui.html">GUI controls and presets</a>).</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -984,6 +1070,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The right inlet stores a number without sending it; send a bang to the left
+inlet to send it later. A float is truncated toward 0, so 2.9 is stored as 2.
+Restoring the value works as described under <code class="docutils literal notranslate"><span class="pre">.slider</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1080,6 +1169,35 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>Messages</strong></p>
+<p>On the left inlet:</p>
+<ul class="simple">
+<li><p>bang: send the value without moving it.</p></li>
+<li><p>a number, or <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;n&gt;</span></code>: set the value without sending it. A float is
+truncated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inc</span></code> / <code class="docutils literal notranslate"><span class="pre">dec</span></code>: move one step up or down and send the result.</p></li>
+</ul>
+<p>The middle inlet moves several steps at once: an int <code class="docutils literal notranslate"><span class="pre">n</span></code> moves <code class="docutils literal notranslate"><span class="pre">n</span></code> steps,
+down when it is negative, and sends the result. A MIDI encoder that sends +1
+and -1 can drive it directly. 0 moves nothing and just sends the value.</p>
+<p>The right inlet sets the step size. A negative step makes <code class="docutils literal notranslate"><span class="pre">inc</span></code> go down, and
+a step of 0 never moves the value.</p>
+<p><strong>The range</strong></p>
+<p>The value always stays between <code class="docutils literal notranslate"><span class="pre">minimum</span></code> and <code class="docutils literal notranslate"><span class="pre">maximum</span></code>, given in either
+order. With <code class="docutils literal notranslate"><span class="pre">wrap</span></code> 0 it stops at the ends. With <code class="docutils literal notranslate"><span class="pre">wrap</span></code> 1 it carries round
+to the other end, and both ends are reachable, so one step past the maximum
+is the minimum:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.incdec 1 0 11 1]   at 11, inc  =&gt;  0
+</pre></div>
+</div>
+<p>Without arguments the range is the whole int range, and the value stops at
+its ends instead of overflowing.</p>
+<p>The value is kept inside the range even before anything moves it: an
+<code class="docutils literal notranslate"><span class="pre">.incdec</span> <span class="pre">1</span> <span class="pre">60</span> <span class="pre">72</span></code> starts at 60. With <code class="docutils literal notranslate"><span class="pre">wrap</span></code> on, an untouched stepper
+starts wherever 0 wraps to (65 for 60-72), so send <code class="docutils literal notranslate"><span class="pre">set</span></code> first when the
+starting point matters.</p>
+<p>The GUI value is the number. A one-number list or <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">0</span> <span class="pre">&lt;value&gt;</span></code> sets it
+without sending, so a restore is silent (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/gui.html">GUI controls and presets</a>).</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1197,6 +1315,37 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The state is the keyboard: the velocity held on each of the 128 keys, with 0
+for a key that is up.</p>
+<p><strong>Messages</strong></p>
+<p>On the left inlet:</p>
+<ul class="simple">
+<li><p>a pitch: press that key at the stored velocity.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code>: store the velocity, then play the pitch with it.
+Velocity 0 releases the key.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code>: the same, but the stored velocity stays as it
+was.</p></li>
+<li><p>128 numbers: set every key at once, and send a pair only for each key that
+changed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: release every held key, sending velocity 0 for each.</p></li>
+<li><p>bang: send the pair for every held key, from low to high.</p></li>
+</ul>
+<p>The right inlet stores the velocity for the pitches that follow. It sends
+nothing.</p>
+<p>A pitch outside 0-127 is ignored; a velocity is clamped to 0-127. A float is
+truncated, and a list of any other length is ignored.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.kslider]   60    =&gt;  100, then 60
+             60 0  =&gt;  0, then 60
+</pre></div>
+</div>
+<p>A single-key message sends even when the velocity has not changed, so playing
+the same note twice sends two note-ons.</p>
+<p><strong>Output</strong></p>
+<p>The velocity is sent before the pitch, so the pair can be wired straight into
+<code class="docutils literal notranslate"><span class="pre">.noteon</span></code>, <code class="docutils literal notranslate"><span class="pre">.makenote</span></code> or <code class="docutils literal notranslate"><span class="pre">.flush</span></code>, which take the velocity on a cold
+inlet. There is no mode that holds one note at a time.</p>
+<p>The GUI value has 128 cells, one velocity per key. Held keys are not saved
+with the patch; only the <code class="docutils literal notranslate"><span class="pre">velocity</span></code> argument is.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1299,6 +1448,8 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">.m</span></code>, the box always sends its text as a list, even when it is a
+single number or starts with a word.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1389,6 +1540,37 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><code class="docutils literal notranslate"><span class="pre">.led</span></code> and <code class="docutils literal notranslate"><span class="pre">.textbutton</span></code> are the same object under two names. A host
+draws <code class="docutils literal notranslate"><span class="pre">.led</span></code> as a lamp and <code class="docutils literal notranslate"><span class="pre">.textbutton</span></code> as a labelled button; they take
+the same arguments and messages.</p>
+<p><strong>Arguments</strong></p>
+<p>An optional <code class="docutils literal notranslate"><span class="pre">momentary</span></code> keyword, then the label. The words of the label are
+joined with single spaces, so <code class="docutils literal notranslate"><span class="pre">.textbutton</span> <span class="pre">filter</span> <span class="pre">cutoff</span></code> is one control
+called “filter cutoff”. A label cannot start with the word <code class="docutils literal notranslate"><span class="pre">momentary</span></code>. The
+label is fixed: changing the arguments replaces the object.</p>
+<p><strong>Latching and momentary</strong></p>
+<p>Without <code class="docutils literal notranslate"><span class="pre">momentary</span></code> the control latches: a number sets the state (0 off,
+anything else on) and a bang flips it.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">momentary</span></code> every number or bang is a press, whatever the number. The
+state stays 1 until the host next reads the GUI value, which clears it. Poll
+it from one place only.</p>
+<p>In both modes, a one-number list or <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">0</span> <span class="pre">&lt;value&gt;</span></code> sets the state
+outright. In momentary mode that is the only way to clear a press without
+reading it.</p>
+<p><strong>Output</strong></p>
+<p>Every message sends: the label from the right outlet first, then the state
+from the left outlet. A control without a label sends an empty list. Wire a
+bank of labelled controls into one <code class="docutils literal notranslate"><span class="pre">.route</span></code> and the label says which one
+fired:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.textbutton mute]   bang  =&gt;  right: mute,  left: 1
+</pre></div>
+</div>
+<p>A message starting with any other word changes nothing, and the state is
+still sent. There is no message to change the label, and no way to set the
+state without sending it.</p>
+<p>The GUI value is <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>. A host or <code class="docutils literal notranslate"><span class="pre">.preset</span></code> can write it back; in
+momentary mode, restoring a value taken during a press replays the press
+(see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/gui.html">GUI controls and presets</a>).</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1485,6 +1667,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The text is sent as the message it spells:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.m 440]       =&gt;  the int 440
+[.m 0.5]       =&gt;  the float 0.5
+[.m 1 2 3]     =&gt;  a list
+[.m stop]      =&gt;  the command stop, to objects that take one
+</pre></div>
+</div>
+<p>A list, or text starting with a word, that arrives on the inlet replaces the
+stored text without sending it. <code class="docutils literal notranslate"><span class="pre">.l</span></code> always sends its text as a list.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1575,6 +1766,36 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>Arguments</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">columns</span> <span class="pre">rows</span> <span class="pre">minimum</span> <span class="pre">maximum</span></code>: each axis 1-256, default 8, and a cell
+range of 0 to 1 by default. A count outside 1-256 is clamped with a warning.
+Changing the arguments replaces the object, and every cell starts at 0 again.</p>
+<p><strong>Messages</strong></p>
+<p>The inlet takes lists and bangs only:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;column&gt;</span> <span class="pre">&lt;row&gt;</span> <span class="pre">&lt;value&gt;</span></code>: set that cell.</p></li>
+<li><p>one number per cell, <code class="docutils literal notranslate"><span class="pre">columns</span> <span class="pre">*</span> <span class="pre">rows</span></code> of them: set the whole grid.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;index&gt;</span> <span class="pre">&lt;value&gt;</span></code>: set one cell by index, where the index of
+<code class="docutils literal notranslate"><span class="pre">(column,</span> <span class="pre">row)</span></code> is <code class="docutils literal notranslate"><span class="pre">column</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">+</span> <span class="pre">row</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: set every cell to 0 (or to the bound nearest 0).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getrow</span> <span class="pre">&lt;row&gt;</span></code> / <code class="docutils literal notranslate"><span class="pre">getcolumn</span> <span class="pre">&lt;column&gt;</span></code>: send that row’s or column’s
+values from the right outlet as one list.</p></li>
+<li><p>bang: send every cell.</p></li>
+</ul>
+<p>A cell outside the grid, or a list of any other length, is ignored. Values
+are clamped to the range. On a grid of exactly three cells, a three-number
+list sets the whole grid; use <code class="docutils literal notranslate"><span class="pre">set</span></code> to address one cell.</p>
+<p><strong>Output</strong></p>
+<p>Every change is sent from the left outlet as <code class="docutils literal notranslate"><span class="pre">&lt;column&gt;</span> <span class="pre">&lt;row&gt;</span> <span class="pre">&lt;value&gt;</span></code>: one
+list for a one-cell change, and one per cell, column by column, for a whole
+grid, a <code class="docutils literal notranslate"><span class="pre">clear</span></code> or a bang. That is the form the control inlets of
+<code class="docutils literal notranslate"><span class="pre">.matrix</span></code> and <code class="docutils literal notranslate"><span class="pre">.router</span></code> take, so the grid can drive either directly.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.matrixctrl 4 4]   2 1 1     =&gt;  2 1 1.
+                    set 9 1   =&gt;  2 1 1.
+</pre></div>
+</div>
+<p>The GUI value has one cell per grid cell, in index order. There is no mode
+that allows only one active cell per row or column.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1671,6 +1892,26 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a list: set the cells from its numbers, and make the bank as long as the
+list (up to 1024 cells).</p></li>
+<li><p>a number: set every cell to it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;index&gt;</span> <span class="pre">&lt;value&gt;</span></code>: set one cell.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fetch</span> <span class="pre">&lt;index&gt;</span></code>: send that cell’s value from the right outlet.</p></li>
+<li><p>bang: send the bank again.</p></li>
+</ul>
+<p>Every message sends the whole bank from the left outlet, after a <code class="docutils literal notranslate"><span class="pre">fetch</span></code>
+answer. An index outside the bank is ignored, and every value is clamped to
+the range.</p>
+<p><strong>Size</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">size</span></code> argument sets the starting number of cells, 1 to 1024. A list
+of another length changes it. Shrinking hides the cells at the end rather
+than clearing them, so lengthening the bank again brings their values back.</p>
+<p>Changing the range takes effect at once: an untouched
+<code class="docutils literal notranslate"><span class="pre">.multislider</span> <span class="pre">4</span> <span class="pre">20</span> <span class="pre">20000</span></code> reads back as four 20s. The values and the live
+size are not saved with the patch. To sum, sort or scale the bank, process
+the list it sends with <code class="docutils literal notranslate"><span class="pre">.zl</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1777,6 +2018,39 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The field holds up to 64 nodes, each a circle with an x, a y and a radius. A
+new <code class="docutils literal notranslate"><span class="pre">.nodes</span> <span class="pre">4</span></code> has four nodes at 0 0 with radius 1.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span></code>: move the cursor and send.</p></li>
+<li><p>three or more numbers, <code class="docutils literal notranslate"><span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span> <span class="pre">&lt;radius&gt;</span> <span class="pre">...</span></code>: set every node, and make
+the field as long as the number of complete triples. A partial triple at
+the end is ignored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;index&gt;</span> <span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span> <span class="pre">[&lt;radius&gt;]</span></code>: move one node; without a radius it
+keeps its radius.</p></li>
+<li><p>bang: send again.</p></li>
+</ul>
+<p>There is no int or float message: build the cursor pair with <code class="docutils literal notranslate"><span class="pre">.pack</span> <span class="pre">0.</span> <span class="pre">0.</span></code>,
+or wire in the right outlet of <code class="docutils literal notranslate"><span class="pre">.xyslider</span></code>, which sends <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">y</span></code>.</p>
+<p><strong>Output</strong></p>
+<p>The right outlet sends the distance from the cursor to each node, then the
+left outlet sends one weight per node. A node’s closeness is 1 at its centre,
+falls in a straight line to 0 at its edge, and is 0 outside it. Each weight
+is that closeness divided by the sum over all nodes:</p>
+<ul class="simple">
+<li><p>inside at least one node the weights add up to 1, so a crossfade built on
+them keeps its level as the cursor moves;</p></li>
+<li><p>outside every node all weights are 0. There is no fallback to the nearest
+node.</p></li>
+</ul>
+<p>A node with a radius of 0 or less never gets any weight, which mutes it
+without deleting it.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.nodes 2]   0 0 1  1 0 1,  then 0.5 0  =&gt;  right: 0.5 0.5,  left: 0.5 0.5
+</pre></div>
+</div>
+<p>The GUI value has one cell per node, <code class="docutils literal notranslate"><span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span> <span class="pre">&lt;radius&gt;</span></code>. Writing the whole
+value back restores the number of nodes as well. Positions are not saved with
+the patch; only the <code class="docutils literal notranslate"><span class="pre">count</span></code> argument is.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1873,6 +2147,31 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The state is a pitch and how it is spelled. MIDI pitch 61 can be written as
+C sharp or as D flat; the accidental says which, so a host knows the sign to
+draw and, from <code class="docutils literal notranslate"><span class="pre">pitch</span> <span class="pre">-</span> <span class="pre">accidental</span></code>, the line or space to draw it on.</p>
+<p><strong>Spelling</strong></p>
+<p>A white key is always natural (0). A black key is spelled with the accidental
+the last message chose, or else by the <code class="docutils literal notranslate"><span class="pre">spelling</span></code> argument: 0 or above for
+a sharp, below 0 for a flat. Only the sign of an accidental counts.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a number: a pitch, spelled the default way again.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;accidental&gt;</span></code>: a pitch with its spelling.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">0</span> <span class="pre">&lt;pitch&gt;</span></code>: move the note and keep the chosen spelling.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">1</span> <span class="pre">&lt;accidental&gt;</span></code>: re-spell the note without moving it.</p></li>
+<li><p>bang: send again.</p></li>
+</ul>
+<p>The pitch is clamped to <code class="docutils literal notranslate"><span class="pre">minimum</span></code>-<code class="docutils literal notranslate"><span class="pre">maximum</span></code> (given in either order,
+within 0-127). Every message sends the accidental from the right outlet,
+then the pitch from the left.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.nslider 0 127 -1]   61    =&gt;  -1, then 61    (D flat)
+                      61 1  =&gt;  1, then 61     (C sharp)
+</pre></div>
+</div>
+<p>A patch in a flat key sets <code class="docutils literal notranslate"><span class="pre">spelling</span></code> to -1 once, and a single note
+re-spelled as a sharp does not change it. There is no empty state and no
+chords: the staff always shows one note.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1979,6 +2278,16 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><code class="docutils literal notranslate"><span class="pre">store</span> <span class="pre">&lt;n&gt;</span></code> captures every control whose GUI value can be written back, in
+the whole patch including subpatchers, and a recall sends each one its value
+again. <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/gui.html#gui-preset">Presets</a> covers the messages, what a slot captures, and when
+a recall runs. The slots are saved with the patch, but loading does not
+recall one (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/gui.html#gui-saved">What is saved with the patch</a>).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.preset 8]   store 0  ...  0  =&gt;  every control back as it was, then 0
+</pre></div>
+</div>
+<p>The GUI value is the active slot, or -1 when none is active. It is
+read-only. A recall is instant: there is no blending between slots.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2075,6 +2384,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>It works exactly like <code class="docutils literal notranslate"><span class="pre">.umenu</span></code>; see there. A host draws radio buttons, or
+check boxes with <code class="docutils literal notranslate"><span class="pre">multi</span></code>: <code class="docutils literal notranslate"><span class="pre">.radiogroup</span> <span class="pre">multi</span> <span class="pre">8</span></code> is eight check boxes. In
+<code class="docutils literal notranslate"><span class="pre">multi</span></code> mode a number toggles that box, and a list of one 0 or 1 per box
+sets them all.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2177,6 +2490,24 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The two ends are set separately, and either may be the higher one: the
+object always sends the lower end from the left outlet and the higher end
+from the middle one, with the pair, lower first, from the right outlet. The
+outlets fire right to left.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.rslider]   20 -&gt; right inlet, then 100 -&gt; left inlet  =&gt;  20. 100.,  100,  20
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>a number on the left inlet sets that inlet’s end and sends.</p></li>
+<li><p>a number on the right inlet sets the other end silently.</p></li>
+<li><p>a list sets both ends from its first two numbers; a single number sets the
+left inlet’s end.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">0</span> <span class="pre">&lt;value&gt;</span></code> moves the current low end and <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">1</span> <span class="pre">&lt;value&gt;</span></code> the high
+end.</p></li>
+<li><p>bang: send again.</p></li>
+</ul>
+<p>Both ends are clamped to <code class="docutils literal notranslate"><span class="pre">minimum</span></code>-<code class="docutils literal notranslate"><span class="pre">maximum</span></code>, which may be given in
+either order. The GUI value has two cells, low end first.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2290,6 +2621,21 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The position runs from 0 to 1. A number outside that range is clamped, so an
+int sets 0 or 1. Every message sends the position. For another range, use
+<code class="docutils literal notranslate"><span class="pre">.dial</span></code> or put <code class="docutils literal notranslate"><span class="pre">.scale</span></code> after the slider.</p>
+<p><strong>Restoring a value</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">.slider</span></code>, <code class="docutils literal notranslate"><span class="pre">.dial</span></code>, <code class="docutils literal notranslate"><span class="pre">.i</span></code>, <code class="docutils literal notranslate"><span class="pre">.f</span></code> and <code class="docutils literal notranslate"><span class="pre">.t</span></code> take their own GUI value
+back on the left inlet, which is how a host or <code class="docutils literal notranslate"><span class="pre">.preset</span></code> restores them:</p>
+<ul class="simple">
+<li><p>a list holding one value sets it. That is exactly the string the host read.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">0</span> <span class="pre">&lt;value&gt;</span></code> sets it too. 0 is the cell number; any other cell number
+is ignored.</p></li>
+</ul>
+<p>Both work like a number on the inlet: clamped the same way, and the value is
+sent. Only the first number of a longer list is used. A list starting with
+any other word changes nothing, and the value is sent again. See
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/gui.html">GUI controls and presets</a> for the protocol as a whole.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2356,6 +2702,11 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>An int sets the state: 0 is off, any other number is on. A bang flips it.
+Every message sends the state as 0 or 1.</p>
+<p>The GUI value is <code class="docutils literal notranslate"><span class="pre">on</span></code> or <code class="docutils literal notranslate"><span class="pre">off</span></code>. The left inlet takes that word back, or a
+number, alone or after <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">0</span></code>, and sets the state without flipping it.
+Restoring works as described under <code class="docutils literal notranslate"><span class="pre">.slider</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2422,6 +2773,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>It works exactly like <code class="docutils literal notranslate"><span class="pre">.umenu</span></code>; see there. A host draws a row of tabs.
+Wire the name outlet into <code class="docutils literal notranslate"><span class="pre">.route</span></code> to switch between named pages of a
+patch.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2560,6 +2914,8 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>It works exactly like <code class="docutils literal notranslate"><span class="pre">.led</span></code>; see there. A host draws a button with the
+label on it.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2656,6 +3012,19 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Everything that arrives is text. A list is stored word for word: no word is
+a command, so a field can hold <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">clear</span></code> like any other text. A
+number is stored as the text that spells it, and an empty list clears the
+field. Every message sends the text from the outlet, as a list.</p>
+<p>The field holds at most 256 characters. Longer text is ignored and the
+stored text is kept (and sent again). A starting text longer than that is
+ignored with an error in the log.</p>
+<p>The text is never turned back into a number: a field holding <code class="docutils literal notranslate"><span class="pre">440</span></code> sends
+the text <code class="docutils literal notranslate"><span class="pre">440</span></code>. Put <code class="docutils literal notranslate"><span class="pre">.fromsymbol</span></code> after it to read a number, or
+<code class="docutils literal notranslate"><span class="pre">.tosymbol</span></code> to join the words into one.</p>
+<p>The GUI value is the text. It is written back as plain text, with no <code class="docutils literal notranslate"><span class="pre">set</span></code>
+form (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/gui.html">GUI controls and presets</a>). The live text is not saved with the patch;
+the <code class="docutils literal notranslate"><span class="pre">text</span></code> argument is only the starting text.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2746,6 +3115,43 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><code class="docutils literal notranslate"><span class="pre">.umenu</span></code>, <code class="docutils literal notranslate"><span class="pre">.radiogroup</span></code> and <code class="docutils literal notranslate"><span class="pre">.tab</span></code> are the same object under three
+names. A host draws <code class="docutils literal notranslate"><span class="pre">.umenu</span></code> as a pop-up menu, <code class="docutils literal notranslate"><span class="pre">.radiogroup</span></code> as radio
+buttons or check boxes and <code class="docutils literal notranslate"><span class="pre">.tab</span></code> as a row of tabs; they take the same
+arguments and messages.</p>
+<p><strong>Arguments</strong></p>
+<p>An optional <code class="docutils literal notranslate"><span class="pre">multi</span></code> keyword, then the items:</p>
+<ul class="simple">
+<li><p>no items: two items, named <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p>a single number of 1 or more: that many items, named by their numbers.</p></li>
+<li><p>anything else: one item per word, up to 256. A longer list is cut short
+with a warning.</p></li>
+</ul>
+<p>With <code class="docutils literal notranslate"><span class="pre">multi</span></code>, several items can be selected at once. The first item cannot
+be named <code class="docutils literal notranslate"><span class="pre">multi</span></code>, and an item named <code class="docutils literal notranslate"><span class="pre">set</span></code> cannot be selected by name. The
+items are fixed: changing the arguments replaces the object. There are no
+messages to add or remove items.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a number: select that item. With <code class="docutils literal notranslate"><span class="pre">multi</span></code> it toggles the item instead. A
+number outside the list is ignored.</p></li>
+<li><p>an item name: select that item. An unknown name is ignored.</p></li>
+<li><p>a list of numbers: the whole selection, as the right outlet spells it.
+Without <code class="docutils literal notranslate"><span class="pre">multi</span></code> that is the item number; with <code class="docutils literal notranslate"><span class="pre">multi</span></code> it is one 0 or 1
+per item, and a shorter list leaves the remaining items as they are.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;index&gt;</span> <span class="pre">&lt;value&gt;</span></code>: without <code class="docutils literal notranslate"><span class="pre">multi</span></code>, <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">0</span> <span class="pre">&lt;item&gt;</span></code> selects an
+item; with <code class="docutils literal notranslate"><span class="pre">multi</span></code>, <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;item&gt;</span> <span class="pre">&lt;0|1&gt;</span></code> sets one item.</p></li>
+<li><p>bang: send again.</p></li>
+</ul>
+<p><strong>Output</strong></p>
+<p>Every message sends, right to left: the whole selection, then the name of
+the item, then its number. With <code class="docutils literal notranslate"><span class="pre">multi</span></code> the number is the item that just
+changed, or after a whole-selection write the lowest selected item.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.umenu sine square saw]   saw  =&gt;  2,  saw,  2
+</pre></div>
+</div>
+<p>The GUI value is the selection: one cell with the item number, or with
+<code class="docutils literal notranslate"><span class="pre">multi</span></code> one cell per item.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2848,6 +3254,19 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>x and y are independent, each clamped to its own pair of arguments, which
+may be given in either order. The position is never sorted: the first cell
+is always x.</p>
+<ul class="simple">
+<li><p>a number on the left inlet sets x and sends.</p></li>
+<li><p>a number on the right inlet sets y silently.</p></li>
+<li><p>a list <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">y</span></code> sets both; a single number sets x.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">0</span> <span class="pre">&lt;value&gt;</span></code> sets x and <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">1</span> <span class="pre">&lt;value&gt;</span></code> sets y.</p></li>
+<li><p>bang: send again.</p></li>
+</ul>
+<p>The outlets fire right to left: the pair, then y, then x. The pair is the
+cursor message <code class="docutils literal notranslate"><span class="pre">.nodes</span></code> takes, so one cord turns the pad into a morph
+control.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

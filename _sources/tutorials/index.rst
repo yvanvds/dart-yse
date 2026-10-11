@@ -24,8 +24,13 @@ Phase 2 — Spatial audio and mixing
 3D positioning, channels, audio devices. Demos:
 
 - ``demo04_channels.dart`` — route sounds through pre-built channels.
-- ``demo06_devices.dart`` — enumerate output devices and switch
-  between them at runtime via :py:meth:`System.openDevice`.
+- ``demo06_devices.dart`` — list the output devices without opening a
+  stream (:py:meth:`System.refreshDevices` on an offline session). Opening
+  and switching devices is covered in :doc:`/intro/sessions_and_devices`.
+- ``demo19_bus.dart`` — name a synth, a sound, a channel and a patcher,
+  then drive them all through :py:meth:`Bus.publish` while a
+  :py:meth:`Bus.tap` and a :py:meth:`Bus.subscribe` print what goes by.
+  See :doc:`/api/bus`.
 
 Phase 3 — Effects
 -----------------
@@ -45,9 +50,17 @@ Phase 4 — MIDI and music
 - ``demo16_midi.dart`` — enumerate MIDI output ports and send
   Note-On / Note-Off via :class:`MidiOut`.
 - ``demo17_music.dart`` — build :class:`Note` / :class:`PNote` /
-  :class:`Scale` / :class:`Motif` objects (the building blocks of the
-  generative :class:`Player`; see the Status note in the README about
-  Player itself).
+  :class:`Scale` / :class:`Motif` objects, then let a generative
+  :class:`Player` improvise on a :class:`Synth` with them.
+- ``demo20_clocks_clips.dart`` — loop a bar of notes into a
+  :class:`Synth` with a :class:`ClipTransport` on a :class:`DomainClock`,
+  glide the tempo and swap the notes while it plays. Written up as a full
+  tutorial:
+
+.. toctree::
+   :maxdepth: 1
+
+   06_clocks_and_clips
 
 Phase 5 — Modular synthesis
 ---------------------------
@@ -57,10 +70,10 @@ Phase 5 — Modular synthesis
 
    05_patcher
 
-The Phase-5 tutorial is the only one written as full prose in this
-release — the patcher is the largest single API surface and benefits
-from a guided introduction. Other tutorials are inline comments in
-each demo file; refer to the source under ``example/``.
+The patcher and clocks-and-clips tutorials are written as full prose —
+they are the largest API surfaces and benefit from a guided introduction.
+Other tutorials are inline comments in each demo file; refer to the
+source under ``example/``.
 
 How to follow along
 -------------------

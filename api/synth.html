@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Synth &#8212; dart-yse 0.1</title>
+    <title>Synth &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Clip transport" href="clip.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -531,26 +534,26 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Synth</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Synth</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Synth</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#sfzinstrument">SfzInstrument</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Constructors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Properties</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Methods</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#dx7bank">Dx7Bank</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Constructors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Properties</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Methods</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#positionhandler">PositionHandler</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Constructors</a></li>
 </ul>
 </li>
 </ul>
@@ -579,10 +582,22 @@ table on the MIDI page.</p>
 file (<code class="docutils literal notranslate"><span class="pre">Dx7Bank.load</span></code>) or from bytes already in memory such as a bundled
 asset (<code class="docutils literal notranslate"><span class="pre">Dx7Bank.fromBytes</span></code>); <code class="docutils literal notranslate"><span class="pre">indexOf</span></code> finds a patch by name. The sampler voice renders an <code class="xref py py-class docutils literal notranslate"><span class="pre">SfzInstrument</span></code>. Per-note 3D
 positioning — “the swarm” — is configured with a <code class="xref py py-class docutils literal notranslate"><span class="pre">PositionHandler</span></code>.</p>
-<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::synth">api/synth.html</a>.</p>
+<p>Two engine issues in libYSE v3.1.0 shape how a synth is set up and torn
+down (see <a class="reference internal" href="../intro/upgrading.html"><span class="doc">Upgrading to package:yse 0.2.0 (libYSE 3.1)</span></a> for the full list):</p>
+<ul class="simple">
+<li><p>Add every voice group right after <code class="docutils literal notranslate"><span class="pre">Synth()</span></code>. The engine’s setup job
+can build a new synth before its voices arrive and leave it at 0 voices
+with no error (upstream <a class="reference external" href="https://github.com/yvanvds/yse-soundengine/issues/1177">#1177</a>); voice groups
+added after the pool is built throw <code class="xref py py-class docutils literal notranslate"><span class="pre">StateError</span></code>.</p></li>
+<li><p>Attach a synth with VA or FM voices to a sound before disposing it.
+Disposing one that was never attached crashes the next synth that is
+attached to a sound (upstream <a class="reference external" href="https://github.com/yvanvds/yse-soundengine/issues/1175">#1175</a>). Sine-only and
+voice-less synths are not affected.</p></li>
+</ul>
+<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/api/synth.html">YSE::synth</a>.</p>
 </section>
-<section id="id1">
-<h1>Synth<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<section id="id3">
+<h1>Synth<a class="headerlink" href="#id3" title="Link to this heading">#</a></h1>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">Synth</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Finalizable</span>
 </pre></div>
 </div>
@@ -602,8 +617,22 @@ outlive that sound).</p></li>
 a synth becomes playable a short moment <em>after</em> an <cite>addVoices</cite> call
 returns — poll [voiceCount] for the cloned count, exactly as a file-backed
 [Sound] is not playable until its buffer finishes loading. Voices must be
-added before the synth is attached/played; adding a group afterwards is
-rejected.</p>
+added before the synth is attached/played; once [voiceCount] is non-zero
+the <cite>add*Voices</cite> methods and [setPositionHandler] throw [StateError].</p>
+<p><strong>Add every voice group right after `Synth()`</strong> (issue #81). In libYSE
+v3.1.0 the engine’s setup job can build a new synth before its voices
+arrive: the audio thread queues a synth setup job while any synth waits
+to be built (plus one spare job right after another synth finishes), and
+that job builds every synth it finds. A synth built that way keeps zero
+voices for good — the engine drops the later groups with only a log
+warning, and [voiceCount] stays <cite>0</cite> with no error raised. Measured on
+Windows x64, adding the voices immediately after
+<cite>Synth()</cite> still loses the race in roughly 1–10 % of cases when another
+synth was just built; leave 5 ms between the two and it is lost almost
+every time. The wrapper cannot detect this case (the C API reports
+success and has no status to query), so if [voiceCount] stays <cite>0</cite> well
+after the synth’s sound is playing, dispose both and build a new synth.
+The fix belongs in the engine: yvanvds/yse-soundengine#1177.</p>
 <p>Channels use the musical layer’s <strong>1-based</strong> numbering: <cite>1..16</cite> address a
 specific MIDI channel and <cite>0</cite> means <em>omni</em> (all channels) — <cite>0</cite> is never
 channel 1. This is the same base as [ClipEvent.channel], [Note.channel]
@@ -670,8 +699,9 @@ an ADSR envelope) responding to note numbers in <cite>[lowestNote,
 highestNote]</cite> on [channel] (<cite>0</cite> = omni). May be called several times to
 build layered or split keyboards. [attack], [decay] and [release] are in
 seconds; [sustain] is a level in <cite>[0, 1]</cite>.</p>
-<p>Must be called before the synth is played. Throws [YseException] if the
-group is rejected.</p>
+<p>Must be called right after <cite>Synth()</cite>, before the synth is played (see
+the class notes on issue #81). Throws [StateError] if the voice pool is
+already built, and [YseException] if the group is rejected.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addSamplerVoices</span><span class="p">(</span><span class="n">SfzInstrument</span><span class="w"> </span><span class="n">instrument</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lowestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">highestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -682,7 +712,9 @@ events broadcast on its MIDI channel — e.g. per-voice routing from a
 [ClipTransport].</p>
 <p>The instrument’s region table and PCM are shared with the voice group,
 which retains its own reference — so [instrument] may be disposed right
-after this returns. Throws [YseException] if the group is rejected.</p>
+after this returns. Like [addSineVoices], call it right after <cite>Synth()</cite>;
+throws [StateError] if the voice pool is already built, and
+[YseException] if the group is rejected.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addVaVoices</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lowestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">highestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -692,7 +724,9 @@ on [channel] (<cite>0</cite> = omni). Filtering by [channel] lets a VA pool resp
 only to events broadcast on its MIDI channel — e.g. per-voice routing
 from a [ClipTransport].</p>
 <p>Establishes the synth’s VA patch, which the <cite>setVa*</cite> setters steer. Call
-once per synth. Throws [YseException] on failure.</p>
+once per synth, right after <cite>Synth()</cite> (see [addSineVoices]). Throws
+[StateError] if the voice pool is already built, and [YseException] on
+failure.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addFmVoices</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lowestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">highestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -703,7 +737,9 @@ only to events broadcast on its MIDI channel — e.g. per-voice routing
 from a [ClipTransport].</p>
 <p>Establishes the synth’s FM patch — select a DX7 voice into it with
 [setFmPatch], or dial the headline params with the <cite>setFm*</cite> setters. Call
-once per synth. Throws [YseException] on failure.</p>
+once per synth, right after <cite>Synth()</cite> (see [addSineVoices]). Throws
+[StateError] if the voice pool is already built, and [YseException] on
+failure.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">noteOn</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">noteNumber</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -943,7 +979,8 @@ voice its own 3D position and movement.</p>
 <p>Must be called <em>before</em> the synth is attached/played — like the
 <cite>add*Voices</cite> methods, the engine rejects a handler swap once the voice
 pool is built (it logs a warning and keeps the existing handler). Throws
-[YseException] only for an unknown handler kind.</p>
+[StateError] once [voiceCount] shows the pool is built, and
+[YseException] for an unknown handler kind.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setHandlerCenter</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -986,8 +1023,8 @@ retains its own share, so it is safe to [dispose] this handle right after
 [Synth.addSamplerVoices] returns, and safe to hold or dispose it across
 [System] close. Loading decodes samples on the calling isolate (never the
 audio thread), so construct these off any latency-sensitive path.</p>
-<section id="id2">
-<h2>Constructors<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h2>Constructors<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">SfzInstrument</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1005,8 +1042,8 @@ envelope times in seconds; [maxLength] caps a non-looping one-shot in
 seconds. [name] is an optional label used only for identification.</p>
 <p>Throws [YseException] if the sample is missing or unreadable.</p>
 </section>
-<section id="id3">
-<h2>Properties<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h2>Properties<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isValid</span>
 </pre></div>
 </div>
@@ -1018,8 +1055,8 @@ one resident sample).</p>
 <p>Raw native handle, for sibling wrappers within <cite>lib/src/</cite>
 (e.g. [Synth.addSamplerVoices]). Not part of the public API surface.</p>
 </section>
-<section id="id4">
-<h2>Methods<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>Methods<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1036,8 +1073,8 @@ one resident sample).</p>
 dump) imported from a <cite>.syx</cite> file. Select a patch into a synth’s FM voice
 pool with [Synth.setFmPatch] — the patch is copied into the synth, so this
 bank may be [dispose]d afterwards.</p>
-<section id="id5">
-<h2>Constructors<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>Constructors<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Dx7Bank</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1056,8 +1093,8 @@ native buffer for the duration of the call only; neither the copy nor
 <p>Throws [YseException] on empty input, a bad header, the wrong length, or
 a checksum mismatch.</p>
 </section>
-<section id="id6">
-<h2>Properties<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>Properties<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">patchCount</span>
 </pre></div>
 </div>
@@ -1068,8 +1105,8 @@ a checksum mismatch.</p>
 <p>Raw native handle, for sibling wrappers within <cite>lib/src/</cite>
 (e.g. [Synth.setFmPatch]). Not part of the public API surface.</p>
 </section>
-<section id="id7">
-<h2>Methods<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>Methods<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">patchName</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1102,8 +1139,8 @@ with a factory constructor and pass it to [Synth.setPositionHandler]
 <em>before</em> the synth is attached/played. All positions are in the same
 coordinate frame as a [Sound] position; the shared centre of the spread /
 orbit handlers can be steered at runtime with [Synth.setHandlerCenter].</p>
-<section id="id8">
-<h2>Constructors<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h2>Constructors<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PositionHandler</span><span class="p">.</span><span class="n">fixed</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1173,26 +1210,26 @@ second, [height] the vertical offset of the orbit plane, and
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Synth</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Synth</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Synth</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#sfzinstrument">SfzInstrument</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Constructors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Properties</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Methods</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#dx7bank">Dx7Bank</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Constructors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Properties</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Methods</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#positionhandler">PositionHandler</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Constructors</a></li>
 </ul>
 </li>
 </ul>

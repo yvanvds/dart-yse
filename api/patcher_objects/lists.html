@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Lists &#8212; dart-yse 0.1</title>
+    <title>Lists &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Control flow" href="control_flow.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -558,9 +561,11 @@
 <p>11 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/lists.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/lists.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#append" id="id1"><code class="docutils literal notranslate"><span class="pre">.append</span></code></a></p></li>
@@ -587,6 +592,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The mirror of <code class="docutils literal notranslate"><span class="pre">.prepend</span></code>: the stored message goes after the incoming one
+instead of in front. Everything else, including the right inlet, works as
+described under <code class="docutils literal notranslate"><span class="pre">.prepend</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.append 1]   60 100   =&gt;  60 100 1
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -683,6 +694,14 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each item is sent and fully handled downstream before the next one leaves
+(see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>), so a counter or accumulator after <code class="docutils literal notranslate"><span class="pre">.iter</span></code>
+sees the items in order. Items keep the type they are spelled as. A list of
+up to 256 items is accepted; see <em>List length limits</em> in
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a> for what happens to a longer one. A bang before any
+list has arrived sends nothing.</p>
+<p>A list wired back from the outlet into the inlet while <code class="docutils literal notranslate"><span class="pre">.iter</span></code> is still
+sending is ignored, so a loop cannot restart the iteration.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -749,6 +768,36 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each inlet holds a whole message, so the length of the result is the total of
+the pieces, not the number of inlets:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.join 2]      inlet 1 &lt;- 3 4,  inlet 0 &lt;- 1 2   =&gt;  1 2 3 4
+[.pack 0 0]    inlet 1 &lt;- 3 4,  inlet 0 &lt;- 1 2   =&gt;  1 2
+</pre></div>
+</div>
+<p>In <code class="docutils literal notranslate"><span class="pre">.pack</span></code> each element holds one item: the <code class="docutils literal notranslate"><span class="pre">4</span></code> is dropped, and <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">2</span></code>
+at the leftmost inlet fills both elements.</p>
+<p>Nothing is converted: a piece keeps whatever it was sent. Every inlet starts
+out holding <code class="docutils literal notranslate"><span class="pre">0</span></code>, so a bang before anything has arrived sends <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">0</span></code> from a
+<code class="docutils literal notranslate"><span class="pre">.join</span> <span class="pre">2</span></code>.</p>
+<p><strong>Which inlets send</strong></p>
+<p>By default only the leftmost inlet sends the list. Arguments after the inlet
+count name the inlets that send, counted from 0; <code class="docutils literal notranslate"><span class="pre">-1</span></code> makes every inlet
+send. <code class="docutils literal notranslate"><span class="pre">.join</span> <span class="pre">3</span> <span class="pre">2</span></code> sends from inlet 2 only, <code class="docutils literal notranslate"><span class="pre">.join</span> <span class="pre">3</span> <span class="pre">0</span> <span class="pre">2</span></code> from inlets 0 and
+2. A bang sends the list from any inlet, whether or not that inlet sends when
+written.</p>
+<p><strong>Messages</strong></p>
+<p>Every inlet takes these:</p>
+<ul class="simple">
+<li><p>an int, float or list: store it as this inlet’s piece, replacing the old
+one, and send if this inlet sends.</p></li>
+<li><p>bang: send the list without storing anything.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;message&gt;</span></code>: store without sending.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span></code> followed by a space and nothing else: empty this inlet’s piece, so
+it adds nothing to the list. When every piece is empty, nothing is sent.</p></li>
+</ul>
+<p>A message that would make the whole list longer than 256 items or 1024
+characters is refused, and every inlet keeps what it had (see <em>List length
+limits</em> in <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>).</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -845,6 +894,20 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each item leaves as its own list: the index, then the item.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.listfunnel]     a b c   =&gt;  0 a,  1 b,  2 c
+[.listfunnel 1]   60 64   =&gt;  1 60,  2 64
+</pre></div>
+</div>
+<p>The pairs leave first to last, each fully handled downstream before the
+next. The index is always an int, and the item keeps its exact spelling.
+Unlike <code class="docutils literal notranslate"><span class="pre">.iter</span></code>, the output is always a list, so <code class="docutils literal notranslate"><span class="pre">.route</span></code>, <code class="docutils literal notranslate"><span class="pre">.sel</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.spray</span></code> can act on the index. A <code class="docutils literal notranslate"><span class="pre">.listfunnel</span></code> into a <code class="docutils literal notranslate"><span class="pre">.spray</span></code> with the
+same offset sends item k to outlet k, whatever the length of the list.</p>
+<p><code class="docutils literal notranslate"><span class="pre">offset</span> <span class="pre">&lt;n&gt;</span></code> sets the index of the first item for the lists that follow.
+It is not saved with the patch; the creation argument is. A bare <code class="docutils literal notranslate"><span class="pre">offset</span></code> is
+ignored. Lists longer than 256 items lose their tail, as described under
+<em>List length limits</em> in <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -935,6 +998,36 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Arguments set both the number of inlets and the type of each element, by how
+they are spelled:</p>
+<ul class="simple">
+<li><p>a whole number (<code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">60</span></code>): an int element. A float sent here is
+truncated.</p></li>
+<li><p>a number with a decimal point or exponent (<code class="docutils literal notranslate"><span class="pre">0.</span></code>, <code class="docutils literal notranslate"><span class="pre">0.5</span></code>, <code class="docutils literal notranslate"><span class="pre">1e3</span></code>): a
+float element. An int sent here becomes a float.</p></li>
+<li><p>anything else (<code class="docutils literal notranslate"><span class="pre">foo</span></code>): a symbol element, which stores whatever it is sent
+unchanged.</p></li>
+</ul>
+<p>A word sent to an int or float element is refused: the element keeps its
+value. With no arguments the object has two int elements starting at 0.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.pack 0 0. foo]   inlet 2 &lt;- bar, inlet 1 &lt;- 3, inlet 0 &lt;- 1.7
+                   =&gt;  1 3. bar
+</pre></div>
+</div>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>an int, float or symbol: store it in this inlet’s element. At the leftmost
+inlet, also send the list.</p></li>
+<li><p>a list: spread it over this inlet’s element and the ones to its right, one
+item each. Items past the last element are dropped.</p></li>
+<li><p>bang (leftmost inlet): send the list as it stands.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;message&gt;</span></code>: store as above, without sending.</p></li>
+</ul>
+<p>To build a list, send the right-hand values first and the leftmost one last
+(<code class="docutils literal notranslate"><span class="pre">.trigger</span></code> makes this order explicit; see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>).</p>
+<p>A list may hold up to 256 elements and 1024 characters. Arguments that do not
+fit are cut off and a warning is logged. A message that would make the list
+too long is refused, and the elements keep their values.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1031,6 +1124,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Works like <code class="docutils literal notranslate"><span class="pre">.pack</span></code> (element types, <code class="docutils literal notranslate"><span class="pre">set</span></code>, spreading of lists), except
+that every inlet sends the list when it receives a value, and every inlet
+takes a bang. Use it when each change should go out at once, for example x, y
+and z of a position arriving on separate cords. Feeding three values into a
+<code class="docutils literal notranslate"><span class="pre">.pak</span> <span class="pre">0</span> <span class="pre">0</span> <span class="pre">0</span></code> sends three lists; use <code class="docutils literal notranslate"><span class="pre">.pack</span></code> to send one list after all
+three have arrived.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1127,6 +1226,24 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The stored message goes in front of every message that arrives, and the
+result leaves as one list:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.prepend note]   60 100   =&gt;  note 60 100
+[.prepend set]    0.5      =&gt;  set 0.5
+</pre></div>
+</div>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>left inlet, an int, float or list: send it with the stored message in
+front.</p></li>
+<li><p>left inlet, bang: send the stored message on its own.</p></li>
+<li><p>right inlet, an int, float or list: replace the stored message, without
+sending anything. The whole list is stored. An empty list clears it.
+The right inlet does not take a bang.</p></li>
+</ul>
+<p>With no stored message, the object passes everything through unchanged, in
+the type it arrived as. The stored message holds at most 256 characters; a
+longer one is refused and the old one kept.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1223,6 +1340,32 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.substitute 60 72]        60 64 60     =&gt;  left:  72 64 72
+[.substitute 60 72 1]      60 64 60     =&gt;  left:  72 64 60
+[.substitute 60 72]        62 64        =&gt;  right: 62 64
+</pre></div>
+</div>
+<p>Exactly one outlet sends for each message: the left outlet when something was
+replaced, the right outlet when nothing matched. The right outlet sends the
+message unchanged, so <code class="docutils literal notranslate"><span class="pre">.substitute</span></code> objects can be chained, each one’s right
+outlet into the next one’s left inlet.</p>
+<p><strong>Matching</strong></p>
+<ul class="simple">
+<li><p>A match that reads as a number matches items with the same value, so
+<code class="docutils literal notranslate"><span class="pre">60</span></code> matches both <code class="docutils literal notranslate"><span class="pre">60</span></code> and <code class="docutils literal notranslate"><span class="pre">60.</span></code>. Any other match is compared as text.
+A number never matches a word.</p></li>
+<li><p>A bang matches the word <code class="docutils literal notranslate"><span class="pre">bang</span></code>.</p></li>
+<li><p>The comparison is exact: a computed float that only looks equal may not
+match. Put a <code class="docutils literal notranslate"><span class="pre">.round</span></code> in front if needed.</p></li>
+<li><p>Every item of a list is checked, not just the first. With a third argument
+(any value), only the first match is replaced.</p></li>
+</ul>
+<p>When an int, float or bang matches, the replacement leaves alone, as the
+int, float or word it spells. In a list, the replacement is written as it is
+spelled. Without a replacement argument, matches become <code class="docutils literal notranslate"><span class="pre">0</span></code>. Without a
+match argument, nothing matches and every message leaves the right outlet.</p>
+<p>The match and the replacement are single words of at most 64 characters.
+Inlets 1 and 2 change them; a longer word is refused.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1341,6 +1484,21 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The first argument is the number of group outlets, the second the number of
+items per group. There is one more outlet on the right for the remainder.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.unjoin 2 2]   1 2 3 4 5   =&gt;  rest: 5,  out1: 3 4,  out0: 1 2
+[.unjoin 2 2]   1 2 3       =&gt;  rest: 3,  out0: 1 2
+[.unjoin 2]     1 2 3 4     =&gt;  rest: 3 4,  out1: 2,  out0: 1
+</pre></div>
+</div>
+<p>A group outlet only sends a full group. The items that do not make a full
+group, and any items after the last group outlet, leave the rightmost outlet
+together, so nothing is dropped. The outlets send right to left, the remainder
+first. Use <code class="docutils literal notranslate"><span class="pre">.unpack</span></code> when each item needs its own type, and <code class="docutils literal notranslate"><span class="pre">.unjoin</span></code> when
+the list’s length is not known in advance.</p>
+<p>There is no bang: the object keeps nothing between messages. Put a <code class="docutils literal notranslate"><span class="pre">.l</span></code> in
+front to send a list again. Lists longer than 256 items lose their tail, as
+described under <em>List length limits</em> in <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1443,6 +1601,28 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The outlets send right to left (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>), so a patch can
+wire the right outlets into cold inlets and the leftmost outlet into a hot
+one.</p>
+<p>Arguments set each outlet’s type by how they are spelled, as for <code class="docutils literal notranslate"><span class="pre">.pack</span></code>:
+a whole number makes an int outlet, a number with a decimal point or exponent
+a float outlet, and anything else an outlet that sends items unchanged.</p>
+<ul class="simple">
+<li><p>A float into an int outlet is truncated; an int into a float outlet becomes
+a float.</p></li>
+<li><p>A word into an int or float outlet is refused: that outlet sends the value
+it held before.</p></li>
+<li><p>Only the outlets the list reaches send. <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">2</span></code> into <code class="docutils literal notranslate"><span class="pre">.unpack</span> <span class="pre">0</span> <span class="pre">0</span> <span class="pre">0</span></code> sends
+outlets 1 and 0, and outlet 2 stays silent. Items past the last outlet are
+dropped.</p></li>
+<li><p>A bang sends every outlet’s last value. An outlet no list has reached sends
+its creation argument.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.unpack 0 0. s]   1.7 2 foo   =&gt;  out2: foo,  out1: 2.,  out0: 1
+</pre></div>
+</div>
+<p>There is no <code class="docutils literal notranslate"><span class="pre">set</span></code> message. A list that would not fit in 256 items and 1024
+characters is refused, and nothing is sent.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1539,6 +1719,149 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The mode word selects what the object does: <code class="docutils literal notranslate"><span class="pre">.zl</span> <span class="pre">rev</span></code>, <code class="docutils literal notranslate"><span class="pre">.zl</span> <span class="pre">nth</span> <span class="pre">2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.zl</span> <span class="pre">sort</span> <span class="pre">-1</span></code>. Anything after the mode word is the mode’s argument, which
+the right inlet replaces later. A whole number before the mode word sets the
+maximum list length (<code class="docutils literal notranslate"><span class="pre">.zl</span> <span class="pre">16</span> <span class="pre">rev</span></code>).</p>
+<p>A list at the left inlet is stored and processed straight away. A bang
+processes the stored list again, so after <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">&lt;name&gt;</span></code> a bang gives the
+same list under the new mode. Except in the four accumulating modes, the
+stored list is not changed by processing: two bangs in <code class="docutils literal notranslate"><span class="pre">scramble</span></code> mode give
+two shuffles of the same list.</p>
+<p>Positions and indices count from 1 in every mode except <code class="docutils literal notranslate"><span class="pre">mth</span></code>, so what one
+mode reports can be fed to another: <code class="docutils literal notranslate"><span class="pre">sub</span></code> and <code class="docutils literal notranslate"><span class="pre">filter</span></code> report positions
+that <code class="docutils literal notranslate"><span class="pre">nth</span></code> takes. When a mode uses both outlets, the right outlet sends
+first.</p>
+<p><strong>Reading the list</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">len</span></code>: the number of items. An empty list gives 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nth</span> <span class="pre">&lt;i&gt;</span></code>: the item at position i out the left outlet, and the list
+without it out the right outlet. A position outside the list sends nothing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mth</span> <span class="pre">&lt;i&gt;</span></code>: as <code class="docutils literal notranslate"><span class="pre">nth</span></code>, but counting from 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sum</span></code>: the numbers in the list added up. Words are skipped; a list with
+no numbers gives 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">median</span></code>: the middle number once sorted. With an even count, the mean of
+the two middle numbers. Words are skipped; a list with no numbers sends
+nothing.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">sum</span></code> and <code class="docutils literal notranslate"><span class="pre">median</span></code> send an int when every number they used is an int and
+the result is whole, and a float otherwise: the median of <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">3</span></code> is 2, of
+<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">2</span></code> it is 1.5.</p>
+<p><strong>Reordering</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rev</span></code>: the list reversed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rot</span> <span class="pre">&lt;n&gt;</span></code>: the list rotated n places toward the end (negative: toward
+the start). <code class="docutils literal notranslate"><span class="pre">rot</span> <span class="pre">1</span></code> turns <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">2</span> <span class="pre">3</span></code> into <code class="docutils literal notranslate"><span class="pre">3</span> <span class="pre">1</span> <span class="pre">2</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scramble</span></code>: the list in random order. <code class="docutils literal notranslate"><span class="pre">zlseed</span> <span class="pre">&lt;n&gt;</span></code> with a non-zero n
+makes the shuffles repeat each run; 0 makes them unpredictable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sort</span></code>: the list sorted, upward, or downward when the argument is
+negative. Numbers come before words in both directions, and equal items
+keep their order. The right outlet sends, first, each sorted item’s
+original position: send it to a second <code class="docutils literal notranslate"><span class="pre">.zl</span> <span class="pre">indexmap</span></code> to put a parallel
+list in the same order.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">swap</span> <span class="pre">&lt;i&gt;</span> <span class="pre">&lt;j&gt;</span></code>: the list with the items at positions i and j exchanged.
+If either position is outside the list, nothing is sent.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">indexmap</span> <span class="pre">&lt;i...&gt;</span></code>: the items at the positions the argument names, in that
+order. A position may be named twice or left out; positions outside the list
+are skipped.</p></li>
+</ul>
+<p><strong>Cutting and searching</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">slice</span> <span class="pre">&lt;n&gt;</span></code>: the first n items out the left outlet, the rest out the
+right.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ecils</span> <span class="pre">&lt;n&gt;</span></code>: the last n items out the right outlet, the rest out the
+left.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sub</span> <span class="pre">&lt;list&gt;</span></code>: the position of every place the argument list occurs,
+overlapping ones included, out the left outlet; the number of places out
+the right outlet, also when it is 0. Without an argument nothing is sent.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lookup</span> <span class="pre">&lt;table&gt;</span></code>: each item of the incoming list is a position in the
+argument list, and the items found there are sent. Positions outside the
+table, and words, are skipped.</p></li>
+</ul>
+<p><strong>Comparing and sets</strong></p>
+<p>The argument is the second list.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">thin</span></code>: the list with repeated items removed. Each item stays at its
+first place.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sect</span></code>: the items that are in both lists, each once, in the order of the
+incoming list. When there are none, the right outlet sends a bang.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">union</span></code>: the incoming list with repeats removed, followed by the
+argument’s items that are not in it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unique</span></code> and <code class="docutils literal notranslate"><span class="pre">filter</span></code>: the incoming list with every item that is in the
+argument removed. Repeats and order are kept. <code class="docutils literal notranslate"><span class="pre">filter</span></code> also sends, first,
+the original positions of the items that remain.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compare</span></code>: 1 out the left outlet when the two lists are equal, 0 when not.
+When they differ, the right outlet first sends the positions that differ.
+Lists of different lengths differ at every position past the shorter one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">change</span></code>: the incoming list out the left outlet only when it differs from
+the previous one, and 1 or 0 out the right outlet every time. Each list
+becomes the one the next is compared with. A list sent to the right inlet
+sets that reference without sending anything.</p></li>
+</ul>
+<p>Numbers compare by value, so <code class="docutils literal notranslate"><span class="pre">1</span></code> equals <code class="docutils literal notranslate"><span class="pre">1.</span></code>; words compare as text.</p>
+<p><strong>Combining</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">join</span> <span class="pre">&lt;list&gt;</span></code>: the incoming list followed by the argument.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lace</span> <span class="pre">&lt;list&gt;</span></code>: the two lists interleaved, item by item. When one is
+longer, its remaining items follow at the end.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delace</span></code>: the reverse of <code class="docutils literal notranslate"><span class="pre">lace</span></code>: the 1st, 3rd, 5th… items out the left
+outlet, the 2nd, 4th… out the right.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iter</span> <span class="pre">&lt;n&gt;</span></code>: the list sent as a series of lists of n items, the last one
+shorter when the list does not divide.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reg</span></code>: the list is sent straight on and kept; a bang sends it again. A
+list at the right inlet replaces it without sending.</p></li>
+</ul>
+<p><strong>Accumulating</strong></p>
+<p>These four modes collect items across messages in one shared store. An
+incoming list adds its items; a bang takes from the store.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">group</span> <span class="pre">&lt;n&gt;</span></code>: every time n items have been collected, they are sent as one
+list. A bang sends and clears what has been collected so far. Without n,
+items collect until n is set or a bang arrives.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stream</span> <span class="pre">&lt;n&gt;</span></code>: the last n items received. Once n have arrived, every new
+list sends the latest n. The right outlet sends how many items are still
+missing, 0 when the window is full. A bang sends the count, and the window when it is full, again. Without
+n, nothing is collected.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">queue</span></code>: an incoming list is stored and nothing is sent. Each bang sends
+the oldest item and removes it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stack</span></code>: as <code class="docutils literal notranslate"><span class="pre">queue</span></code>, but each bang sends the newest item.</p></li>
+</ul>
+<p>When the store is empty, a bang in <code class="docutils literal notranslate"><span class="pre">queue</span></code> or <code class="docutils literal notranslate"><span class="pre">stack</span></code> mode sends a bang
+out the right outlet, so a patch can empty the store by banging until that
+happens. The store keeps its contents when switching between these four
+modes. <code class="docutils literal notranslate"><span class="pre">zlclear</span></code> empties it.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.zl group 3]   1 2, 3 4, 5 6 7   =&gt;  1 2 3,  4 5 6   (7 is kept)
+[.zl queue]     60 64 67, bang, bang   =&gt;  60,  64
+</pre></div>
+</div>
+<p><strong>Messages at the left inlet</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">&lt;name&gt;</span></code>: switch modes. The stored list is kept and nothing is sent.
+An unknown name leaves the mode unchanged.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">zlclear</span></code>: empty the stored list and the accumulating store. The mode and
+argument stay.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">zlmaxsize</span> <span class="pre">&lt;n&gt;</span></code>: set the maximum list length, 1-256. It applies to the
+next list; the stored list is not shortened.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">zlseed</span> <span class="pre">&lt;n&gt;</span></code>: set the random sequence for <code class="docutils literal notranslate"><span class="pre">scramble</span></code>.</p></li>
+</ul>
+<p>A list that starts with one of these words is read as that command, not as
+data.</p>
+<p><strong>The right inlet</strong></p>
+<p>The right inlet sets the mode’s argument and never sends anything. An int, a
+float or a list all work; a float is truncated to an int, also when the mode
+reads a list. Modes that take a number or a position use the first number
+in the list (<code class="docutils literal notranslate"><span class="pre">swap</span></code> the first two, <code class="docutils literal notranslate"><span class="pre">indexmap</span></code> all of them); a list with
+no numbers leaves that number unchanged. Modes that take a list use the whole
+list. Changing the mode keeps the argument.</p>
+<p><strong>Limits</strong></p>
+<p>Lists hold at most 256 items and 1024 characters, or fewer after
+<code class="docutils literal notranslate"><span class="pre">zlmaxsize</span></code>. Items that do not fit are refused and the list keeps the
+items before them (see <em>List length limits</em> in <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>).
+The accumulating store has the same limit.</p>
+<p>Without a mode word the object stores lists and sends nothing; an unknown
+mode word in the arguments is logged. Changing the creation arguments
+empties the stored list. Separate objects per mode (<code class="docutils literal notranslate"><span class="pre">.zl.rev</span></code> and so on)
+do not exist: use <code class="docutils literal notranslate"><span class="pre">.zl</span> <span class="pre">rev</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

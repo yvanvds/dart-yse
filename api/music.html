@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Music &#8212; dart-yse 0.1</title>
+    <title>Music &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Synth" href="synth.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -576,10 +579,26 @@
   <section id="music">
 <h1>Music<a class="headerlink" href="#music" title="Link to this heading">#</a></h1>
 <p>Musical primitives — <code class="xref py py-class docutils literal notranslate"><span class="pre">Note</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PNote</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Motif</span></code>. The <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> is wrapped but currently
-non-functional (see the Status note in the project README); the
-primitives are usable on their own.</p>
-<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::note">api/music.html</a>.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Motif</span></code> — and the generative <code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code> that builds on them.
+The primitives are usable on their own.</p>
+<p>A player plays its notes on the <code class="xref py py-class docutils literal notranslate"><span class="pre">Synth</span></code> it is constructed with;
+attach that synth to a playing sound (<code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromSynth()</span></code>) to hear
+it:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">synth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Synth</span><span class="p">()..</span><span class="n">addSineVoices</span><span class="p">(</span><span class="m">8</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromSynth</span><span class="p">(</span><span class="n">synth</span><span class="p">)..</span><span class="n">play</span><span class="p">();</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">player</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Player</span><span class="p">(</span><span class="n">synth</span><span class="p">)</span>
+<span class="w">  </span><span class="p">..</span><span class="n">setScale</span><span class="p">(</span><span class="n">Scale</span><span class="p">()..</span><span class="n">add</span><span class="p">(</span><span class="m">60</span><span class="p">)..</span><span class="n">add</span><span class="p">(</span><span class="m">64</span><span class="p">)..</span><span class="n">add</span><span class="p">(</span><span class="m">67</span><span class="p">))</span>
+<span class="w">  </span><span class="p">..</span><span class="n">play</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The engine borrows the synth, the active scales and every added motif.
+The player holds Dart references to them, so garbage collection never
+frees one while the player can still read it, and they are released only
+after the player’s native destroy. Dispose the player before any of them,
+and let one audio block run before disposing the synth: the engine retires
+a destroyed player on its next block and still sends note-offs to the
+synth then.</p>
+<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/api/music.html">YSE::note</a> / <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/api/player.html">YSE::player</a>.</p>
 </section>
 <section id="note">
 <h1>Note<a class="headerlink" href="#note" title="Link to this heading">#</a></h1>
@@ -830,6 +849,10 @@ exact pitch.</p>
 <p>Restrict legal starting pitches.</p>
 <p>When the [Player] picks a transposition for this motif it picks one
 whose starting note belongs to [validPitches].</p>
+<p>The engine <em>borrows</em> [validPitches] (it keeps a pointer, not a copy), so
+later changes to the scale apply. The motif holds a Dart reference to it
+until the next call or [dispose], so garbage collection never frees it
+under the motif; don’t <cite>.dispose()</cite> the scale first.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -847,27 +870,32 @@ ranges, optionally constrained to a [Scale], optionally drawing from
 one or more weighted [Motif]s instead of pure randomness. Numeric
 setters accept an optional [fade] parameter that interpolates from
 the current value to the target over that many seconds.</p>
-<p><strong>Note</strong>: the upstream <cite>YSE::player::create(synth&amp;)</cite> factory is
-commented out, and there is no other path to initialise the player’s
-implementation pointer. Calling any method on a freshly-constructed
-[Player] therefore crashes the process (null pimpl dereference) —
-this surface is dead until the synth subsystem returns to the public
-API. The class is exposed here so the wrapping is in place when that
-happens; do not call its methods until then.</p>
+<p>A player has no sound of its own: it plays its notes on the [Synth] it is
+constructed with. Attach that synth to a playing sound
+(<cite>Sound.fromSynth</cite>) to hear them. The engine advances players once per
+rendered audio block.</p>
+<p>The engine <em>borrows</em> the synth, the active [Scale]s and every added
+[Motif] — it keeps pointers to them, not copies. The player holds Dart
+references to each, so garbage collection never frees one while the
+player can still read it (#85); they are released only after the
+player’s own native destroy. Don’t <cite>.dispose()</cite> any of them while the
+player is alive.</p>
 <section id="id10">
 <h2>Constructors<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Player</span><span class="p">()</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Player</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Construct a player.</p>
-<p>As of engine v2.3.0 <cite>yse_player_create</cite> takes a <cite>YseSynth*</cite>. The synth
-subsystem does not yet have an idiomatic Dart wrapper (tracked as a
-separate issue in this batch), so a null synth is passed here — matching
-the dead-surface contract documented on this class. Do not call this
-class’s methods until the synth wiring lands.</p>
+<p>Construct a player that plays its notes on [synth].</p>
+<p>[synth] must be live (not disposed). The player holds it until the
+player is disposed or collected. Throws [YseException] if the engine
+refuses to create the player.</p>
 </section>
 <section id="id11">
 <h2>Properties<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Synth</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">synth</span>
+</pre></div>
+</div>
+<p>The synth this player plays its notes on.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isPlaying</span>
 </pre></div>
 </div>
@@ -923,16 +951,24 @@ class’s methods until the synth wiring lands.</p>
 </pre></div>
 </div>
 <p>Constrain generated pitches to [scale].</p>
-<p>The player keeps its own copy — modifying [scale] after this
-call has no effect on the player.</p>
+<p>With a [fade], the player cross-fades from the current scale to [scale]
+over that time (the first call always applies at once).</p>
+<p>The engine <em>borrows</em> [scale] (it keeps a pointer, not a copy), so later
+changes to it apply. The player holds a Dart reference to every scale
+the cross-fade may still read: the last scale set without a fade and
+each fade target set since. Don’t <cite>.dispose()</cite> them while the player is
+alive.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addMotif</span><span class="p">(</span><span class="n">Motif</span><span class="w"> </span><span class="n">motif</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Add a [motif] to the player’s pool. Picked weighted by [weight].</p>
+<p>The engine <em>borrows</em> [motif] (it keeps a pointer, not a copy). The
+player holds a Dart reference to it until [removeMotif] or [dispose];
+don’t <cite>.dispose()</cite> the motif before then.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">removeMotif</span><span class="p">(</span><span class="n">Motif</span><span class="w"> </span><span class="n">motif</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Remove a previously added motif.</p>
+<p>Remove a previously added motif, and stop holding it.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">adjustMotifWeight</span><span class="p">(</span><span class="n">Motif</span><span class="w"> </span><span class="n">motif</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">weight</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -953,6 +989,12 @@ call has no effect on the player.</p>
 </pre></div>
 </div>
 <p>Destroy the underlying native player and detach the finalizer.</p>
+<p>The scales and motifs are released at once. The synth stays held until
+this wrapper is collected: the engine retires a destroyed player on its
+next audio block, and that step still sends note-offs to the synth
+(upstream yvanvds/yse-soundengine#1181). If you dispose the synth
+yourself, let at least one audio block run after this call first (in an
+offline session, render one) — and before <cite>System.close</cite>.</p>
 </section>
 </section>
 

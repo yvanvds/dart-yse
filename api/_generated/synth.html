@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Synth &#8212; dart-yse 0.1</title>
+    <title>Synth &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -49,7 +49,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -565,8 +568,22 @@ outlive that sound).</p></li>
 a synth becomes playable a short moment <em>after</em> an <cite>addVoices</cite> call
 returns — poll [voiceCount] for the cloned count, exactly as a file-backed
 [Sound] is not playable until its buffer finishes loading. Voices must be
-added before the synth is attached/played; adding a group afterwards is
-rejected.</p>
+added before the synth is attached/played; once [voiceCount] is non-zero
+the <cite>add*Voices</cite> methods and [setPositionHandler] throw [StateError].</p>
+<p><strong>Add every voice group right after `Synth()`</strong> (issue #81). In libYSE
+v3.1.0 the engine’s setup job can build a new synth before its voices
+arrive: the audio thread queues a synth setup job while any synth waits
+to be built (plus one spare job right after another synth finishes), and
+that job builds every synth it finds. A synth built that way keeps zero
+voices for good — the engine drops the later groups with only a log
+warning, and [voiceCount] stays <cite>0</cite> with no error raised. Measured on
+Windows x64, adding the voices immediately after
+<cite>Synth()</cite> still loses the race in roughly 1–10 % of cases when another
+synth was just built; leave 5 ms between the two and it is lost almost
+every time. The wrapper cannot detect this case (the C API reports
+success and has no status to query), so if [voiceCount] stays <cite>0</cite> well
+after the synth’s sound is playing, dispose both and build a new synth.
+The fix belongs in the engine: yvanvds/yse-soundengine#1177.</p>
 <p>Channels use the musical layer’s <strong>1-based</strong> numbering: <cite>1..16</cite> address a
 specific MIDI channel and <cite>0</cite> means <em>omni</em> (all channels) — <cite>0</cite> is never
 channel 1. This is the same base as [ClipEvent.channel], [Note.channel]
@@ -633,8 +650,9 @@ an ADSR envelope) responding to note numbers in <cite>[lowestNote,
 highestNote]</cite> on [channel] (<cite>0</cite> = omni). May be called several times to
 build layered or split keyboards. [attack], [decay] and [release] are in
 seconds; [sustain] is a level in <cite>[0, 1]</cite>.</p>
-<p>Must be called before the synth is played. Throws [YseException] if the
-group is rejected.</p>
+<p>Must be called right after <cite>Synth()</cite>, before the synth is played (see
+the class notes on issue #81). Throws [StateError] if the voice pool is
+already built, and [YseException] if the group is rejected.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addSamplerVoices</span><span class="p">(</span><span class="n">SfzInstrument</span><span class="w"> </span><span class="n">instrument</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lowestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">highestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -645,7 +663,9 @@ events broadcast on its MIDI channel — e.g. per-voice routing from a
 [ClipTransport].</p>
 <p>The instrument’s region table and PCM are shared with the voice group,
 which retains its own reference — so [instrument] may be disposed right
-after this returns. Throws [YseException] if the group is rejected.</p>
+after this returns. Like [addSineVoices], call it right after <cite>Synth()</cite>;
+throws [StateError] if the voice pool is already built, and
+[YseException] if the group is rejected.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addVaVoices</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lowestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">highestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -655,7 +675,9 @@ on [channel] (<cite>0</cite> = omni). Filtering by [channel] lets a VA pool resp
 only to events broadcast on its MIDI channel — e.g. per-voice routing
 from a [ClipTransport].</p>
 <p>Establishes the synth’s VA patch, which the <cite>setVa*</cite> setters steer. Call
-once per synth. Throws [YseException] on failure.</p>
+once per synth, right after <cite>Synth()</cite> (see [addSineVoices]). Throws
+[StateError] if the voice pool is already built, and [YseException] on
+failure.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addFmVoices</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lowestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">highestNote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -666,7 +688,9 @@ only to events broadcast on its MIDI channel — e.g. per-voice routing
 from a [ClipTransport].</p>
 <p>Establishes the synth’s FM patch — select a DX7 voice into it with
 [setFmPatch], or dial the headline params with the <cite>setFm*</cite> setters. Call
-once per synth. Throws [YseException] on failure.</p>
+once per synth, right after <cite>Synth()</cite> (see [addSineVoices]). Throws
+[StateError] if the voice pool is already built, and [YseException] on
+failure.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">noteOn</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">noteNumber</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -906,7 +930,8 @@ voice its own 3D position and movement.</p>
 <p>Must be called <em>before</em> the synth is attached/played — like the
 <cite>add*Voices</cite> methods, the engine rejects a handler swap once the voice
 pool is built (it logs a warning and keeps the existing handler). Throws
-[YseException] only for an unknown handler kind.</p>
+[StateError] once [voiceCount] shows the pool is built, and
+[YseException] for an unknown handler kind.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setHandlerCenter</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
 </pre></div>
 </div>

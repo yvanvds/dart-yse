@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MIDI &#8212; dart-yse 0.1</title>
+    <title>MIDI &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="DSP" href="dsp.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -576,7 +579,7 @@
 <h1>MIDI<a class="headerlink" href="#midi" title="Link to this heading">#</a></h1>
 <p>Standard MIDI file playback (<code class="xref py py-class docutils literal notranslate"><span class="pre">MidiFile</span></code>), output port
 (<code class="xref py py-class docutils literal notranslate"><span class="pre">MidiOut</span></code>), and input port (<code class="xref py py-class docutils literal notranslate"><span class="pre">MidiIn</span></code>).</p>
-<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::midiOut">api/midi.html</a>.</p>
+<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/api/midi.html">YSE::midiOut / midiIn</a>.</p>
 </section>
 <section id="midifile">
 <h1>MidiFile<a class="headerlink" href="#midifile" title="Link to this heading">#</a></h1>
@@ -617,7 +620,8 @@ contains is delivered to [synth] block-accurately on the audio thread.
 May be called for several synths (up to a small fixed cap) to drive them
 together; re-connecting an already-connected synth is a no-op. [synth]
 must outlive the connection — [disconnectSynth] it (or dispose this file)
-before disposing the synth.</p>
+before disposing the synth. The file holds a Dart reference to [synth]
+until then, so garbage collection never frees it under the connection.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">disconnectSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -831,7 +835,8 @@ same channel 0-based, so channel 1 there is filter <cite>1</cite> here. May be c
 small fixed cap); re-connecting an already-connected synth just updates
 its channel filter. [synth] must outlive the connection —
 [disconnectSynth] it (or close/dispose this port) before disposing the
-synth.</p>
+synth. The port holds a Dart reference to [synth] until [disconnectSynth]
+or [dispose], so garbage collection never frees it under the connection.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">disconnectSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">)</span>
 </pre></div>
 </div>

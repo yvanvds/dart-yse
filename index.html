@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>dart-yse &#8212; dart-yse 0.1</title>
+    <title>dart-yse &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="_static/documentation_options.js?v=7f7c277e"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -50,7 +50,7 @@
     <link rel="next" title="What is dart-yse?" href="intro/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -173,7 +173,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -199,10 +199,13 @@
 <li class="toctree-l1"><a class="reference internal" href="intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -538,7 +541,8 @@ ABI; everything you can do in the C++ API has a Dart equivalent on the
 <a class="reference internal" href="api/index.html"><span class="doc">API Reference</span></a>.</p>
 <p>New here? Start with <a class="reference internal" href="intro/index.html"><span class="doc">What is dart-yse?</span></a>, then <a class="reference internal" href="intro/mental_model.html"><span class="doc">Mental model</span></a>,
 then <a class="reference internal" href="intro/hello_sound.html"><span class="doc">Hello, sound</span></a>. Looking for a specific class? The
-<a class="reference internal" href="api/index.html"><span class="doc">API Reference</span></a> is the full reference.</p>
+<a class="reference internal" href="api/index.html"><span class="doc">API Reference</span></a> is the full reference. Coming from <code class="docutils literal notranslate"><span class="pre">package:yse</span></code> 0.1.0
+(libYSE 2.4)? Read <a class="reference internal" href="intro/upgrading.html"><span class="doc">Upgrading to package:yse 0.2.0 (libYSE 3.1)</span></a>.</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
 <ul>
@@ -563,6 +567,7 @@ then <a class="reference internal" href="intro/hello_sound.html"><span class="do
 <li class="toctree-l1"><a class="reference internal" href="intro/install.html">Install</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="intro/install.html#windows-msys2-clang64">Windows (MSYS2 Clang64)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro/install.html#linux-ubuntu-24-04">Linux (Ubuntu 24.04)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/install.html#engine-version-and-build-options">Engine version and build options</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro/install.html#android-via-yse-flutter-libs">Android (via yse_flutter_libs)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro/install.html#verifying-the-install">Verifying the install</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro/install.html#next">Next</a></li>
@@ -571,6 +576,28 @@ then <a class="reference internal" href="intro/hello_sound.html"><span class="do
 <li class="toctree-l1"><a class="reference internal" href="intro/hello_sound.html">Hello, sound</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="intro/hello_sound.html#what-just-happened">What just happened</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro/hello_sound.html#what-s-not-here">What’s not here</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="intro/sessions_and_devices.html">Sessions and devices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/sessions_and_devices.html#starting-a-session">Starting a session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/sessions_and_devices.html#sample-rate">Sample rate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/sessions_and_devices.html#offline-sessions">Offline sessions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/sessions_and_devices.html#choosing-an-audio-device">Choosing an audio device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/sessions_and_devices.html#is-audio-flowing">Is audio flowing?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/sessions_and_devices.html#reconnecting-automatically">Reconnecting automatically</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/sessions_and_devices.html#midi-devices">MIDI devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/sessions_and_devices.html#where-to-go-next">Where to go next</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/upgrading.html#quick-checklist">Quick checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/upgrading.html#sessions-and-devices">Sessions and devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/upgrading.html#buffers-and-dsp">Buffers and DSP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/upgrading.html#patcher">Patcher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/upgrading.html#music-synth-and-midi">Music, synth and MIDI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/upgrading.html#bus-and-live-coding">Bus and live coding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/upgrading.html#known-upstream-issues">Known upstream issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/upgrading.html#where-to-go-next">Where to go next</a></li>
 </ul>
 </li>
 </ul>
@@ -635,7 +662,7 @@ then <a class="reference internal" href="intro/hello_sound.html"><span class="do
 <li class="toctree-l2"><a class="reference internal" href="api/clip.html#cliptransport">ClipTransport</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/clip.html#clipevent">ClipEvent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/synth.html">Synth</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/synth.html#id1">Synth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/synth.html#id3">Synth</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/synth.html#sfzinstrument">SfzInstrument</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/synth.html#dx7bank">Dx7Bank</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/synth.html#positionhandler">PositionHandler</a></li>

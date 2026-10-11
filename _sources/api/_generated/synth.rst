@@ -22,8 +22,23 @@ Voice cloning happens off the audio thread on the engine's setup pool, so
 a synth becomes playable a short moment *after* an `addVoices` call
 returns — poll [voiceCount] for the cloned count, exactly as a file-backed
 [Sound] is not playable until its buffer finishes loading. Voices must be
-added before the synth is attached/played; adding a group afterwards is
-rejected.
+added before the synth is attached/played; once [voiceCount] is non-zero
+the `add*Voices` methods and [setPositionHandler] throw [StateError].
+
+**Add every voice group right after `Synth()`** (issue #81). In libYSE
+v3.1.0 the engine's setup job can build a new synth before its voices
+arrive: the audio thread queues a synth setup job while any synth waits
+to be built (plus one spare job right after another synth finishes), and
+that job builds every synth it finds. A synth built that way keeps zero
+voices for good — the engine drops the later groups with only a log
+warning, and [voiceCount] stays `0` with no error raised. Measured on
+Windows x64, adding the voices immediately after
+`Synth()` still loses the race in roughly 1–10 % of cases when another
+synth was just built; leave 5 ms between the two and it is lost almost
+every time. The wrapper cannot detect this case (the C API reports
+success and has no status to query), so if [voiceCount] stays `0` well
+after the synth's sound is playing, dispose both and build a new synth.
+The fix belongs in the engine: yvanvds/yse-soundengine#1177.
 
 Channels use the musical layer's **1-based** numbering: `1..16` address a
 specific MIDI channel and `0` means *omni* (all channels) — `0` is never
@@ -110,8 +125,9 @@ highestNote]` on [channel] (`0` = omni). May be called several times to
 build layered or split keyboards. [attack], [decay] and [release] are in
 seconds; [sustain] is a level in `[0, 1]`.
 
-Must be called before the synth is played. Throws [YseException] if the
-group is rejected.
+Must be called right after `Synth()`, before the synth is played (see
+the class notes on issue #81). Throws [StateError] if the voice pool is
+already built, and [YseException] if the group is rejected.
 
 .. code-block:: dart
 
@@ -125,7 +141,9 @@ events broadcast on its MIDI channel — e.g. per-voice routing from a
 
 The instrument's region table and PCM are shared with the voice group,
 which retains its own reference — so [instrument] may be disposed right
-after this returns. Throws [YseException] if the group is rejected.
+after this returns. Like [addSineVoices], call it right after `Synth()`;
+throws [StateError] if the voice pool is already built, and
+[YseException] if the group is rejected.
 
 .. code-block:: dart
 
@@ -138,7 +156,9 @@ only to events broadcast on its MIDI channel — e.g. per-voice routing
 from a [ClipTransport].
 
 Establishes the synth's VA patch, which the `setVa*` setters steer. Call
-once per synth. Throws [YseException] on failure.
+once per synth, right after `Synth()` (see [addSineVoices]). Throws
+[StateError] if the voice pool is already built, and [YseException] on
+failure.
 
 .. code-block:: dart
 
@@ -152,7 +172,9 @@ from a [ClipTransport].
 
 Establishes the synth's FM patch — select a DX7 voice into it with
 [setFmPatch], or dial the headline params with the `setFm*` setters. Call
-once per synth. Throws [YseException] on failure.
+once per synth, right after `Synth()` (see [addSineVoices]). Throws
+[StateError] if the voice pool is already built, and [YseException] on
+failure.
 
 .. code-block:: dart
 
@@ -503,7 +525,8 @@ voice its own 3D position and movement.
 Must be called *before* the synth is attached/played — like the
 `add*Voices` methods, the engine rejects a handler swap once the voice
 pool is built (it logs a warning and keeps the existing handler). Throws
-[YseException] only for an unknown handler kind.
+[StateError] once [voiceCount] shows the pool is built, and
+[YseException] for an unknown handler kind.
 
 .. code-block:: dart
 

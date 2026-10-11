@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Random &#8212; dart-yse 0.1</title>
+    <title>Random &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Math" href="math.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -552,9 +555,11 @@
 <p>5 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/random.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/random.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#decide" id="id2"><code class="docutils literal notranslate"><span class="pre">.decide</span></code></a></p></li>
@@ -575,6 +580,20 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>An int or float at the left inlet flips the coin just like a bang; its value
+is ignored.</p>
+<p><strong>Seeds</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">.decide</span></code>, <code class="docutils literal notranslate"><span class="pre">.drunk</span></code>, <code class="docutils literal notranslate"><span class="pre">.prob</span></code> and <code class="docutils literal notranslate"><span class="pre">.urn</span></code> each keep their own random
+sequence, set by the <code class="docutils literal notranslate"><span class="pre">seed</span></code> argument:</p>
+<ul class="simple">
+<li><p>Any seed other than 0 gives the same sequence on every run, so a generative
+patch can replay exactly.</p></li>
+<li><p>Seed 0, the default, takes a sequence from the engine’s generator. That too
+repeats from run to run, until the host calls <code class="docutils literal notranslate"><span class="pre">System.randomize()</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seed</span> <span class="pre">&lt;n&gt;</span></code> (or an int at the seed inlet, where there is one) restarts
+the sequence while the patch runs. A saved patch keeps the seed it was
+created with, not the last one sent.</p></li>
+</ul>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -671,6 +690,22 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each bang adds a random step to the current position and sends the result,
+clipped to 0 to range-1. The walk stays at an edge once it reaches it, until a
+step leads back; for a walk that bounces or wraps, pass the output through
+<code class="docutils literal notranslate"><span class="pre">.pong</span></code>.</p>
+<p>The step size is a limit that steps never reach: with the default 2, each step
+is -1, 0 or +1. A negative step size gives the same steps without 0, so the
+walk moves on every bang (if it is not held at an edge).</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>bang: take a step and send the new position.</p></li>
+<li><p>an int or float: move to that position (clipped) and send it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;n&gt;</span></code>: move to <code class="docutils literal notranslate"><span class="pre">n</span></code> without sending.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seed</span> <span class="pre">&lt;n&gt;</span></code>: restart the random sequence; see <code class="docutils literal notranslate"><span class="pre">.decide</span></code>.</p></li>
+</ul>
+<p>Changing the range clips the current position into it straight away. Floats
+are truncated.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -783,6 +818,35 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A list <code class="docutils literal notranslate"><span class="pre">&lt;from&gt;</span> <span class="pre">&lt;to&gt;</span> <span class="pre">&lt;weight&gt;</span></code> stores a transition. Storing the same pair
+again replaces its weight. For each state, the weights of its transitions are
+added up, and each weight’s share is the chance of that jump:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1 1 3,  1 2 4,  1 3 1   =&gt;   from state 1: to 1 37.5%, to 2 50%, to 3 12.5%
+</pre></div>
+</div>
+<p>A weight of 0 keeps the transition but switches it off; negative weights count
+as 0. A state may jump to itself.</p>
+<p>Each bang makes one jump from the current state and sends the new state,
+which becomes the current state. When the current state has no transition with
+a weight above 0, nothing comes out of the left outlet: the middle outlet
+bangs and the current state becomes the <code class="docutils literal notranslate"><span class="pre">reset</span></code> state, so the next bang can
+start again.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>bang: make one jump.</p></li>
+<li><p>an int or float: set the current state without sending anything.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;from&gt;</span> <span class="pre">&lt;to&gt;</span> <span class="pre">&lt;weight&gt;</span></code>: store a transition. A list of any other length is
+ignored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: forget every transition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send every transition out of the right outlet, in the order they
+were first stored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span> <span class="pre">&lt;n&gt;</span></code>: set the state to return to after a dead end.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seed</span> <span class="pre">&lt;n&gt;</span></code>: restart the random sequence; see <code class="docutils literal notranslate"><span class="pre">.decide</span></code>.</p></li>
+</ul>
+<p><strong>Limits</strong></p>
+<p>The table holds 1024 transitions. Once it is full, a new pair is ignored;
+changing the weight of a stored pair still works.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.anal</span></code> builds the same kind of table from a stream of numbers.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -896,6 +960,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><code class="docutils literal notranslate"><span class="pre">.random</span></code> draws from the engine’s generator, so its numbers repeat from run
+to run until the host calls <code class="docutils literal notranslate"><span class="pre">System.randomize()</span></code>, and <code class="docutils literal notranslate"><span class="pre">System.randomSeed()</span></code> makes them replay. It has no seed of its own. A
+range of 0 or less always gives 0.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -992,6 +1059,21 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each bang deals one number from 0 to limit-1 that has not come out since the
+last refill, so every number appears once before any repeats. When all are
+dealt, a bang sends nothing from the left outlet and bangs the right one
+instead.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>bang: deal the next number.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: put every number back, in a new order.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seed</span> <span class="pre">&lt;n&gt;</span></code>: restart the random sequence and reshuffle the numbers not yet
+dealt; see <code class="docutils literal notranslate"><span class="pre">.decide</span></code>.</p></li>
+<li><p>an int or float at the right inlet: set the limit, clamped to 1-4096, and
+refill.</p></li>
+</ul>
+<p>The urn is refilled only by <code class="docutils literal notranslate"><span class="pre">clear</span></code> or a new limit. To deal round after
+round, send <code class="docutils literal notranslate"><span class="pre">clear</span></code> when the right outlet bangs.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

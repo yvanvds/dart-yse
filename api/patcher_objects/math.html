@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Math &#8212; dart-yse 0.1</title>
+    <title>Math &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Filters" href="filters.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -616,9 +619,11 @@
 <p>69 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/math.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/math.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#id1" id="id25"><code class="docutils literal notranslate"><span class="pre">.!-</span></code></a></p></li>
@@ -703,6 +708,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Use it when the value that should trigger the calculation is the one being
+subtracted:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.!- 100]   30 -&gt; left inlet  =&gt;  70
+</pre></div>
+</div>
+<p>The inlets work as described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -799,6 +810,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Use it when the value that should trigger the calculation is the divisor. A
+left operand of 0 sends 0.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.!/ 1]   4 -&gt; left inlet  =&gt;  0.25
+</pre></div>
+</div>
+<p>The inlets work as described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -991,6 +1008,17 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Works on whole numbers: a float on either inlet is truncated toward zero
+first, so 7.9 counts as 7. The remainder has the sign of the left operand, so
+-1 stays -1 rather than wrapping round:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.% 12]   14  =&gt;  2
+[.% 12]   -1  =&gt;  -1
+</pre></div>
+</div>
+<p>To wrap a number that can go negative into a range, use <code class="docutils literal notranslate"><span class="pre">.pong</span></code> with mode 2
+(<code class="docutils literal notranslate"><span class="pre">.pong</span> <span class="pre">0</span> <span class="pre">12</span> <span class="pre">2</span></code>), which sends 11 for -1. A divisor of 0 sends 0.
+<code class="docutils literal notranslate"><span class="pre">.div</span></code> sends the quotient that goes with the remainder. The inlets work as
+described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1087,6 +1115,20 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>The bitwise objects</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">.&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">.|</span></code>, <code class="docutils literal notranslate"><span class="pre">.&lt;&lt;</span></code> and <code class="docutils literal notranslate"><span class="pre">.&gt;&gt;</span></code> work on 32-bit whole numbers and send an
+int. A float on either inlet is truncated toward zero first.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.&amp;</span></code> keeps the bits set in both operands, so <code class="docutils literal notranslate"><span class="pre">.&amp;</span> <span class="pre">15</span></code> keeps the lowest
+four bits: 300 gives 12.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.|</span></code> keeps the bits set in either operand.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.&lt;&lt;</span></code> shifts bits up: <code class="docutils literal notranslate"><span class="pre">.&lt;&lt;</span> <span class="pre">4</span></code> turns 3 into 48. Bits shifted past the
+top are lost, and a count of 32 or more gives 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.&gt;&gt;</span></code> shifts bits down and keeps the sign, so -8 shifted by 1 is -4. A
+count of 32 or more gives -1 for a negative number and 0 for any other.</p></li>
+</ul>
+<p>A shift count below 0 shifts nothing. The inlets work as described under
+<code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1375,6 +1417,29 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>Hot and cold inlets</strong></p>
+<p>The left inlet is hot: a number there is stored and the result is sent at
+once. Every other inlet is cold: it stores its number for the next result and
+sends nothing. The creation argument sets the right operand, which is 0 until
+it is given.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.+ 10]   5 -&gt; left inlet                    =&gt;  15
+3 -&gt; right inlet, then 5 -&gt; left inlet       =&gt;  8
+</pre></div>
+</div>
+<p>Every math object with more than one inlet works this way unless its notes
+say otherwise.</p>
+<p>To set both operands from one message, update the cold inlet first:
+<code class="docutils literal notranslate"><span class="pre">.trigger</span></code> sends from its rightmost outlet to its leftmost, so wire its
+right outlet to the cold inlet and its left outlet to the hot one. <code class="docutils literal notranslate"><span class="pre">.swap</span></code>
+sends a pair in that order, and <code class="docutils literal notranslate"><span class="pre">.!-</span></code> and <code class="docutils literal notranslate"><span class="pre">.!/</span></code> are <code class="docutils literal notranslate"><span class="pre">.-</span></code> and <code class="docutils literal notranslate"><span class="pre">./</span></code>
+with the operands the other way round.</p>
+<p><strong>Numbers</strong></p>
+<p>Ints and floats are both accepted. A bang, a list or a word is ignored, so to
+calculate again, send the left value again.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.+</span></code>, <code class="docutils literal notranslate"><span class="pre">.-</span></code>, <code class="docutils literal notranslate"><span class="pre">.*</span></code>, <code class="docutils literal notranslate"><span class="pre">./</span></code>, <code class="docutils literal notranslate"><span class="pre">.!-</span></code> and <code class="docutils literal notranslate"><span class="pre">.!/</span></code> calculate in floats and
+send a float, even for two ints. A float holds whole numbers exactly only up
+to 16,777,216; above that, ints lose precision. Dividing by 0 sends 0. Use
+<code class="docutils literal notranslate"><span class="pre">.%</span></code> and <code class="docutils literal notranslate"><span class="pre">.div</span></code> for whole-number division.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1951,6 +2016,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>The comparison and logic objects</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">.==</span></code>, <code class="docutils literal notranslate"><span class="pre">.!=</span></code>, <code class="docutils literal notranslate"><span class="pre">.&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">.&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">.&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">.&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">.&amp;&amp;</span></code> and <code class="docutils literal notranslate"><span class="pre">.||</span></code> send 1
+when their test holds and 0 when it does not, as an int. Ints and floats are
+compared by value, so 3 equals 3.0.</p>
+<p>The test is exact. A value that ought to be 1 but arrives as 0.9999999 after
+some arithmetic is not equal to 1; send it through <code class="docutils literal notranslate"><span class="pre">.round</span></code> first.
+<code class="docutils literal notranslate"><span class="pre">.&amp;&amp;</span></code> and <code class="docutils literal notranslate"><span class="pre">.||</span></code> treat any number other than 0 as true, including
+negative numbers and fractions such as 0.5.</p>
+<p>The inlets work as described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2401,6 +2475,29 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The middle and right inlets change the stored value without sending it,
+unlike the cold inlets of the other math objects, which only store an
+operand.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a number on the left inlet: replace the stored value and send it.</p></li>
+<li><p>bang: send the stored value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;n&gt;</span></code>: replace the stored value without sending it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add</span> <span class="pre">&lt;n&gt;</span></code>: add without sending, as the middle inlet does. <code class="docutils literal notranslate"><span class="pre">ft1</span> <span class="pre">&lt;n&gt;</span></code> is
+another spelling of the same message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mult</span> <span class="pre">&lt;n&gt;</span></code>: multiply without sending, as the right inlet does.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span></code>: go back to the creation argument without sending. On an
+<code class="docutils literal notranslate"><span class="pre">.accum</span> <span class="pre">1</span></code> that is 1, not 0.</p></li>
+</ul>
+<p>A word without a number after it is ignored.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.accum 1]   mult 2, mult 2, bang  =&gt;  4
+</pre></div>
+</div>
+<p>The stored value is a float; there is no whole-number mode, so put <code class="docutils literal notranslate"><span class="pre">.round</span></code>
+after the outlet to get whole numbers. The value never becomes infinite: it
+stops at about plus or minus 3.4e38, and a later multiply brings it back. An
+infinite or undefined number (NaN) changes nothing when it is added or
+multiplied, and counts as 0 when it replaces the stored value.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2635,6 +2732,30 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Every number after the first is counted as a pair with the number before it,
+and the pair leaves with its new count. The first number only becomes the
+one the next number is paired with.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>60, 62, 60, 62  =&gt;  60 62 1,  62 60 1,  60 62 2
+</pre></div>
+</div>
+<p>Numbers are limited to 0 to <code class="docutils literal notranslate"><span class="pre">limit</span></code>, and floats are truncated, so with the
+default of 128 MIDI note numbers arrive unchanged.</p>
+<p>Wire the outlet into <code class="docutils literal notranslate"><span class="pre">.prob</span></code>: each list sets the weight of that transition
+in <code class="docutils literal notranslate"><span class="pre">.prob</span></code> to the count, so <code class="docutils literal notranslate"><span class="pre">.prob</span></code> learns which numbers follow which and
+can play in the same style.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: forget the counts, but keep the last number, so the next number
+still forms a pair with it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span></code>: forget the last number but keep the counts, so the next number
+starts a new phrase.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send every stored pair with its count, in the order the pairs
+were first seen. Use it to teach a <code class="docutils literal notranslate"><span class="pre">.prob</span></code> created later.</p></li>
+</ul>
+<p><strong>Limits</strong></p>
+<p>At most 1024 different pairs are stored. Once the table is full, pairs
+already in it keep counting, and a new pair is not stored: outlet 1 bangs
+instead. A count stops growing at 1,048,576.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3091,6 +3212,18 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>The engine’s decibel scale</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">.atodb</span></code> and <code class="docutils literal notranslate"><span class="pre">.dbtoa</span></code> use the scale the engine uses for its own volume
+levels: an amplitude of 1 is 100 dB, and every halving of the amplitude is
+about 6 dB less. An amplitude of 0.00001 and anything quieter gives 0, so the
+result never goes negative.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1    =&gt;  100
+0.5  =&gt;  93.98
+0.1  =&gt;  80
+</pre></div>
+</div>
+<p>Subtract 100 to read the result as decibels relative to full scale, and add
+100 to such a value before sending it to <code class="docutils literal notranslate"><span class="pre">.dbtoa</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3157,6 +3290,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Both outlets send on every calculation, the angle first, so an object that
+takes both values already has the angle when the distance arrives. The angle
+is measured counterclockwise from the positive x axis, from -pi to pi.
+<code class="docutils literal notranslate"><span class="pre">.poltocar</span></code> converts back. The inlets work as described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3259,6 +3396,38 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The first number is compared with the creation argument, 0 by default. A bare
+<code class="docutils literal notranslate"><span class="pre">.change</span></code> therefore ignores a first 0, and <code class="docutils literal notranslate"><span class="pre">.change</span> <span class="pre">5</span></code> stays silent until
+the value moves away from 5, so loading a patch does not report a parameter
+that has not moved.</p>
+<p>The comparison is exact: 0.5 and 0.5000001 are different numbers. To ignore
+small changes, put <code class="docutils literal notranslate"><span class="pre">.round</span></code> in front.</p>
+<p><strong>Outlets</strong></p>
+<ul class="simple">
+<li><p>left: the number, when it differs from the previous one.</p></li>
+<li><p>middle: 1 when the value changes from 0 to anything else.</p></li>
+<li><p>right: 1 when the value changes from anything else to 0.</p></li>
+</ul>
+<p>The outlets send from right to left, so whatever the number triggers already
+has the 0 reports. <code class="docutils literal notranslate"><span class="pre">.togedge</span></code> reports the same two changes as bangs.</p>
+<p><strong>Modes</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">+</span></code>: send 1 when the number is greater than the previous one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">-</span></code>: send -1 when the number is less than the previous one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: back to sending numbers that differ.</p></li>
+</ul>
+<p>A <code class="docutils literal notranslate"><span class="pre">+</span></code> or <code class="docutils literal notranslate"><span class="pre">-</span></code> after the creation argument starts the object in that mode.
+In every mode the previous number is the last one received, whether it was
+sent or not: a <code class="docutils literal notranslate"><span class="pre">.change</span> <span class="pre">+</span></code> fed 5, 3, 4 sends 1 (5 is above the starting
+0), nothing, then 1.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;n&gt;</span></code>: store n as the previous number without sending anything, for
+when the value was changed by another route.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span></code>: go back to the creation value and mode without sending.</p></li>
+</ul>
+<p>A list counts as its first number. A bang, a word and an infinite or
+undefined number (NaN) are ignored.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3361,6 +3530,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The limits may be given in either order: <code class="docutils literal notranslate"><span class="pre">.clip</span> <span class="pre">1</span> <span class="pre">-1</span></code> clips like
+<code class="docutils literal notranslate"><span class="pre">.clip</span> <span class="pre">-1</span> <span class="pre">1</span></code>. An undefined number (NaN) becomes 0 before it is clipped, so
+the result is always inside the range. <code class="docutils literal notranslate"><span class="pre">~clip</span></code> does the same to an audio
+signal. The inlets work as described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3600,6 +3773,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The first bang sends the start value plus the step, so <code class="docutils literal notranslate"><span class="pre">.counter</span> <span class="pre">0</span> <span class="pre">1</span></code> sends
+1, 2, 3 and so on. Create it as <code class="docutils literal notranslate"><span class="pre">.counter</span> <span class="pre">-1</span></code> to send 0 first.</p>
+<p>An int on the left inlet sets the count and sends it; the next bang adds the
+step to that. <code class="docutils literal notranslate"><span class="pre">reset</span></code> goes back to the start value without sending. Floats
+are ignored on both inlets.</p>
+<p>The count has no limit and does not wrap. To make it loop, send it through
+<code class="docutils literal notranslate"><span class="pre">.%</span></code> or <code class="docutils literal notranslate"><span class="pre">.pong</span></code>, or reset it.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3767,6 +3947,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The quotient is truncated toward zero, so -7 divided by 2 is -3, and floats
+are truncated before the division. <code class="docutils literal notranslate"><span class="pre">.%</span></code> sends the matching remainder.
+The inlets work as described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3863,6 +4046,48 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>Placeholders</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">$i1</span></code> to <code class="docutils literal notranslate"><span class="pre">$i9</span></code> read an inlet as an int, truncated toward zero; <code class="docutils literal notranslate"><span class="pre">$f1</span></code> to
+<code class="docutils literal notranslate"><span class="pre">$f9</span></code> read it as a float. The number is the inlet, counted from 1 at the
+left. The object has as many inlets as the highest placeholder, and an inlet
+that is skipped, such as inlet 2 in <code class="docutils literal notranslate"><span class="pre">$f1</span> <span class="pre">+</span> <span class="pre">$f3</span></code>, is there but unused. An
+inlet that has not received a number reads 0.</p>
+<p><strong>Types</strong></p>
+<p>Types follow C:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code> and <code class="docutils literal notranslate"><span class="pre">%</span></code> on two ints give an int, so
+<code class="docutils literal notranslate"><span class="pre">$i1</span> <span class="pre">/</span> <span class="pre">$i2</span></code> is whole-number division. With a float on either side, the
+result is a float.</p></li>
+<li><p>Comparisons (<code class="docutils literal notranslate"><span class="pre">&lt;</span> <span class="pre">&lt;=</span> <span class="pre">&gt;</span> <span class="pre">&gt;=</span> <span class="pre">==</span> <span class="pre">!=</span></code>), logic (<code class="docutils literal notranslate"><span class="pre">&amp;&amp;</span> <span class="pre">||</span> <span class="pre">!</span></code>) and bitwise
+operators (<code class="docutils literal notranslate"><span class="pre">&amp;</span> <span class="pre">|</span> <span class="pre">^</span> <span class="pre">&lt;&lt;</span> <span class="pre">&gt;&gt;</span> <span class="pre">~</span></code>) give an int. <code class="docutils literal notranslate"><span class="pre">^</span></code> is exclusive or, not a
+power: use <code class="docutils literal notranslate"><span class="pre">pow()</span></code>.</p></li>
+<li><p>The result leaves as an int or a float to match.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.expr ($f1 - 32) * 5 / 9]   212  =&gt;  100, a float
+[.expr $i1 / 2]              7    =&gt;  3, an int
+</pre></div>
+</div>
+<p><strong>Functions</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, <code class="docutils literal notranslate"><span class="pre">abs</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">pow</span></code>, <code class="docutils literal notranslate"><span class="pre">sqrt</span></code>, <code class="docutils literal notranslate"><span class="pre">exp</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ln</span></code> and <code class="docutils literal notranslate"><span class="pre">log</span></code> (both the natural logarithm), <code class="docutils literal notranslate"><span class="pre">log10</span></code>, <code class="docutils literal notranslate"><span class="pre">sin</span></code>, <code class="docutils literal notranslate"><span class="pre">cos</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tan</span></code>, <code class="docutils literal notranslate"><span class="pre">asin</span></code>, <code class="docutils literal notranslate"><span class="pre">acos</span></code>, <code class="docutils literal notranslate"><span class="pre">atan</span></code>, <code class="docutils literal notranslate"><span class="pre">atan2</span></code>, <code class="docutils literal notranslate"><span class="pre">sinh</span></code>, <code class="docutils literal notranslate"><span class="pre">cosh</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tanh</span></code>, <code class="docutils literal notranslate"><span class="pre">fact</span></code> (factorial), <code class="docutils literal notranslate"><span class="pre">round</span></code>, <code class="docutils literal notranslate"><span class="pre">floor</span></code> and <code class="docutils literal notranslate"><span class="pre">ceil</span></code>. <code class="docutils literal notranslate"><span class="pre">int</span></code>,
+<code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">abs</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code> keep ints as ints; the others return
+a float.</p>
+<p>Division by 0, and any result that is not a finite number, give 0.</p>
+<p><strong>Input</strong></p>
+<p>A list on the left inlet fills the inlets from the left and calculates.
+Items past the ninth are ignored, and inlets the list does not reach keep
+their numbers. A bang calculates again with the stored numbers. The other
+inlets take single numbers.</p>
+<p><strong>Errors</strong></p>
+<p>An expression that cannot be read is reported in the log when the object is
+created, and the object then sends 0. Random numbers (<code class="docutils literal notranslate"><span class="pre">random</span></code>, <code class="docutils literal notranslate"><span class="pre">noise</span></code>)
+and table functions (<code class="docutils literal notranslate"><span class="pre">size</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">avg</span></code>, <code class="docutils literal notranslate"><span class="pre">store</span></code> and <code class="docutils literal notranslate"><span class="pre">$s</span></code>
+placeholders) are not supported and are reported the same way; use
+<code class="docutils literal notranslate"><span class="pre">.random</span></code> for random numbers.</p>
+<p>The expression is read once, when the object is created, so evaluating it is
+cheap and safe on the audio thread.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3953,6 +4178,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The scale is equal temperament with 12 notes per octave: 440 Hz is 69, 880 Hz
+is 81, and 450 Hz is about 69.39. A frequency of 0 or below has no note, so it
+gives -1500, which <code class="docutils literal notranslate"><span class="pre">.mtof</span></code> turns back into a frequency of almost 0.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4019,6 +4247,21 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Numbers from 0 to <code class="docutils literal notranslate"><span class="pre">size</span></code> - 1 are counted; floats are truncated. A number
+outside that range is not counted: outlet 1 bangs instead. With the default
+size of 128, MIDI note numbers fit.</p>
+<p><strong>Inlets and messages</strong></p>
+<ul class="simple">
+<li><p>a number on the left inlet: count it and send it with its new count.</p></li>
+<li><p>a number on the right inlet: send it with its count, without counting it.</p></li>
+<li><p>bang: send the last counted number and its count again; <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">0</span></code> before
+anything was counted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: set every count to 0. The last number is kept, so a bang then
+reports it with a count of 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send every number with a count above 0, lowest first.</p></li>
+</ul>
+<p>Changing the <code class="docutils literal notranslate"><span class="pre">size</span></code> argument clears the counts. A count stops growing at
+1,073,741,824.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4121,6 +4364,18 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The output is <code class="docutils literal notranslate"><span class="pre">outputMax</span> <span class="pre">*</span> <span class="pre">curve</span> <span class="pre">^</span> <span class="pre">(value</span> <span class="pre">-</span> <span class="pre">inputMax)</span></code>. With the defaults,
+a 0-127 controller covers a wide range evenly:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.linedrive 127 1 1.06]   127  =&gt;  1
+                          64   =&gt;  about 0.025
+                          0    =&gt;  about 0.0006
+</pre></div>
+</div>
+<p>Values above <code class="docutils literal notranslate"><span class="pre">inputMax</span></code> give more than <code class="docutils literal notranslate"><span class="pre">outputMax</span></code>; nothing is limited,
+so add <code class="docutils literal notranslate"><span class="pre">.clip</span></code> when that matters. A curve below 1 mirrors the response, so
+the output grows as the value falls, and a curve of 1 always sends
+<code class="docutils literal notranslate"><span class="pre">outputMax</span></code>. A curve of 0 or below, or a result too large for a float,
+sends 0. The inlets work as described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4239,6 +4494,25 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Numbers on the left inlet are compared with the stored value but never
+change it. For the largest number received so far, use <code class="docutils literal notranslate"><span class="pre">.peak</span></code>.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a number: send the larger of it and the stored value.</p></li>
+<li><p>bang: send the last result again. Before the first result, that is the
+creation argument.</p></li>
+<li><p>a list of two or more numbers: send the largest item. The stored value
+takes no part, and afterwards the second largest item becomes the stored
+value. Up to 256 items are read; a one-item list counts as a number.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.maximum 0.1]   0.05  =&gt;  0.1
+                 0.3   =&gt;  0.3
+                 3 9 4 =&gt;  9, and 4 is now the stored value
+</pre></div>
+</div>
+<p>With a control on the right inlet, <code class="docutils literal notranslate"><span class="pre">.maximum</span></code> is a lower limit that can
+move. The result is always a float. An infinite or undefined number (NaN)
+counts as 0.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4335,6 +4609,22 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The count leaves before the average, so whatever the average triggers
+already has the matching count.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a number: add it and send the new average.</p></li>
+<li><p>bang: send the average and count again; 0 and 0 before any number.</p></li>
+<li><p>a list: send the average of its items (up to 256) and start over from
+them. Numbers that arrive later are averaged with the list’s items.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code> or <code class="docutils literal notranslate"><span class="pre">reset</span></code>: start over without sending.</p></li>
+</ul>
+<p>Every number counts the same however long the average runs; the sum is kept
+in double precision, so it stays accurate over billions of numbers. An
+infinite or undefined number (NaN) counts as 0 and is still counted. The
+count outlet stops at 2,147,483,647, but the average stays correct. For an
+average that forgets old numbers, use <code class="docutils literal notranslate"><span class="pre">.slide</span></code>, or <code class="docutils literal notranslate"><span class="pre">.array.stream</span></code> with
+<code class="docutils literal notranslate"><span class="pre">.array.mean</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4407,6 +4697,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Works like <code class="docutils literal notranslate"><span class="pre">.maximum</span></code> with the comparison reversed: a list sends its
+smallest item, and the second smallest becomes the stored value.</p>
+<p>The stored value starts at 0, so a bare <code class="docutils literal notranslate"><span class="pre">.minimum</span></code> sends 0 for every
+positive number. Give it an argument, or a number on the right inlet.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4503,6 +4797,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The scale is equal temperament with 12 notes per octave: 69 is 440 Hz, 60
+(middle C) is about 261.63 Hz, and 69.5 is a quarter tone above A4. Note
+numbers outside 0-127 work too, from -1500 to 1499: a higher note is treated
+as 1499, and a lower one gives 0 Hz.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4569,6 +4867,31 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A number has reached its threshold when it is equal to it or above. The
+object bangs when the number reaches the threshold after being below it, and
+is ready again only once the number drops strictly below:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.past 100]   80, 110, 120, 90, 105  =&gt;  bang at 110, bang at 105
+[.past 5]     10, 5, 10              =&gt;  one bang, at the first 10
+</pre></div>
+</div>
+<p>A new object bangs on the first number that reaches the threshold.</p>
+<p><strong>Several thresholds</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">.past</span> <span class="pre">60</span> <span class="pre">100</span></code> compares a list item by item: the first item with 60, the
+second with 100. It bangs when every item has reached its threshold. A list
+with fewer items updates only those positions, a number is the first item,
+and items past the last threshold are ignored. At most 256 thresholds are
+held.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: forget the past, so the next number that reaches the thresholds
+bangs again. The thresholds are kept.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;numbers&gt;</span></code>: change the thresholds. This does not clear: a threshold
+that is changed continually does not cause a bang for every message above
+it. Positions the new list adds start below their threshold.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span></code>: go back to the creation thresholds and clear.</p></li>
+</ul>
+<p>None of them sends anything. A bang is ignored, and an infinite or undefined
+number (NaN) counts as 0, in the input and in the thresholds.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4659,6 +4982,26 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>Inlets and messages</strong></p>
+<ul class="simple">
+<li><p>a number on the left inlet: when it is greater than the peak, it becomes
+the peak and is sent. A number equal to the peak is not a new peak.</p></li>
+<li><p>a number on the right inlet: it becomes the peak and is sent, and counts as
+new even when it is lower.</p></li>
+<li><p>bang: send the peak from the left outlet only.</p></li>
+<li><p>a list <code class="docutils literal notranslate"><span class="pre">&lt;number&gt;</span> <span class="pre">&lt;peak&gt;</span></code>: set the peak as the right inlet does, then offer
+the number. Items past the second are ignored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;n&gt;</span></code>: set the peak without sending.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span></code>: go back to the creation argument without sending.</p></li>
+</ul>
+<p>Every number sends the two flag outlets, right before middle, and then the
+new peak if there is one.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.peak]   3, 5, 4, 9  =&gt;  3, 5, (nothing), 9
+</pre></div>
+</div>
+<p>The peak starts at 0, so negative numbers never beat it. For data below 0,
+give a lower start, such as <code class="docutils literal notranslate"><span class="pre">.peak</span> <span class="pre">-1000</span></code>. The result is always a float, and
+an infinite or undefined number (NaN) counts as 0.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4767,6 +5110,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Both outlets send on every calculation, y first, so an object that takes both
+values already has y when x arrives. The inlets work as described under
+<code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4869,6 +5215,22 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>Modes</strong></p>
+<p>The third argument sets the mode:</p>
+<ul class="simple">
+<li><p>3, fold (the default): a number past a limit is reflected back, as many
+times as needed. With the range 0 to 10, 12 gives 8 and -3 gives 3.</p></li>
+<li><p>2, wrap: a number past a limit comes back in from the other side. The
+range includes <code class="docutils literal notranslate"><span class="pre">low</span></code> but not <code class="docutils literal notranslate"><span class="pre">high</span></code>, so 10 gives 0, 12 gives 2 and -3
+gives 7. Fed from a counter, this cycles through the range, negative
+counts included.</p></li>
+<li><p>1, clip: as <code class="docutils literal notranslate"><span class="pre">.clip</span></code>.</p></li>
+<li><p>0: the number passes unchanged.</p></li>
+</ul>
+<p>Any other mode folds. The limits may be given in either order, and when they
+are equal the result is always that value. An infinity goes to the nearest
+limit, and an undefined number (NaN) counts as 0. The inlets work as
+described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5173,6 +5535,23 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The mapping is</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>n   = (value - inLow) / (inHigh - inLow)
+out = outLow + (outHigh - outLow) * n ^ exponent
+</pre></div>
+</div>
+<p>so an exponent above 1 starts slowly and ends fast, and one below 1 does the
+opposite. Below <code class="docutils literal notranslate"><span class="pre">inLow</span></code>, where n is negative, the curve is mirrored.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.scale 0 127 0 1]     64  =&gt;  0.504
+[.scale 0 127 0 1 2]   64  =&gt;  0.254
+</pre></div>
+</div>
+<p>A number outside the input range maps past the output range. Set the sixth
+argument, <code class="docutils literal notranslate"><span class="pre">clip</span></code>, to 1 to limit the result to the output range instead, or
+use <code class="docutils literal notranslate"><span class="pre">.zmap</span></code>, which always limits and is always a straight line.</p>
+<p>Either range may run from high to low. When <code class="docutils literal notranslate"><span class="pre">inLow</span></code> equals <code class="docutils literal notranslate"><span class="pre">inHigh</span></code>, the
+result is <code class="docutils literal notranslate"><span class="pre">outLow</span></code>. A result that is not a finite number sends 0. The
+inlets work as described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5318,6 +5697,19 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>The single-input functions</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">.sin</span></code>, <code class="docutils literal notranslate"><span class="pre">.cos</span></code>, <code class="docutils literal notranslate"><span class="pre">.tan</span></code>, <code class="docutils literal notranslate"><span class="pre">.asin</span></code>, <code class="docutils literal notranslate"><span class="pre">.acos</span></code>, <code class="docutils literal notranslate"><span class="pre">.atan</span></code>, <code class="docutils literal notranslate"><span class="pre">.sinh</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.cosh</span></code>, <code class="docutils literal notranslate"><span class="pre">.tanh</span></code>, <code class="docutils literal notranslate"><span class="pre">.asinh</span></code>, <code class="docutils literal notranslate"><span class="pre">.acosh</span></code>, <code class="docutils literal notranslate"><span class="pre">.atanh</span></code>, <code class="docutils literal notranslate"><span class="pre">.abs</span></code> and
+<code class="docutils literal notranslate"><span class="pre">.sqrt</span></code> have one inlet. A number there, int or float, sends the result at
+once as a float.</p>
+<p>Angles are in radians: a full circle is 2 pi, about 6.2832. To use degrees,
+multiply by 0.017453 (pi / 180) first:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.* 0.017453] -&gt; [.sin]   90  =&gt;  1
+</pre></div>
+</div>
+<p>Where a function has no finite result, for a number outside its range or a
+result too large for a float, it sends 0. When 0 is also a meaningful
+result, check the range of the input first.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5450,6 +5842,26 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each number moves the output <code class="docutils literal notranslate"><span class="pre">(number</span> <span class="pre">-</span> <span class="pre">output)</span> <span class="pre">/</span> <span class="pre">slide</span></code> closer to it. A
+slide of 1 jumps straight to the number; a slide of 10 covers a tenth of the
+remaining distance per number. The output starts at 0.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.slide 4 4]   100, 100, 100  =&gt;  25, 43.75, 57.81
+</pre></div>
+</div>
+<p>The smoothing counts numbers, not time, so it depends on how often numbers
+arrive. For a ramp over a set time, use <code class="docutils literal notranslate"><span class="pre">.line</span></code> or <code class="docutils literal notranslate"><span class="pre">~line</span></code>.</p>
+<p>A slide below 1 counts as 1. Once the output is within a millionth of the
+number, it lands exactly on it. An infinite or undefined number (NaN) counts
+as 0.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>bang: take another step towards the last number. Repeated bangs glide the
+output to it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;n&gt;</span></code>: make n the number to move towards, without sending. Follow it
+with bangs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span></code>: set the output to 0 without sending. The number to move towards
+is kept.</p></li>
+</ul>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5623,6 +6035,28 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Use it when two values arrive in the wrong order for the hot and cold rule
+(see <code class="docutils literal notranslate"><span class="pre">.+</span></code>). The right outlet always sends first, and everything connected
+to it finishes before the left outlet sends, so wire the right outlet to a
+cold inlet and the left outlet to the hot one:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.swap 100]  right outlet -&gt; right inlet of [.-]
+             left outlet  -&gt; left inlet of [.-]
+x -&gt; left inlet of [.swap]  =&gt;  [.-] sends 100 - x
+</pre></div>
+</div>
+<p>Each number keeps its type: an int leaves as an int and a float as a float.
+The argument’s spelling sets its type: <code class="docutils literal notranslate"><span class="pre">.swap</span> <span class="pre">5</span></code> holds the int 5 and
+<code class="docutils literal notranslate"><span class="pre">.swap</span> <span class="pre">5.</span></code> the float 5.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a number on the left inlet: store it and send the pair.</p></li>
+<li><p>bang: send the pair again unchanged. Before anything has arrived, that is
+0 and the argument.</p></li>
+<li><p>a list: the first number goes to the left inlet’s slot and the second to
+the right’s, then the pair is sent. A single number leaves the right slot
+alone. Reading stops at the first word, and a list that starts with a word
+is ignored.</p></li>
+</ul>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5857,6 +6291,27 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Only transitions are reported: 5 followed by 9 sends nothing, and neither
+does 0 followed by 0. The two outlets therefore take turns, never banging
+twice in a row from the same side, which makes them a reliable pair of
+note-on and note-off triggers.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>0, 0.2, 0.8, 0.3, 0  =&gt;  left bang at 0.2, right bang at the last 0
+</pre></div>
+</div>
+<p>The value starts at 0, so the first non-zero number bangs the left outlet and
+a first 0 sends nothing. Any number other than 0 counts, fractions such as
+0.5 included.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>bang: flip the value between zero and non-zero, and bang the matching
+outlet. A stream of bangs alternates left, right, left. After a number such
+as 5, a bang flips to 0 and bangs the right outlet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span></code>: set the value to 0 without sending, so the gate is closed again
+without a right-outlet bang.</p></li>
+</ul>
+<p>A list counts as its first number. Words and infinite or undefined numbers
+(NaN) are ignored. <code class="docutils literal notranslate"><span class="pre">.change</span></code> reports the same transitions as 1s, next to
+the value.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5929,6 +6384,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Works like <code class="docutils literal notranslate"><span class="pre">.peak</span></code> with the comparison reversed: a number below the minimum
+becomes the new minimum and is sent.</p>
+<p>The minimum starts at 128, so MIDI values can go below it. For larger data,
+give a higher start, such as <code class="docutils literal notranslate"><span class="pre">.trough</span> <span class="pre">100000</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -6037,6 +6496,20 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The language is that of <code class="docutils literal notranslate"><span class="pre">.expr</span></code>: placeholders, operators, types, functions
+and errors work as described there.</p>
+<p>Every inlet holds a list, and a single number is a one-item list. The
+expression runs once per position, up to the length of the shortest list
+among the inlets it uses. An inlet that holds one item supplies it to every
+position.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.vexpr $f1 * $f2]   0.5 -&gt; right inlet, then 60 64 67 -&gt; left  =&gt;  30 32 33.5
+[.vexpr $i1 + $i2]   0 4 7 -&gt; right inlet, then 60 -&gt; left      =&gt;  60 64 67
+</pre></div>
+</div>
+<p>A single result leaves as an int or a float rather than a list. Every inlet
+takes lists, of up to 256 items; items past that are dropped. A list without
+numbers is ignored, a bang calculates again, and an inlet that has received
+nothing reads as a single 0.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -6127,6 +6600,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The mapping is the straight-line <code class="docutils literal notranslate"><span class="pre">.scale</span></code>, always limited to the output
+range. A number outside the input range, an infinity included, gives the
+nearest output limit:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.zmap 0 127 0 1]   200  =&gt;  1
+                    -5   =&gt;  0
+</pre></div>
+</div>
+<p>Either range may run from high to low. When <code class="docutils literal notranslate"><span class="pre">inLow</span></code> equals <code class="docutils literal notranslate"><span class="pre">inHigh</span></code>, the
+result is <code class="docutils literal notranslate"><span class="pre">outLow</span></code>. The inlets work as described under <code class="docutils literal notranslate"><span class="pre">.+</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -6448,6 +6930,22 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>DSP (audio-rate)</p>
 </dd>
 </dl>
+<p><strong>The audio-rate operators</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">~+</span></code>, <code class="docutils literal notranslate"><span class="pre">~-</span></code>, <code class="docutils literal notranslate"><span class="pre">~*</span></code> and <code class="docutils literal notranslate"><span class="pre">~/</span></code> share these rules:</p>
+<ul class="simple">
+<li><p>The left inlet takes the audio signal. Nothing comes out while no audio
+reaches it.</p></li>
+<li><p>The right inlet takes an audio signal or a number, int or float. While
+audio is connected there, it is used sample by sample; otherwise the last
+number is used, or the argument until a number arrives.</p></li>
+<li><p>A new number takes effect at the next audio block and is not smoothed, so a
+large jump can click. Ramp it with <code class="docutils literal notranslate"><span class="pre">~line</span></code> instead.</p></li>
+<li><p>When no argument is given, <code class="docutils literal notranslate"><span class="pre">~+</span></code> and <code class="docutils literal notranslate"><span class="pre">~-</span></code> use 0 and <code class="docutils literal notranslate"><span class="pre">~*</span></code> and <code class="docutils literal notranslate"><span class="pre">~/</span></code>
+use 1, so a bare object passes the signal through unchanged.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[~* 0.5]   halves the signal's level
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -6736,6 +7234,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>DSP (audio-rate)</p>
 </dd>
 </dl>
+<p>A number of 0 on the right inlet leaves the signal unchanged. An audio divisor
+that reaches 0 produces infinite samples, so keep it away from 0. The other
+rules are described under <code class="docutils literal notranslate"><span class="pre">~*</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -6832,6 +7333,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>DSP (audio-rate)</p>
 </dd>
 </dl>
+<p>The low and high inlets take ints and floats. When low
+is above high, every sample becomes high. New limits take effect at the next
+audio block.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

@@ -71,6 +71,9 @@ unbinds the clip from any clock it was bound to.
 Route this clip's playback to an external MIDI output port. [out] must
 already have opened a port. May be called for several ports.
 
+The clip holds a Dart reference to [out] until [disconnectMidiOut] or
+[dispose], so garbage collection never frees the port under it.
+
 .. code-block:: dart
 
    void disconnectMidiOut(MidiOut out)
@@ -84,6 +87,10 @@ Stop routing this clip to [out].
 Route this clip's playback to an internal [synth]. The engine drives the
 synth's note events from the audio thread. [synth] must outlive the clip
 (or be disconnected first). May be called for several synths.
+
+The clip holds a Dart reference to [synth] until [disconnectSynth] or
+[dispose], so garbage collection never frees the synth under it; don't
+`.dispose()` the synth while it is connected.
 
 .. code-block:: dart
 

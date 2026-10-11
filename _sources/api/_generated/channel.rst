@@ -206,9 +206,15 @@ slot; the effect processes the channel's summed output in place, before
 reverb and the channel [volume]. Chain multiple effects with
 [DspObject.link] and assign the head. Assign `null` to detach.
 
-The channel holds only a borrowed reference: the assigned [DspObject]
+The engine holds only a borrowed reference: the assigned [DspObject]
 (and every object linked after it) must outlive the channel, or be
-detached first. This mirrors `Sound.dsp` at the channel level.
+detached first. The wrapper holds a Dart reference to the assigned head
+for this native channel — through any wrapper, including the fresh one
+each singleton getter returns — and each effect holds its linked
+successor, so garbage collection never frees the chain while it is
+attached. The reference is dropped when the head is replaced, the
+channel is [dispose]d, or `System.close()` ends the session. This
+mirrors `Sound.dsp` at the channel level.
 
 .. code-block:: dart
 

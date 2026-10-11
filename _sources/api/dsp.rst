@@ -8,7 +8,7 @@ operations a buffer supports) and chainable effect modules
 (:class:`DspObject`, which flattens its hierarchy into named factory
 constructors and subclass-specific accessors).
 
-Upstream: :yse-cpp:`api/dsp.html <YSE::DSP>`.
+Upstream: :yse-cpp:`YSE::DSP <api/dsp.html>` (buffers), :yse-cpp:`DSP modules <api/dsp_modules.html>` and :yse-cpp:`mixing effects <api/effects.html>`.
 
 Every buffer supports sample-wise math against another buffer
 (:py:meth:`DspBuffer.addBuffer`, ``subBuffer``, ``mulBuffer``,

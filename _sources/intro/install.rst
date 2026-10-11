@@ -65,6 +65,26 @@ sibling shared libraries are discovered automatically — no
    export YSE_DLL_PATH="$PWD/third_party/yse-soundengine/build/bin"
    dart run example/hello_sound.dart
 
+Engine version and build options
+--------------------------------
+
+The submodule is pinned to the libYSE release this package binds
+(**v3.1.0** for ``package:yse`` 0.2.0); :py:attr:`System.version` reports
+the library you actually loaded. The bindings follow that pin, so build
+the submodule as checked out rather than another engine version.
+
+Two upstream CMake options change what the wrapper can do:
+
+- ``-DYSE_ENABLE_PYTHON=ON`` (default ``OFF``, desktop only) embeds the
+  CPython interpreter behind :class:`LiveCoding`. Without it the API stays
+  callable and reports the build through :py:attr:`LiveCoding.enabled`.
+  Upstream's ``release-python`` CMake preset sets it.
+- ``YSE_ENABLE_MIDI_DEVICE`` (default ``ON`` on Windows and Linux, ``OFF``
+  elsewhere) builds the RtMidi device backend behind :class:`MidiIn` /
+  :class:`MidiOut`. Without it the MIDI device counts are 0, and the
+  patcher objects marked *MIDI device only* in the object reference do not
+  exist.
+
 Android (via yse_flutter_libs)
 ------------------------------
 
@@ -75,8 +95,8 @@ and bundles it into the APK / AAB:
 .. code-block:: yaml
 
    dependencies:
-     yse: ^0.1.0
-     yse_flutter_libs: ^0.1.0
+     yse: ^0.2.0
+     yse_flutter_libs: ^0.2.0
 
 Requirements: Flutter ≥ 3.22, Android NDK 27.0.12077973 (must match
 the engine's CMake config), AGP ≥ 8.5, ``minSdk`` 26 (so Oboe can
@@ -88,8 +108,8 @@ See the project README for the end-to-end Flutter sample under
 Verifying the install
 ---------------------
 
-The 11 demos under ``example/`` are ports of the C++ demos shipped
-with libYSE. Each one exercises a different subsystem; start with the
+The 13 demos under ``example/`` are mostly ports of the C++ demos
+shipped with libYSE. Each one exercises a different subsystem; start with the
 simplest:
 
 .. code-block:: sh

@@ -85,6 +85,11 @@ Restrict legal starting pitches.
 When the [Player] picks a transposition for this motif it picks one
 whose starting note belongs to [validPitches].
 
+The engine *borrows* [validPitches] (it keeps a pointer, not a copy), so
+later changes to the scale apply. The motif holds a Dart reference to it
+until the next call or [dispose], so garbage collection never frees it
+under the motif; don't `.dispose()` the scale first.
+
 .. code-block:: dart
 
    void dispose()

@@ -4,7 +4,7 @@ Reverb
 Positioned reverb zones. The engine blends every reverb whose roll-off
 radius overlaps the listener into a single shared reverb processor.
 
-Upstream: :yse-cpp:`api/core.html <YSE::reverb>`.
+Upstream: :yse-cpp:`YSE::reverb <api/core.html>`.
 
 The named presets are also available as plain values:
 :py:meth:`ReverbPresetValues.fromPreset` returns the exact parameter set

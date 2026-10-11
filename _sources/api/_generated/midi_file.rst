@@ -52,7 +52,8 @@ contains is delivered to [synth] block-accurately on the audio thread.
 May be called for several synths (up to a small fixed cap) to drive them
 together; re-connecting an already-connected synth is a no-op. [synth]
 must outlive the connection — [disconnectSynth] it (or dispose this file)
-before disposing the synth.
+before disposing the synth. The file holds a Dart reference to [synth]
+until then, so garbage collection never frees it under the connection.
 
 .. code-block:: dart
 

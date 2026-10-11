@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Strings and symbols &#8212; dart-yse 0.1</title>
+    <title>Strings and symbols &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Lists" href="lists.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -557,9 +560,11 @@
 <p>10 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/strings.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/strings.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#atoi" id="id1"><code class="docutils literal notranslate"><span class="pre">.atoi</span></code></a></p></li>
@@ -585,6 +590,29 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The message is converted as it stands, as text: an int digit by digit
+(<code class="docutils literal notranslate"><span class="pre">123</span></code> gives <code class="docutils literal notranslate"><span class="pre">49</span> <span class="pre">50</span> <span class="pre">51</span></code>), a float including its decimal point, and a list
+character by character with <code class="docutils literal notranslate"><span class="pre">32</span></code> (a space) between its items. Runs of
+spaces count as one, and spaces at the ends are dropped.</p>
+<p>The text is read as UTF-8, so an accented letter gives one code, not two:
+<code class="docutils literal notranslate"><span class="pre">é</span></code> gives <code class="docutils literal notranslate"><span class="pre">233</span></code>. A byte that is not part of a valid UTF-8 character gives
+its own value, 0 to 255. <code class="docutils literal notranslate"><span class="pre">.spell</span></code> reads text the same way.</p>
+<p><strong>Inlets</strong></p>
+<ul class="simple">
+<li><p>Inlet 0 replaces the stored codes and sends them. A bang sends them again
+without converting anything.</p></li>
+<li><p>Inlet 1 adds codes to the end and sends nothing. Characters are added with
+no space between messages: <code class="docutils literal notranslate"><span class="pre">a</span></code> then <code class="docutils literal notranslate"><span class="pre">b</span></code> stores <code class="docutils literal notranslate"><span class="pre">97</span> <span class="pre">98</span></code>, while the one
+message <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">b</span></code> gives <code class="docutils literal notranslate"><span class="pre">97</span> <span class="pre">32</span> <span class="pre">98</span></code>.</p></li>
+<li><p>Inlet 2 replaces the stored codes and sends nothing.</p></li>
+</ul>
+<p>An empty message on inlet 0 or inlet 2 clears the stored codes. Nothing is
+sent while nothing is stored.</p>
+<p>The codes leave together as one list. Use <code class="docutils literal notranslate"><span class="pre">.iter</span></code> to get them one at a
+time.</p>
+<p><strong>Limits</strong></p>
+<p>At most 256 codes. A message that would take the total past 256 is refused
+whole: the stored codes stay as they were, and nothing is logged.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -663,6 +691,38 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The creation arguments are the items. Each one gets an inlet and is that
+inlet’s starting value. The output is the items written one after another,
+with nothing in between. To put a separator in, make it an item of its own:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.combine synth / lead / note]   inlet 4 &lt;- 60, then bang   =&gt;   synth/lead/60
+</pre></div>
+</div>
+<p><strong>What an inlet stores</strong></p>
+<ul class="simple">
+<li><p>A number is stored as its text.</p></li>
+<li><p>A list fills this item and the ones to its right, one token each. Tokens
+past the last item are dropped.</p></li>
+<li><p>An empty message clears the item. An item that was never set, or was
+cleared, adds nothing to the output.</p></li>
+</ul>
+<p>When every item is empty, nothing is sent.</p>
+<p><strong>Which inlets send</strong></p>
+<p>By default inlet 0 stores and sends and the other inlets only store. Start
+the arguments with <code class="docutils literal notranslate"><span class="pre">triggers</span></code> to change that:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">triggers</span> <span class="pre">-1</span></code>: every inlet sends.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">triggers</span> <span class="pre">&lt;n&gt;</span></code>: only inlet <code class="docutils literal notranslate"><span class="pre">n</span></code> sends.</p></li>
+</ul>
+<p>A bang on inlet 0 always sends the current items. If <code class="docutils literal notranslate"><span class="pre">triggers</span></code> is not
+followed by a whole number, or names an inlet that does not exist, the
+problem is logged: <code class="docutils literal notranslate"><span class="pre">triggers</span></code> is then read as an item, or inlet 0 stays the
+one that sends.</p>
+<p>There is no option to pad numbers to a fixed width; use <code class="docutils literal notranslate"><span class="pre">.sprintf</span></code> with a
+width (<code class="docutils literal notranslate"><span class="pre">%03d</span></code>) for that.</p>
+<p><strong>Limits</strong></p>
+<p>At most 32 items of at most 64 characters each. An argument that is too long
+is logged and the item left empty. A longer item arriving at an inlet is
+ignored and the item keeps its value.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -753,6 +813,23 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each token of the message is split on the separator, and the pieces leave as
+an ordinary list. Spaces in the message separate pieces too. Empty pieces
+are dropped, so <code class="docutils literal notranslate"><span class="pre">a//b</span></code> split on <code class="docutils literal notranslate"><span class="pre">/</span></code> gives <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">b</span></code>.</p>
+<p>When the result is a single token, it leaves as the type it reads as: a
+number leaves as an int or a float, and the word <code class="docutils literal notranslate"><span class="pre">bang</span></code> leaves as a bang.
+Anything longer leaves as a list. An int, a float or a bang that arrives
+passes through as it is.</p>
+<p><strong>The separator</strong></p>
+<p>The separator is the creation argument, and inlet 1 changes it. The default
+is a single space, which only evens out the spacing and restores the type.
+An empty separator splits a symbol into single characters, so <code class="docutils literal notranslate"><span class="pre">1234</span></code>
+gives <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">2</span> <span class="pre">3</span> <span class="pre">4</span></code>. A separator is one token of at most 16 characters; a
+longer one is ignored (and logged when it is the argument).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.tosymbol /]  &lt;- voice 3 freq   =&gt;   voice/3/freq
+[.fromsymbol /] &lt;- voice/3/freq  =&gt;   voice 3 freq
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -849,6 +926,24 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>An int or a float gives one character (a float is truncated first), and a
+list gives one character per code. The text is written as UTF-8, so
+<code class="docutils literal notranslate"><span class="pre">.atoi</span></code> after <code class="docutils literal notranslate"><span class="pre">.itoa</span></code> gives back the codes that went in, and <code class="docutils literal notranslate"><span class="pre">.itoa</span></code>
+after <code class="docutils literal notranslate"><span class="pre">.atoi</span></code> gives back the message.</p>
+<p>The result is always a list, even when it reads as a number: <code class="docutils literal notranslate"><span class="pre">49</span> <span class="pre">50</span></code> gives
+the text <code class="docutils literal notranslate"><span class="pre">12</span></code>. Send it through <code class="docutils literal notranslate"><span class="pre">.fromsymbol</span></code> to turn it into the int
+<code class="docutils literal notranslate"><span class="pre">12</span></code>.</p>
+<p>A token that is not a number, or a code that is not a character (negative,
+above 1114111, or in the range 55296-57343), refuses the whole message.</p>
+<p><strong>Inlets</strong></p>
+<p>The three inlets work as on <code class="docutils literal notranslate"><span class="pre">.atoi</span></code>: inlet 0 replaces and sends (a bang
+sends again), inlet 1 adds and sends nothing, inlet 2 replaces and sends
+nothing. An empty message on inlet 0 or inlet 2 clears the stored text. To
+build a word one character at a time, send each code to inlet 1 and bang
+inlet 0 when it is complete.</p>
+<p><strong>Limits</strong></p>
+<p>At most 256 characters. A message that would take the total past 256 is
+refused whole: the stored text stays as it was, and nothing is logged.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -927,6 +1022,51 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The first creation argument is the pattern. Everything after it, joined with
+single spaces, is the substitution, which is optional:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.regexp ^/synth/(\d+)/(\w+)$ %2]   &lt;- /synth/3/freq
+outlet 2: /synth/3/freq   outlet 1: 3 freq   outlet 0: freq
+</pre></div>
+</div>
+<p>The pattern is one token, so it cannot hold a space: write <code class="docutils literal notranslate"><span class="pre">\s</span></code> for any
+whitespace or <code class="docutils literal notranslate"><span class="pre">\x20</span></code> for exactly one space.</p>
+<p><strong>What is sent</strong></p>
+<p>For each match, from left to right, the matched text leaves outlet 2 and
+then its capture groups leave outlet 1 as one list. Outlet 1 stays silent
+when the pattern has no groups, and a group that took no part in the match
+is empty. After the last match, when a substitution is set, outlet 0 sends
+the whole message with every match replaced.</p>
+<p>A message the pattern matches nowhere leaves outlet 3 unchanged, and nothing
+else is sent, so the object also works as a filter. An int or a float is
+matched as the text that spells it.</p>
+<p>In the substitution, <code class="docutils literal notranslate"><span class="pre">%1</span></code> to <code class="docutils literal notranslate"><span class="pre">%9</span></code> insert a capture group, <code class="docutils literal notranslate"><span class="pre">%0</span></code> the whole
+match and <code class="docutils literal notranslate"><span class="pre">%%</span></code> a percent sign. A <code class="docutils literal notranslate"><span class="pre">%</span></code> before anything else is copied as
+it is.</p>
+<p><strong>Pattern syntax</strong></p>
+<ul class="simple">
+<li><p>Literal characters, and <code class="docutils literal notranslate"><span class="pre">.</span></code> for any character.</p></li>
+<li><p>Character classes: <code class="docutils literal notranslate"><span class="pre">[abc]</span></code>, ranges <code class="docutils literal notranslate"><span class="pre">[a-z]</span></code>, negation <code class="docutils literal notranslate"><span class="pre">[^0-9]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">\d</span> <span class="pre">\D</span> <span class="pre">\w</span> <span class="pre">\W</span> <span class="pre">\s</span> <span class="pre">\S</span></code>, inside a class or outside it.</p></li>
+<li><p>Escapes for the special characters (<code class="docutils literal notranslate"><span class="pre">\.</span></code>, <code class="docutils literal notranslate"><span class="pre">\(</span></code>, <code class="docutils literal notranslate"><span class="pre">\\</span></code> …), <code class="docutils literal notranslate"><span class="pre">\t</span> <span class="pre">\n</span>
+<span class="pre">\r</span></code>, and <code class="docutils literal notranslate"><span class="pre">\xHH</span></code> for a character by its hexadecimal code.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">^</span></code> and <code class="docutils literal notranslate"><span class="pre">$</span></code> anchor to the start and end of the whole message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">*</span> <span class="pre">+</span> <span class="pre">?</span></code> and <code class="docutils literal notranslate"><span class="pre">{n}</span></code>, <code class="docutils literal notranslate"><span class="pre">{n,}</span></code>, <code class="docutils literal notranslate"><span class="pre">{n,m}</span></code>. They are greedy; add <code class="docutils literal notranslate"><span class="pre">?</span></code>
+for the shortest match (<code class="docutils literal notranslate"><span class="pre">*?</span></code>).</p></li>
+<li><p>Alternation with <code class="docutils literal notranslate"><span class="pre">|</span></code>.</p></li>
+<li><p>Capturing groups <code class="docutils literal notranslate"><span class="pre">(</span> <span class="pre">)</span></code>, at most nine, and non-capturing <code class="docutils literal notranslate"><span class="pre">(?:</span> <span class="pre">)</span></code>.</p></li>
+</ul>
+<p>Backreferences, lookahead and lookbehind, named groups, <code class="docutils literal notranslate"><span class="pre">\b</span></code> and <code class="docutils literal notranslate"><span class="pre">\B</span></code>,
+<code class="docutils literal notranslate"><span class="pre">\A</span></code> and <code class="docutils literal notranslate"><span class="pre">\Z</span></code>, possessive quantifiers and inline flags are not
+supported. Neither is a repeat of something that can match nothing, such as
+<code class="docutils literal notranslate"><span class="pre">(a*)*</span></code>. Such a pattern is logged when the object is created, and the
+object then sends every message out of outlet 3.</p>
+<p><strong>Limits</strong></p>
+<p>A pattern is at most 256 characters, a <code class="docutils literal notranslate"><span class="pre">{n,m}</span></code> count at most 64 and groups
+nest at most 16 deep. A message longer than 512 characters leaves outlet 3
+unmatched. A pattern that takes too long on one message stops searching
+there; when nothing had matched yet, the message counts as unmatched. A
+substitution result longer than 4096 characters is not sent. Safe on the
+audio thread: matching never allocates memory and its time is bounded.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1040,6 +1180,21 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The message is spelled as it stands, by the same rules as <code class="docutils literal notranslate"><span class="pre">.atoi</span></code>: an int
+digit by digit, a float including its decimal point, a list character by
+character with <code class="docutils literal notranslate"><span class="pre">32</span></code> between its items, and UTF-8 text one code per
+character. Unlike <code class="docutils literal notranslate"><span class="pre">.atoi</span></code> it stores nothing and does not take a bang.</p>
+<p>The two creation arguments pad a short result to a fixed length, which is
+useful for fixed-width records:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.spell 5]      &lt;- hi   =&gt;   104 105 32 32 32
+[.spell 5 48]   &lt;- hi   =&gt;   104 105 48 48 48
+</pre></div>
+</div>
+<p>The first argument is the minimum number of codes (at most 256), the second
+the fill code, 32 (a space) by default. A negative fill code is logged and
+the default kept.</p>
+<p>Nothing is sent when there is nothing to spell and no minimum. A message that
+would spell to more than 256 codes sends nothing at all.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1135,6 +1290,47 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The creation arguments are the format: text with placeholders in it. Each
+placeholder gets one inlet, in order. Inlet 0 formats and sends; the other
+inlets only store.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.sprintf /voice/%d/%s]   inlet 1 &lt;- freq   inlet 0 &lt;- 3   =&gt;   /voice/3/freq
+</pre></div>
+</div>
+<p><strong>Placeholders</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">%d</span></code> or <code class="docutils literal notranslate"><span class="pre">%i</span></code>: an int. <code class="docutils literal notranslate"><span class="pre">%ld</span></code> and other <code class="docutils literal notranslate"><span class="pre">l</span></code> / <code class="docutils literal notranslate"><span class="pre">h</span></code> forms are read
+the same way.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">%f</span></code>: a float, with 6 decimals unless a precision is given.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">%s</span></code>: a word.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">%c</span></code>: an int written as the character with that code (1 to 255).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">%%</span></code>: a percent sign.</p></li>
+</ul>
+<p>Between the <code class="docutils literal notranslate"><span class="pre">%</span></code> and the letter a placeholder may have, in this order: the
+flags <code class="docutils literal notranslate"><span class="pre">-</span></code> (align left) and <code class="docutils literal notranslate"><span class="pre">0</span></code> (pad a number with zeros), a width of at
+most 64, and a <code class="docutils literal notranslate"><span class="pre">.precision</span></code> of at most 9 (decimals for <code class="docutils literal notranslate"><span class="pre">%f</span></code>, the most
+characters for <code class="docutils literal notranslate"><span class="pre">%s</span></code>). So <code class="docutils literal notranslate"><span class="pre">%03d</span></code> writes <code class="docutils literal notranslate"><span class="pre">7</span></code> as <code class="docutils literal notranslate"><span class="pre">007</span></code> and <code class="docutils literal notranslate"><span class="pre">%.2f</span></code>
+writes <code class="docutils literal notranslate"><span class="pre">0.5</span></code> as <code class="docutils literal notranslate"><span class="pre">0.50</span></code>. Anything else after a <code class="docutils literal notranslate"><span class="pre">%</span></code>, including a larger
+width or precision, is logged and copied into the output as it was typed. A leading word <code class="docutils literal notranslate"><span class="pre">symout</span></code> is accepted and
+dropped; it changes nothing.</p>
+<p><strong>What an inlet stores</strong></p>
+<ul class="simple">
+<li><p>Every inlet takes an int, a float or a list, whatever its placeholder.</p></li>
+<li><p>A number sent to a <code class="docutils literal notranslate"><span class="pre">%s</span></code> is stored as its text. A word sent to a <code class="docutils literal notranslate"><span class="pre">%d</span></code> or
+<code class="docutils literal notranslate"><span class="pre">%f</span></code> is ignored and the previous value kept. A word sent to a <code class="docutils literal notranslate"><span class="pre">%c</span></code>
+uses its first character.</p></li>
+<li><p>A list fills this placeholder and the ones to its right, one token each;
+tokens past the last placeholder are dropped.</p></li>
+<li><p>A bang on inlet 0 formats with the values stored so far.</p></li>
+</ul>
+<p>A <code class="docutils literal notranslate"><span class="pre">%d</span></code> or <code class="docutils literal notranslate"><span class="pre">%f</span></code> that was never set writes <code class="docutils literal notranslate"><span class="pre">0</span></code>; a <code class="docutils literal notranslate"><span class="pre">%s</span></code> or <code class="docutils literal notranslate"><span class="pre">%c</span></code> writes
+nothing. A format with no placeholders sends the same text every time.
+Without a format, nothing is sent.</p>
+<p><code class="docutils literal notranslate"><span class="pre">%f</span></code> rounds a value exactly halfway between two decimals away from zero. A
+value too large to write in full is written with an exponent.</p>
+<p><strong>Limits</strong></p>
+<p>At most 32 placeholders; more are logged and copied through as text. A word
+for a <code class="docutils literal notranslate"><span class="pre">%s</span></code> is at most 64 characters; a longer one is ignored and the
+previous value kept.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1225,6 +1421,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Only the letters A-Z change. Letters outside ASCII (<code class="docutils literal notranslate"><span class="pre">É</span></code>, <code class="docutils literal notranslate"><span class="pre">Ж</span></code>) are left
+as they are, because their case depends on the language. Numbers,
+punctuation and spacing are unchanged, so the tokens of the message stay
+the same.</p>
+<p>A bang, an int or a float passes through in its own type, and an empty
+message is passed on as an empty message.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.tolower] -&gt; [.route play stop]   accepts Play, PLAY and play
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1291,6 +1496,21 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A symbol is a message of one token (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>). This
+object makes one by joining the tokens of a message with its separator, so
+the result can be matched by <code class="docutils literal notranslate"><span class="pre">.route</span></code> as one item, or used as a name. A
+bang becomes the word <code class="docutils literal notranslate"><span class="pre">bang</span></code> and a number becomes its text. The result
+always leaves as a list.</p>
+<p>Runs of spaces count as one, and spaces at the ends are dropped, so the
+result never holds an empty token.</p>
+<p><strong>The separator</strong></p>
+<p>The separator is the creation argument, and inlet 1 changes it. The default
+is a single space, which leaves the tokens apart and only turns numbers and
+bangs into text. An empty separator joins the tokens with nothing between
+them: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">2</span> <span class="pre">3</span> <span class="pre">4</span></code> becomes <code class="docutils literal notranslate"><span class="pre">1234</span></code>. A separator is one token of at most 16
+characters; a longer one is ignored (and logged when it is the argument).</p>
+<p><code class="docutils literal notranslate"><span class="pre">.fromsymbol</span></code> with the same separator turns the result back into the
+original message.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1387,6 +1607,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Works like <code class="docutils literal notranslate"><span class="pre">.tolower</span></code> in the other direction: only the letters a-z
+change, and everything else, including letters outside ASCII, is left as it
+was.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Arrays &#8212; dart-yse 0.1</title>
+    <title>Arrays &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Dictionaries" href="dictionaries.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -604,9 +607,11 @@
 <p>57 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/arrays.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/arrays.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#array" id="id1"><code class="docutils literal notranslate"><span class="pre">.array</span></code></a></p></li>
@@ -679,6 +684,73 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each element is a single value: an int, a float or a word. <code class="docutils literal notranslate"><span class="pre">append</span> <span class="pre">0</span> <span class="pre">4</span> <span class="pre">7</span></code>
+adds three elements, and <code class="docutils literal notranslate"><span class="pre">getvalue</span></code> sends them back as the list <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">4</span> <span class="pre">7</span></code>.
+An element keeps the spelling it arrived with, so <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">7.</span></code> are
+different elements. On the way out, <code class="docutils literal notranslate"><span class="pre">7</span></code> leaves as an int, <code class="docutils literal notranslate"><span class="pre">7.</span></code> as a float
+and anything that is not a number as a symbol.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">append</span> <span class="pre">&lt;value...&gt;</span></code>: add elements at the end.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">insert</span> <span class="pre">&lt;index&gt;</span> <span class="pre">&lt;value...&gt;</span></code>: add elements before position <code class="docutils literal notranslate"><span class="pre">index</span></code>, in
+the order given. Inserting at the length appends.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;index&gt;</span> <span class="pre">&lt;value&gt;</span></code>: replace one element.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get</span> <span class="pre">&lt;index&gt;</span></code>: send one element out of outlet 0, or bang outlet 2 when
+there is no element at <code class="docutils literal notranslate"><span class="pre">index</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delete</span> <span class="pre">&lt;index&gt;</span></code>: remove one element and close the gap.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: remove every element.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getsize</span></code>: send the number of elements out of outlet 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getvalue</span></code>: send the whole array out of outlet 0. One element leaves as
+a single value, several as a list.</p></li>
+<li><p>bang: send the reference <code class="docutils literal notranslate"><span class="pre">array</span> <span class="pre">&lt;name&gt;</span></code> out of outlet 1.</p></li>
+</ul>
+<p>Positions start at 0. A position outside the array, and any negative
+position, is refused: nothing is wrapped or clamped. Use <code class="docutils literal notranslate"><span class="pre">.array.wrap</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.array.rotate</span></code> when you want wrapping.</p>
+<p><strong>Sharing</strong></p>
+<p>Every <code class="docutils literal notranslate"><span class="pre">.array</span></code> with the same name in a patcher uses the same contents, and
+two patchers with the same name share theirs. An <code class="docutils literal notranslate"><span class="pre">.array</span></code> without a name
+keeps a private array and sends no reference. The contents are saved with
+the patch. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-sharing">Sharing a store by name</a> and <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-saved">What is saved with the patch</a>.</p>
+<p><strong>The other .array objects</strong></p>
+<p>The other objects in this category each work on a named array. They take
+the array’s name as their first argument, and it cannot be changed while
+the patch runs. They share these rules:</p>
+<ul class="simple">
+<li><p>A bang on the left inlet runs the object. So does the reference
+<code class="docutils literal notranslate"><span class="pre">array</span> <span class="pre">&lt;name&gt;</span></code>, so outlet 1 of an <code class="docutils literal notranslate"><span class="pre">.array</span></code> can be wired straight into
+them. A reference that names a different array is refused (see
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-references">Dictionaries and arrays travel by name</a>).</p></li>
+<li><p>The rightmost inlet accepts the array’s reference and does nothing with
+it, so the wiring can show which array an object works on.</p></li>
+<li><p>Objects that change the array send its reference after each change, so
+they can be chained: <code class="docutils literal notranslate"><span class="pre">.array.push</span></code> into <code class="docutils literal notranslate"><span class="pre">.array.length</span></code> reports the new
+length after every push.</p></li>
+<li><p>A result of one element leaves as a single value. When there is no result
+(an empty array, a missing position), a separate outlet bangs instead of
+sending a placeholder value.</p></li>
+<li><p>Each operation reads or changes the array in one step, so its result is
+the array as it was at that moment, even if another object changes it
+right after.</p></li>
+<li><p>An object without a name works on a private, empty array and sends no
+reference.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>append 60 64 67  -&gt;  [.array chord]
+bang             -&gt;  [.array chord]         outlet 1: array chord
+array chord      -&gt;  [.array.length chord]  -&gt;  3
+</pre></div>
+</div>
+<p><strong>Limits</strong></p>
+<p>An array holds at most 256 elements of at most 64 characters each. A list
+sent out of an outlet holds at most 256 items and 1024 characters. A message
+that does not fit is refused: it changes nothing, sends nothing and is not
+logged. <code class="docutils literal notranslate"><span class="pre">append</span></code> and <code class="docutils literal notranslate"><span class="pre">insert</span></code> are the exception: they add the elements
+that fit and drop the rest. The same refusal happens when two threads use
+one array at the same moment, for example a millisecond <code class="docutils literal notranslate"><span class="pre">.metro</span></code> and the
+audio thread: the second one does nothing rather than wait. See
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-limits">Size limits</a>.</p>
+<p>Safe on the audio thread: no message allocates memory, takes a lock or
+waits.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -781,6 +853,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>An int moves the remembered position even when the fetch misses, so a bang
+after the array has grown finds the element. A list of positions is a
+one-off fetch: it does not change the remembered position, and it is
+answered whole or not at all. Each <code class="docutils literal notranslate"><span class="pre">.array.at</span></code> keeps its own position, so
+several of them can read one array independently.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">.array.wrap</span></code> when positions past the end should wrap around instead
+of missing.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -888,6 +967,18 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A change is any difference in length, or in the spelling of an element at
+any position: <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">7.</span></code> differ, and <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">20</span></code> differs from <code class="docutils literal notranslate"><span class="pre">20</span> <span class="pre">10</span></code>.
+The object starts out remembering an empty array, so the first poll of an
+array that already holds elements reports a change.</p>
+<p>Use the right inlet when the array was changed on purpose and that change
+should not count: it takes the current contents as the new starting point
+and sends nothing. Changing the object’s arguments, or renaming the patcher,
+also resets the remembered state to empty.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.metro 100] -&gt; [.array.change steps] -&gt; reference -&gt; [.array.iter steps]
+</pre></div>
+</div>
+<p>The walk only runs when <code class="docutils literal notranslate"><span class="pre">steps</span></code> has actually changed.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -990,6 +1081,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Elements are compared by spelling, so <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">7.</span></code> differ, and order
+matters: <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">20</span></code> does not equal <code class="docutils literal notranslate"><span class="pre">20</span> <span class="pre">10</span></code>. Both arguments may name the same
+array.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1091,6 +1185,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The result is a list, not a new array. To store it, send it to
+<code class="docutils literal notranslate"><span class="pre">.array.push</span></code> on another array, which appends a whole list. If the joined
+list is longer than a list can be, nothing is sent. Both arguments may name
+the same array, which sends it twice in a row.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1198,6 +1296,25 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The document uses the same JSON form a saved patch uses for an <code class="docutils literal notranslate"><span class="pre">.array</span></code>.
+Each value becomes one element:</p>
+<ul class="simple">
+<li><p>numbers keep their form: <code class="docutils literal notranslate"><span class="pre">60</span></code> becomes an int, <code class="docutils literal notranslate"><span class="pre">62.5</span></code> a float,</p></li>
+<li><p>strings become words; an empty string is skipped,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code> become <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">0</span></code>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">null</span></code>, nested arrays and objects are skipped,</p></li>
+<li><p>elements longer than 64 characters, and elements past the 256th, are
+dropped while the rest still loads.</p></li>
+</ul>
+<p>Text that is not a JSON array (malformed text, a number, an object) changes
+nothing: the array keeps its contents and no reference is sent.</p>
+<p>The text is parsed on the engine’s background pool, so the new contents
+appear one audio block after the message. The object is safe to use from
+the audio thread.</p>
+<p><strong>Limits</strong></p>
+<p>A document is at most 255 characters. At most 16 <code class="docutils literal notranslate"><span class="pre">.array.deserialize</span></code>
+objects can exist in the engine at the same time; a seventeenth logs an
+error when it is created and refuses every document.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1288,6 +1405,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Words are skipped: the expression only sees elements that read as numbers.
+An array without numbers passes, because nothing in it fails. The test stops
+at the first element that fails.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.every notes $i1 &gt;= 60 &amp;&amp; $i1 &lt; 72]   are all notes between C4 and B4?
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1389,6 +1512,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each numeric element is replaced in the output by the expression’s result,
+an int or a float following the expression’s types (see <code class="docutils literal notranslate"><span class="pre">.expr</span></code>). Words
+pass through as they are, so the output has one item per element. If the
+output is longer than a list can be, the items past the limit are dropped.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.array.map</span></code> performs the same calculation and writes the results back
+into the array.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.expr chord $i1 + 12]   chord 60 64 67  -&gt;  72 76 79
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1496,6 +1628,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A fill replaces everything: the array becomes exactly <code class="docutils literal notranslate"><span class="pre">count</span></code> copies of the
+value, so a smaller count shrinks the array and 0 empties it.</p>
+<p>Because the other objects refuse positions past the end of an array, a fill
+is the usual way to give an array its size before writing to it by
+position:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.fill steps 16 0]   bang  -&gt;  steps holds 16 zeros
+set 3 1  -&gt;  [.array steps]       steps now has a 1 at position 3
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1608,6 +1749,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>An element stays when the expression gives a non-zero result for it. Words
+are always removed, because the expression cannot see them. The elements
+that stay keep their order and move down to close the gaps, so positions
+change for every object that uses the array.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.filter notes $i1 &gt;= 60]   notes 48 60 55 72  -&gt;  60 72
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1709,6 +1857,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>An element is a single value, so an array cannot contain other arrays. To
+work with a group of arrays, give each one a name and list the names:
+<code class="docutils literal notranslate"><span class="pre">.array.flatten</span> <span class="pre">verse</span> <span class="pre">chorus</span> <span class="pre">bridge</span></code> sends the three arrays, one after the
+other, as one list. A name may appear more than once.</p>
+<p>The arrays are read one after the other, not all in the same instant. If the
+combined list is longer than a list can be, nothing is sent.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1816,6 +1970,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Works like <code class="docutils literal notranslate"><span class="pre">.array.iter</span></code> with the expression applied on the way out: each
+numeric element leaves as the expression’s result, an int or a float
+following the expression’s types (see <code class="docutils literal notranslate"><span class="pre">.expr</span></code>). Words leave unchanged.</p>
+<p>The object walks a copy of the array taken when the bang arrives. Changes to
+the array during the walk, including changes made by the objects connected
+to outlet 0, do not affect it. A bang that arrives during a walk, for example
+through a cord from an outlet back to the inlet, is refused.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1923,6 +2084,14 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Elements are equal when they are spelled the same, so <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">7.</span></code> form
+separate groups. The length of each group is how often its value occurs.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>notes 60 64 60 67 64 60  -&gt;  60 60 60,  then 64 64,  then 67,  then done
+</pre></div>
+</div>
+<p>The groups come from a copy of the array taken when the bang arrives. If any
+group would be longer than a list can be, nothing is sent. A bang that
+arrives while the groups are being sent is refused.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2025,6 +2194,11 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A value matches an element with exactly the same spelling: an int <code class="docutils literal notranslate"><span class="pre">7</span></code> finds
+<code class="docutils literal notranslate"><span class="pre">7</span></code> but not <code class="docutils literal notranslate"><span class="pre">7.</span></code>, and a float <code class="docutils literal notranslate"><span class="pre">7.</span></code> finds <code class="docutils literal notranslate"><span class="pre">7.</span></code> but not <code class="docutils literal notranslate"><span class="pre">7</span></code>. Words
+match case-sensitively. Only the first match is reported.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.array.indexof</span></code> does the same search but reports a miss as -1 instead of
+on a separate outlet.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2132,6 +2306,18 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each entry in the map picks one element of the array as it was before the
+reorder. An entry may appear more than once, which copies the element, and
+positions that are left out drop their element. A position past the end of
+the array picks nothing, so the result can be shorter than the map.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>notes 60 62 64 67,  map 3 2 1 0  -&gt;  67 64 62 60
+notes 60 62 64 67,  map 0 0 2    -&gt;  60 60 64
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">.array.sort</span></code>, <code class="docutils literal notranslate"><span class="pre">.array.scramble</span></code> and <code class="docutils literal notranslate"><span class="pre">.array.shuffle</span></code> send the order
+they applied in this form. Send that order to the left inlet of an
+<code class="docutils literal notranslate"><span class="pre">.array.indexmap</span></code> on a second array, and the second array gets the same
+new order.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2239,6 +2425,11 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A value matches an element with exactly the same spelling: an int <code class="docutils literal notranslate"><span class="pre">7</span></code> finds
+<code class="docutils literal notranslate"><span class="pre">7</span></code> but not <code class="docutils literal notranslate"><span class="pre">7.</span></code>, and a float <code class="docutils literal notranslate"><span class="pre">7.</span></code> finds <code class="docutils literal notranslate"><span class="pre">7.</span></code> but not <code class="docutils literal notranslate"><span class="pre">7</span></code>. Words
+match case-sensitively. Only the first match is reported.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.array.index</span></code> does the same search but bangs a separate outlet on a miss,
+which is easier to route on.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2340,6 +2531,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A list is inserted in the order sent: <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">b</span> <span class="pre">c</span></code> inserted at position 1 leaves
+<code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">b</span> <span class="pre">c</span></code> starting at position 1. The insert is all or nothing: if the
+position is past the end, or the array cannot take the whole list, nothing
+is inserted.</p>
+<p>The array’s reference is refused on the left inlet, so a cord wired there
+by mistake does not insert the words <code class="docutils literal notranslate"><span class="pre">array</span> <span class="pre">&lt;name&gt;</span></code>. <code class="docutils literal notranslate"><span class="pre">.array.remove</span></code> is
+the opposite operation.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2447,6 +2645,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each element’s message is fully handled by everything connected to outlet 0
+before the next one leaves. The object walks a copy of the array taken when
+the bang arrives, so changes to the array during the walk, including changes
+made by the objects connected to outlet 0, do not affect it: every element
+the array held at that moment is sent exactly once.</p>
+<p>A bang that arrives during a walk, for example through a cord from an outlet
+back to the inlet, is refused.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2549,6 +2754,14 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The result leaves as the value it spells: <code class="docutils literal notranslate"><span class="pre">c4</span> <span class="pre">e4</span> <span class="pre">g4</span></code> joined with <code class="docutils literal notranslate"><span class="pre">-</span></code>
+gives the symbol <code class="docutils literal notranslate"><span class="pre">c4-e4-g4</span></code>, and <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">2</span></code> joined without a separator gives
+the int <code class="docutils literal notranslate"><span class="pre">12</span></code>.</p>
+<p>The joined word may be up to 1280 characters long, which is more than an
+array element can hold, so storing it back into an array can be refused. A
+longer result is not sent.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.array.tosymbol</span></code> joins without a separator and always sends a symbol;
+<code class="docutils literal notranslate"><span class="pre">.array.tostring</span></code> separates the elements with spaces.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2752,6 +2965,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each numeric element is replaced by the expression’s result, an int or a
+float following the expression’s types (see <code class="docutils literal notranslate"><span class="pre">.expr</span></code>). Words stay where they
+are, so the length and the positions do not change. The whole array is
+rewritten in one step; no other object sees it half done.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.array.expr</span></code> performs the same calculation and sends the results without
+changing the array.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.map chord $i1 + 12]   chord 60 64 67  -&gt;  72 76 79
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3465,6 +3687,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Pair it with <code class="docutils literal notranslate"><span class="pre">.array.pop</span></code> for a stack (last in, first out) or with
+<code class="docutils literal notranslate"><span class="pre">.array.shift</span></code> for a queue (first in, first out).</p>
+<p>The array’s reference is refused on the left inlet, so a cord wired there by
+mistake does not append the words <code class="docutils literal notranslate"><span class="pre">array</span> <span class="pre">&lt;name&gt;</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3561,6 +3787,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Every pick is independent, so the same element can come up twice in a row.
+Use <code class="docutils literal notranslate"><span class="pre">.urn</span></code> to draw without repeats.</p>
+<p>A bang on an empty array does not use up a random number, so a seeded
+sequence of picks is not shifted by it.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3674,6 +3904,16 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The running result starts as the first numeric element. The expression then
+runs once for each following numeric element, and its result becomes the new
+running result. Words are skipped.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">$f1</span> <span class="pre">+</span> <span class="pre">$f2</span></code>: the sum,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$f1</span> <span class="pre">*</span> <span class="pre">$f2</span></code>: the product,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max($f1,</span> <span class="pre">$f2)</span></code>: the largest value.</p></li>
+</ul>
+<p>With a single numeric element, that element is the answer and the
+expression does not run.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3781,6 +4021,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each element is matched as text, and the pattern may match anywhere in it:
+<code class="docutils literal notranslate"><span class="pre">^c</span></code> keeps elements that start with <code class="docutils literal notranslate"><span class="pre">c</span></code>, and <code class="docutils literal notranslate"><span class="pre">^[0-9]+$</span></code> keeps whole
+numbers. Anchor the pattern with <code class="docutils literal notranslate"><span class="pre">^</span></code> and <code class="docutils literal notranslate"><span class="pre">$</span></code> to match the whole element.</p>
+<p>The result is sent whole or not at all: when the matching elements do not
+fit in one list, or the matching takes too long, nothing is sent.</p>
+<p>For capture groups or substitutions per element, feed <code class="docutils literal notranslate"><span class="pre">.array.iter</span></code> into
+<code class="docutils literal notranslate"><span class="pre">.regexp</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3888,6 +4135,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>An int moves the remembered position even when nothing is removed. Only one
+position can be removed per message: after each removal the later elements
+move down, so a list of positions would no longer point at the elements it
+meant.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.array.insert</span></code> is the opposite operation. <code class="docutils literal notranslate"><span class="pre">.array</span></code>’s own <code class="docutils literal notranslate"><span class="pre">delete</span></code>
+removes an element without sending it.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3995,6 +4248,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Matches are exact: <code class="docutils literal notranslate"><span class="pre">7</span></code> replaces elements spelled <code class="docutils literal notranslate"><span class="pre">7</span></code> but not <code class="docutils literal notranslate"><span class="pre">7.</span></code>, and
+words match case-sensitively. Positions do not change; only the matching
+elements get the new value.</p>
+<p>A replacement value must be set, as the third argument or on the middle
+inlet, before anything can be replaced. To replace only the first occurrence,
+find it with <code class="docutils literal notranslate"><span class="pre">.array.indexof</span></code> and send <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;index&gt;</span> <span class="pre">&lt;value&gt;</span></code> to the
+<code class="docutils literal notranslate"><span class="pre">.array</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4209,6 +4469,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Rotating <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">2</span> <span class="pre">3</span> <span class="pre">4</span></code> by 1 gives <code class="docutils literal notranslate"><span class="pre">4</span> <span class="pre">1</span> <span class="pre">2</span> <span class="pre">3</span></code>; by -1 it gives <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">3</span> <span class="pre">4</span> <span class="pre">1</span></code>. Any
+amount works: it is taken modulo the length, so rotating by the length leaves
+the array as it was.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4316,6 +4579,22 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The values after the name each get an outlet, in order, and one more outlet
+on the right catches the arrays that hold none of them. A trigger checks the
+values from left to right and sends the array’s reference, not its
+contents, out of the outlet of the first value the array holds anywhere.
+Exactly one outlet fires.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.routepass chord 60 61 62]
+chord 64 61 67  -&gt;  outlet 1 (61)
+chord 64 67     -&gt;  outlet 3 (none of the values)
+</pre></div>
+</div>
+<p>A value matches an element with exactly the same spelling, so <code class="docutils literal notranslate"><span class="pre">5</span></code> does not
+match <code class="docutils literal notranslate"><span class="pre">5.0</span></code>. A value that appears twice in the arguments only uses its
+first outlet. An empty array always goes to the rightmost outlet, so a chain
+of <code class="docutils literal notranslate"><span class="pre">.array.routepass</span></code> objects can test one array against more values.</p>
+<p>A trigger that arrives while a reference is being sent, for example through
+a cord from an outlet back to the inlet, is refused.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4417,6 +4696,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The order outlet sends, for each new position, the position the element came
+from. Send it to the left inlet of an <code class="docutils literal notranslate"><span class="pre">.array.indexmap</span></code> on a second array,
+and that array is shuffled the same way:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.scramble notes]  order outlet  -&gt;  [.array.indexmap velocities]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">.array.shuffle</span></code> is the same object under another name.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4530,6 +4816,11 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Elements are compared by spelling, so <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">7.</span></code> are different
+elements. A value that repeats in the left array appears once in the result.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.sect left right]   left 60 64 67,  right 67 71 74  -&gt;  67
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4739,6 +5030,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The order outlet sends, for each new position, the position the element came
+from. Send it to the left inlet of an <code class="docutils literal notranslate"><span class="pre">.array.indexmap</span></code> on a second array,
+and that array is shuffled the same way:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.shuffle notes]  order outlet  -&gt;  [.array.indexmap velocities]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">.array.scramble</span></code> is the same object under another name.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4852,6 +5150,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The range runs from <code class="docutils literal notranslate"><span class="pre">start</span></code> up to, but not including, <code class="docutils literal notranslate"><span class="pre">end</span></code>. An end of 0,
+or one past the end of the array, means “to the end”. When <code class="docutils literal notranslate"><span class="pre">end</span></code> is at or
+before <code class="docutils literal notranslate"><span class="pre">start</span></code>, the range is empty.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>notes 60 62 64 67
+[.array.slice notes 1 3]  -&gt;  62 64
+[.array.slice notes 2]    -&gt;  64 67
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">.array.subarray</span></code> includes the end position and can read backwards.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4976,6 +5283,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Words are skipped: the expression only sees elements that read as numbers.
+An array without numbers gives 0. The test stops at the first element that
+passes.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.some notes $i1 &lt; 48]   is any note below C3?
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5077,6 +5390,17 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Numbers come before words in both directions. Numbers are compared by value,
+so <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">7.</span></code> count as equal; words are compared character by
+character, with the shorter first when one starts the other. Equal elements
+keep their order.</p>
+<p>The order outlet sends, for each new position, the position the element came
+from. Send it to the left inlet of an <code class="docutils literal notranslate"><span class="pre">.array.indexmap</span></code> on a second array,
+and that array is put in the same order. This keeps, for example, an array
+of velocities matched to an array of notes after the notes are sorted.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.sort notes]  order outlet  -&gt;  [.array.indexmap velocities]
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5190,6 +5514,14 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The position is the number of elements in the left half: 0 puts everything
+in the right half, and the length (or more) puts everything in the left
+half. An empty half sends nothing, which a patch that keeps splitting off the
+first element can use to stop.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.split notes 1]   notes 60 62 64  -&gt;  right: 62 64,  then left: 60
+</pre></div>
+</div>
+<p>If either half is longer than a list can be, nothing is sent.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5405,6 +5737,17 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each value is appended to the array. Once the array holds <code class="docutils literal notranslate"><span class="pre">size</span></code> values,
+every new value pushes the oldest one off the front, so the array always
+holds the latest <code class="docutils literal notranslate"><span class="pre">size</span></code> values. A list counts as one value per item.</p>
+<p>After every message the right outlet reports how many values are still
+missing, and the reference leaves only when the window is full. Wire the
+reference to a statistics object to analyse each full window:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.stream recent 8]  reference  -&gt;  [.array.mean recent]
+</pre></div>
+</div>
+<p>A bang reports the current state without adding a value. A smaller size
+takes effect at the next message, which drops the extra elements.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5518,6 +5861,16 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The range runs from <code class="docutils literal notranslate"><span class="pre">start</span></code> to <code class="docutils literal notranslate"><span class="pre">end</span></code>, both included. A missing end, or
+one past the last element, means “to the end”. When <code class="docutils literal notranslate"><span class="pre">end</span></code> is before
+<code class="docutils literal notranslate"><span class="pre">start</span></code>, the elements are sent from <code class="docutils literal notranslate"><span class="pre">start</span></code> down to <code class="docutils literal notranslate"><span class="pre">end</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>notes 60 62 64 67
+[.array.sub notes 1 2]  -&gt;  62 64
+[.array.sub notes 3 1]  -&gt;  67 64 62
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">.array.subarray</span></code> is the same object under another name. <code class="docutils literal notranslate"><span class="pre">.array.slice</span></code>
+leaves out the end position.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5642,6 +5995,16 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The range runs from <code class="docutils literal notranslate"><span class="pre">start</span></code> to <code class="docutils literal notranslate"><span class="pre">end</span></code>, both included. A missing end, or
+one past the last element, means “to the end”. When <code class="docutils literal notranslate"><span class="pre">end</span></code> is before
+<code class="docutils literal notranslate"><span class="pre">start</span></code>, the elements are sent from <code class="docutils literal notranslate"><span class="pre">start</span></code> down to <code class="docutils literal notranslate"><span class="pre">end</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>notes 60 62 64 67
+[.array.subarray notes 1 2]  -&gt;  62 64
+[.array.subarray notes 3 1]  -&gt;  67 64 62
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">.array.sub</span></code> is the same object under another name. <code class="docutils literal notranslate"><span class="pre">.array.slice</span></code>
+leaves out the end position.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -5766,6 +6129,16 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each element is compared with the last element that was kept. It is removed
+when it is spelled the same, or, with a tolerance above 0, when both are
+numbers no further apart than the tolerance. Because the comparison is with
+the last kept element, a slow drift still shows:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.thin values 0.5]   values 0 0.4 0.8 1.2  -&gt;  0 0.8
+</pre></div>
+</div>
+<p>Words are only removed when they repeat exactly. A value that comes back
+later, not next to its earlier copy, is kept; use <code class="docutils literal notranslate"><span class="pre">.array.unique</span></code> to
+remove every repeat.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -6185,6 +6558,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>For each position up to the length of the shorter array, the expression runs
+with the left and right elements. Its result is an int or a float, following
+the expression’s types (see <code class="docutils literal notranslate"><span class="pre">.expr</span></code>). Where one of the two elements is a
+word, the left element is sent unchanged in that position.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.tuplewise a b $i1 + $i2]   a 1 2 3,  b 10 20  -&gt;  11 22
+</pre></div>
+</div>
+<p>If the result is longer than a list can be, nothing is sent. Both arguments
+may name the same array.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -6297,6 +6679,11 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Elements are compared by spelling, so <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">7.</span></code> are different
+elements. Repeats within either array appear once in the result.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.array.union left right]   left 60 64 60,  right 64 67  -&gt;  60 64 67
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -6404,6 +6791,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Elements are compared by spelling, so <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">7.</span></code> are both kept. To
+remove only repeats that sit next to each other, or values that are close
+together, use <code class="docutils literal notranslate"><span class="pre">.array.thin</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -6602,6 +6992,11 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Every position is taken modulo the array’s length: with three elements,
+position 3 reads element 0, position 5 reads element 2, and -1 reads the
+last element. Fed from a counter, <code class="docutils literal notranslate"><span class="pre">.array.wrap</span></code> loops over the array
+forever, like a step sequencer.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">.array.at</span></code> when a position past the end should be reported as a miss.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

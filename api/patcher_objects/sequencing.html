@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Sequencing &#8212; dart-yse 0.1</title>
+    <title>Sequencing &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Time" href="time.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -550,9 +553,11 @@
 <p>3 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/sequencing.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/sequencing.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#mtr" id="id1"><code class="docutils literal notranslate"><span class="pre">.mtr</span></code></a></p></li>
@@ -571,6 +576,54 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><code class="docutils literal notranslate"><span class="pre">.mtr</span> <span class="pre">4</span></code> has four tracks. Each track has its own inlet and outlet: inlet 1
+and outlet 1 are track 1, and so on. The leftmost inlet controls the whole
+recorder, the leftmost outlet reports what <code class="docutils literal notranslate"><span class="pre">next</span></code> sends, and the last outlet
+bangs when a file has been read.</p>
+<p>While a track records, every message on its inlet (bang, number, list) is
+stored with the time since the previous one. Playback sends each message out
+of the track’s outlet after the same wait, as the type it arrived as. Each
+track has its own position, speed and mute, so tracks can be recorded and
+played independently.</p>
+<p>Timing is measured in audio blocks, so its resolution is one block (see
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/time.html">Time, scheduling and clocks</a>). The clock stops while the engine is paused.</p>
+<p><strong>Transport</strong></p>
+<p>These work in the leftmost inlet on every track, or on the tracks whose
+numbers follow (<code class="docutils literal notranslate"><span class="pre">play</span> <span class="pre">1</span> <span class="pre">3</span></code>). In a track’s own inlet they act on that track.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">record</span></code>: start a new recording, erasing the old one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">play</span></code>: play from the beginning. In a track inlet, <code class="docutils literal notranslate"><span class="pre">play</span> <span class="pre">&lt;repeats&gt;</span>
+<span class="pre">&lt;timescale&gt;</span></code> plays the track several times and at a speed (<code class="docutils literal notranslate"><span class="pre">play</span> <span class="pre">3</span> <span class="pre">200</span></code>:
+three times at double speed).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop</span></code>: stop recording or playing. The position stays where it is.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">next</span></code>: send the next event of each track at once, without waiting, and
+report <code class="docutils literal notranslate"><span class="pre">&lt;track&gt;</span> <span class="pre">&lt;delta&gt;</span> <span class="pre">&lt;time&gt;</span></code> out of the leftmost outlet for each.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rewind</span></code>: go back to the beginning, without playing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: erase the recording.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mute</span></code> / <code class="docutils literal notranslate"><span class="pre">unmute</span></code>: silence a track. It keeps playing, so unmuting picks
+up where the track has got to.</p></li>
+</ul>
+<p><strong>Settings</strong> (leftmost inlet only, for all tracks)</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">timescale</span> <span class="pre">&lt;percent&gt;</span></code>: playback speed. 100 is as recorded, 200 twice as
+fast. <code class="docutils literal notranslate"><span class="pre">play</span></code> resets it to 100, so send it after <code class="docutils literal notranslate"><span class="pre">play</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">first</span> <span class="pre">&lt;ms&gt;</span></code>: wait this long after <code class="docutils literal notranslate"><span class="pre">play</span></code> before the first event. The
+recording is not changed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delay</span> <span class="pre">&lt;ms&gt;</span></code>: set the wait before the first event of every track. This
+changes the recording.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">embed</span> <span class="pre">1</span></code>: save the recordings with the patch (off by default). See
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-saved">What is saved with the patch</a>.</p></li>
+</ul>
+<p><strong>Files</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">read</span> <span class="pre">&lt;file&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">write</span> <span class="pre">&lt;file&gt;</span></code> in the leftmost inlet load or save every
+track; in a track’s inlet they load or save that track only. A read replaces
+the tracks and stops them, then bangs the last outlet. A bare <code class="docutils literal notranslate"><span class="pre">read</span></code> or
+<code class="docutils literal notranslate"><span class="pre">write</span></code> reuses the last file name. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/files.html">File input and output</a> for the
+format.</p>
+<p><strong>Limits</strong></p>
+<p>1-32 tracks. Each track holds 256 events of at most 128 characters; later
+events are not recorded. A bang on the leftmost inlet does nothing. There is
+no editing window.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -679,6 +732,64 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A cue list is a list of lines. What a line does depends on how it starts:</p>
+<ul class="simple">
+<li><p><strong>Numbers only</strong> (<code class="docutils literal notranslate"><span class="pre">500</span></code> or <code class="docutils literal notranslate"><span class="pre">500</span> <span class="pre">60</span> <span class="pre">100</span></code>): sent out of the left outlet as
+an int, a float or a list. During playback, the first number is then the
+wait, in milliseconds, before the next line.</p></li>
+<li><p><strong>A word first</strong> (<code class="docutils literal notranslate"><span class="pre">synth</span> <span class="pre">60</span> <span class="pre">100</span></code>): sent to every <code class="docutils literal notranslate"><span class="pre">.r</span> <span class="pre">synth</span></code>, with the
+rest of the line as the message (a bare word sends a bang). The next line
+follows at once.</p></li>
+<li><p><strong>Numbers then a word</strong> (<code class="docutils literal notranslate"><span class="pre">500</span> <span class="pre">synth</span> <span class="pre">60</span></code>): stored as two lines, <code class="docutils literal notranslate"><span class="pre">500</span></code>
+and <code class="docutils literal notranslate"><span class="pre">synth</span> <span class="pre">60</span></code>.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>set synth 60 100; 500; synth 64 100; 500; synth 67 100
+
+bang  =&gt;  "60 100" to .r synth, 500 out of the left outlet, wait 500 ms,
+          "64 100" to .r synth, 500 out of the left outlet, wait 500 ms,
+          "67 100" to .r synth, bang out of the middle outlet
+</pre></div>
+</div>
+<p><strong>Playing</strong></p>
+<ul class="simple">
+<li><p>bang: play from the first line, waiting out each number line. A bang always
+starts again from the top.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop</span></code>: stop playback. The position stays where it is.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">next</span></code>: step by hand. Sends word lines until it reaches a number line,
+sends that and stops. It does not wait: to play by hand, wire the left
+outlet into a delay whose bang goes back into <code class="docutils literal notranslate"><span class="pre">next</span></code>. <code class="docutils literal notranslate"><span class="pre">next</span> <span class="pre">1</span></code> skips the
+word lines instead of sending them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fwd</span> <span class="pre">&lt;n&gt;</span></code>: <code class="docutils literal notranslate"><span class="pre">next</span> <span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">n</span></code> times: the number lines are sent, the word
+lines skipped.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rewind</span></code>: go back to the first line.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tempo</span> <span class="pre">&lt;f&gt;</span></code>: speed factor for the waits. 2 plays twice as fast, 0.5 at
+half speed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clock</span> <span class="pre">&lt;name&gt;</span></code>: wait on the YSE domain clock of that name. The leading
+numbers are then beats instead of milliseconds, so playback follows that
+clock’s tempo changes and stops when it is paused. A bare <code class="docutils literal notranslate"><span class="pre">clock</span></code> goes back
+to milliseconds. A clock that doesn’t exist yet holds playback until it
+does.</p></li>
+</ul>
+<p>The middle outlet bangs when playback or <code class="docutils literal notranslate"><span class="pre">next</span></code> runs past the last line,
+and for an empty list.</p>
+<p><strong>Writing the list</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">;</span></code> separates lines in all three messages.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;lines&gt;</span></code>: replace the whole list. A bare <code class="docutils literal notranslate"><span class="pre">set</span></code> empties it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">insert</span> <span class="pre">&lt;lines&gt;</span></code>: add lines at the end.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">append</span> <span class="pre">&lt;text&gt;</span></code>: add the text to the end of the last line.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: empty the list.</p></li>
+</ul>
+<p><strong>Files and saving</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">read</span> <span class="pre">&lt;file&gt;</span></code> replaces the list with a text file and bangs the right
+outlet; <code class="docutils literal notranslate"><span class="pre">write</span> <span class="pre">&lt;file&gt;</span></code> saves the list. A bare <code class="docutils literal notranslate"><span class="pre">read</span></code> or <code class="docutils literal notranslate"><span class="pre">write</span></code> reuses
+the last file name. A read during playback lets it carry on from the top of
+the new list. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/files.html">File input and output</a> for the format.</p>
+<p>The list is saved with the patch. The position, tempo and clock are not.</p>
+<p><strong>Limits</strong></p>
+<p>At most 256 lines of 256 characters; longer or extra lines are ignored. Waits
+shorter than one audio block take one block. <code class="docutils literal notranslate"><span class="pre">open</span></code> and <code class="docutils literal notranslate"><span class="pre">wclose</span></code> are
+accepted and do nothing: there is no editing window.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -757,6 +868,73 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><code class="docutils literal notranslate"><span class="pre">.seq</span></code> stores MIDI as raw bytes, the way a MIDI port sends them: a note-on
+is three bytes. Feed it bytes from a MIDI input or from the <code class="docutils literal notranslate"><span class="pre">.midi*</span></code>
+formatting objects, and send its output to a MIDI output or parser.</p>
+<p>While recording, each byte is stored with the time since the previous one.
+Playback sends each byte after the same wait. Bytes that arrived together are
+sent together, so a message is never split across blocks.</p>
+<p><strong>Recording and playing</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">record</span></code>: start a new recording, erasing the old one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">append</span></code>: record on after the end of the current sequence.</p></li>
+<li><p>a number 0-255, or a list of them: one byte each. Ignored when not
+recording. Floats are truncated; other numbers are ignored.</p></li>
+<li><p>bang or <code class="docutils literal notranslate"><span class="pre">start</span></code>: play from the beginning.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">&lt;speed&gt;</span></code>: play at a speed, where 1024 is as recorded, 512 half
+speed and 2048 double. The speed can only be set when playback starts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop</span></code>: stop recording or playing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: erase the sequence.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">record</span></code> and <code class="docutils literal notranslate"><span class="pre">start</span></code> don’t need a <code class="docutils literal notranslate"><span class="pre">stop</span></code> first.</p>
+<p>The middle outlet bangs <strong>just before</strong> the last event is sent, so a patch
+knows the next byte is the final one. A <code class="docutils literal notranslate"><span class="pre">start</span></code> on an empty sequence sends
+nothing.</p>
+<p><strong>External timing</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">-1</span></code> plays by <code class="docutils literal notranslate"><span class="pre">tick</span></code> messages instead of by its own clock: 48 ticks
+per second play the sequence at its recorded speed. Use it to follow another
+timing source.</p>
+<p><code class="docutils literal notranslate"><span class="pre">clock</span> <span class="pre">&lt;name&gt;</span></code> makes the YSE domain clock of that name supply the ticks, 24
+per beat, so the sequence follows that clock’s tempo changes and stops when
+it is paused. While a clock drives it, <code class="docutils literal notranslate"><span class="pre">tick</span></code> messages are ignored. A bare
+<code class="docutils literal notranslate"><span class="pre">clock</span></code> hands the ticks back to the patch. At 120 BPM, 24 ticks per beat is
+the same 48 per second.</p>
+<p><strong>Editing the timing</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">delay</span> <span class="pre">&lt;ms&gt;</span></code>: set when the first event happens; the rest move with it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">addeventdelay</span> <span class="pre">&lt;ms&gt;</span></code>: add to that time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hook</span> <span class="pre">&lt;factor&gt;</span></code>: multiply every event time. 2 plays twice as slowly. It
+works during playback, from the next event on.</p></li>
+</ul>
+<p><strong>Files</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">read</span> <span class="pre">&lt;file&gt;</span></code> loads a standard MIDI file (format 0, or format 1 with up to
+32 tracks, merged into one sequence) or a text file with one event per line:
+a time in milliseconds, then the bytes. A read replaces the sequence and stops
+playback, then bangs the right outlet. A file name given as the argument is
+read when the object is created.</p>
+<p><code class="docutils literal notranslate"><span class="pre">write</span> <span class="pre">&lt;file&gt;</span></code> saves a standard MIDI file, format 0. <code class="docutils literal notranslate"><span class="pre">write</span> <span class="pre">&lt;file&gt;</span> <span class="pre">1</span></code>
+saves format 1: one track for meta events and anything without a channel,
+then one track per MIDI channel used. A bare <code class="docutils literal notranslate"><span class="pre">read</span></code> or <code class="docutils literal notranslate"><span class="pre">write</span></code> reuses the
+last file name, which starts as the argument. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/files.html">File input and output</a>.</p>
+<p>The sequence is not saved with the patch: the file is where it is kept.</p>
+<p><strong>Meta events and tempo</strong></p>
+<p>Meta events from a MIDI file stay in the sequence at their place and are sent
+out of the third outlet as <code class="docutils literal notranslate"><span class="pre">meta</span> <span class="pre">&lt;name&gt;</span> <span class="pre">&lt;data&gt;</span></code>: for example <code class="docutils literal notranslate"><span class="pre">meta</span> <span class="pre">tempo</span>
+<span class="pre">120.</span></code> (in BPM) or <code class="docutils literal notranslate"><span class="pre">meta</span> <span class="pre">marker</span> <span class="pre">verse</span></code>. The names are <code class="docutils literal notranslate"><span class="pre">sequencenumber</span></code>,
+<code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">copyright</span></code>, <code class="docutils literal notranslate"><span class="pre">sequenceortrackname</span></code>, <code class="docutils literal notranslate"><span class="pre">instrumentname</span></code>,
+<code class="docutils literal notranslate"><span class="pre">lyric</span></code>, <code class="docutils literal notranslate"><span class="pre">marker</span></code>, <code class="docutils literal notranslate"><span class="pre">cuepoint</span></code>, <code class="docutils literal notranslate"><span class="pre">midichannelprefix</span></code>, <code class="docutils literal notranslate"><span class="pre">endoftrack</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tempo</span></code>, <code class="docutils literal notranslate"><span class="pre">smpteoffset</span></code>, <code class="docutils literal notranslate"><span class="pre">timesignature</span></code>, <code class="docutils literal notranslate"><span class="pre">keysignature</span></code> and
+<code class="docutils literal notranslate"><span class="pre">sequencerspecific</span></code>; any other type sends its number instead of a name.
+Text is sent as words, everything else as numbers. A recorded sequence has no
+meta events.</p>
+<p>A read uses the file’s tempo map to turn its ticks into milliseconds.
+<code class="docutils literal notranslate"><span class="pre">tempo</span> <span class="pre">&lt;bpm&gt;</span></code> sets the tempo written into files. With <code class="docutils literal notranslate"><span class="pre">overridetempo</span> <span class="pre">1</span></code>
+the next read uses that tempo instead of the file’s. Without it, a tempo event
+passing during playback updates <code class="docutils literal notranslate"><span class="pre">tempo</span></code>.</p>
+<p><strong>Limits</strong></p>
+<p>4096 events, where each byte is one event: about 1365 three-byte messages.
+Further bytes are not recorded. <code class="docutils literal notranslate"><span class="pre">dump</span></code>, <code class="docutils literal notranslate"><span class="pre">print</span></code> and <code class="docutils literal notranslate"><span class="pre">sequencetempo</span></code> are
+accepted and do nothing; there is no editing window.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

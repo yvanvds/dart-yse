@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Control flow &#8212; dart-yse 0.1</title>
+    <title>Control flow &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Routing" href="routing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -558,9 +561,11 @@
 <p>11 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/control_flow.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/control_flow.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#bangbang" id="id1"><code class="docutils literal notranslate"><span class="pre">.bangbang</span></code></a></p></li>
@@ -683,6 +688,33 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Every inlet is hot: a value arriving at any inlet is stored there, and then
+every outlet sends what its inlet holds, the last outlet first and outlet 0
+last (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>). Wire outlet 0 to whatever acts on the set
+and the others to cold inlets, and the whole set is in place when outlet 0
+fires.</p>
+<p>Stored values stay until replaced, so each send repeats the values that did
+not change. An inlet that has received nothing sends 0.</p>
+<p><strong>Messages</strong></p>
+<p>Every inlet takes all of these:</p>
+<ul class="simple">
+<li><p>an int, float, list or word: store it here and send the set.</p></li>
+<li><p>a list that starts with a number: spread over this inlet and the ones to its
+right, one item each; items past the last inlet are dropped. With the <code class="docutils literal notranslate"><span class="pre">n</span></code>
+argument the list is stored whole in this inlet instead.</p></li>
+<li><p>a message that starts with a word (<code class="docutils literal notranslate"><span class="pre">note</span> <span class="pre">60</span></code>): stored whole in this inlet.</p></li>
+<li><p>bang: send the set without storing anything.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;message&gt;</span></code>: store as above without sending. A bare <code class="docutils literal notranslate"><span class="pre">set</span></code> is an
+ordinary word: it is stored and the set is sent.</p></li>
+</ul>
+<p><strong>Arguments</strong></p>
+<p>In order: the number of inlet/outlet pairs (1-256, default 2), then a delay in
+milliseconds, then <code class="docutils literal notranslate"><span class="pre">n</span></code> to store lists whole (<code class="docutils literal notranslate"><span class="pre">n</span></code> may stand anywhere). With
+a delay, a stored value sends the set that many milliseconds later instead of
+at once; another value before then restarts the wait, so a burst of changes
+sends one set. A bang still sends at once. Waits are counted in whole audio
+blocks; see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/time.html">Time, scheduling and clocks</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.buddy</span></code> is the other way round: it waits until every inlet has a value.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -785,6 +817,26 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each inlet stores the last value it received. When the last empty inlet
+receives one, every outlet sends its inlet’s value, the last outlet first and
+outlet 0 last (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>), and all inlets are empty again.
+Nothing is ever sent twice, and nothing is sent for an incomplete set.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.buddy 2]   in1 &lt;- 7    =&gt;  nothing
+             in0 &lt;- 3    =&gt;  out1: 7, out0: 3
+             in0 &lt;- 4    =&gt;  nothing (in1 is empty again)
+</pre></div>
+</div>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>an int, float, list or word: stored in this inlet, replacing what it held. A
+list is stored whole and leaves the matching outlet unchanged.</p></li>
+<li><p>bang: stores the number 0, so a source with no value of its own can still
+take part.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>, on inlet 0 only: empty every inlet without sending. On the other
+inlets the word is stored like any other value.</p></li>
+</ul>
+<p>To send a set on any change, keeping the values that did not change, use
+<code class="docutils literal notranslate"><span class="pre">.bondo</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -887,6 +939,35 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The argument is a statement:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;condition&gt; then &lt;message&gt; [else &lt;message&gt;]
+
+[.if $i1 &gt; 64 then bang else out2 $i1]
+</pre></div>
+</div>
+<p>When the condition is not 0 the <code class="docutils literal notranslate"><span class="pre">then</span></code> message is sent, otherwise the
+<code class="docutils literal notranslate"><span class="pre">else</span></code> message. Without <code class="docutils literal notranslate"><span class="pre">else</span></code>, a false condition sends nothing, which
+filters a stream.</p>
+<p><strong>The condition</strong> is an expression in the language of <code class="docutils literal notranslate"><span class="pre">.expr</span></code> (see
+<a class="reference internal" href="math.html"><span class="doc">Math</span></a>): the same <code class="docutils literal notranslate"><span class="pre">$i1</span></code>-<code class="docutils literal notranslate"><span class="pre">$i9</span></code> and <code class="docutils literal notranslate"><span class="pre">$f1</span></code>-<code class="docutils literal notranslate"><span class="pre">$f9</span></code>
+placeholders, operators, functions and int/float rules.</p>
+<p><strong>A message</strong> is up to 16 items separated by spaces. Each item is itself an
+expression without spaces, such as <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">0.5</span></code>, <code class="docutils literal notranslate"><span class="pre">$i1</span></code> or <code class="docutils literal notranslate"><span class="pre">$i1*2</span></code>. One
+item is sent as an int or a float, depending on its type; two or more are sent
+as a list. <code class="docutils literal notranslate"><span class="pre">bang</span></code> on its own sends a bang. <code class="docutils literal notranslate"><span class="pre">out2</span></code> in front of a message
+sends it from a second, right outlet, which exists only when a message uses
+it.</p>
+<p><strong>Inlets</strong></p>
+<p>There is one inlet per placeholder number, up to the highest one used (at
+most 9). Inlet 0 stores its number and evaluates; the others only store. A
+bang on inlet 0 evaluates with the stored numbers, and a list on inlet 0 fills
+the inlets from the left, then evaluates. An inlet that has received nothing
+reads 0.</p>
+<p><strong>Errors</strong></p>
+<p>A statement that cannot be read is reported in the log when the object is
+created, and the object then sends nothing. Text placeholders (<code class="docutils literal notranslate"><span class="pre">$s</span></code>) are
+not supported, and neither is a <code class="docutils literal notranslate"><span class="pre">send</span> <span class="pre">&lt;name&gt;</span></code> message to a named receiver:
+wire the outlet to a <code class="docutils literal notranslate"><span class="pre">.s</span></code> instead.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -977,6 +1058,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The bang is sent once, after the whole patch has been loaded with
+<code class="docutils literal notranslate"><span class="pre">Patcher.parseJson</span></code>: every object created, every cord connected. Objects inside
+subpatchers fire in the same pass.</p>
+<p>An object created with <code class="docutils literal notranslate"><span class="pre">Patcher.createObject</span></code> in a running patch does not fire until
+the patch is saved and loaded again. Send it a bang to fire it by hand; a host
+that builds a patch object by object can do this to initialise it.</p>
+<p>The order in which two <code class="docutils literal notranslate"><span class="pre">.loadbang</span></code> objects fire is not defined. When one
+initialisation must come before another, use one <code class="docutils literal notranslate"><span class="pre">.loadbang</span></code> and a
+<code class="docutils literal notranslate"><span class="pre">.trigger</span></code>. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/file_format.html">Patch file format</a> for the whole load sequence.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1043,6 +1133,29 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Fires at the same moment as <code class="docutils literal notranslate"><span class="pre">.loadbang</span></code> and follows the same rules (see
+there). <code class="docutils literal notranslate"><span class="pre">.loadmess</span> <span class="pre">0.5</span></code> into a gain does what <code class="docutils literal notranslate"><span class="pre">.loadbang</span></code> into a message
+box holding <code class="docutils literal notranslate"><span class="pre">0.5</span></code> would.</p>
+<p>The message is sent in the form it has:</p>
+<ul class="simple">
+<li><p>nothing at all when the object has no arguments;</p></li>
+<li><p>a bang for the single word <code class="docutils literal notranslate"><span class="pre">bang</span></code>;</p></li>
+<li><p>an int or a float for a single number, an int when written without a <code class="docutils literal notranslate"><span class="pre">.</span></code>
+or an exponent: <code class="docutils literal notranslate"><span class="pre">60</span></code> is an int, <code class="docutils literal notranslate"><span class="pre">60.0</span></code> a float;</p></li>
+<li><p>otherwise a list with the text unchanged.</p></li>
+</ul>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>bang: send the stored message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;message&gt;</span></code>: replace the stored message without sending. A bare
+<code class="docutils literal notranslate"><span class="pre">set</span></code> empties it. This works from a list and from a message box.</p></li>
+<li><p>any other list is ignored, so values passing through cannot replace the
+initialisation.</p></li>
+</ul>
+<p>A <code class="docutils literal notranslate"><span class="pre">set</span></code> longer than 256 characters is refused, and the old message is kept.
+Arguments longer than that are cut at the last whole word that fits. <code class="docutils literal notranslate"><span class="pre">set</span></code>
+does not change the saved arguments: the patch saves the message the object
+was created with.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1133,6 +1246,38 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The object keeps the most recent numbers, as many as the pattern is long. When
+those spell the pattern, it sends them as a list and forgets them, so matches
+never overlap.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.match 1 nn 3]   1, 5, 3       =&gt;  1 5 3
+[.match 1 2 3]    1 2 1 2 3     =&gt;  1 2 3
+[.match 1 1 1]    1 1 1 1 1     =&gt;  1 1 1   (once)
+</pre></div>
+</div>
+<p>A value that ends one attempt can start the next, as in the second example.</p>
+<p><strong>Matching</strong></p>
+<ul class="simple">
+<li><p>A number in the pattern matches only that exact number. Ints and floats are
+compared as floats, so <code class="docutils literal notranslate"><span class="pre">5</span></code> matches <code class="docutils literal notranslate"><span class="pre">5.0</span></code>. A calculated float can miss a
+number that looks equal; put <code class="docutils literal notranslate"><span class="pre">.round</span></code> in front.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nn</span></code> matches any number.</p></li>
+<li><p>A word in the stream, or a value that is not finite, takes a place and
+matches nothing, not even <code class="docutils literal notranslate"><span class="pre">nn</span></code>.</p></li>
+<li><p>A pattern word other than <code class="docutils literal notranslate"><span class="pre">nn</span></code> (<code class="docutils literal notranslate"><span class="pre">NN</span></code> included) matches nothing, so the
+object never fires. With no pattern at all it never fires either.</p></li>
+</ul>
+<p>The output keeps the values as they arrived, so the places filled by <code class="docutils literal notranslate"><span class="pre">nn</span></code>
+show what came in. An int is sent as an int and a float as a float.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>an int, float or list: each number, or each list item, takes the next place
+in the stream.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: forget the numbers received so far. The pattern stays.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;pattern&gt;</span></code>: a new pattern, written like the arguments. It also
+forgets the numbers received so far. A bare <code class="docutils literal notranslate"><span class="pre">set</span></code> leaves no pattern. The
+saved arguments do not change.</p></li>
+</ul>
+<p>The pattern holds at most 256 elements.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1223,6 +1368,20 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A <em>logical event</em> is everything one stimulus causes: one host call, one GUI
+action, one tick of a timed object, one MIDI message (see <em>Logical events</em> in
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>). Time does not matter: two host calls are two events
+however close together, and the whole fan-out of one <code class="docutils literal notranslate"><span class="pre">.trigger</span></code> is one event
+however long it takes.</p>
+<p>The first message of an event sends a bang from the left outlet, and every
+later message of the same event sends one from the right. Exactly one outlet
+fires per message. Typical use is to do something once per burst, such as
+resetting a counter at the start of a <code class="docutils literal notranslate"><span class="pre">.coll</span></code> dump without knowing how long
+the dump is.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.uzi 3] -&gt; [.next]   bang   =&gt;  left, right, right
+</pre></div>
+</div>
+<p>The content of a message is ignored, so a 0 counts like any other value.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1295,6 +1454,22 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The object is a gate with two states. When armed, the next message on the
+left inlet sends a bang from the left outlet and closes the gate. When
+closed, a message sends a bang from the right outlet instead. Every message
+gives exactly one bang, so the right outlet can count or report the triggers
+that were blocked; leave it unconnected for a plain one-shot.</p>
+<ul class="simple">
+<li><p>Anything on the right inlet arms the gate, including the word <code class="docutils literal notranslate"><span class="pre">stop</span></code>.
+Arming an armed gate changes nothing: five arms and five triggers give one
+pass and four rejects.</p></li>
+<li><p>Everything on the left inlet is a trigger, including 0. The one exception is
+the bare word <code class="docutils literal notranslate"><span class="pre">stop</span></code>, which closes the gate without sending anything.
+<code class="docutils literal notranslate"><span class="pre">stop</span> <span class="pre">1</span></code> is a trigger.</p></li>
+<li><p>The gate starts closed. A non-zero argument starts it armed; <code class="docutils literal notranslate"><span class="pre">0.5</span></code> counts
+as non-zero, and an argument that is not a number counts as 0.</p></li>
+</ul>
+<p>To open and close a path with numbers, use <code class="docutils literal notranslate"><span class="pre">.gate</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1397,6 +1572,30 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each argument makes one outlet, in order. When a message arrives, every outlet
+sends, the last outlet first and outlet 0 last. Each outlet’s branch finishes
+before the next outlet sends (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.trigger b i]   7   =&gt;  out1: 7, then out0: bang
+</pre></div>
+</div>
+<p>The common use is <code class="docutils literal notranslate"><span class="pre">.trigger</span> <span class="pre">b</span> <span class="pre">i</span></code>: the number reaches a cold inlet first, and
+only then does the bang make the object compute with it.</p>
+<p><strong>Formats</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">i</span></code>: an int. A float is truncated toward zero; a list or a bang sends 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: a float. A list or a bang sends 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: a bang, whatever arrived.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: a list unchanged. Anything else sends the list <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">s</span></code>: text unchanged. Text travels as a list, so a list passes through
+<code class="docutils literal notranslate"><span class="pre">s</span></code> too; a number or a bang sends the empty symbol.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">i</span></code> and <code class="docutils literal notranslate"><span class="pre">f</span></code> do not read lists: a list <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">6</span></code> sends 0 from an <code class="docutils literal notranslate"><span class="pre">i</span></code>
+outlet. Use <code class="docutils literal notranslate"><span class="pre">.unpack</span></code> or <code class="docutils literal notranslate"><span class="pre">.route</span></code> to take numbers out of a list.</p>
+<p>Any other argument is a constant, sent on every input whatever arrived: a
+number without a <code class="docutils literal notranslate"><span class="pre">.</span></code> or an exponent is an int (<code class="docutils literal notranslate"><span class="pre">7</span></code>), one with them is a
+float (<code class="docutils literal notranslate"><span class="pre">0.5</span></code>), and anything else is sent as text. The format letters are
+lower case and single characters, so <code class="docutils literal notranslate"><span class="pre">I</span></code> or <code class="docutils literal notranslate"><span class="pre">bang</span></code> are constants.</p>
+<p>With no arguments there are two <code class="docutils literal notranslate"><span class="pre">i</span></code> outlets. At most 256 outlets.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1493,6 +1692,39 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A bang starts a run. For each iteration, the index goes out the right outlet,
+then a bang out the left outlet, so whatever the bang drives already has the
+new index. After the last iteration the middle outlet sends a bang.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.uzi 3]     bang   =&gt;  index 1, bang, index 2, bang, index 3, bang, carry
+[.uzi 4 0]   bang   =&gt;  indices 0 1 2 3
+</pre></div>
+</div>
+<p>Each send finishes everything it triggers before the next one, and the whole
+run is one logical event (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>). A run of 0 iterations
+still sends the carry bang.</p>
+<p><strong>Messages</strong></p>
+<p>On the left inlet:</p>
+<ul class="simple">
+<li><p>bang: run.</p></li>
+<li><p>int or float: set the count, then run. A float is truncated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pause</span></code> (or <code class="docutils literal notranslate"><span class="pre">break</span></code>): stop the run that is in progress after the current
+iteration. Only a message triggered by the run itself can arrive during a
+run, so this is how a loop exits early, such as stopping a search once the
+value is found. A paused run sends no carry bang. Outside a run it does
+nothing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">resume</span></code> (or <code class="docutils literal notranslate"><span class="pre">continue</span></code>): finish a paused run, numbering on from where it
+stopped. It does nothing if no run is paused.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset</span> <span class="pre">&lt;n&gt;</span></code>: skip the first n iterations of every run from now on, so the
+run sends count minus n bangs and the index starts at base plus n.
+<code class="docutils literal notranslate"><span class="pre">offset</span> <span class="pre">0</span></code> turns this off.</p></li>
+</ul>
+<p>Other words are ignored. The right inlet sets the count for the next run
+without starting it.</p>
+<p><strong>Limits</strong></p>
+<p>The count is clamped to 0-4096. A creation argument above that is reported in
+the log. A bang or <code class="docutils literal notranslate"><span class="pre">resume</span></code> that arrives while a run is in progress, for
+example from an outlet wired back to the left inlet, is ignored, so such a
+loop always ends. A count changed during a run applies to the next run.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

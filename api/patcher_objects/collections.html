@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Collections &#8212; dart-yse 0.1</title>
+    <title>Collections &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Strings and symbols" href="strings.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -553,9 +556,11 @@
 <p>6 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/collections.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/collections.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#bag" id="id1"><code class="docutils literal notranslate"><span class="pre">.bag</span></code></a></p></li>
@@ -577,6 +582,33 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The left inlet takes the numbers, the right inlet says what to do with them:
+while the flag is non-zero, numbers are added; while it is 0, they are
+removed. The flag starts at 0, so set it before sending numbers. A float is truncated to an int on either inlet.</p>
+<p>Adding and removing send nothing. A typical use is tracking held notes: add
+the pitch on note-on, remove it on note-off, and bang to get the notes still
+down.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>an int or float: add it or remove it, depending on the flag.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;value&gt;</span> <span class="pre">&lt;flag&gt;</span></code>: set the flag, then apply the value. <code class="docutils literal notranslate"><span class="pre">60</span> <span class="pre">1</span></code> adds 60,
+<code class="docutils literal notranslate"><span class="pre">60</span> <span class="pre">0</span></code> removes it. The flag stays set for later numbers.</p></li>
+<li><p>bang: send every stored number, newest first.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cut</span></code>: send the oldest number and remove it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">length</span></code>: send how many numbers are stored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: remove everything.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send</span> <span class="pre">&lt;name&gt;</span></code>: send what a bang would, but to every <code class="docutils literal notranslate"><span class="pre">.r</span> <span class="pre">&lt;name&gt;</span></code> (and the
+bus) instead of the outlet. It is a one-off: a later bang uses the outlet
+again. A bare <code class="docutils literal notranslate"><span class="pre">send</span></code> does nothing.</p></li>
+</ul>
+<p>Without an argument each number is stored at most once, and adding one that
+is already there changes nothing. With any argument (<code class="docutils literal notranslate"><span class="pre">.bag</span> <span class="pre">dup</span></code>) the same
+number can be stored several times; a remove then takes the most recently
+added copy.</p>
+<p><strong>Limits</strong></p>
+<p>At most 256 numbers; further adds are ignored. A <code class="docutils literal notranslate"><span class="pre">send</span></code> name is at most 63
+characters. The contents are not saved with the patch (see
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-saved">What is saved with the patch</a>).</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -673,6 +705,30 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Every value that arrives is recorded. A list is recorded as separate items,
+one per element, and each item keeps its type: an int stays an int, a float a
+float, a word a word. Recording sends nothing.</p>
+<p>When the record is full, each new item pushes out the oldest one, so it
+always holds the most recent values. That makes it a debugging tool: run the
+patch, then <code class="docutils literal notranslate"><span class="pre">dump</span></code> to see what went past.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>any value or list: record it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send every recorded item out of the left outlet, oldest first, one
+at a time. A word leaves as a one-word list.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">count</span></code>: send how many items have arrived since the last <code class="docutils literal notranslate"><span class="pre">count</span></code> out of
+the right outlet, and restart the count. <code class="docutils literal notranslate"><span class="pre">count</span> <span class="pre">1</span></code> sends it without
+restarting. This counts arrivals, including items already pushed out, so it
+can be larger than the number of items held.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: erase the record. The <code class="docutils literal notranslate"><span class="pre">count</span></code> total is not reset.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">open</span></code>, <code class="docutils literal notranslate"><span class="pre">wclose</span></code> and <code class="docutils literal notranslate"><span class="pre">write</span></code> are accepted and do nothing: there is no
+editing window, and the record cannot be written to a file. Use
+<code class="docutils literal notranslate"><span class="pre">.textfile</span></code> for that.</p></li>
+</ul>
+<p>A bang does nothing.</p>
+<p><strong>Limits</strong></p>
+<p>The argument sets the size, 1-512 items (default 512). A word longer than 64
+characters is not recorded. The record is not saved with the patch.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -769,6 +825,109 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A collection of entries. Each entry is a message stored at an <strong>address</strong>,
+which is a number or a word: the address <code class="docutils literal notranslate"><span class="pre">1</span></code> and the address <code class="docutils literal notranslate"><span class="pre">one</span></code> are
+different entries. Numeric addresses don’t have to be consecutive.</p>
+<p>Entries are kept in the order they were stored, not sorted by address.
+<code class="docutils literal notranslate"><span class="pre">dump</span></code>, <code class="docutils literal notranslate"><span class="pre">next</span></code> and <code class="docutils literal notranslate"><span class="pre">prev</span></code> walk that order; use <code class="docutils literal notranslate"><span class="pre">sort</span></code> to change it.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1 60 64 67          store "60 64 67" at address 1
+store intro 0 0 0   store "0 0 0" at address intro
+1                   send "60 64 67"
+intro               send "0 0 0"
+</pre></div>
+</div>
+<p><strong>Storing and recalling</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;number&gt;</span> <span class="pre">&lt;message&gt;</span></code>: store the message at that numeric address,
+replacing what was there.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">store</span> <span class="pre">&lt;address&gt;</span> <span class="pre">&lt;message&gt;</span></code>: the same, for a number or a word address.</p></li>
+<li><p>an int or float: send the entry at that address (a float is truncated).</p></li>
+<li><p>a word on its own: send the entry at that word address. Anything after the
+word is ignored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">insert</span> <span class="pre">&lt;number&gt;</span> <span class="pre">&lt;message&gt;</span></code>: store at that address, first moving every
+numeric address at or above it up by one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">append</span> <span class="pre">&lt;message&gt;</span></code>: store at one past the highest numeric address (0 when
+there is none).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">merge</span> <span class="pre">&lt;address&gt;</span> <span class="pre">&lt;data&gt;</span></code>: add the data to the end of the entry’s message,
+or create the entry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remove</span> <span class="pre">&lt;address&gt;</span></code>: delete the entry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delete</span> <span class="pre">&lt;address&gt;</span></code>: delete the entry and move every higher numeric
+address down by one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: delete every entry.</p></li>
+</ul>
+<p>An entry’s message leaves the left outlet as an int or a float when it is one
+number, and as a list otherwise (a single word is a one-word list). A plain
+recall sends only the message; nothing is sent for an address that holds
+nothing.</p>
+<p><strong>Walking the collection</strong></p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">.coll</span></code> has a pointer into the stored order.</p>
+<ul class="simple">
+<li><p>bang: send the entry at the pointer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">next</span></code> / <code class="docutils literal notranslate"><span class="pre">prev</span></code>: send the entry at the pointer, then move the pointer
+one forward or back. It wraps around at either end.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">goto</span> <span class="pre">&lt;address&gt;</span></code>: put the pointer on that entry, without sending.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code> / <code class="docutils literal notranslate"><span class="pre">end</span></code>: put the pointer on the first or last entry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send every entry in order, then bang outlet 2.</p></li>
+</ul>
+<p>These, and <code class="docutils literal notranslate"><span class="pre">sub</span></code>, also send the entry’s address out of outlet 1, just
+before its message.</p>
+<p><strong>Working inside entries</strong></p>
+<p>Element positions count from 1.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nth</span> <span class="pre">&lt;address&gt;</span> <span class="pre">&lt;position&gt;</span></code>: send one element of an entry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sub</span> <span class="pre">&lt;address&gt;</span> <span class="pre">&lt;position&gt;</span> <span class="pre">&lt;data&gt;</span></code>: replace one element, then send the
+entry. <code class="docutils literal notranslate"><span class="pre">nsub</span></code> does the same without sending.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span> <span class="pre">[position]</span></code> / <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">[position]</span></code>: send the lowest or highest number
+found at that position across all entries (default 1). Entries without a
+number there are skipped.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">length</span></code>: send the number of entries.</p></li>
+</ul>
+<p><strong>Reordering and renumbering</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sort</span> <span class="pre">[order]</span> <span class="pre">[position]</span></code>: reorder the entries. <code class="docutils literal notranslate"><span class="pre">order</span></code> -1 (the
+default) is ascending, 1 descending. The key is the element at
+<code class="docutils literal notranslate"><span class="pre">position</span></code> (default the first), or the address when <code class="docutils literal notranslate"><span class="pre">position</span></code> is -1.
+Numbers sort before words, and entries without that element come first.
+Equal keys keep their order.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">swap</span> <span class="pre">&lt;address&gt;</span> <span class="pre">&lt;address&gt;</span></code>: exchange the addresses of two entries; the
+messages stay where they are.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">renumber</span> <span class="pre">[start]</span></code>: give the numeric entries consecutive addresses from
+<code class="docutils literal notranslate"><span class="pre">start</span></code> (default 0), in stored order. Word addresses are not touched.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">renumber2</span> <span class="pre">[from]</span></code>: move every numeric address at or above <code class="docutils literal notranslate"><span class="pre">from</span></code>
+(default 0) up by one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">separate</span> <span class="pre">&lt;number&gt;</span></code>: the same as <code class="docutils literal notranslate"><span class="pre">renumber2</span></code>, but the address is
+required. It opens a free address at <code class="docutils literal notranslate"><span class="pre">number</span></code>.</p></li>
+</ul>
+<p><strong>Word aliases</strong></p>
+<p>A numeric entry can have a second address, a word. From then on the word
+reaches that entry in every message: recall, <code class="docutils literal notranslate"><span class="pre">store</span></code>, <code class="docutils literal notranslate"><span class="pre">remove</span></code>, <code class="docutils literal notranslate"><span class="pre">nth</span></code>
+and so on. The outlet still reports the number.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">assoc</span> <span class="pre">&lt;word&gt;</span> <span class="pre">&lt;number&gt;</span></code>: give the existing entry at <code class="docutils literal notranslate"><span class="pre">number</span></code> the alias
+<code class="docutils literal notranslate"><span class="pre">word</span></code>. If another entry already answered to that word, it is removed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deassoc</span> <span class="pre">&lt;word&gt;</span> <span class="pre">&lt;number&gt;</span></code>: take the alias away again. Both must match.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nstore</span> <span class="pre">&lt;number&gt;</span> <span class="pre">&lt;word&gt;</span> <span class="pre">&lt;message&gt;</span></code>: store at the number and give it the
+alias, in one message. The word may also come first.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">subsym</span> <span class="pre">&lt;new&gt;</span> <span class="pre">&lt;old&gt;</span></code>: rename a word address or alias. Refused when
+<code class="docutils literal notranslate"><span class="pre">new</span></code> is already in use.</p></li>
+</ul>
+<p>An entry has at most one alias, and the alias moves with the entry through
+<code class="docutils literal notranslate"><span class="pre">insert</span></code>, <code class="docutils literal notranslate"><span class="pre">delete</span></code>, <code class="docutils literal notranslate"><span class="pre">sort</span></code>, <code class="docutils literal notranslate"><span class="pre">swap</span></code> and renumbering.</p>
+<p><strong>Files</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">read</span> <span class="pre">&lt;file&gt;</span></code> replaces the collection with the contents of a text file,
+then bangs outlet 3. <code class="docutils literal notranslate"><span class="pre">write</span> <span class="pre">&lt;file&gt;</span></code> saves the collection. <code class="docutils literal notranslate"><span class="pre">readagain</span></code> and
+<code class="docutils literal notranslate"><span class="pre">writeagain</span></code>, or a bare <code class="docutils literal notranslate"><span class="pre">read</span></code> or <code class="docutils literal notranslate"><span class="pre">write</span></code>, reuse the last file name.
+<code class="docutils literal notranslate"><span class="pre">filetype</span></code> is accepted and does nothing. The file format, and how reading
+and writing work, are described in <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/files.html">File input and output</a>.</p>
+<p><strong>Sharing and saving</strong></p>
+<p>The argument is a name. Every <code class="docutils literal notranslate"><span class="pre">.coll</span></code> with the same name uses the same
+collection, and each keeps its own pointer. Without a name the collection is
+private. A second argument is accepted and ignored. The contents are saved
+with the patch. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-sharing">Sharing a store by name</a> and <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-saved">What is saved with the patch</a>.</p>
+<p><strong>Limits</strong></p>
+<p>At most 256 entries. A message is at most 256 characters and an address at
+most 64. A store that does not fit is ignored. There is no editing window, and
+a <code class="docutils literal notranslate"><span class="pre">.coll</span></code> cannot be pointed at another name while the patch runs.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -882,6 +1041,48 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A function stored as points: (x, y) pairs of ints, kept sorted by x, with at
+most one y per x. Use it for breakpoint curves, zone maps and timed event
+lists.</p>
+<p>The left inlet both stores and looks up. A number on the right inlet waits
+for the next x: that x stores the pair. An x with nothing waiting is a
+lookup. The waiting y is used once.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.funbuff]   right &lt;- 100, left &lt;- 60   store (60, 100)
+             60 100                     the same, as one list
+             left &lt;- 64                 send 100 (nearest lower x is 60)
+</pre></div>
+</div>
+<p>A lookup sends the y stored at x. When there is no pair at x, it sends the y
+of the nearest lower x, so the function is a staircase. An x below every
+stored x sends nothing. Floats are truncated on both inlets.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span> <span class="pre">[&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span> <span class="pre">...]</span></code>: store one or more pairs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delete</span> <span class="pre">&lt;x&gt;</span></code>: remove the pair at x. <code class="docutils literal notranslate"><span class="pre">delete</span> <span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span></code> removes it only if
+its y matches.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: remove every pair.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interp</span> <span class="pre">&lt;x&gt;</span></code>: send the y linearly interpolated between the pairs either
+side of x, as a float. <code class="docutils literal notranslate"><span class="pre">x</span></code> may be a float. Outside the stored range the
+first or last y is sent.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code> / <code class="docutils literal notranslate"><span class="pre">max</span></code>: send the lowest or highest y.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">find</span> <span class="pre">&lt;y&gt;</span></code>: send, out of the left outlet, every x whose y equals <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send every pair in x order: x out of the middle outlet, then y out
+of the left outlet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">goto</span> <span class="pre">&lt;x&gt;</span></code>: move the pointer to x.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">next</span></code>: send the y at the pointer (or the next pair above it), with the
+distance from the previous x out of the middle outlet first, then move past
+it. When no pair is left, bang the right outlet instead. The pointer does
+not wrap; send <code class="docutils literal notranslate"><span class="pre">goto</span></code> to start again.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">embed</span> <span class="pre">1</span></code>: save the pairs with the patch. <code class="docutils literal notranslate"><span class="pre">embed</span> <span class="pre">0</span></code> (the default) does
+not.</p></li>
+</ul>
+<p>The distance from <code class="docutils literal notranslate"><span class="pre">next</span></code> is what a sequencer needs: store event times as x,
+and the middle outlet gives the wait before each event. After <code class="docutils literal notranslate"><span class="pre">goto</span></code> the
+distance is measured from the <code class="docutils literal notranslate"><span class="pre">goto</span></code> position; on a fresh object, from 0.</p>
+<p><strong>Limits</strong></p>
+<p>At most 256 pairs; further pairs are ignored. The file-name argument is
+accepted and ignored: <code class="docutils literal notranslate"><span class="pre">.funbuff</span></code> does not read or write files. Copy, paste
+and the editing window are not supported.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -990,6 +1191,59 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>An array of ints at addresses 0 to size-1, all set to 0 at the start. The
+left inlet both reads and writes: a number on the right inlet waits for the
+next address, which stores it. An address with nothing waiting sends the
+value stored there. Floats are truncated on both inlets. An address outside
+the table does nothing.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.table 8]   right &lt;- 50, left &lt;- 3   store 50 at address 3
+             3 50                     the same, as one list
+             left &lt;- 3                send 50
+</pre></div>
+</div>
+<p><strong>Reading and writing</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;address&gt;</span> <span class="pre">&lt;value&gt;</span></code>: store directly.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;address&gt;</span> <span class="pre">&lt;value&gt;</span> <span class="pre">[&lt;value&gt;</span> <span class="pre">...]</span></code>: store values at successive
+addresses. Values past the end are dropped.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">&lt;value&gt;</span></code>: set every address to the value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: set every address to 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load</span></code>: from now on, every number on the left inlet is stored at the next
+address, starting at 0, until the table is full. <code class="docutils literal notranslate"><span class="pre">normal</span></code> ends this.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cancel</span></code>: drop a value waiting on the right inlet, so the next address
+reads instead of writing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getbits</span> <span class="pre">&lt;address&gt;</span> <span class="pre">&lt;start&gt;</span> <span class="pre">&lt;count&gt;</span></code>: send, as a number, the <code class="docutils literal notranslate"><span class="pre">count</span></code>
+bits of one value from bit <code class="docutils literal notranslate"><span class="pre">start</span></code> downwards (bit 0 is the lowest).
+<code class="docutils literal notranslate"><span class="pre">setbits</span> <span class="pre">&lt;address&gt;</span> <span class="pre">&lt;start&gt;</span> <span class="pre">&lt;count&gt;</span> <span class="pre">&lt;value&gt;</span></code> writes those bits.</p></li>
+</ul>
+<p><strong>Reading out</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send every value, from address 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">goto</span> <span class="pre">&lt;address&gt;</span></code>: move the pointer (clamped into the table).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">next</span></code> / <code class="docutils literal notranslate"><span class="pre">prev</span></code>: send the value at the pointer, then move it one
+forward or back, wrapping at the ends.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">length</span></code>: send the lowest value, the highest,
+the total, or the size.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inv</span> <span class="pre">&lt;value&gt;</span></code>: send the first address whose value is at least <code class="docutils literal notranslate"><span class="pre">value</span></code>,
+or nothing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send</span> <span class="pre">&lt;name&gt;</span> <span class="pre">&lt;address&gt;</span></code>: send the value at that address to every
+<code class="docutils literal notranslate"><span class="pre">.r</span> <span class="pre">&lt;name&gt;</span></code> (and the bus) instead of the outlet.</p></li>
+</ul>
+<p><strong>As a distribution</strong></p>
+<p>The values can be read as weights. <code class="docutils literal notranslate"><span class="pre">fquantile</span> <span class="pre">&lt;f&gt;</span></code>, with <code class="docutils literal notranslate"><span class="pre">f</span></code> from 0 to 1,
+sends the first address where the running total of the values reaches that
+fraction of the sum. <code class="docutils literal notranslate"><span class="pre">quantile</span> <span class="pre">&lt;n&gt;</span></code> is the same with <code class="docutils literal notranslate"><span class="pre">n</span></code> from 0 to 32768.
+A bang does a <code class="docutils literal notranslate"><span class="pre">quantile</span></code> with a random number, so the table becomes a
+weighted dice: an address with twice the value is picked twice as often.</p>
+<p><strong>Arguments and saving</strong></p>
+<p>A number sets the size, 1-4096 (default 128). A word is a name. It is
+accepted so that named tables load, but tables with the same name do not
+share their values. Changing the arguments sets every value back to 0.</p>
+<p>The values are saved with the patch unless the table is sent <code class="docutils literal notranslate"><span class="pre">embed</span> <span class="pre">0</span></code>
+(<code class="docutils literal notranslate"><span class="pre">flags</span> <span class="pre">0</span></code> does the same). See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-saved">What is saved with the patch</a>.</p>
+<p><strong>Limits</strong></p>
+<p>There is no editing window, the size cannot be changed by a message, and
+tables do not read or write files.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1086,6 +1340,48 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each message is added to the end of the current line, separated from the
+previous one by a space. <code class="docutils literal notranslate"><span class="pre">cr</span></code> ends the line, so the next message starts a
+new one. Numbers are written as text the way the rest of the patcher writes
+them; a list is written as it arrived. Adding text sends nothing.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>60 64 67
+cr
+intro
+0 0
+cr          =&gt;   line 1: 60 64 67
+                 line 2: intro 0 0
+</pre></div>
+</div>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>any message: add it to the current line.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cr</span></code>: end the current line. A <code class="docutils literal notranslate"><span class="pre">cr</span></code> when no line is open adds an empty
+line.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tab</span></code>: add a tab character, with no space around it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">symbol</span> <span class="pre">&lt;word&gt;</span></code>: add a word that would otherwise be read as one of these
+messages (<code class="docutils literal notranslate"><span class="pre">symbol</span> <span class="pre">clear</span></code> adds the word <code class="docutils literal notranslate"><span class="pre">clear</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send every line out of the left outlet, in order. A line that is
+one number leaves as an int or a float; any other line as a list, and an
+empty line as an empty list.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">line</span> <span class="pre">&lt;n&gt;</span></code>: send line <code class="docutils literal notranslate"><span class="pre">n</span></code> (counting from 1) preceded by <code class="docutils literal notranslate"><span class="pre">set</span></code>, so it
+can set another object’s contents. <code class="docutils literal notranslate"><span class="pre">n</span></code> below 1 means 1; a line that
+doesn’t exist sends nothing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">query</span></code>: send the number of lines out of the middle outlet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: erase every line.</p></li>
+</ul>
+<p><strong>Files</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">read</span> <span class="pre">&lt;file&gt;</span></code> replaces the lines with those of a text file, then bangs the
+right outlet. <code class="docutils literal notranslate"><span class="pre">write</span> <span class="pre">&lt;file&gt;</span></code> saves them, one line per line. A bare <code class="docutils literal notranslate"><span class="pre">read</span></code>
+or <code class="docutils literal notranslate"><span class="pre">write</span></code> reuses the last file name. A file name given as the argument is
+read when the object is created, and is the default for a bare <code class="docutils literal notranslate"><span class="pre">read</span></code> or
+<code class="docutils literal notranslate"><span class="pre">write</span></code>. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/files.html">File input and output</a>.</p>
+<p>The lines themselves are not saved with the patch: the file is where they are
+kept.</p>
+<p><strong>Limits</strong></p>
+<p>At most 256 lines of at most 256 characters. A message that would make the
+line too long, or a new line past the 256th, is ignored. There is no editing
+window: <code class="docutils literal notranslate"><span class="pre">open</span></code>, <code class="docutils literal notranslate"><span class="pre">wclose</span></code>, <code class="docutils literal notranslate"><span class="pre">settitle</span></code>, <code class="docutils literal notranslate"><span class="pre">filetype</span></code>, <code class="docutils literal notranslate"><span class="pre">precision</span></code> and
+<code class="docutils literal notranslate"><span class="pre">stringout</span></code> are accepted and do nothing.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

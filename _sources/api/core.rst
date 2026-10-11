@@ -4,7 +4,7 @@ Core
 The :class:`System` singleton drives engine lifecycle, audio-device
 selection, MIDI device enumeration, and the per-frame update loop.
 
-Upstream: :yse-cpp:`api/core.html <YSE::system>`.
+Upstream: :yse-cpp:`YSE::system <api/core.html>`.
 
 .. include:: _generated/system.rst
 

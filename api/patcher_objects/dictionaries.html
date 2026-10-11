@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Dictionaries &#8212; dart-yse 0.1</title>
+    <title>Dictionaries &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Collections" href="collections.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -560,9 +563,11 @@
 <p>13 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/dictionaries.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/dictionaries.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#dict" id="id1"><code class="docutils literal notranslate"><span class="pre">.dict</span></code></a></p></li>
@@ -591,6 +596,69 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A dictionary holds entries: a key path and a value. Keys nest with <code class="docutils literal notranslate"><span class="pre">::</span></code>,
+so <code class="docutils literal notranslate"><span class="pre">voice::1::freq</span></code> is one entry three levels deep. A value is the text of
+any message, so <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">chord</span> <span class="pre">0</span> <span class="pre">4</span> <span class="pre">7</span></code> stores one value of three numbers. See
+<em>Nested keys</em> in <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html">Collections, dictionaries and arrays</a> for how the nesting works.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;path&gt;</span> <span class="pre">&lt;value...&gt;</span></code>: store a value, replacing the one already there.
+<code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;path&gt;</span></code> with no value stores an empty value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get</span> <span class="pre">&lt;path&gt;</span></code>: send the value out of outlet 0. One number leaves as an
+int or a float, anything else as a list. When the path is missing, outlet
+2 bangs instead. A path holding an empty value sends nothing at all.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delete</span> <span class="pre">&lt;path&gt;</span></code>: remove one entry. A sub-tree is not an entry:
+<code class="docutils literal notranslate"><span class="pre">delete</span> <span class="pre">voice</span></code> does not remove <code class="docutils literal notranslate"><span class="pre">voice::1::freq</span></code> (use <code class="docutils literal notranslate"><span class="pre">.dict.strip</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: remove every entry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getsize</span></code>: send the number of entries out of outlet 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getkeys</span></code>: send the top-level keys out of outlet 0, each once, in the
+order they were first written.</p></li>
+<li><p>bang: send the reference <code class="docutils literal notranslate"><span class="pre">dictionary</span> <span class="pre">&lt;name&gt;</span></code> out of outlet 1.</p></li>
+</ul>
+<p><strong>Sharing</strong></p>
+<p>Every <code class="docutils literal notranslate"><span class="pre">.dict</span></code> with the same name in a patcher uses the same dictionary, and
+two patchers with the same name share theirs. A <code class="docutils literal notranslate"><span class="pre">.dict</span></code> without a name
+keeps a private dictionary and sends no reference. The contents are saved
+with the patch as nested JSON. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-sharing">Sharing a store by name</a> and
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-saved">What is saved with the patch</a>.</p>
+<p><strong>The other .dict objects</strong></p>
+<p>The other objects in this category each work on one or more named
+dictionaries. They take the names as creation arguments, and the names
+cannot be changed while the patch runs. A cord cannot carry a dictionary,
+so an object that produces one writes it into a dictionary you name, rather
+than sending it (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-references">Dictionaries and arrays travel by name</a>). They share these rules:</p>
+<ul class="simple">
+<li><p>A bang on the left inlet runs the object. So does the reference
+<code class="docutils literal notranslate"><span class="pre">dictionary</span> <span class="pre">&lt;name&gt;</span></code> of the dictionary it reads, so outlet 1 of a
+<code class="docutils literal notranslate"><span class="pre">.dict</span></code> can be wired straight into it. A reference that names any other
+dictionary is refused.</p></li>
+<li><p>Any extra inlet accepts the reference of the dictionary it stands for and
+does nothing with it, so the wiring can show which dictionaries an object
+uses.</p></li>
+<li><p>An object that writes a dictionary replaces its whole contents
+(<code class="docutils literal notranslate"><span class="pre">.dict.strip</span></code> edits it in place), then sends that dictionary’s
+reference. So the objects chain: the reference that leaves one can run the
+next.</p></li>
+<li><p>Each run works on the dictionary as it was when the run started. Changes
+made while it sends, even by objects it is wired to, show up only on the
+next run.</p></li>
+<li><p>An object without a name works on a private, empty dictionary and sends no
+reference.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>set voice::1::freq 440  -&gt;  [.dict synth]
+bang                    -&gt;  [.dict synth]              outlet 1: dictionary synth
+dictionary synth        -&gt;  [.dict.serialize synth]    -&gt;  {"voice":{"1":{"freq":440}}}
+</pre></div>
+</div>
+<p><strong>Limits</strong></p>
+<p>A dictionary holds at most 256 entries. A key path is at most 128 characters,
+including the <code class="docutils literal notranslate"><span class="pre">::</span></code> separators, and a value at most 256. A message that
+does not fit is refused: it changes nothing, sends nothing and is not
+logged. The same refusal happens when two threads use one dictionary at the
+same moment: the second one does nothing rather than wait. See
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/data.html#data-limits">Size limits</a>.</p>
+<p>Safe on the audio thread: no message allocates memory, takes a lock or
+waits. Only <code class="docutils literal notranslate"><span class="pre">.dict.deserialize</span></code> does part of its work elsewhere.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -693,6 +761,14 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Two dictionaries are equal when they hold the same key paths with the same
+values, in any order. Values are compared as text, so <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">7.</span></code>
+differ.</p>
+<p>On a difference, the paths that differ follow the verdict: first the paths
+that are only in the left dictionary or hold a different value, in the left
+dictionary’s order, then the paths that are only in the right one. The
+verdict is sent first, so a patch can act on it before the list arrives.</p>
+<p>Both arguments may name the same dictionary. At most 256 paths are sent.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -800,6 +876,27 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The message must be one JSON object, such as the text <code class="docutils literal notranslate"><span class="pre">.dict.serialize</span></code>
+sends. It replaces the contents of the named dictionary, and the reference
+then leaves the outlet:</p>
+<ul class="simple">
+<li><p>Nested objects become <code class="docutils literal notranslate"><span class="pre">::</span></code> key paths.</p></li>
+<li><p>An array becomes a list value. Arrays and objects inside an array are
+dropped.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code> become <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">0</span></code>; <code class="docutils literal notranslate"><span class="pre">null</span></code> becomes an empty
+value.</p></li>
+</ul>
+<p>The JSON is read in the background, so the dictionary changes and the
+reference is sent one audio block after the message arrives, not at once.
+A document that is not valid JSON, or is not an object, changes nothing and
+sends nothing. A document that arrives while the previous one is still being
+read is refused.</p>
+<p><strong>Files</strong></p>
+<p>A message holds at most 255 characters. For a larger document use <code class="docutils literal notranslate"><span class="pre">read</span>
+<span class="pre">&lt;file&gt;</span></code>, which loads a JSON file of up to 128 KiB and then works like a
+message. A bare <code class="docutils literal notranslate"><span class="pre">read</span></code> reads the last file again. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/files.html">File input and output</a>.</p>
+<p>Entries past 256, or with a key path or value that is too long, are dropped
+and the rest of the document still loads.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -890,6 +987,20 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each entry of the source is written into the target as
+<code class="docutils literal notranslate"><span class="pre">&lt;group&gt;::&lt;original</span> <span class="pre">path&gt;</span></code>, with its value unchanged. Without a key
+argument, an entry’s group is its own value, which turns a table into an
+index. With a key argument, the source is read as records: the first part of
+each path names a record, and every entry of the record groups under the
+value the record holds at that key.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>source notes:   n1::inst bass   n1::pitch 40   n2::inst lead   n2::pitch 72
+[.dict.group notes byinst inst]
+target byinst:  bass::n1::inst bass   bass::n1::pitch 40
+                lead::n2::inst lead   lead::n2::pitch 72
+</pre></div>
+</div>
+<p>An entry is skipped when its group is empty, when its record has no entry at
+the key, or when the new path would be longer than 128 characters.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -996,6 +1107,13 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each entry leaves as one list: its whole <code class="docutils literal notranslate"><span class="pre">::</span></code> path, then its value. The
+entries leave in the order they were first written. When the last one has
+been sent, the right outlet bangs, also for an empty dictionary.</p>
+<p>Each pair is handled completely, including everything it causes downstream,
+before the next pair leaves. Use the done bang for whatever should happen
+after the walk. A run that arrives while a walk is still sending is refused,
+so an outlet wired back into the inlet does not restart the walk.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1092,6 +1210,14 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The target gets every entry of the left dictionary, then every entry of the
+right one. Where both hold the same key path, the right value replaces the
+left one, so the left dictionary is the base and the right one the
+override. Neither source is changed, unless it is also the target:
+<code class="docutils literal notranslate"><span class="pre">.dict.join</span> <span class="pre">base</span> <span class="pre">preset</span> <span class="pre">base</span></code> merges <code class="docutils literal notranslate"><span class="pre">preset</span></code> into <code class="docutils literal notranslate"><span class="pre">base</span></code>.</p>
+<p>When the result would be more than 256 entries, the new key paths of the
+right dictionary that do not fit are dropped; the rest of the join still
+happens.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1198,6 +1324,31 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The first argument names the dictionary, and every argument after it is a
+key path with its own inlet. The inlets work like those of <code class="docutils literal notranslate"><span class="pre">.pack</span></code> (see
+<a class="reference internal" href="lists.html"><span class="doc">Lists</span></a>): the left inlet stores its value and writes, the others only
+store, so set the right-hand values first.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.dict.pack synth freq gain]   inlet 1 &lt;- 0.5   inlet 0 &lt;- 440
+dictionary synth now holds:    freq 440   gain 0.5
+</pre></div>
+</div>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>A value on any inlet is stored for that inlet’s key path. A whole list is
+one value, not spread over the inlets.</p></li>
+<li><p>bang on the left inlet: write the dictionary without storing anything.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;value&gt;</span></code>: store a value without writing.</p></li>
+<li><p>The reference <code class="docutils literal notranslate"><span class="pre">dictionary</span> <span class="pre">&lt;name&gt;</span></code> of the bound dictionary writes it on
+the left inlet and is ignored on the others.</p></li>
+</ul>
+<p>Writing replaces the whole dictionary with one entry per key path, so any
+other key in it is removed. A key path that has not received a value yet is
+written with an empty value. With no key paths, a bang writes an empty
+dictionary. When the same key path is given twice, the inlet further right
+wins.</p>
+<p>At most 256 key paths of at most 128 characters; a longer path is logged and
+gets no inlet. A value longer than 256 characters is refused and the inlet
+keeps its old value.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1293,6 +1444,26 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The dictionary is printed as indented JSON, the same structure a saved patch
+holds. Each line starts with the dictionary’s name and a colon:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>synth: {
+synth:   "voice": {
+synth:     "1": {
+synth:       "freq": 440
+synth:     }
+synth:   }
+synth: }
+</pre></div>
+</div>
+<p>The lines reach the engine log the next time the host calls
+<code class="docutils literal notranslate"><span class="pre">System.instance.update()</span></code>. <code class="docutils literal notranslate"><span class="pre">Log.instance.logfile</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Log.instance.messages</span></code> choose where the log goes.</p>
+<p><strong>Limits</strong></p>
+<p>The second argument limits how many lines the object sends per update,
+64 by default and 1 to 256. When a dump runs past it, the rest is dropped and
+one line says that the limit was reached. A line too long for the log is cut
+and ends in <code class="docutils literal notranslate"><span class="pre">...</span></code>. Only the first 32 characters of the name are used as the
+label.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1361,6 +1532,18 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each key argument has an outlet, and one more outlet on the right is added
+for no match. The dictionary is tested for each key in order, and its
+reference leaves the outlet of the first key it holds. Exactly one outlet
+sends per run.</p>
+<p>A key matches an entry at that path or under it: <code class="docutils literal notranslate"><span class="pre">voice</span></code> matches
+<code class="docutils literal notranslate"><span class="pre">voice::1::freq</span></code>, but not <code class="docutils literal notranslate"><span class="pre">voicing</span></code>. A key can be a deeper path such as
+<code class="docutils literal notranslate"><span class="pre">voice::1</span></code>. When a key is given twice, only its first outlet is used.</p>
+<p>The no-match outlet sends the same reference, so a second <code class="docutils literal notranslate"><span class="pre">.dict.route</span></code>
+wired to it can test more keys. Without a name the object sends nothing,
+because a private dictionary has no reference. A run that arrives while the
+object is still sending is refused, so an outlet wired back into the inlet
+does not loop.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1456,6 +1639,22 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The JSON is written on one line with no spaces outside strings. <code class="docutils literal notranslate"><span class="pre">::</span></code> paths
+become nested objects, and the entries keep the order they were first
+written. Values are written as:</p>
+<ul class="simple">
+<li><p>one number: a JSON number;</p></li>
+<li><p>several tokens: an array;</p></li>
+<li><p>an empty value: <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>;</p></li>
+<li><p>anything else: a string.</p></li>
+</ul>
+<p>An empty dictionary is <code class="docutils literal notranslate"><span class="pre">{}</span></code>. <code class="docutils literal notranslate"><span class="pre">.dict.deserialize</span></code> reads this text back
+into a dictionary.</p>
+<p><strong>Limits</strong></p>
+<p>A message holds at most 255 characters. When the JSON is longer, nothing is
+sent. Use <code class="docutils literal notranslate"><span class="pre">write</span> <span class="pre">&lt;file&gt;</span></code> instead, which saves the same JSON to a file of up
+to 128 KiB, or walk the entries with <code class="docutils literal notranslate"><span class="pre">.dict.iter</span></code>. A bare <code class="docutils literal notranslate"><span class="pre">write</span></code> writes
+to the last file again. See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/files.html">File input and output</a>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1546,6 +1745,24 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>An entry is <em>under</em> the path when its key starts with the path followed by
+<code class="docutils literal notranslate"><span class="pre">::</span></code>. Those entries go into the slice dictionary with that start removed,
+so the sub-tree becomes a dictionary of its own. Every other entry goes into
+the remainder dictionary unchanged.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>source:     voice::1::freq 440   voice::1::gain 0.5   voice::2::freq 220
+[.dict.slice synth v1 rest voice::1]
+v1:         freq 440   gain 0.5
+rest:       voice::2::freq 220
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>An entry stored at exactly the path is a value, not a sub-tree. It goes
+into the remainder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">voice</span></code> does not match <code class="docutils literal notranslate"><span class="pre">voices::1</span></code>: the path ends at a <code class="docutils literal notranslate"><span class="pre">::</span></code>.</p></li>
+<li><p>An empty path matches nothing, so the remainder gets everything.</p></li>
+</ul>
+<p>The remainder’s reference is sent first, then the slice’s. When both
+targets have the same name, that dictionary ends up holding the remainder.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1669,6 +1886,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The entries removed are exactly the ones <code class="docutils literal notranslate"><span class="pre">.dict.slice</span></code> would put in its
+slice for the same path: every entry whose key starts with the path followed
+by <code class="docutils literal notranslate"><span class="pre">::</span></code>. An entry at exactly the path is kept, and <code class="docutils literal notranslate"><span class="pre">voice</span></code> does not
+match <code class="docutils literal notranslate"><span class="pre">voices::1</span></code>. An empty path removes nothing.</p>
+<p>To remove one entry, send <code class="docutils literal notranslate"><span class="pre">delete</span> <span class="pre">&lt;path&gt;</span></code> to <code class="docutils literal notranslate"><span class="pre">.dict</span></code>; to remove
+everything, send it <code class="docutils literal notranslate"><span class="pre">clear</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1764,6 +1987,17 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The first argument names the dictionary, and every argument after it is a
+key path with its own outlet. Each value leaves its outlet right to left, so
+a <code class="docutils literal notranslate"><span class="pre">.dict.unpack</span></code> can feed the cold inlets of an object before its hot one.
+One number leaves as an int or a float, anything else as one list.</p>
+<p>A missing path, or one holding an empty value, sends nothing on its outlet.
+When the same path is given twice, both outlets send. A run that arrives
+while the object is still sending is refused.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.dict.pack</span></code> and <code class="docutils literal notranslate"><span class="pre">.dict.unpack</span></code> with the same name and key paths are a
+pair: a reference from the <code class="docutils literal notranslate"><span class="pre">.dict.pack</span></code> makes the <code class="docutils literal notranslate"><span class="pre">.dict.unpack</span></code> send the
+values that were packed. At most 256 key paths of at most 128 characters; a
+longer path is logged and gets no outlet.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

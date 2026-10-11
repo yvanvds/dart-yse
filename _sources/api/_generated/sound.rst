@@ -34,8 +34,16 @@ Throws [YseException] if the file cannot be loaded.
 
 Construct a sound driven by a [Patcher] graph.
 
-The patcher must outlive this sound; the engine reads its `~dac`
-output on every audio callback.
+**Lifetime contract:** [patcher] must outlive this sound — the engine
+renders its `~dac` output on every audio callback. The sound holds a
+Dart reference to it, so garbage collection never frees the patcher
+under a live sound; don't `.dispose()` the patcher before disposing the
+sound (the engine keeps rendering the graph it already took over, but
+every control call — [Patcher.passBang], [Patcher.messages], edits —
+is gone with the handle).
+
+Throws [YseException] if the sound cannot be created, or if [patcher]
+is already driving another sound.
 
 .. code-block:: dart
 
@@ -82,8 +90,10 @@ play/stop intent for every voice. Build the synth's voices (with its
 `add*Voices` methods) before constructing this sound.
 
 **Lifetime contract:** [synth] must outlive this sound — the audio thread
-renders its voices on every callback. Dispose this sound before the
-synth. Pass `null` for [channel] to route through the master mix.
+renders its voices on every callback. The sound holds a Dart reference to
+it, so garbage collection never frees the synth under a live sound;
+don't `.dispose()` the synth before disposing the sound. Pass `null` for
+[channel] to route through the master mix.
 
 Throws [YseException] if the sound cannot be created.
 
@@ -258,7 +268,10 @@ Attach a DSP effect chain to this sound.
 
 Pass `null` to clear. The engine holds a borrowed reference to [dsp]
 for as long as the sound is live; [dsp] must outlive this sound and
-the engine's slow-pool delete tick that follows its destruction.
+the engine's slow-pool delete tick that follows its destruction. The
+sound holds a Dart reference to the assigned head, and each effect
+holds the one [DspObject.link]ed after it, so garbage collection never
+frees any part of the chain under a live sound (#80, #84).
 
 .. code-block:: dart
 

@@ -9,7 +9,8 @@ ABI; everything you can do in the C++ API has a Dart equivalent on the
 
 New here? Start with :doc:`intro/index`, then :doc:`intro/mental_model`,
 then :doc:`intro/hello_sound`. Looking for a specific class? The
-:doc:`api/index` is the full reference.
+:doc:`api/index` is the full reference. Coming from ``package:yse`` 0.1.0
+(libYSE 2.4)? Read :doc:`intro/upgrading`.
 
 .. toctree::
    :maxdepth: 2
@@ -19,6 +20,8 @@ then :doc:`intro/hello_sound`. Looking for a specific class? The
    intro/mental_model
    intro/install
    intro/hello_sound
+   intro/sessions_and_devices
+   intro/upgrading
 
 .. toctree::
    :maxdepth: 2

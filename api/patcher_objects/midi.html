@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MIDI &#8212; dart-yse 0.1</title>
+    <title>MIDI &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Sequencing" href="sequencing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -592,9 +595,11 @@
 <p>45 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/midi.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/midi.html">category’s page</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Objects marked <em>MIDI device only</em> below hold a MIDI device port. They
@@ -668,6 +673,12 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Reads only the coarse byte of the pitch-bend message. Over a two-semitone
+bend range that is a step of about three cents, which can be heard on a slow
+bend; use <code class="docutils literal notranslate"><span class="pre">.xbendin</span></code> for the full resolution. Subtract 64 before scaling
+the value into a bend amount.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -742,6 +753,11 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The value is sent as the coarse byte of the pitch-bend message, with the fine
+byte set to 0. That matches what <code class="docutils literal notranslate"><span class="pre">.bendin</span></code> and <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code> report, so a
+value means the same on the way in and on the way out. <code class="docutils literal notranslate"><span class="pre">.xbendout</span></code> sends
+the full 14 bits.</p>
+<p>The channel argument and the output work as described under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -832,6 +848,33 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each pair that arrives is a note-on when its velocity is not 0, and a
+note-off when it is 0. The object measures the notes; it does not pass them
+on, so wire it beside the path the notes take, not into it.</p>
+<p><strong>Outlets</strong></p>
+<p>Not every outlet fires on every message:</p>
+<ul class="simple">
+<li><p>A note-on sends the delta pair (when there was an earlier note-on), then
+velocity, pitch, polyphony, voice and serial.</p></li>
+<li><p>A note-off sends duration and note-off count, then velocity 0, pitch,
+polyphony, voice and serial.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delta</span></code> sends only the delta pair: the time since the last note-on, right
+now. Before the first note-on it sends nothing.</p></li>
+</ul>
+<p>The serial is sent last and is the same at the attack and the release of a
+note, so it identifies the note. Voices are the lowest free number from 1,
+as <code class="docutils literal notranslate"><span class="pre">.poly</span></code> numbers them. A pitch played twice takes two voices, and the
+releases close them oldest first. Durations and deltas are measured in
+milliseconds with sub-millisecond precision, on the same clock <code class="docutils literal notranslate"><span class="pre">.timer</span></code>
+uses.</p>
+<p><strong>Reset</strong></p>
+<p>A bang on the right inlet sends a full note-off report for every note still
+sounding, in voice order, then sets every counter back to 0 and forgets the
+last note-on, so the next note-on reports no delta.</p>
+<p><strong>Limits</strong></p>
+<p>At most 128 notes are tracked at once. A note-on with 128 notes sounding is
+ignored, and so is a note-off for a pitch no voice holds. Pitches and
+velocities are not clamped.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -958,6 +1001,8 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The value is clamped to 0-127. The channel argument and the output work as
+described under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1048,6 +1093,10 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The value is clamped to 0-127. The channel and controller number are
+creation arguments. The channel argument and the output work as described
+under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.xctlout</span></code> sends a controller at 14-bit resolution.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1150,6 +1199,14 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Wire the controller-number outlet into <code class="docutils literal notranslate"><span class="pre">.route</span></code> or <code class="docutils literal notranslate"><span class="pre">.sel</span></code> to split one
+<code class="docutils literal notranslate"><span class="pre">.ctlin</span></code> across a whole control surface. The default controller filter is
+-1, not 0, because controller 0 (bank select) is a real controller.</p>
+<p>A switch such as the sustain pedal sends 0 and 127 rather than a sweep.
+<code class="docutils literal notranslate"><span class="pre">.xctlin</span></code> combines the paired controllers 0-31 and 32-63 into 14-bit
+values.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1235,6 +1292,22 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Use it between the logic that plays notes and the object that sends them. A
+pair with a velocity other than 0 marks the pitch as sounding, a pair with
+velocity 0 clears it, and every pair passes through unchanged.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>bang: send pitch and velocity 0 for every note still sounding, from the
+lowest pitch up, and forget them. A second bang sends nothing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: forget the sounding notes without sending anything.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code>: set the velocity, then play the pitch. This is the
+shape <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code> sends from its note outlet.</p></li>
+</ul>
+<p>The object has no channel. To release notes in a MIDI byte stream on the
+channels they were played on, use <code class="docutils literal notranslate"><span class="pre">.midiflush</span></code> after the formatters.</p>
+<p>Pitches outside 0-127 pass through but are not tracked. When the patcher is
+cleared or destroyed, or the object is deleted, the object releases its
+sounding notes first.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1313,6 +1386,33 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The velocity and duration inlets set the values for notes played after them;
+a note already sounding keeps its own. A velocity of 0 is a release in MIDI,
+so the pair passes through and nothing is scheduled. The velocity starts at
+0, so give it as the first argument or send one before playing:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.makenote 100 500]   60  =&gt;  60 100 now, 60 0 half a second later
+</pre></div>
+</div>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stop</span></code>: release every sounding note now, in the order they were played.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: forget the sounding notes without releasing them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code>: set the velocity, then play the pitch.</p></li>
+</ul>
+<p>The duration is in milliseconds. A duration of 0 releases the note on the
+next audio block. Durations follow the engine’s audio clock: while the
+engine is paused, pending releases wait. Note values such as <code class="docutils literal notranslate"><span class="pre">4n</span></code> and tick
+counts are not supported; they are ignored and the duration is left as it
+was.</p>
+<p>A pitch played twice is two notes, each released after its own duration.</p>
+<p><strong>Limits</strong></p>
+<p>One <code class="docutils literal notranslate"><span class="pre">.makenote</span></code> holds at most 64 sounding notes. Past that, a new note is
+refused completely: nothing is sent. The patcher also holds at most 128
+pending timed messages, shared with <code class="docutils literal notranslate"><span class="pre">.pipe</span></code>, <code class="docutils literal notranslate"><span class="pre">.delay</span></code> and the other
+timing objects; when that runs out, the note is released at once instead of
+after its duration.</p>
+<p>When the patcher is cleared or destroyed, or the object is deleted, it
+releases its sounding notes first.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1426,6 +1526,23 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Put it in a MIDI byte stream, for example between the formatters and
+<code class="docutils literal notranslate"><span class="pre">.midiout</span></code>. Everything that arrives passes out unchanged, in the form it
+arrived in. On the way through, the object follows the stream and remembers
+which notes are sounding on which channel.</p>
+<p>A bang sends a note-off for every note still sounding, as numeric lists such
+as <code class="docutils literal notranslate"><span class="pre">128</span> <span class="pre">60</span> <span class="pre">0</span></code>, ordered by channel and then pitch, and forgets them.</p>
+<p>The stream is decoded the way <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code> decodes it, so notes sent under
+running status are tracked, a clock byte between two data bytes does not
+break a note, and bytes inside a system-exclusive dump are never read as
+notes. Both forms of a release clear a note: a note-off, and a note-on with
+velocity 0.</p>
+<p>The inlet reads numeric byte lists, the binary messages the MIDI sender
+objects build, and single ints. A numeric list holding a number outside
+0-255 is dropped whole.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.midiout</span></code>’s <code class="docutils literal notranslate"><span class="pre">allnotesoff</span></code> is a controller message that many devices
+ignore; <code class="docutils literal notranslate"><span class="pre">.midiflush</span></code> sends a real note-off for each note. When the patcher
+is cleared or destroyed, or the object is deleted, it flushes first.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1492,6 +1609,30 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Every inlet except the channel sends a message at once, on the channel the
+channel inlet holds (1 until set). The output is a list of byte values, such
+as <code class="docutils literal notranslate"><span class="pre">144</span> <span class="pre">60</span> <span class="pre">100</span></code>, one message per list.</p>
+<p><strong>Inlets</strong></p>
+<ul class="simple">
+<li><p>note: <code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code>. A bare pitch is sent with velocity 0, which is
+a release. Releases are sent as note-ons with velocity 0, never as note-off
+messages.</p></li>
+<li><p>poly pressure: <code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;pressure&gt;</span></code>; a bare pitch sends pressure 0.</p></li>
+<li><p>control change: <code class="docutils literal notranslate"><span class="pre">&lt;controller&gt;</span> <span class="pre">&lt;value&gt;</span></code>; a bare number sends value 0.</p></li>
+<li><p>program change: 1-128, the numbering <code class="docutils literal notranslate"><span class="pre">.pgmin</span></code> and <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code> report.</p></li>
+<li><p>aftertouch: one pressure value for the channel.</p></li>
+<li><p>pitch bend: 0-127, the coarse byte, with 64 at rest. The fine byte is sent
+as 0.</p></li>
+<li><p>channel: 1-16, stored only.</p></li>
+<li><p>raw: byte values passed straight to the outlet, so the system-exclusive and
+clock messages <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code> sends from its rightmost outlet can be put
+back.</p></li>
+</ul>
+<p>Values are clamped to the range MIDI allows, except on the raw inlet, where a
+value outside 0-255 is dropped. A raw list is cut at 128 bytes.</p>
+<p>Because <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code> reports a note-off as velocity 0 and pitch bend as the
+coarse byte, a stream taken apart and put back together loses note-off
+release velocities and the fine bend byte.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1607,6 +1748,44 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>The bytes arrive exactly as the device sent them, so a note-on is three ints
+and a system-exclusive dump is as many ints as it has bytes. To work with
+whole messages, use <code class="docutils literal notranslate"><span class="pre">.xmidiin</span></code>; to decode them, wire <code class="docutils literal notranslate"><span class="pre">.midiin</span></code> into
+<code class="docutils literal notranslate"><span class="pre">.midiparse</span></code>.</p>
+<p><strong>Every MIDI input object</strong></p>
+<p>The objects that receive from a MIDI device (<code class="docutils literal notranslate"><span class="pre">.midiin</span></code>, <code class="docutils literal notranslate"><span class="pre">.xmidiin</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.notein</span></code>, <code class="docutils literal notranslate"><span class="pre">.ctlin</span></code>, <code class="docutils literal notranslate"><span class="pre">.sysexin</span></code> and the others) share these rules:</p>
+<ul class="simple">
+<li><p>The first argument is the input port, counted from 0. <code class="docutils literal notranslate"><span class="pre">.midiinfo</span></code> lists
+the ports by name. Several objects can listen to one port; each receives
+every message.</p></li>
+<li><p>A port that cannot be opened, because the device is missing or another
+program holds it, leaves the object silent. The patch still loads.</p></li>
+<li><p>Changing the port argument while the patch runs recreates the object.</p></li>
+<li><p>Messages that arrive between two audio blocks reach the patch at the start
+of the next block. At most 64 short messages (512 bytes) are handed out per
+block; the rest wait for the next block, so a long dump arrives over
+several blocks.</p></li>
+<li><p>These objects exist only in builds with MIDI device support, which
+includes the Windows and Linux builds.</p></li>
+</ul>
+<p>Objects that decode channel messages (<code class="docutils literal notranslate"><span class="pre">.notein</span></code>, <code class="docutils literal notranslate"><span class="pre">.ctlin</span></code>, <code class="docutils literal notranslate"><span class="pre">.bendin</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.pgmin</span></code>, <code class="docutils literal notranslate"><span class="pre">.touchin</span></code>, <code class="docutils literal notranslate"><span class="pre">.polyin</span></code>, <code class="docutils literal notranslate"><span class="pre">.rpnin</span></code>, <code class="docutils literal notranslate"><span class="pre">.nrpnin</span></code> and the <code class="docutils literal notranslate"><span class="pre">.x</span></code>
+input objects) also share these:</p>
+<ul class="simple">
+<li><p>The second argument is the channel to listen to, 1-16. 0, the default,
+listens to all channels.</p></li>
+<li><p>Channels are reported as 1-16. The channel outlet is there even when the
+object listens to one channel, and then always reports that channel.</p></li>
+<li><p>The outlets fire from right to left, so the channel and the other values
+are out before the leftmost outlet triggers anything.</p></li>
+</ul>
+<p><strong>Limits</strong></p>
+<p>A message of up to 8192 bytes arrives whole. A longer one is dropped
+entirely and logged, never passed on cut short. Messages are also dropped,
+and logged, when they arrive faster than the patch takes them. At most 8
+input ports can be open at once, and at most 8 objects can listen to one
+port.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1677,6 +1856,24 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Input ports and output ports are numbered separately: input port 1 and
+output port 1 are unrelated devices. The <code class="docutils literal notranslate"><span class="pre">direction</span></code> argument chooses
+which list a bang reports.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>bang: send the number of ports, then for each port its index and then its
+name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input</span></code>, <code class="docutils literal notranslate"><span class="pre">output</span></code>: switch which list is reported.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">refresh</span></code>: scan the machine again, for example after a device was plugged
+in. The scan runs in the background, and the full listing is sent again
+when it finishes, from the next audio block.</p></li>
+</ul>
+<p>The ports are scanned when the object is created; a bang reports that scan
+until <code class="docutils literal notranslate"><span class="pre">refresh</span></code> takes a new one. Names are sent whole, spaces included.</p>
+<p><strong>Limits</strong></p>
+<p>At most 32 ports are listed per direction, and names are cut at 63
+characters. At most 16 <code class="docutils literal notranslate"><span class="pre">.midiinfo</span></code> objects can use <code class="docutils literal notranslate"><span class="pre">refresh</span></code> at the same
+time. Only available in builds with MIDI device support.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1786,6 +1983,36 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p><strong>Input</strong></p>
+<p>Each list is sent as one MIDI message, at its own length, so a program change
+goes out as two bytes and a system-exclusive dump as a whole. Two forms are
+accepted:</p>
+<ul class="simple">
+<li><p>numeric, <code class="docutils literal notranslate"><span class="pre">144</span> <span class="pre">60</span> <span class="pre">100</span></code>: what <code class="docutils literal notranslate"><span class="pre">.midiformat</span></code>, <code class="docutils literal notranslate"><span class="pre">.sxformat</span></code>, <code class="docutils literal notranslate"><span class="pre">.xmidiin</span></code>
+and <code class="docutils literal notranslate"><span class="pre">.seq</span></code> send;</p></li>
+<li><p>binary: what <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>, <code class="docutils literal notranslate"><span class="pre">.bendout</span></code>, <code class="docutils literal notranslate"><span class="pre">.rpnout</span></code> and the other sender
+objects build.</p></li>
+</ul>
+<p>A numeric list with a number outside 0-255, or longer than 256 bytes, is not
+sent.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">allnotesoff</span></code>: controller 123 (all notes off) on all 16 channels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span></code>: controller 121 (reset all controllers) on all 16 channels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">omni</span> <span class="pre">on</span></code>, <code class="docutils literal notranslate"><span class="pre">omni</span> <span class="pre">off</span></code>, <code class="docutils literal notranslate"><span class="pre">poly</span> <span class="pre">on</span></code>, <code class="docutils literal notranslate"><span class="pre">poly</span> <span class="pre">off</span></code>, <code class="docutils literal notranslate"><span class="pre">local</span> <span class="pre">control</span> <span class="pre">on</span></code>,
+<code class="docutils literal notranslate"><span class="pre">local</span> <span class="pre">control</span> <span class="pre">off</span></code>: the matching channel-mode message on channel 1.</p></li>
+</ul>
+<p><strong>Opening the port</strong></p>
+<p>The port opens when the first message arrives, not when the object is
+created, so a patch loads on a machine without its devices. The port is
+opened in the background, and messages sent before it is open are dropped,
+including the first one. If the port cannot be opened, every message is
+dropped.</p>
+<p>Sending never blocks the audio thread: messages are handed to a separate
+thread, which normally sends them within a millisecond, in order. If that
+queue is full, a message is dropped.</p>
+<p>At most 64 <code class="docutils literal notranslate"><span class="pre">.midiout</span></code> objects can exist at once; a further one never opens
+its port. Only available in builds with MIDI device support.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1849,6 +2076,30 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Bytes may arrive one at a time or as numeric lists, in any split: a message
+spread over several lists decodes the same as one sent whole.</p>
+<p><strong>Outlets</strong></p>
+<ul class="simple">
+<li><p>note: <code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code>. A note-off, and a note-on with velocity 0,
+both report velocity 0.</p></li>
+<li><p>poly pressure: <code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;pressure&gt;</span></code>.</p></li>
+<li><p>control change: <code class="docutils literal notranslate"><span class="pre">&lt;controller&gt;</span> <span class="pre">&lt;value&gt;</span></code>.</p></li>
+<li><p>program change: 1-128, the value on the wire plus one.</p></li>
+<li><p>aftertouch: the channel pressure.</p></li>
+<li><p>pitch bend: 0-127, the coarse byte only, with 64 at rest.</p></li>
+<li><p>channel: 1-16, sent before the outlet it belongs to.</p></li>
+<li><p>raw: everything else, as byte lists: system exclusive, song position, song
+select, time code, tune request, and clock messages (248-255).</p></li>
+</ul>
+<p>The parser understands running status, so a chord sent with one status byte
+decodes as separate notes. A clock byte that arrives in the middle of
+another message is sent at once and does not disturb it. A
+system-exclusive dump longer than 128 bytes leaves in consecutive pieces,
+the first starting with 240 and the last ending with 247; a dump cut short
+by another status byte ends there.</p>
+<p>Data bytes that arrive with no status byte before them are dropped. A value
+outside 0-255 is ignored. <code class="docutils literal notranslate"><span class="pre">.midiformat</span></code> is the inverse; see its notes for
+what does not survive the round trip.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1957,6 +2208,20 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>MPE gives every sounding note its own MIDI channel, so pitch bend, pressure
+and slide apply to one note. Before playing, both ends must agree how many
+channels the zone uses; this message sets that.</p>
+<p>A value on the inlet sends three control-change messages on the zone’s
+master channel: channel 1 for the lower zone, channel 16 for the upper.
+Wire the outlet to <code class="docutils literal notranslate"><span class="pre">.midiout</span></code>.</p>
+<ul class="simple">
+<li><p>15, the default, gives the zone every other channel.</p></li>
+<li><p>A smaller number leaves room for a second zone or for ordinary MIDI.</p></li>
+<li><p>0 switches MPE off on the device.</p></li>
+</ul>
+<p>On receiving the message, a device sets its pitch-bend range to 48 semitones
+on the member channels and 2 on the master channel, and stops its sounding
+notes. MPE defines only the lower and upper zone.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2047,6 +2312,23 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Set the member channel on the right inlet first; it is stored and sends
+nothing. Every other inlet sends one message on that channel at once, as a
+numeric byte list. In MPE one channel is one note, so a polyphonic patch
+changes the channel for each note.</p>
+<p><strong>Inlets</strong></p>
+<ul class="simple">
+<li><p>note: <code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code>. A bare pitch is sent with velocity 0, a
+release. Releases are sent as note-ons with velocity 0.</p></li>
+<li><p>bend: 0-16383, 8192 at rest. The full 14 bits are needed at the 48-semitone
+bend range MPE devices use.</p></li>
+<li><p>pressure: sent as channel pressure, which on a member channel belongs to
+that note.</p></li>
+<li><p>slide: sent as controller 74.</p></li>
+<li><p>channel: 1-16.</p></li>
+</ul>
+<p>Values are clamped to the range MIDI allows. <code class="docutils literal notranslate"><span class="pre">.mpeconfig</span></code> tells the device
+how many member channels to expect.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2137,6 +2419,22 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each message on the four left outlets is preceded by its role, then its
+channel. The role says what the channel is doing in the zone:</p>
+<ul class="simple">
+<li><p>2: the master channel. Its messages apply to every note.</p></li>
+<li><p>1: a member channel. Its messages belong to the one note on that channel.</p></li>
+<li><p>0: a channel outside the zone, such as ordinary MIDI on the same cable.</p></li>
+</ul>
+<p>Pitch bend is reported at the full 14 bits. A release, in either form, is
+reported as velocity 0.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">zone</span></code> and <code class="docutils literal notranslate"><span class="pre">members</span></code> arguments say which channels to expect. An MPE
+configuration message on the zone’s master channel updates the member count
+while the patch runs, and is not reported. The member count only changes
+the role reported; nothing is filtered.</p>
+<p>Program changes, other controllers, poly pressure and system exclusive are
+not reported here. Wire <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code> to the same source to read them. Input
+is read the same way <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code> reads it.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2349,6 +2647,9 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The pitch and velocity are clamped to 0-127. The channel argument and the
+output work as described under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.xnoteout</span></code> sends both note-ons and note-offs from one object.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2445,6 +2746,28 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A note-on with velocity 0 is a release on most devices, so <code class="docutils literal notranslate"><span class="pre">.noteon</span></code> can
+end the notes it starts. The pitch and velocity are clamped to 0-127.</p>
+<p><strong>The MIDI sender objects</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">.noteon</span></code>, <code class="docutils literal notranslate"><span class="pre">.noteoff</span></code>, <code class="docutils literal notranslate"><span class="pre">.controlchange</span></code>, <code class="docutils literal notranslate"><span class="pre">.polypressure</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.channelpressure</span></code>, <code class="docutils literal notranslate"><span class="pre">.programchange</span></code>, <code class="docutils literal notranslate"><span class="pre">.bendout</span></code>, <code class="docutils literal notranslate"><span class="pre">.xbendout</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.xbendout2</span></code>, <code class="docutils literal notranslate"><span class="pre">.xctlout</span></code>, <code class="docutils literal notranslate"><span class="pre">.xnoteout</span></code>, <code class="docutils literal notranslate"><span class="pre">.rpnout</span></code> and <code class="docutils literal notranslate"><span class="pre">.nrpnout</span></code>
+share these rules:</p>
+<ul class="simple">
+<li><p>The channel is a creation argument counted from 0: <code class="docutils literal notranslate"><span class="pre">0</span></code> is MIDI channel 1
+and <code class="docutils literal notranslate"><span class="pre">15</span></code> is channel 16. This differs from the input objects and
+<code class="docutils literal notranslate"><span class="pre">.midiformat</span></code>, which number channels 1-16. A channel outside 0-15 is
+clamped.</p></li>
+<li><p>The leftmost inlet sends the message. The other inlets store a value for
+the next message.</p></li>
+<li><p>Values are clamped to the range MIDI allows rather than refused.</p></li>
+<li><p>The output is a binary message meant for <code class="docutils literal notranslate"><span class="pre">.midiout</span></code>. <code class="docutils literal notranslate"><span class="pre">.midiflush</span></code>
+reads it too, but other objects, including <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code>, do not; use
+<code class="docutils literal notranslate"><span class="pre">.midiformat</span></code> for a message as a list of numbers.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.notein] pitch, velocity  -&gt;  [.noteon 0]  -&gt;  [.midiout 1]
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2548,6 +2871,12 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Works like <code class="docutils literal notranslate"><span class="pre">.rpnin</span></code>, with controllers 99 and 98 selecting the parameter. A
+non-registered number means whatever the device’s documentation says; it is
+where a hardware synthesiser keeps its own settings.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.rpnin</span></code> and <code class="docutils literal notranslate"><span class="pre">.nrpnin</span></code> follow the same selection, so each reports only
+the writes to its own kind of parameter. Parameter 16383 is a valid
+non-registered number and is reported.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2628,6 +2957,9 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Works like <code class="docutils literal notranslate"><span class="pre">.rpnout</span></code>, with controllers 99 and 98 selecting the parameter.
+A non-registered number means whatever the receiving device’s documentation
+says.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2724,6 +3056,32 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>It was made for note streams that are transformed on the way through: store
+the original pitch with the pitch actually played, and when the note-off
+arrives, its pitch looks up the played one.</p>
+<p><strong>Inlets</strong></p>
+<ul class="simple">
+<li><p>y (right): arm a y value. Nothing is stored yet; only one y can wait, and a
+second one replaces the first. 0 is a valid y.</p></li>
+<li><p>x (left), with a y armed: store the pair x,y and disarm the y.</p></li>
+<li><p>x (left), with no y armed: look up x. If a pair matches, send its y and
+delete the pair; otherwise do nothing.</p></li>
+</ul>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;x&gt;</span> <span class="pre">&lt;y&gt;</span></code>: arm y, then store the pair. A bare x is a lookup.</p></li>
+<li><p>bang: send the y of every stored pair, oldest first, without deleting
+anything.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: delete every pair and disarm a waiting y.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>72 -&gt; right inlet, 60 -&gt; left inlet    stores 60,72
+60 -&gt; left inlet                       sends 72 and deletes the pair
+</pre></div>
+</div>
+<p>Storing an x that is already there keeps both pairs, and a lookup takes the
+newest. A float is truncated to an int. The store holds at most 256 pairs; a
+store past that is refused, and the armed y is still used up. Nothing is
+saved with the patch.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2803,6 +3161,11 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Programs are reported as 1-128, one more than the value on the wire, which
+is how most devices display them. <code class="docutils literal notranslate"><span class="pre">.midiformat</span></code> takes the same numbering;
+<code class="docutils literal notranslate"><span class="pre">.programchange</span></code> takes the value on the wire, 0-127.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -2877,6 +3240,32 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Wire the voice outlet into <code class="docutils literal notranslate"><span class="pre">.route</span></code> or <code class="docutils literal notranslate"><span class="pre">.gate</span></code> to send each note to its
+own voice chain. The voice number is sent last, after the velocity and
+pitch, so it is the value that triggers.</p>
+<p><strong>Allocation</strong></p>
+<ul class="simple">
+<li><p>A note-on takes the lowest free voice.</p></li>
+<li><p>A note-off frees the voice holding that pitch and sends the same voice
+number with velocity 0. A pitch played twice takes two voices; the
+releases free them oldest first.</p></li>
+<li><p>When every voice is busy and stealing is off, the note leaves the overflow
+outlet as <code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code> and is not tracked.</p></li>
+<li><p>When stealing is on, the note held longest gives up its voice: its release
+is sent first, then the new note on the same voice number.</p></li>
+<li><p>A note-off for a pitch no voice holds leaves the overflow outlet as
+<code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">0</span></code>, so the releases of overflowed notes follow them. With
+stealing on this happens when a stolen note’s key is released.</p></li>
+</ul>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stop</span></code>: release every sounding voice, in voice order.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code>: set the velocity, then play the pitch.</p></li>
+</ul>
+<p>Pitches and velocities are not clamped. Making the pool smaller while notes
+sound strands nothing: notes above the new size still get their releases.
+When the patcher is cleared or destroyed, or the object is deleted, it
+releases every sounding voice first.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3003,6 +3392,11 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Few keyboards send per-key pressure; most send only channel pressure, which
+<code class="docutils literal notranslate"><span class="pre">.touchin</span></code> reads. Match the pitch with the one <code class="docutils literal notranslate"><span class="pre">.notein</span></code> reported to
+route the pressure to the right voice.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3083,6 +3477,8 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The pitch and pressure are clamped to 0-127. The channel argument and the
+output work as described under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3179,6 +3575,10 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Programs are numbered as on the wire, 0-127. Devices that display programs
+from 1 show the value plus one, which is also what <code class="docutils literal notranslate"><span class="pre">.pgmin</span></code> reports. The
+value is clamped to 0-127. The channel argument and the output work as
+described under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3276,6 +3676,19 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>A parameter write is four control changes, not one message: controllers 101
+and 100 select a 14-bit parameter number, then controllers 6 and 38 write a
+14-bit value. The object remembers the selection for each channel and
+reports each value written.</p>
+<p>Registered numbers are defined by the MIDI standard: 0 is pitch-bend range,
+1 fine tuning, 2 coarse tuning, 3 tuning program, 4 tuning bank.</p>
+<p>A value is reported as soon as its coarse byte (controller 6) arrives, with
+the fine byte as 0, and again when the fine byte (controller 38) follows.
+Devices that send only the coarse byte are therefore reported in steps of
+128. Selecting parameter 16383 (null) ends the selection, so later data
+bytes are not reported.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3356,6 +3769,16 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each value sends four control-change messages: controllers 101 and 100 select
+the parameter number from the right inlet, then controllers 6 and 38 write
+the value. The selection is sent again with every value, so another device
+on the cable cannot change it in between.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>0 -&gt; right inlet, then 1536 -&gt; left inlet
+pitch-bend range of 12 semitones (12 * 128)
+</pre></div>
+</div>
+<p>The selection is not reset to null afterwards. Send to parameter 16383 when
+a device needs that.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3459,6 +3882,13 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>A clock sends 24 timing messages per quarter note. Count them with
+<code class="docutils literal notranslate"><span class="pre">.counter</span></code> to follow an external sequencer’s tempo, and use start and stop
+to drive a <code class="docutils literal notranslate"><span class="pre">.transport</span></code>. Active sensing (254) is filtered out.</p>
+<p>Clock messages can arrive in the middle of other messages, such as a
+system-exclusive dump; they reach this object whole without disturbing the
+other objects on the port. The port argument works as described under
+<code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3522,6 +3952,12 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Use it after a note source when only attacks matter, such as triggering a
+sample. Every note source reports a release as velocity 0, so without it a
+patch fires twice per key.</p>
+<p>A list <code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code> sets the velocity and then tests the pitch, so
+<code class="docutils literal notranslate"><span class="pre">.midiparse</span></code>’s note outlet can be wired straight in. Nothing is clamped:
+any velocity other than 0 passes.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3600,6 +4036,23 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A note-on always passes straight through. A note-off (velocity 0) passes
+through with the pedal up, and is held back with the pedal down. Lifting the
+pedal sends every held note-off, from the lowest pitch up.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sustain</span> <span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">sustain</span> <span class="pre">0</span></code>: press or lift the pedal, as the right inlet
+does.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flush</span></code>: send every held note-off now and leave the pedal where it is.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: forget the held note-offs without sending them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;pitch&gt;</span> <span class="pre">&lt;velocity&gt;</span></code>: set the velocity, then play the pitch.</p></li>
+</ul>
+<p>A key played again while its release is held sounds again, and the held
+release still goes out when the pedal lifts. Pitches outside 0-127 are never
+held.</p>
+<p>Placed before a <code class="docutils literal notranslate"><span class="pre">.flush</span></code>, it leaves the <code class="docutils literal notranslate"><span class="pre">.flush</span></code> tracking what is really
+sounding. When the patcher is cleared or destroyed, or the object is
+deleted, it sends its held note-offs first.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3684,6 +4137,31 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The arguments are the template, one token per byte:</p>
+<ul class="simple">
+<li><p>a number 0-255: a constant byte,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$i1</span></code> to <code class="docutils literal notranslate"><span class="pre">$i9</span></code>: a byte taken from an inlet; <code class="docutils literal notranslate"><span class="pre">$i1</span></code> is the left inlet,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sumstart</span></code>: sends nothing, and starts the checksum region,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sum</span></code>: a checksum byte that makes the region’s total a multiple of 128,
+as Roland devices expect. Without <code class="docutils literal notranslate"><span class="pre">sumstart</span></code>, the region is everything
+before it except a leading 240.</p></li>
+</ul>
+<p>The object has one inlet for each placeholder up to the highest one used.
+The left inlet sends the message; the others only store. A list on the left
+inlet fills <code class="docutils literal notranslate"><span class="pre">$i1</span></code>, <code class="docutils literal notranslate"><span class="pre">$i2</span></code> and so on, then sends. A bang sends with the
+stored values.</p>
+<p>A negative value leaves its byte out, so one template can cover a short and
+a long form of a message. A value above 127 is clamped to 127. A
+placeholder that has not received a value is 0.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.sxformat 240 67 16 0 $i1 $i2 247]   5 99 -&gt; left inlet  =&gt;  240 67 16 0 5 99 247
+</pre></div>
+</div>
+<p>The message leaves as a list of byte values for <code class="docutils literal notranslate"><span class="pre">.midiout</span></code>. Start it with
+240 and end it with 247; the object does not add them.</p>
+<p><strong>Limits</strong></p>
+<p>A template holds at most 256 tokens; the rest is cut, with an error in the
+log. A token that is not a byte, a placeholder, <code class="docutils literal notranslate"><span class="pre">sumstart</span></code> or <code class="docutils literal notranslate"><span class="pre">sum</span></code> is
+skipped, with an error in the log.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3781,6 +4259,14 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Use it to receive the answer to a request built with <code class="docutils literal notranslate"><span class="pre">.sxformat</span></code>. Nothing
+is collected: bytes are sent as they arrive, so collect a whole dump
+downstream, for example with <code class="docutils literal notranslate"><span class="pre">.zl</span> <span class="pre">group</span></code>, and watch for the 247 that ends
+it.</p>
+<p>Clock bytes inside a dump are dropped. A status byte other than 247 ends the
+dump without a 247 on the outlet, which happens when a device is interrupted
+mid-transfer. A second 240 starts a new dump.</p>
+<p>The port argument and the size limit work as described under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3851,6 +4337,11 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Most keyboards with aftertouch send this kind: one pressure value for the
+whole channel, from the hardest-pressed key. Per-key pressure is
+<code class="docutils literal notranslate"><span class="pre">.polyin</span></code>’s.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -3932,6 +4423,11 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Reports both bytes of the pitch-bend message combined. Subtract 8192 before
+scaling the value into a bend amount. <code class="docutils literal notranslate"><span class="pre">.bendin</span></code> reports only the coarse
+byte, and <code class="docutils literal notranslate"><span class="pre">.xbendin2</span></code> reports the two bytes separately.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4013,6 +4509,11 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Use it when the two bytes are wanted apart, or to pass a bend through
+<code class="docutils literal notranslate"><span class="pre">.xbendout2</span></code> unchanged. <code class="docutils literal notranslate"><span class="pre">.xbendin</span></code> reports the same message as one
+number.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4093,6 +4594,8 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The value is clamped to 0-16383. The channel argument and the output work as
+described under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4183,6 +4686,9 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The left inlet takes the coarse byte (64 at rest) and sends; the right inlet
+stores the fine byte. Both are clamped to 0-127. The channel argument and the
+output work as described under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4286,6 +4792,15 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>MIDI pairs controllers 0-31 with controllers 32-63 as the coarse and fine
+halves of one 14-bit value. A value is reported when the coarse controller
+arrives, with the fine half as 0, and again when the fine controller
+follows. A device that sends only the coarse half is reported in steps of
+128.</p>
+<p>The coarse value is remembered per channel and controller. Controllers
+64-127 have no fine half and are not reported; use <code class="docutils literal notranslate"><span class="pre">.ctlin</span></code> for them.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4371,6 +4886,11 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each value sends two control-change messages: the coarse half on the
+controller number, then the fine half on that number plus 32. Only
+controllers 0-31 have a fine half, so the controller number is clamped to
+0-31. The value is clamped to 0-16383.</p>
+<p>The channel argument and the output work as described under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4474,6 +4994,18 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>, which sends single bytes, this object sends each
+complete message as one list, ready for <code class="docutils literal notranslate"><span class="pre">.midiparse</span></code>, <code class="docutils literal notranslate"><span class="pre">.seq</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.midiout</span></code>.</p>
+<ul class="simple">
+<li><p>Messages sent under running status get their status byte back.</p></li>
+<li><p>A clock byte (248-255) is sent at once as a list of its own, without
+disturbing the message it arrived in.</p></li>
+<li><p>A new status byte drops an unfinished message.</p></li>
+<li><p>A system-exclusive dump longer than 256 bytes leaves in consecutive
+256-byte lists.</p></li>
+</ul>
+<p>The port argument and the size limit work as described under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4544,6 +5076,13 @@ Android.</p>
 <p class="admonition-title">Note</p>
 <p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
 </div>
+<p>A note-off message carries a release velocity: how fast the key came up.
+<code class="docutils literal notranslate"><span class="pre">.notein</span></code> discards it; this object reports it. The velocity outlet still
+reports 0 for every release, so a patch tests for a release the same way as
+with <code class="docutils literal notranslate"><span class="pre">.notein</span></code>. A note-on with velocity 0 has no release velocity and
+reports 0 for both.</p>
+<p>Port and channel arguments, and the order of the outlets, work as described
+under <code class="docutils literal notranslate"><span class="pre">.midiin</span></code>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -4630,6 +5169,11 @@ Android.</p>
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>A velocity above 0 sends a note-on. A velocity of 0 sends a note-off message
+carrying the release velocity from the right inlet, which defaults to 64.
+All three values are clamped to 0-127. The middle and right inlets store
+their value for the next pitch.</p>
+<p>The channel argument and the output work as described under <code class="docutils literal notranslate"><span class="pre">.noteon</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

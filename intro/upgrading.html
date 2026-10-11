@@ -1,0 +1,1062 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Upgrading to package:yse 0.2.0 (libYSE 3.1) &#8212; dart-yse 0.2</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'intro/upgrading';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorials" href="../tutorials/index.html" />
+    <link rel="prev" title="Sessions and devices" href="sessions_and_devices.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.2" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.2</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/core.html">Core</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/reverb.html">Reverb</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/dsp.html">DSP</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/clip.html">Clip transport</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/synth.html">Synth</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/music.html">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/patcher.html">Patcher</a></li>
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/patcher_objects/index.html">Patcher object reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/bus.html">Bus</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/live_coding.html">LiveCoding</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/enums.html">Enums</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fintro/upgrading.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/intro/upgrading.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Upgrading to package:yse 0.2.0 (libYSE 3.1)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-checklist">Quick checklist</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sessions-and-devices">Sessions and devices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#buffers-and-dsp">Buffers and DSP</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#patcher">Patcher</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#patcher-objects">Patcher objects</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#music-synth-and-midi">Music, synth and MIDI</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bus-and-live-coding">Bus and live coding</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#known-upstream-issues">Known upstream issues</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-go-next">Where to go next</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="upgrading-to-package-yse-0-2-0-libyse-3-1">
+<h1>Upgrading to package:yse 0.2.0 (libYSE 3.1)<a class="headerlink" href="#upgrading-to-package-yse-0-2-0-libyse-3-1" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">package:yse</span></code> 0.2.0 moves the binding from libYSE 2.4 to <strong>libYSE
+v3.1.0</strong> (3.0.1 plus the device-enumeration and auto-reconnect API of
+3.1). The 3.0 C ABI is not compatible with 2.4, the engine changed
+several behaviours without changing a signature, and the wrapper took the
+chance to fix a few unsafe spots. This page lists every change that can
+break or alter a program written against <code class="docutils literal notranslate"><span class="pre">package:yse</span></code> 0.1.0, with the
+old and the new Dart code.</p>
+<p>It is the Dart-facing counterpart of upstream’s
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/upgrading.html">Upgrading from 2.4 to 3.0</a>, which has the full
+engine-side reasoning. New features that change nothing existing are in
+the <a class="reference external" href="https://github.com/yvanvds/dart-yse/blob/main/CHANGELOG.md">CHANGELOG</a>, not here.
+Issue numbers below are dart-yse issues unless they say <em>upstream</em>.</p>
+<section id="quick-checklist">
+<h2>Quick checklist<a class="headerlink" href="#quick-checklist" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Everyone:</strong> <code class="docutils literal notranslate"><span class="pre">System.init()</span></code> now <strong>throws</strong> when no audio device
+opens; the default session rate is <strong>48 kHz</strong>; <code class="docutils literal notranslate"><span class="pre">setAutoReconnect</span></code>’s
+delay is wall-clock <strong>milliseconds</strong>. See <a class="reference internal" href="#sessions-and-devices">Sessions and devices</a>.</p></li>
+<li><p><strong>Buffers:</strong> <code class="docutils literal notranslate"><span class="pre">DspBuffer.drawable</span></code> / <code class="docutils literal notranslate"><span class="pre">.file</span></code> / <code class="docutils literal notranslate"><span class="pre">.wavetable</span></code> are
+gone; construct <code class="docutils literal notranslate"><span class="pre">DrawableBuffer</span></code> / <code class="docutils literal notranslate"><span class="pre">FileBuffer</span></code> / <code class="docutils literal notranslate"><span class="pre">Wavetable</span></code>.</p></li>
+<li><p><strong>Patcher hosts:</strong> <code class="docutils literal notranslate"><span class="pre">PHandle.id</span></code> and the connection getters return
+<code class="docutils literal notranslate"><span class="pre">int?</span></code>; IDs start at 0; <code class="docutils literal notranslate"><span class="pre">parseJson</span></code> <em>adds</em> (call <code class="docutils literal notranslate"><span class="pre">clear()</span></code> first)
+and throws on bad input; anything that talks to a patcher slot over the
+bus needs the <code class="docutils literal notranslate"><span class="pre">patcher.</span></code> prefix.</p></li>
+<li><p><strong>Patches:</strong> re-check <code class="docutils literal notranslate"><span class="pre">.route</span></code>, <code class="docutils literal notranslate"><span class="pre">.metro</span></code>, <code class="docutils literal notranslate"><span class="pre">.counter</span></code>, <code class="docutils literal notranslate"><span class="pre">~saw</span></code>,
+several <code class="docutils literal notranslate"><span class="pre">~dac</span></code> objects, <code class="docutils literal notranslate"><span class="pre">.m</span></code> message boxes and <code class="docutils literal notranslate"><span class="pre">~+</span></code> / <code class="docutils literal notranslate"><span class="pre">~-</span></code> /
+<code class="docutils literal notranslate"><span class="pre">~bp</span></code> defaults. See <a class="reference internal" href="#patcher-objects">Patcher objects</a>.</p></li>
+<li><p><strong>Music:</strong> <code class="docutils literal notranslate"><span class="pre">Player()</span></code> is now <code class="docutils literal notranslate"><span class="pre">Player(synth)</span></code>.</p></li>
+<li><p><strong>Bus:</strong> <code class="docutils literal notranslate"><span class="pre">LiveCoding.bus</span></code> is deprecated; use <code class="docutils literal notranslate"><span class="pre">Bus.tap</span></code>.</p></li>
+</ul>
+</section>
+<section id="sessions-and-devices">
+<h2>Sessions and devices<a class="headerlink" href="#sessions-and-devices" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="sessions_and_devices.html"><span class="doc">Sessions and devices</span></a> covers all of this in full.</p>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">init()</span></code> throws when no device opens (#56)</dt><dd><p>In 0.1.0 (libYSE 2.4) <code class="docutils literal notranslate"><span class="pre">System.init()</span></code> returned normally even when the
+machine had no output device, or the device refused to open. It now
+throws <code class="xref py py-class docutils literal notranslate"><span class="pre">YseException</span></code> (<code class="docutils literal notranslate"><span class="pre">YSE_ERR_AUDIO_DEVICE</span></code>) and leaves the
+engine closed. A host that must run without audio hardware (CI, a
+server) falls back to <code class="docutils literal notranslate"><span class="pre">initOffline()</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// 0.1.0</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">init</span><span class="p">();</span><span class="w">   </span><span class="c1">// "succeeded" with nothing open</span>
+
+<span class="c1">// 0.2.0</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+<span class="p">}</span><span class="w"> </span><span class="kd">on</span><span class="w"> </span><span class="n">YseException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">initOffline</span><span class="p">();</span><span class="w">   </span><span class="c1">// render with renderOffline(), or openDevice later</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">openDevice()</span></code> throws when nothing opened (#56)</dt><dd><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">System.openDevice()</span></code> throws <code class="docutils literal notranslate"><span class="pre">YseException</span></code> when the engine
+opened no stream: no output device in the setup, a device that no
+longer resolves, a stream error (including a device that refuses the
+session rate), or an offline session with no audio backend running.
+The running stream and speaker layout are left as they were. In 0.1.0
+these failures were only logged.</p>
+</dd>
+<dt>48 kHz default and <code class="docutils literal notranslate"><span class="pre">requestedSampleRate</span></code> (#56)</dt><dd><p>The engine’s initial rate is 48000 Hz instead of 44100. A device session
+still runs at whatever the device negotiates; read it from
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">System.sessionSampleRate</span></code>. To ask for a rate, set
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">System.requestedSampleRate</span></code> <strong>before</strong> <code class="docutils literal notranslate"><span class="pre">init()</span></code> /
+<code class="docutils literal notranslate"><span class="pre">initOffline()</span></code>. An offline session runs exactly at the requested
+rate, so offline renders that assumed 44.1 kHz change length:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">sys</span><span class="p">.</span><span class="n">requestedSampleRate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">44100</span><span class="p">;</span><span class="w">   </span><span class="c1">// survives close(); 0 clears it</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">initOffline</span><span class="p">();</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">DeviceSetup.sampleRate</span></code> can no longer change a running session’s
+rate: close and init again with a new <code class="docutils literal notranslate"><span class="pre">requestedSampleRate</span></code>.
+<code class="docutils literal notranslate"><span class="pre">DspObject.granulator</span></code>’s default <code class="docutils literal notranslate"><span class="pre">poolSize</span></code> followed the new default
+(<code class="docutils literal notranslate"><span class="pre">48000</span> <span class="pre">*</span> <span class="pre">5</span></code>, was <code class="docutils literal notranslate"><span class="pre">44100</span> <span class="pre">*</span> <span class="pre">5</span></code>).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">setAutoReconnect</span></code> delay is in milliseconds; it reopens <em>your</em> device (#54, #56)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">delayMs</span></code> used to be compared against a count of <code class="docutils literal notranslate"><span class="pre">update()</span></code> calls.
+It is now wall-clock milliseconds, with a 500 ms start-up grace for a
+stream that has not delivered its first callback. At 60 updates per
+second, <code class="docutils literal notranslate"><span class="pre">delayMs:</span> <span class="pre">20</span></code> used to mean about 333 ms and now means 20 ms.</p>
+<p>The watchdog also changed device: libYSE 3.0 reopened the <em>default</em>
+device, so a session on an external interface moved silently onto the
+built-in output. In 0.2.0 it reopens the device of the last successful
+<code class="docutils literal notranslate"><span class="pre">openDevice()</span></code> (found again by name and host). Two new optional
+parameters and an outcome API come with it:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// 0.1.0</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">setAutoReconnect</span><span class="p">(</span><span class="kd">on</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nl">delayMs:</span><span class="w"> </span><span class="m">60</span><span class="p">);</span><span class="w">   </span><span class="c1">// 60 update ticks</span>
+
+<span class="c1">// 0.2.0</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">setAutoReconnect</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">on</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">delayMs:</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span><span class="w">              </span><span class="c1">// wall-clock ms</span>
+<span class="w">  </span><span class="nl">fallbackToDefault:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">   </span><span class="c1">// true: open the default device instead</span>
+<span class="w">  </span><span class="nl">maxAttempts:</span><span class="w"> </span><span class="m">30</span><span class="p">,</span><span class="w">            </span><span class="c1">// 0 = retry forever</span>
+<span class="p">);</span>
+<span class="c1">// later, in the update loop:</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">reconnectState</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ReconnectState</span><span class="p">.</span><span class="n">failed</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* tell the user */</span><span class="w"> </span><span class="p">}</span>
+<span class="n">print</span><span class="p">(</span><span class="s1">'</span><span class="si">${</span><span class="n">sys</span><span class="p">.</span><span class="n">activeDevice</span><span class="si">}</span><span class="s1"> on </span><span class="si">${</span><span class="n">sys</span><span class="p">.</span><span class="n">activeHost</span><span class="si">}</span><span class="s1">'</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">System.resume()</span></code> likewise reopens the same device and never falls
+back to another one.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">devices</span></code> is empty on an offline session (#51, #56)</dt><dd><p>An <code class="docutils literal notranslate"><span class="pre">initOffline()</span></code> session enumerates no devices.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">System.refreshDevices()</span></code> fills the list without opening a
+stream (before <code class="docutils literal notranslate"><span class="pre">init</span></code>, offline, or on a running session), and is also
+what lets <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code> work on an offline session.</p>
+</dd>
+<dt>Small contract changes</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">System.resume()</span></code> is a no-op on an offline session.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">System.missedCallbacks</span></code> counts <code class="docutils literal notranslate"><span class="pre">update()</span></code> ticks in a row with no
+audio callback; 0 means audio is flowing. A freshly started stream
+reads non-zero until its first callback.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Device.defaultBufferSize</span></code> is 0 when the host does not advertise one
+(every desktop device); 0 means <em>unspecified</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Device.id</span></code> is -1 for a descriptor with no device behind it.</p></li>
+<li><p>The MIDI device-name getters return <code class="docutils literal notranslate"><span class="pre">''</span></code> (not <code class="docutils literal notranslate"><span class="pre">&quot;Invalid</span> <span class="pre">Call&quot;</span></code>)
+for an index with no port, or when the MIDI backend is down.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">System.underwaterDepth</span></code> is world units below the surface (effect
+fades in above 1 and saturates at 5), not a 0..1 strength.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Channel.virtual</span> <span class="pre">=</span> <span class="pre">false</span></code> now actually turns virtualisation off
+(upstream #864). Remove the call if you relied on the old broken
+behaviour to cap the voice count.</p></li>
+<li><p>Doppler is computed from a wall clock (upstream #667), so it no
+longer scales with CPU load and can sound different under load.</p></li>
+</ul>
+</dd>
+<dt>Random numbers (#57)</dt><dd><p>The engine’s generator (<code class="docutils literal notranslate"><span class="pre">.random</span></code>, granulator jitter, LFO random
+shapes) is thread-safe and <strong>reproducible by default</strong>: without a seed
+the same patch renders the same output every run. Seed it through the
+engine, never through <code class="docutils literal notranslate"><span class="pre">dart:math</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">System</span><span class="p">.</span><span class="n">randomize</span><span class="p">();</span><span class="w">        </span><span class="c1">// time-based seed</span>
+<span class="n">System</span><span class="p">.</span><span class="n">randomSeed</span><span class="p">(</span><span class="m">1234</span><span class="p">);</span><span class="w">   </span><span class="c1">// repeatable stream</span>
+</pre></div>
+</div>
+<p>Float draws are in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code> instead of <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="buffers-and-dsp">
+<h2>Buffers and DSP<a class="headerlink" href="#buffers-and-dsp" title="Link to this heading">#</a></h2>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">DspBuffer</span></code> subclasses are real Dart classes (#55)</dt><dd><p>The 3.0 C API <code class="docutils literal notranslate"><span class="pre">static_cast</span></code>s a buffer to the subclass an operation
+needs, so calling <code class="docutils literal notranslate"><span class="pre">drawLine</span></code> on a plain buffer was undefined
+behaviour. The named factories are replaced by subclass constructors,
+and the type system rules the mistake out:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// 0.1.0</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DspBuffer</span><span class="p">.</span><span class="n">drawable</span><span class="p">(</span><span class="nl">length:</span><span class="w"> </span><span class="m">48000</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DspBuffer</span><span class="p">.</span><span class="n">file</span><span class="p">(</span><span class="nl">length:</span><span class="w"> </span><span class="m">48000</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">5</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DspBuffer</span><span class="p">.</span><span class="n">wavetable</span><span class="p">(</span><span class="nl">length:</span><span class="w"> </span><span class="m">2048</span><span class="p">);</span>
+
+<span class="c1">// 0.2.0</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DrawableBuffer</span><span class="p">(</span><span class="nl">length:</span><span class="w"> </span><span class="m">48000</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FileBuffer</span><span class="p">(</span><span class="nl">length:</span><span class="w"> </span><span class="m">48000</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">5</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Wavetable</span><span class="p">(</span><span class="nl">length:</span><span class="w"> </span><span class="m">2048</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DspBuffer</span><span class="p">.</span><span class="n">plain</span><span class="p">(</span><span class="nl">length:</span><span class="w"> </span><span class="m">1024</span><span class="p">);</span><span class="w">   </span><span class="c1">// unchanged</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">FileBuffer</span></code> extends <code class="docutils literal notranslate"><span class="pre">DrawableBuffer</span></code> and <code class="docutils literal notranslate"><span class="pre">Wavetable</span></code> extends
+<code class="docutils literal notranslate"><span class="pre">FileBuffer</span></code>, mirroring the C++ chain.</p>
+</dd>
+<dt>Kind-specific <code class="docutils literal notranslate"><span class="pre">DspObject</span></code> accessors check the kind (#72)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">q</span></code>, the <code class="docutils literal notranslate"><span class="pre">sweep*</span></code> accessors, <code class="docutils literal notranslate"><span class="pre">setDelayTap</span></code> / <code class="docutils literal notranslate"><span class="pre">delayTime</span></code> /
+<code class="docutils literal notranslate"><span class="pre">delayGain</span></code>, <code class="docutils literal notranslate"><span class="pre">phaserRange</span></code>, <code class="docutils literal notranslate"><span class="pre">differenceAmplitude</span></code> and every
+granulator accessor now throw <code class="docutils literal notranslate"><span class="pre">YseException</span></code> on the wrong module kind
+(e.g. <code class="docutils literal notranslate"><span class="pre">DspObject.lowpass().q</span> <span class="pre">=</span> <span class="pre">2</span></code>), where 0.1.0 wrote through a
+mistyped pointer. Code that called them on the right kind is unaffected.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">bandPass</span></code> has unity gain at its centre frequency (upstream #1022)</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">DspObject.bandpass</span></code> (and the patcher’s <code class="docutils literal notranslate"><span class="pre">~bp</span></code>) boosted the band at
+low Q: about +5 dB at Q 1 and a flat 2x when Q was low enough. It now
+has unity gain at the centre frequency for every Q, so a band-pass
+sounds quieter than before; remove any gain you added to compensate.</p>
+</dd>
+<dt>Lifetime: borrowed objects stay alive (#65, #80, #84)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">Sound.fromBuffer</span></code> / <code class="docutils literal notranslate"><span class="pre">fromMultiBuffer</span></code> / <code class="docutils literal notranslate"><span class="pre">fromPatcher</span></code> /
+<code class="docutils literal notranslate"><span class="pre">fromSynth</span></code>, <code class="docutils literal notranslate"><span class="pre">Sound.dsp</span></code>, <code class="docutils literal notranslate"><span class="pre">Channel.dsp</span></code>, <code class="docutils literal notranslate"><span class="pre">DspObject.link</span></code>
+chains, <code class="docutils literal notranslate"><span class="pre">DspObject.patcherInsert</span></code>, the <code class="docutils literal notranslate"><span class="pre">connectSynth</span></code> /
+<code class="docutils literal notranslate"><span class="pre">connectMidiOut</span></code> sinks and <code class="docutils literal notranslate"><span class="pre">Motif.setFirstPitch</span></code> now hold a Dart
+reference to what the engine borrows, released only after the owner’s
+native destroy. Dropping your own reference no longer frees a source
+under a live sound, so workarounds that kept globals alive “just in
+case” can go. Disposing a source <em>explicitly</em> before its consumer is
+still unsupported.</p>
+</dd>
+</dl>
+</section>
+<section id="patcher">
+<h2>Patcher<a class="headerlink" href="#patcher" title="Link to this heading">#</a></h2>
+<dl>
+<dt>Object IDs: <code class="docutils literal notranslate"><span class="pre">int?</span></code>, 0-based, per patcher (#55)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">PHandle.id</span></code>, <code class="docutils literal notranslate"><span class="pre">PHandle.connectionTargetId</span></code> and
+<code class="docutils literal notranslate"><span class="pre">PHandle.connectionTargetInlet</span></code> return <code class="docutils literal notranslate"><span class="pre">int?</span></code>: <code class="docutils literal notranslate"><span class="pre">null</span></code> for the
+engine’s “nothing here” sentinels, where 0.1.0 returned <code class="docutils literal notranslate"><span class="pre">0</span></code> (which is
+now a real ID). Each patcher numbers its objects from 0 and reuses the
+smallest free number after a delete; patch files are numbered the same
+way, so two identical patches save identically.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// 0.1.0</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">h</span><span class="p">.</span><span class="n">connectionTargetId</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// 0.2.0</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">h</span><span class="p">.</span><span class="n">connectionTargetId</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you store object IDs outside the patch, look them up again after
+loading.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">parseJson</span></code> adds, throws and rolls back (#55)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">parseJson</span></code> has always added the file’s objects to the patcher; the
+0.1.0 docs said it replaced them. It now also throws <code class="docutils literal notranslate"><span class="pre">YseException</span></code> on
+malformed input, and a load that fails part-way removes what it had
+created. <code class="docutils literal notranslate"><span class="pre">Patcher()</span></code> throws <code class="docutils literal notranslate"><span class="pre">YseException</span></code> when the engine rejects
+its configuration.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span><span class="w">          </span><span class="c1">// to replace rather than merge</span>
+<span class="n">p</span><span class="p">.</span><span class="n">parseJson</span><span class="p">(</span><span class="n">json</span><span class="p">);</span><span class="w">  </span><span class="c1">// throws YseException on bad JSON</span>
+</pre></div>
+</div>
+</dd>
+<dt>Bus addresses carry the <code class="docutils literal notranslate"><span class="pre">patcher.</span></code> prefix (#50, #55)</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">.s</span></code> / <code class="docutils literal notranslate"><span class="pre">.r</span></code> slot is published on the global bus as
+<code class="docutils literal notranslate"><span class="pre">patcher.&lt;name&gt;.&lt;slot&gt;</span></code>, where 2.4 used <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;.&lt;slot&gt;</span></code>. Patchers
+now have a <code class="xref py py-attr docutils literal notranslate"><span class="pre">Patcher.name</span></code> (<code class="docutils literal notranslate"><span class="pre">Patcher(name:</span> <span class="pre">'lead')</span></code>); an
+unnamed one keeps its <code class="docutils literal notranslate"><span class="pre">patcher_&lt;N&gt;</span></code> auto-name. The name is saved by
+<code class="docutils literal notranslate"><span class="pre">dumpJson</span></code> and applied by <code class="docutils literal notranslate"><span class="pre">parseJson</span></code> unless one was already set.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// 0.1.0: a `.s level` published to '&lt;patcherName&gt;.level', and a host</span>
+<span class="c1">// could only tap it (LiveCoding.bus); patchers could not be named.</span>
+
+<span class="c1">// 0.2.0</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Patcher</span><span class="p">(</span><span class="nl">name:</span><span class="w"> </span><span class="s1">'lead'</span><span class="p">);</span>
+<span class="n">Bus</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s1">'patcher.lead.level'</span><span class="p">).</span><span class="n">listen</span><span class="p">(...);</span>
+<span class="n">Bus</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">'patcher.lead.freq'</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BusFloat</span><span class="p">(</span><span class="m">440</span><span class="p">));</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pass*</span></code> return value with a <code class="docutils literal notranslate"><span class="pre">messages</span></code> listener (#62)</dt><dd><p>While <code class="xref py py-attr docutils literal notranslate"><span class="pre">Patcher.messages</span></code> has a listener, <code class="docutils literal notranslate"><span class="pre">passBang</span></code> /
+<code class="docutils literal notranslate"><span class="pre">passInt</span></code> / <code class="docutils literal notranslate"><span class="pre">passFloat</span></code> / <code class="docutils literal notranslate"><span class="pre">passString</span></code> return <code class="docutils literal notranslate"><span class="pre">true</span></code> even for a
+name no <code class="docutils literal notranslate"><span class="pre">.r</span></code> receives: the message goes to the stream instead.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Obj</span></code> and <code class="docutils literal notranslate"><span class="pre">PCategory</span></code> (#55, #64)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">Obj</span></code> now has a constant for all 305 registry objects (was 42), and
+every existing name is kept, except <code class="docutils literal notranslate"><span class="pre">Obj.dOut</span></code> (<code class="docutils literal notranslate"><span class="pre">~out</span></code>), which is
+removed: no engine object ever implemented it. <code class="docutils literal notranslate"><span class="pre">PCategory</span></code> gained the
+11 new registry categories, so an exhaustive <code class="docutils literal notranslate"><span class="pre">switch</span></code> over it needs
+the new cases. <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.description</span></code> is now a
+tooltip-length summary; the long notes are in the
+<a class="reference internal" href="../api/patcher_objects/index.html"><span class="doc">object reference</span></a>.</p>
+</dd>
+</dl>
+<section id="patcher-objects">
+<h3>Patcher objects<a class="headerlink" href="#patcher-objects" title="Link to this heading">#</a></h3>
+<p>These patches behave differently without any code change (upstream
+numbers in parentheses; the
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/upgrading.html#patcher-objects">upstream guide</a> has the detail).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.route</span></code> (#672, #679) strips the matched selector and matches floats by
+value: <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">1</span> <span class="pre">2</span></code> into <code class="docutils literal notranslate"><span class="pre">.route</span> <span class="pre">foo</span></code> sends <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">foo</span></code> alone sends
+a bang. <code class="docutils literal notranslate"><span class="pre">.routepass</span></code> behaves like the old <code class="docutils literal notranslate"><span class="pre">.route</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.metro</span></code> (#625, #711) applies a period change while running, keeping
+its phase; its left inlet takes <code class="docutils literal notranslate"><span class="pre">bang</span></code> / <code class="docutils literal notranslate"><span class="pre">stop</span></code> / a float.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.counter</span></code> (#956) seeds the count from its start value and inlet 1
+sets the step.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">~saw</span></code> (#955) is bipolar, -1 to 1 (was a 0 to 1 ramp).</p></li>
+<li><p>Several <code class="docutils literal notranslate"><span class="pre">~dac</span></code> objects (#932) are summed instead of only the last one
+being heard. Lower the gain if a patch got louder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.m</span></code> (#933) sends the message it spells: <code class="docutils literal notranslate"><span class="pre">.m</span> <span class="pre">60</span></code> sends the int 60,
+<code class="docutils literal notranslate"><span class="pre">.m</span> <span class="pre">bang</span></code> a bang.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.midiout</span></code> (#748) takes numeric byte lists.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">~+</span></code> / <code class="docutils literal notranslate"><span class="pre">~-</span></code> default their right operand to 0, and <code class="docutils literal notranslate"><span class="pre">~bp</span></code> defaults to
+Q 1.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.programchange</span></code> / <code class="docutils literal notranslate"><span class="pre">.channelpressure</span></code> no longer send an extra byte;
+<code class="docutils literal notranslate"><span class="pre">~line</span> <span class="pre">stop</span></code> holds its value.</p></li>
+<li><p>Creation arguments are split on runs of whitespace, and a live
+<code class="docutils literal notranslate"><span class="pre">PHandle.setParams</span></code> resets the parameters it leaves out (#935, #936).</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">.s</span></code> value reaches a <code class="docutils literal notranslate"><span class="pre">.r</span></code> in the same patcher once, not twice
+(#943).</p></li>
+</ul>
+</section>
+</section>
+<section id="music-synth-and-midi">
+<h2>Music, synth and MIDI<a class="headerlink" href="#music-synth-and-midi" title="Link to this heading">#</a></h2>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">Player(synth)</span></code> (#85)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">Player()</span></code> passed no synth to the engine, so it always threw and the
+class was unusable. The constructor now takes the <code class="xref py py-class docutils literal notranslate"><span class="pre">Synth</span></code> the
+player plays on; attach that synth to a playing sound to hear it:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">synth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Synth</span><span class="p">()..</span><span class="n">addSineVoices</span><span class="p">(</span><span class="m">8</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromSynth</span><span class="p">(</span><span class="n">synth</span><span class="p">)..</span><span class="n">play</span><span class="p">();</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">player</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Player</span><span class="p">(</span><span class="n">synth</span><span class="p">)..</span><span class="n">play</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Dispose the player before the synth, and let one audio block run in
+between (see <a class="reference internal" href="#known-upstream-issues">Known upstream issues</a>).</p>
+</dd>
+<dt>Late voice groups throw (#81)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">Synth.addSineVoices</span></code> / <code class="docutils literal notranslate"><span class="pre">addVaVoices</span></code> / <code class="docutils literal notranslate"><span class="pre">addFmVoices</span></code> /
+<code class="docutils literal notranslate"><span class="pre">addSamplerVoices</span></code> and <code class="docutils literal notranslate"><span class="pre">setPositionHandler</span></code> throw <code class="docutils literal notranslate"><span class="pre">StateError</span></code>
+once <code class="xref py py-attr docutils literal notranslate"><span class="pre">Synth.voiceCount</span></code> is non-zero. The engine would have
+dropped the call with only a log line. Add every voice group right
+after <code class="docutils literal notranslate"><span class="pre">Synth()</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MidiOut</span></code> channels are clamped (upstream #1014)</dt><dd><p>An out-of-range channel is clamped to <code class="docutils literal notranslate"><span class="pre">0..15</span></code> instead of corrupting the
+status byte. <code class="docutils literal notranslate"><span class="pre">raw3</span></code> still sends exactly three bytes; use the new
+<code class="docutils literal notranslate"><span class="pre">MidiOut.raw</span></code> for two-byte messages and SysEx.</p>
+</dd>
+<dt>Two MIDI channel bases</dt><dd><p>Nothing changed here, but it is now documented on every class:
+<code class="docutils literal notranslate"><span class="pre">MidiOut</span></code> and parsed <code class="docutils literal notranslate"><span class="pre">MidiIn</span></code> messages use wire-level <code class="docutils literal notranslate"><span class="pre">0..15</span></code>;
+<code class="docutils literal notranslate"><span class="pre">Synth</span></code>, <code class="docutils literal notranslate"><span class="pre">ClipEvent</span></code>, <code class="docutils literal notranslate"><span class="pre">Note</span></code> / <code class="docutils literal notranslate"><span class="pre">PNote</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">MidiIn.connectSynth</span></code> filter use <code class="docutils literal notranslate"><span class="pre">1..16</span></code> with <code class="docutils literal notranslate"><span class="pre">0</span></code> = omni. See the
+table on <a class="reference internal" href="../api/midi.html"><span class="doc">MIDI</span></a>.</p>
+</dd>
+<dt>Clocks and clips (upstream #707, #944, #974, #975)</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">DomainClock</span></code> and its <code class="docutils literal notranslate"><span class="pre">ClipTransport</span></code>s can be disposed in any
+order, disposing a clip releases its sounding notes, a clip survives
+<code class="docutils literal notranslate"><span class="pre">System.close()</span></code>, and clocks advance once per rendered block rather
+than per device callback, so beat events land later and more precisely
+on large device buffers. <code class="docutils literal notranslate"><span class="pre">DomainClock()</span></code> and <code class="docutils literal notranslate"><span class="pre">ClipTransport.bind</span></code>
+report failures as <code class="docutils literal notranslate"><span class="pre">YseException</span></code> with the engine’s error detail. See
+<a class="reference internal" href="../tutorials/06_clocks_and_clips.html"><span class="doc">Clocks and clips</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="bus-and-live-coding">
+<h2>Bus and live coding<a class="headerlink" href="#bus-and-live-coding" title="Link to this heading">#</a></h2>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">LiveCoding.bus</span></code> → <code class="docutils literal notranslate"><span class="pre">Bus.tap</span></code> (#59)</dt><dd><p>The bus has its own class. <code class="docutils literal notranslate"><span class="pre">LiveCoding.bus</span></code> still works but is
+deprecated and forwards to <code class="xref py py-meth docutils literal notranslate"><span class="pre">Bus.tap()</span></code>. <code class="docutils literal notranslate"><span class="pre">BusValue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">BusFrame</span></code> moved with it; <code class="docutils literal notranslate"><span class="pre">package:yse/yse.dart</span></code> still exports them,
+so imports do not change.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// 0.1.0</span>
+<span class="n">LiveCoding</span><span class="p">.</span><span class="n">bus</span><span class="p">(</span><span class="s1">'synth.'</span><span class="p">).</span><span class="n">listen</span><span class="p">(</span><span class="n">print</span><span class="p">);</span>
+
+<span class="c1">// 0.2.0</span>
+<span class="n">Bus</span><span class="p">.</span><span class="n">tap</span><span class="p">(</span><span class="s1">'synth.'</span><span class="p">).</span><span class="n">listen</span><span class="p">(</span><span class="n">print</span><span class="p">);</span>
+<span class="n">Bus</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s1">'synth.lead.note'</span><span class="p">).</span><span class="n">listen</span><span class="p">(</span><span class="n">print</span><span class="p">);</span><span class="w">   </span><span class="c1">// exact address</span>
+<span class="n">Bus</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">'synth.lead.note'</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BusList</span><span class="p">([</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">60</span><span class="p">,</span><span class="w"> </span><span class="m">0.8</span><span class="p">]));</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">System.close()</span></code> closes bus streams (#59)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">close()</span></code> releases every subscription and tap and closes their
+streams (0.1.0 left a dead tap cached, so re-tapping the prefix after a
+re-init never fired). Subscribe again after the next <code class="docutils literal notranslate"><span class="pre">init()</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Channel.name</span></code> is not the bus name (#60)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">Channel.name</span></code> is the <em>log</em> name given to <code class="docutils literal notranslate"><span class="pre">Channel.create</span></code>. To put a
+channel on the bus, set <code class="docutils literal notranslate"><span class="pre">Channel.busName</span></code>; <code class="docutils literal notranslate"><span class="pre">Sound.busName</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Synth.busName</span></code> work the same way. <code class="docutils literal notranslate"><span class="pre">close()</span></code> forgets them.</p>
+</dd>
+</dl>
+</section>
+<section id="known-upstream-issues">
+<h2>Known upstream issues<a class="headerlink" href="#known-upstream-issues" title="Link to this heading">#</a></h2>
+<p>These engine issues were found while wrapping libYSE v3.1.0. They are open
+upstream; the wrapper documents them, and works around them where it can
+detect them.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/yvanvds/yse-soundengine/issues/1033">#1033</a> —
+<strong>The sample rate carries over between sessions.</strong> An offline session
+with no <code class="docutils literal notranslate"><span class="pre">requestedSampleRate</span></code> runs at the previous session’s rate,
+not 48 kHz. Set <code class="docutils literal notranslate"><span class="pre">requestedSampleRate</span></code> whenever an offline render must
+run at a known rate. Also, <code class="docutils literal notranslate"><span class="pre">setChannelConfiguration</span></code> takes effect only
+on a block that mixes a sound, so <code class="docutils literal notranslate"><span class="pre">Channel.master.numOutputs</span></code> keeps
+its old value until a sound is alive.</p></li>
+<li><p><a class="reference external" href="https://github.com/yvanvds/yse-soundengine/issues/1175">#1175</a> —
+<strong>Destroying a never-attached synth that has VA or FM voices crashes
+the next synth attach.</strong> Attach every voiced synth to a sound before
+disposing it (sine-only and voice-less synths are not affected).</p></li>
+<li><p><a class="reference external" href="https://github.com/yvanvds/yse-soundengine/issues/1176">#1176</a> —
+<strong>Clearing a MIDI-in callback can race a dispatch in progress.</strong> The
+engine’s clear does not wait for a callback that is about to run, so
+when <code class="docutils literal notranslate"><span class="pre">MidiIn.rawMessages</span></code> loses its last listener (or the port is
+disposed) while MIDI is arriving, one in-flight message can still race
+the wrapper’s teardown. Every message queued before the clear is drained
+and freed exactly once.</p></li>
+<li><p><a class="reference external" href="https://github.com/yvanvds/yse-soundengine/issues/1177">#1177</a> —
+<strong>A synth can be built before its voices are added.</strong> The setup job may
+claim a new synth before <code class="docutils literal notranslate"><span class="pre">add*Voices</span></code> runs; that synth keeps 0 voices
+with no error. Add voice groups right after <code class="docutils literal notranslate"><span class="pre">Synth()</span></code>. The wrapper
+throws <code class="docutils literal notranslate"><span class="pre">StateError</span></code> for a group that arrives after the pool is built
+(when it can tell), but cannot detect a pool built empty: if
+<code class="docutils literal notranslate"><span class="pre">voiceCount</span></code> stays 0 after the sound plays, build a new synth.</p></li>
+<li><p><a class="reference external" href="https://github.com/yvanvds/yse-soundengine/issues/1181">#1181</a> —
+<strong>A disposed player touches its synth on the next audio block.</strong> The
+engine retires a destroyed <code class="docutils literal notranslate"><span class="pre">Player</span></code> on its next block and still sends
+note-offs to the synth then. <code class="docutils literal notranslate"><span class="pre">Player</span></code> keeps its synth alive until the
+wrapper is collected; if you dispose the synth yourself, let one block
+run (an <code class="docutils literal notranslate"><span class="pre">update()</span></code> plus a device callback or <code class="docutils literal notranslate"><span class="pre">renderOffline(1)</span></code>)
+after <code class="docutils literal notranslate"><span class="pre">player.dispose()</span></code>.</p></li>
+</ul>
+</section>
+<section id="where-to-go-next">
+<h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="sessions_and_devices.html"><span class="doc">Sessions and devices</span></a> — sample rates, devices, offline sessions
+and reconnecting, in full.</p></li>
+<li><p><a class="reference internal" href="../api/bus.html"><span class="doc">Bus</span></a> — publish, subscribe, tap and the address namespaces.</p></li>
+<li><p><a class="reference internal" href="../tutorials/05_patcher.html"><span class="doc">Patcher: modular synthesis in code</span></a> and <a class="reference internal" href="../api/patcher_objects/index.html"><span class="doc">Patcher object reference</span></a> — the
+patcher, which grew from 42 to 305 objects.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="sessions_and_devices.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Sessions and devices</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../tutorials/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tutorials</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-checklist">Quick checklist</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sessions-and-devices">Sessions and devices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#buffers-and-dsp">Buffers and DSP</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#patcher">Patcher</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#patcher-objects">Patcher objects</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#music-synth-and-midi">Music, synth and MIDI</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bus-and-live-coding">Bus and live coding</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#known-upstream-issues">Known upstream issues</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-go-next">Where to go next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

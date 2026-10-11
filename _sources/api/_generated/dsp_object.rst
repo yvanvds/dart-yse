@@ -15,10 +15,12 @@ then call the matching `set*` methods to configure parameters.
 Inherited control surface ([bypass], [impact], [lfoType],
 [lfoFrequency], [link]) is available on every instance.
 
-Attach to a [Sound] with [Sound.setDsp]. The Sound holds a borrowed
+Attach to a [Sound] with [Sound.setDsp]. The engine holds a borrowed
 reference — the effect must outlive the sound (and per the YSE
 lifetime contract, also outlive the slow-pool delete tick that
-follows the sound's destruction).
+follows the sound's destruction). The Dart side holds the attached head
+and every object [link]ed after it, so garbage collection never frees a
+chain under a live sound or channel.
 
 Kind-specific accessors (e.g. [q], [sweepSpeed], [setDelayTap],
 [grainGain]) throw [YseException] when called on the wrong kind of
@@ -111,8 +113,10 @@ Wrap a [Patcher] graph as a chainable insert effect (upstream #370).
 The insert feeds the host buffer to the graph's `~adc` objects and copies
 the summed `~dac` output back over it, so [patcher] should contain at
 least one of each. The insert *borrows* [patcher] — it never owns or
-destroys it, so [patcher] must outlive this object. Drive it with the
-inherited control surface ([bypass], [impact], ...).
+destroys it, so [patcher] must outlive this object. The insert holds a
+Dart reference to [patcher], so garbage collection never frees it under
+a live insert; don't `.dispose()` it first. Drive it with the inherited
+control surface ([bypass], [impact], ...).
 
 Properties
 ----------
@@ -183,8 +187,8 @@ engine's own relinking: [link] inserts *between* this object and its
 old successor, and disposing a chained object splices it out.
 
 Throws [StateError] if the engine reports a successor that no live
-[DspObject] wraps (only possible if that successor's wrapper is being
-garbage-collected concurrently — keep chained effects reachable).
+[DspObject] wraps. Each object holds its linked successor, so this only
+happens for a chain rewired outside this API.
 
 .. code-block:: dart
 
@@ -310,13 +314,20 @@ re-linked into a new order without a former non-tail element keeping a
 stale `next` that closes a cycle when the engine walks it (upstream
 yvanvds/yse-soundengine#391).
 
+The engine only borrows linked objects. Each object holds a Dart
+reference to the one linked after it (following the engine's own
+insert-between, unlink and splice-on-dispose rewiring), so a chain whose
+head is held — by a [Sound], a `Channel` or your own variable — keeps
+every link alive (#84).
+
 .. code-block:: dart
 
    void unlink()
 
 Detach this object's forward edge, terminating the chain here.
 
-Convenience for `link(null)` — see [link].
+Convenience for `link(null)` — see [link]. The detached successor is no
+longer held by this object.
 
 .. code-block:: dart
 
@@ -357,4 +368,7 @@ Granulator: pitch shift (1.0 = unchanged, 2.0 = octave up).
    void dispose()
 
 Destroy the underlying native effect and detach the finalizer.
+
+A chained object is spliced out: its predecessor is relinked to its
+successor, and from then on holds that successor instead.
 

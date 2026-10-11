@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Input and output &#8212; dart-yse 0.1</title>
+    <title>Input and output &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="GUI controls" href="gui.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -554,9 +557,11 @@
 <p>7 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/input_output.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/input_output.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#forward" id="id1"><code class="docutils literal notranslate"><span class="pre">.forward</span></code></a></p></li>
@@ -579,6 +584,16 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Values go out exactly as from a <code class="docutils literal notranslate"><span class="pre">.s</span></code> with the current destination as its
+name (see <code class="docutils literal notranslate"><span class="pre">.s</span></code>).</p>
+<p>The right inlet sets the destination. A list sets it to its first word; an
+int sets it to the number spelled out, so <code class="docutils literal notranslate"><span class="pre">7</span></code> reaches a <code class="docutils literal notranslate"><span class="pre">.r</span> <span class="pre">7</span></code>. A float or
+a bang there is ignored, as is a name longer than 63 characters or an empty
+one; the old destination stays. Without a destination, nothing is sent.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.forward]   right &lt;- left       then   left &lt;- 3   =&gt;   .r left: 3
+             right &lt;- right      then   left &lt;- 4   =&gt;   .r right: 4
+</pre></div>
+</div>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -653,6 +668,25 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Each message becomes one log line: the name, a colon, then the message.</p>
+<ul class="simple">
+<li><p>A bang prints <code class="docutils literal notranslate"><span class="pre">bang</span></code>. An int prints its digits.</p></li>
+<li><p>A float always has a decimal point, so <code class="docutils literal notranslate"><span class="pre">440.</span></code> stays visibly a float.</p></li>
+<li><p>A list or a message box’s text prints as it is.</p></li>
+</ul>
+<p>The line reaches the log on the next <code class="docutils literal notranslate"><span class="pre">System.instance.update()</span></code> tick, tagged
+<code class="docutils literal notranslate"><span class="pre">(App</span> <span class="pre">Message)</span></code>. Catch it with <code class="docutils literal notranslate"><span class="pre">Log.instance.messages</span></code>.</p>
+<p><strong>Limits</strong></p>
+<ul class="simple">
+<li><p>A line longer than about 240 characters is cut and ends in <code class="docutils literal notranslate"><span class="pre">...</span></code>.</p></li>
+<li><p>Each object prints at most 16 lines per update tick, or the number given
+as its second argument (1-256). The first line over the limit in a tick
+logs a notice.</p></li>
+<li><p>The queue is shared by every <code class="docutils literal notranslate"><span class="pre">.print</span></code>. Lines that do not fit are counted,
+and the next update logs how many were lost.</p></li>
+</ul>
+<p>Nothing is dropped silently. <code class="docutils literal notranslate"><span class="pre">.print</span></code> has no outlet. See
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/host_io.html">Talking to the host</a>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -716,6 +750,15 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><code class="docutils literal notranslate"><span class="pre">.r</span> <span class="pre">&lt;name&gt;</span></code> sends out everything sent to that name: by a <code class="docutils literal notranslate"><span class="pre">.s</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.forward</span></code> in the same patcher, by one in another patcher with the same
+name, by the host’s <code class="docutils literal notranslate"><span class="pre">Patcher.passInt</span></code> / <code class="docutils literal notranslate"><span class="pre">passFloat</span></code> / <code class="docutils literal notranslate"><span class="pre">passString</span></code> and <code class="docutils literal notranslate"><span class="pre">Patcher.passBang</span></code>, or by a publish on the bus
+address <code class="docutils literal notranslate"><span class="pre">patcher.&lt;patcherName&gt;.&lt;name&gt;</span></code>. A cord into its inlet is passed
+straight through.</p>
+<p>Values that come from the bus are sent out on the control thread. The bus
+subscription only exists while the engine is running, so create patchers
+after <code class="docutils literal notranslate"><span class="pre">System.instance.init()</span></code>. <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/host_io.html">Talking to the host</a> covers when each route
+delivers.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -811,6 +854,25 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><code class="docutils literal notranslate"><span class="pre">.s</span> <span class="pre">&lt;name&gt;</span></code> delivers each value in two ways:</p>
+<ul class="simple">
+<li><p><strong>Inside the patcher</strong>, to every <code class="docutils literal notranslate"><span class="pre">.r</span> <span class="pre">&lt;name&gt;</span></code>, including those in
+subpatchers. A value sent while the patch renders arrives in the same
+block; one sent from the control thread arrives at the start of the next.</p></li>
+<li><p><strong>On the named bus</strong>, at <code class="docutils literal notranslate"><span class="pre">patcher.&lt;patcherName&gt;.&lt;name&gt;</span></code>. A <code class="docutils literal notranslate"><span class="pre">.r</span> <span class="pre">&lt;name&gt;</span></code>
+in another patcher with the same name, a bus subscriber in the host and a
+Python script all receive it there. The patcher’s own <code class="docutils literal notranslate"><span class="pre">.r</span></code> objects ignore
+this copy, so each gets every value once.</p></li>
+</ul>
+<p>With <code class="docutils literal notranslate"><span class="pre">globalOnly</span></code> set to 1 (<code class="docutils literal notranslate"><span class="pre">.s</span> <span class="pre">&lt;name&gt;</span> <span class="pre">1</span></code>) the value only goes out on the
+bus, and the patcher’s own <code class="docutils literal notranslate"><span class="pre">.r</span></code> objects get it from there too.</p>
+<p>The audio thread can only put ints and floats on the bus. A bang or list sent
+while the patch renders reaches the patcher’s own <code class="docutils literal notranslate"><span class="pre">.r</span></code> objects and nothing
+else, and with <code class="docutils literal notranslate"><span class="pre">globalOnly</span></code> set it reaches nothing at all. When nothing in
+the patcher listens to the name, the host’s send callback gets the value
+instead, unless it was sent while the patch renders.</p>
+<p><a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/host_io.html">Talking to the host</a> covers the bus, the send callback, the scope rules
+and the length limits.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -879,6 +941,17 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Every <code class="docutils literal notranslate"><span class="pre">.value</span></code> with the same name in a patcher, and in patchers with the
+same name, shares one value. Storing sends nothing and publishes nothing; to
+react to changes as well, send the value to a <code class="docutils literal notranslate"><span class="pre">.value</span></code> and a <code class="docutils literal notranslate"><span class="pre">.s</span></code> from
+the same outlet.</p>
+<p>The starting value comes from the arguments after the name (<code class="docutils literal notranslate"><span class="pre">.value</span> <span class="pre">tempo</span>
+<span class="pre">120</span></code>, <code class="docutils literal notranslate"><span class="pre">.value</span> <span class="pre">pos</span> <span class="pre">0</span> <span class="pre">0</span></code>). A single number is an int or a float as written,
+so <code class="docutils literal notranslate"><span class="pre">120</span></code> and <code class="docutils literal notranslate"><span class="pre">120.</span></code> differ. Only the <code class="docutils literal notranslate"><span class="pre">.value</span></code> that creates the shared
+value applies its starting value; a later one adopts what is stored, so adding
+a reader never resets it.</p>
+<p>See <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/host_io.html">Talking to the host</a> for reading and writing a <code class="docutils literal notranslate"><span class="pre">.value</span></code> from the
+host.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -974,6 +1047,11 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>DSP (audio-rate)</p>
 </dd>
 </dl>
+<p>There is one outlet per channel of the patcher, as set by
+<code class="docutils literal notranslate"><span class="pre">Patcher(mainOutputs:</span> <span class="pre">...)</span></code>. The outlets only carry audio when the patcher runs as an
+insert effect. When it is a sound source there is no incoming audio and they
+stay silent; outlets beyond the host’s channel count also stay silent. See
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/index.html">Patcher</a>.</p>
 <p><strong>Outlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1019,6 +1097,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>DSP (audio-rate)</p>
 </dd>
 </dl>
+<p>There is one inlet per channel of the patcher, as set by <code class="docutils literal notranslate"><span class="pre">Patcher(mainOutputs:</span> <span class="pre">...)</span></code>.
+A patch can hold several <code class="docutils literal notranslate"><span class="pre">~dac</span></code> objects. Their channels are added together
+without scaling, so keep the combined level in range. See
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/index.html">Patcher</a> for running a patch as a sound or as an insert.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

@@ -13,31 +13,39 @@ one or more weighted [Motif]s instead of pure randomness. Numeric
 setters accept an optional [fade] parameter that interpolates from
 the current value to the target over that many seconds.
 
-**Note**: the upstream `YSE::player::create(synth&)` factory is
-commented out, and there is no other path to initialise the player's
-implementation pointer. Calling any method on a freshly-constructed
-[Player] therefore crashes the process (null pimpl dereference) —
-this surface is dead until the synth subsystem returns to the public
-API. The class is exposed here so the wrapping is in place when that
-happens; do not call its methods until then.
+A player has no sound of its own: it plays its notes on the [Synth] it is
+constructed with. Attach that synth to a playing sound
+(`Sound.fromSynth`) to hear them. The engine advances players once per
+rendered audio block.
+
+The engine *borrows* the synth, the active [Scale]s and every added
+[Motif] — it keeps pointers to them, not copies. The player holds Dart
+references to each, so garbage collection never frees one while the
+player can still read it (#85); they are released only after the
+player's own native destroy. Don't `.dispose()` any of them while the
+player is alive.
 
 Constructors
 ------------
 
 .. code-block:: dart
 
-   factory Player()
+   factory Player(Synth synth)
 
-Construct a player.
+Construct a player that plays its notes on [synth].
 
-As of engine v2.3.0 `yse_player_create` takes a `YseSynth*`. The synth
-subsystem does not yet have an idiomatic Dart wrapper (tracked as a
-separate issue in this batch), so a null synth is passed here — matching
-the dead-surface contract documented on this class. Do not call this
-class's methods until the synth wiring lands.
+[synth] must be live (not disposed). The player holds it until the
+player is disposed or collected. Throws [YseException] if the engine
+refuses to create the player.
 
 Properties
 ----------
+
+.. code-block:: dart
+
+   Synth get synth
+
+The synth this player plays its notes on.
 
 .. code-block:: dart
 
@@ -120,8 +128,14 @@ Number of simultaneous voices.
 
 Constrain generated pitches to [scale].
 
-The player keeps its own copy — modifying [scale] after this
-call has no effect on the player.
+With a [fade], the player cross-fades from the current scale to [scale]
+over that time (the first call always applies at once).
+
+The engine *borrows* [scale] (it keeps a pointer, not a copy), so later
+changes to it apply. The player holds a Dart reference to every scale
+the cross-fade may still read: the last scale set without a fade and
+each fade target set since. Don't `.dispose()` them while the player is
+alive.
 
 .. code-block:: dart
 
@@ -129,11 +143,15 @@ call has no effect on the player.
 
 Add a [motif] to the player's pool. Picked weighted by [weight].
 
+The engine *borrows* [motif] (it keeps a pointer, not a copy). The
+player holds a Dart reference to it until [removeMotif] or [dispose];
+don't `.dispose()` the motif before then.
+
 .. code-block:: dart
 
    void removeMotif(Motif motif)
 
-Remove a previously added motif.
+Remove a previously added motif, and stop holding it.
 
 .. code-block:: dart
 
@@ -164,4 +182,11 @@ Probability that motif notes are quantised to the active scale (0..1).
    void dispose()
 
 Destroy the underlying native player and detach the finalizer.
+
+The scales and motifs are released at once. The synth stays held until
+this wrapper is collected: the engine retires a destroyed player on its
+next audio block, and that step still sends note-offs to the synth
+(upstream yvanvds/yse-soundengine#1181). If you dispose the synth
+yourself, let at least one audio block run after this call first (in an
+offline session, render one) — and before `System.close`.
 

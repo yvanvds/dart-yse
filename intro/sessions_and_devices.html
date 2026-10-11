@@ -1,0 +1,1008 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Sessions and devices &#8212; dart-yse 0.2</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'intro/sessions_and_devices';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Upgrading to package:yse 0.2.0 (libYSE 3.1)" href="upgrading.html" />
+    <link rel="prev" title="Hello, sound" href="hello_sound.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.2" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.2</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/core.html">Core</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/reverb.html">Reverb</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/dsp.html">DSP</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/clip.html">Clip transport</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/synth.html">Synth</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/music.html">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/patcher.html">Patcher</a></li>
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/patcher_objects/index.html">Patcher object reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/bus.html">Bus</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/live_coding.html">LiveCoding</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/enums.html">Enums</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fintro/sessions_and_devices.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/intro/sessions_and_devices.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Sessions and devices</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-a-session">Starting a session</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-rate">Sample rate</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-sessions">Offline sessions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-an-audio-device">Choosing an audio device</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#is-audio-flowing">Is audio flowing?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reconnecting-automatically">Reconnecting automatically</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midi-devices">MIDI devices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-go-next">Where to go next</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="sessions-and-devices">
+<h1>Sessions and devices<a class="headerlink" href="#sessions-and-devices" title="Link to this heading">#</a></h1>
+<p>A <strong>session</strong> is everything between <code class="docutils literal notranslate"><span class="pre">System.instance.init()</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">initOffline()</span></code>) and <code class="docutils literal notranslate"><span class="pre">System.instance.close()</span></code>. This page covers how a
+session starts, which sample rate it runs at, how to pick and switch audio
+devices, how to tell whether audio is flowing, and how the engine
+reconnects a device that went away. Upstream’s
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/intro/sessions_and_devices.html">Sessions and devices</a> is the
+C++ version of this page.</p>
+<p>Every call on this page belongs on the isolate that called <code class="docutils literal notranslate"><span class="pre">init()</span></code>; see
+<a class="reference internal" href="mental_model.html"><span class="doc">Mental model</span></a>.</p>
+<section id="starting-a-session">
+<h2>Starting a session<a class="headerlink" href="#starting-a-session" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 26.0%" />
+<col style="width: 74.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Call</p></th>
+<th class="head"><p>What you get</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">System.init()</span></code></p></td>
+<td><p>Starts the audio backend and opens the platform’s default output
+device. The audio thread renders the mix. <strong>Throws</strong>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">YseException</span></code> (<code class="docutils literal notranslate"><span class="pre">YSE_ERR_AUDIO_DEVICE</span></code>) when no device
+opens, and leaves the engine closed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">System.initOffline()</span></code></p></td>
+<td><p>The same engine, channel tree and DSP graph, but no audio backend and
+no audio thread. You render blocks yourself with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">System.renderOffline()</span></code>. Use it for tests, benchmarks and
+headless tools.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">init()</span></code> succeeds only when a stream on the default output device is
+running. It throws when the backend fails to start, when there is no
+default output device, or when the device refuses to open or start the
+stream (another application holds it exclusively, say). The reason is in
+the engine log (<code class="xref py py-class docutils literal notranslate"><span class="pre">Log</span></code>). A failed <code class="docutils literal notranslate"><span class="pre">init()</span></code> leaves no session
+behind, so the usual pattern for a host that must also run without audio
+hardware is:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">sys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="n">instance</span><span class="p">;</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+<span class="p">}</span><span class="w"> </span><span class="kd">on</span><span class="w"> </span><span class="n">YseException</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">print</span><span class="p">(</span><span class="s1">'No audio device (</span><span class="si">$</span><span class="n">e</span><span class="s1">); running offline'</span><span class="p">);</span>
+<span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">initOffline</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Up to libYSE 2.4 (<code class="docutils literal notranslate"><span class="pre">package:yse</span></code> 0.1.0) <code class="docutils literal notranslate"><span class="pre">init()</span></code> returned normally with
+nothing open. A stream that has just started can still take a moment to
+deliver audio; see <a class="reference internal" href="#is-audio-flowing">Is audio flowing?</a>.</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">System.close()</span></code> ends the session: it closes the device, stops the
+engine threads and frees the engine side of every sound and channel. It
+also removes the <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.occlusion</span></code> callback, closes every
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Bus</span></code> subscription and tap stream, closes every
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Patcher.messages</span></code> stream and forgets every
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Channel.busName</span></code>. You can <code class="docutils literal notranslate"><span class="pre">init()</span></code> again afterwards. The
+requested sample rate and the <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.renderThreads</span></code> setting carry
+over to the next session.</p>
+</section>
+<section id="sample-rate">
+<h2>Sample rate<a class="headerlink" href="#sample-rate" title="Link to this heading">#</a></h2>
+<p>The sample rate is fixed for a whole session. Choose it with
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">System.requestedSampleRate</span></code> <strong>before</strong> <code class="docutils literal notranslate"><span class="pre">init()</span></code> /
+<code class="docutils literal notranslate"><span class="pre">initOffline()</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">sys</span><span class="p">.</span><span class="n">requestedSampleRate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">44100</span><span class="p">;</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+<span class="n">print</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">sessionSampleRate</span><span class="p">);</span><span class="w">   </span><span class="c1">// what the device agreed to</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>With a device</strong>, the engine asks the device for the requested rate. A
+device that refuses it is a log line and the device’s own rate instead,
+never an error. <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.sessionSampleRate</span></code> reports what the
+session really runs at.</p></li>
+<li><p><strong>Without a request</strong> (or after <code class="docutils literal notranslate"><span class="pre">requestedSampleRate</span> <span class="pre">=</span> <span class="pre">0</span></code>), <code class="docutils literal notranslate"><span class="pre">init()</span></code>
+opens the device at its default rate.</p></li>
+<li><p><strong>Offline</strong>, there is no device to ask, so the session runs at exactly
+the requested rate. With no request it keeps the engine’s current rate:
+<strong>48 kHz</strong> in a fresh process (libYSE 2.4 used 44.1 kHz), but the
+previous session’s rate in a process that already ran one
+(upstream <a class="reference external" href="https://github.com/yvanvds/yse-soundengine/issues/1033">#1033</a>).
+Request a rate whenever an offline render must run at a known one.</p></li>
+</ul>
+<p>A request made during a session is only stored for the next one; to change
+a running engine’s rate, <code class="docutils literal notranslate"><span class="pre">close()</span></code> and init again. The request survives
+<code class="docutils literal notranslate"><span class="pre">close()</span></code>. <code class="xref py py-attr docutils literal notranslate"><span class="pre">DeviceSetup.sampleRate</span></code> cannot change a running
+session’s rate either.</p>
+<p>Two getters report the rate:</p>
+<ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">System.sessionSampleRate</span></code> is the session rate. It stays the
+same through <code class="docutils literal notranslate"><span class="pre">pause()</span></code> / <code class="docutils literal notranslate"><span class="pre">resume()</span></code> and is 0 before <code class="docutils literal notranslate"><span class="pre">init()</span></code>. Use
+it for anything you count in samples.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeSampleRate</span></code> is the rate of the device that is
+open right now: 0 before <code class="docutils literal notranslate"><span class="pre">init()</span></code>, after <code class="docutils literal notranslate"><span class="pre">pause()</span></code> or <code class="docutils literal notranslate"><span class="pre">close()</span></code>,
+and in an offline session.</p></li>
+</ul>
+</section>
+<section id="offline-sessions">
+<h2>Offline sessions<a class="headerlink" href="#offline-sessions" title="Link to this heading">#</a></h2>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">System.renderOffline()</span></code> runs the work the audio thread would do
+for <code class="docutils literal notranslate"><span class="pre">blocks</span> <span class="pre">*</span> <span class="pre">System.blockSize</span></code> frames (128 per block), on the calling
+thread; the rendered audio is discarded (measure it with the channel peak
+meters). Call <code class="docutils literal notranslate"><span class="pre">update()</span></code> between renders as in a device session, or new
+sounds never start:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">sys</span><span class="p">.</span><span class="n">requestedSampleRate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">48000</span><span class="p">;</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">initOffline</span><span class="p">();</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">setChannelConfiguration</span><span class="p">(</span><span class="n">ChannelType</span><span class="p">.</span><span class="n">surround51</span><span class="p">,</span><span class="w"> </span><span class="m">6</span><span class="p">);</span><span class="w">   </span><span class="c1">// optional</span>
+
+<span class="c1">// ... create sounds, channels, patchers ...</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">100</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">update</span><span class="p">();</span>
+<span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">renderOffline</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+</pre></div>
+</div>
+<p><strong>Speaker layout.</strong> An offline session starts stereo. Change it with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">System.setChannelConfiguration()</span></code>, called <em>after</em>
+<code class="docutils literal notranslate"><span class="pre">initOffline()</span></code> (init installs stereo itself and overwrites an earlier
+call). <code class="docutils literal notranslate"><span class="pre">outputs</span></code> must be at least 1 (<code class="docutils literal notranslate"><span class="pre">ArgumentError</span></code> otherwise), and
+<code class="docutils literal notranslate"><span class="pre">ChannelType.custom</span></code> creates <code class="docutils literal notranslate"><span class="pre">outputs</span></code> speakers whose positions you set
+yourself. The new layout is applied by the next block <strong>that mixes a
+sound</strong>: with no sound alive the engine skips the mix and the resize with
+it, so <code class="docutils literal notranslate"><span class="pre">Channel.master.numOutputs</span></code> reports the old count until a sound
+exists (upstream #1033). In a device session use <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code>
+instead, which derives the layout from the device.</p>
+<p><strong>An offline session stays offline.</strong> <code class="docutils literal notranslate"><span class="pre">resume()</span></code> restarts the device a
+session already had; an offline session has none, so <code class="docutils literal notranslate"><span class="pre">resume()</span></code> is a
+no-op there and the auto-reconnect watchdog never opens one either. The
+one way to give an offline session a device is <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code>. On
+desktop that needs the audio backend (PortAudio), which <code class="docutils literal notranslate"><span class="pre">initOffline()</span></code>
+does not start, so call <code class="xref py py-meth docutils literal notranslate"><span class="pre">System.refreshDevices()</span></code> first:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">sys</span><span class="p">.</span><span class="n">initOffline</span><span class="p">();</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">refreshDevices</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// pick a Device from sys.devices, then sys.openDevice(setup)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code> succeeds the session becomes a device session: an
+audio thread now renders the mix, so <strong>stop calling</strong> <code class="docutils literal notranslate"><span class="pre">renderOffline()</span></code>.
+The stream opens at the offline session’s rate; a device that refuses it
+makes <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code> throw. Request the device’s rate before
+<code class="docutils literal notranslate"><span class="pre">initOffline()</span></code> to be safe.</p>
+</section>
+<section id="choosing-an-audio-device">
+<h2>Choosing an audio device<a class="headerlink" href="#choosing-an-audio-device" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">init()</span></code> opens the default output device. To use another one, list the
+devices and open one with <code class="xref py py-meth docutils literal notranslate"><span class="pre">System.openDevice()</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">chosen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">devices</span>
+<span class="w">    </span><span class="p">.</span><span class="n">where</span><span class="p">((</span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">outputChannelNames</span><span class="p">.</span><span class="n">length</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">6</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">firstOrNull</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">chosen</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">setup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceSetup</span><span class="p">()</span>
+<span class="w">    </span><span class="p">..</span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">chosen</span>
+<span class="w">    </span><span class="p">..</span><span class="n">bufferSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w">   </span><span class="c1">// 0: let the backend choose</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">sys</span><span class="p">.</span><span class="n">openDevice</span><span class="p">(</span><span class="n">setup</span><span class="p">,</span><span class="w"> </span><span class="nl">layout:</span><span class="w"> </span><span class="n">ChannelType</span><span class="p">.</span><span class="n">auto</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="kd">on</span><span class="w"> </span><span class="n">YseException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Refused and logged; the previous device is still playing.</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Listing devices without opening one.</strong> <code class="docutils literal notranslate"><span class="pre">init()</span></code> fills
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">System.devices</span></code> as a side effect of opening the default device,
+which may be the wrong device, held by another application, or at the
+wrong rate. <code class="xref py py-meth docutils literal notranslate"><span class="pre">System.refreshDevices()</span></code> fills the list without
+opening anything, so you can find a stored device first and open exactly
+that one. It works before <code class="docutils literal notranslate"><span class="pre">init()</span></code>, in an offline session and in a
+running device session:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">sys</span><span class="p">.</span><span class="n">refreshDevices</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// The audio backend could not start; the list is empty and the</span>
+<span class="w">  </span><span class="c1">// reason is in the engine log.</span>
+<span class="p">}</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">devices</span><span class="p">.</span><span class="n">where</span><span class="p">(</span>
+<span class="w">  </span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">storedName</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">hostName</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">storedHost</span><span class="p">,</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>It returns <code class="docutils literal notranslate"><span class="pre">false</span></code> (with an empty list) when the backend cannot start,
+and throws only on an unexpected engine error.</p></li>
+<li><p>It never touches an open stream. With no stream open the backend
+restarts, so devices plugged in or removed since show up. With a stream
+open, PortAudio cannot re-scan, so a new device appears only after you
+<code class="docutils literal notranslate"><span class="pre">closeCurrentDevice()</span></code> (or <code class="docutils literal notranslate"><span class="pre">close()</span></code>) and refresh again.</p></li>
+<li><p>The refresh <strong>replaces</strong> the list: <code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code> descriptors and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceSetup</span></code>s built from the old list are invalid afterwards,
+and an index may now name another device. Match by
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Device.name</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">Device.hostName</span></code>, never by index.
+<code class="docutils literal notranslate"><span class="pre">defaultDevice</span></code> / <code class="docutils literal notranslate"><span class="pre">defaultHost</span></code> are re-read too.</p></li>
+<li><p>An offline session lists nothing until you refresh, and a machine with
+no audio hardware may list nothing at all.</p></li>
+<li><p>On a bare headless Linux machine starting PortAudio can hang, so
+headless tools that never need a device should not call it.</p></li>
+</ul>
+<p><strong>Special values.</strong> <code class="xref py py-attr docutils literal notranslate"><span class="pre">Device.id</span></code> is -1 for a descriptor with no
+device behind it, and <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code> refuses it; every device in
+<code class="docutils literal notranslate"><span class="pre">devices</span></code> has a real index. <code class="xref py py-attr docutils literal notranslate"><span class="pre">Device.defaultBufferSize</span></code> is 0 when
+the host does not advertise one (every desktop device): 0 means
+<em>unspecified</em>, and passed as <code class="docutils literal notranslate"><span class="pre">DeviceSetup.bufferSize</span></code> lets the backend
+choose. After opening, <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeBufferSize</span></code> reports the size
+it chose.</p>
+<p><strong>Opening the device.</strong> <code class="docutils literal notranslate"><span class="pre">openDevice(setup,</span> <span class="pre">layout:)</span></code> returns when a
+stream is running on the new device. It throws <code class="xref py py-class docutils literal notranslate"><span class="pre">YseException</span></code>
+(<code class="docutils literal notranslate"><span class="pre">YSE_ERR_AUDIO_DEVICE</span></code>), and leaves the running stream and the speaker
+layout alone, when:</p>
+<ul class="simple">
+<li><p>the setup has no output device;</p></li>
+<li><p>the device’s ID is -1 or no longer resolves;</p></li>
+<li><p>the backend could not open or start the stream (including a device that
+refuses the session rate);</p></li>
+<li><p>the backend was never started (see <a class="reference internal" href="#offline-sessions">Offline sessions</a>).</p></li>
+</ul>
+<p>On success the speaker layout follows the device: <code class="docutils literal notranslate"><span class="pre">layout</span></code> is applied
+with that device’s output-channel count, and <code class="docutils literal notranslate"><span class="pre">ChannelType.auto</span></code> derives
+the layout from the count. A different number of outputs makes the next
+block reallocate the mix buffers, so switch devices at setup, not while
+something audible plays.</p>
+<p>On Android there is a single device (“Android Audio”, stereo, through
+Oboe); <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code> only applies the speaker layout there.</p>
+<p><strong>Live device state.</strong> <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeSampleRate</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeBufferSize</span></code> (frames per device callback, which is
+not the engine’s 128-frame block) and <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeOutputLatency</span></code>
+(samples) describe the open device and are 0 while none is open.
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeDevice</span></code> / <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeHost</span></code> name it
+(<code class="docutils literal notranslate"><span class="pre">''</span></code> when none is). <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.cpuLoad</span></code> is the audio callback’s
+run time as a fraction of its buffer; near 1.0, dropouts are likely.</p>
+</section>
+<section id="is-audio-flowing">
+<h2>Is audio flowing?<a class="headerlink" href="#is-audio-flowing" title="Link to this heading">#</a></h2>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">System.missedCallbacks</span></code> counts the <code class="docutils literal notranslate"><span class="pre">update()</span></code> calls in a row
+during which the device delivered no audio. It goes back to 0 at the first
+<code class="docutils literal notranslate"><span class="pre">update()</span></code> that sees a callback, so <strong>0 means audio is flowing</strong>.</p>
+<p>A stream that has just started (by <code class="docutils literal notranslate"><span class="pre">init()</span></code>, <code class="docutils literal notranslate"><span class="pre">resume()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">openDevice()</span></code>) reads non-zero until its first callback lands, typically
+tens of milliseconds. To wait for a device to come up, poll until it is 0:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">sys</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">100</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">missedCallbacks</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">update</span><span class="p">();</span>
+<span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A value that keeps climbing means the device has gone away or the audio
+thread is starved. An offline session only ever climbs.</p>
+</section>
+<section id="reconnecting-automatically">
+<h2>Reconnecting automatically<a class="headerlink" href="#reconnecting-automatically" title="Link to this heading">#</a></h2>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">System.setAutoReconnect()</span></code> makes <code class="docutils literal notranslate"><span class="pre">update()</span></code> restart the output
+stream when the device has delivered nothing for <code class="docutils literal notranslate"><span class="pre">delayMs</span></code>
+<strong>milliseconds</strong>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">sys</span><span class="p">.</span><span class="n">setAutoReconnect</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">on</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">delayMs:</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">fallbackToDefault:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">maxAttempts:</span><span class="w"> </span><span class="m">30</span><span class="p">,</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Which device.</strong> The one the session had: after <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code>, that
+device, found again by name and host, with the channel count and buffer
+size it was opened with. A session that never called <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code>
+reopens whatever the default device is at that moment, which covers
+unplugged headphones. Up to libYSE 3.0 every attempt opened the default
+device.</p></li>
+<li><p><strong>Fallback.</strong> When the session’s device cannot be reopened, nothing is
+opened and the watchdog tries again <code class="docutils literal notranslate"><span class="pre">delayMs</span></code> later. With
+<code class="docutils literal notranslate"><span class="pre">fallbackToDefault:</span> <span class="pre">true</span></code> the default output device is opened instead
+(narrowing the layout if it has fewer outputs); the session does not
+move back by itself when its own device returns.</p></li>
+<li><p><strong>Attempt limit.</strong> A positive <code class="docutils literal notranslate"><span class="pre">maxAttempts</span></code> stops after that many
+failed attempts in a row; 0 (the default) retries forever.</p></li>
+<li><p><strong>Timing.</strong> A stream that has just started gets at least half a second
+before the watchdog acts, whatever the delay. Negative delays count as
+0. Up to libYSE 2.4 <code class="docutils literal notranslate"><span class="pre">delayMs</span></code> counted <code class="docutils literal notranslate"><span class="pre">update()</span></code> calls: at 60 updates
+per second, a value of 120 meant 2000 ms.</p></li>
+<li><p><strong>The watchdog runs inside</strong> <code class="docutils literal notranslate"><span class="pre">update()</span></code>. Stop calling <code class="docutils literal notranslate"><span class="pre">update()</span></code> and
+nothing reconnects. <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.missedCallbacks</span></code> itself is not
+acted on; the watchdog keeps its own wall-clock timing.</p></li>
+</ul>
+<p>The watchdog has no callback; poll its outcome:</p>
+<ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">System.reconnectState</span></code> — a <code class="xref py py-class docutils literal notranslate"><span class="pre">ReconnectState</span></code>:
+<code class="docutils literal notranslate"><span class="pre">none</span></code> (nothing happened yet), <code class="docutils literal notranslate"><span class="pre">reconnecting</span></code>, <code class="docutils literal notranslate"><span class="pre">restored</span></code>,
+<code class="docutils literal notranslate"><span class="pre">fellBackToDefault</span></code> or <code class="docutils literal notranslate"><span class="pre">failed</span></code> (gave up after <code class="docutils literal notranslate"><span class="pre">maxAttempts</span></code>). It
+keeps the last attempt’s outcome and resets to <code class="docutils literal notranslate"><span class="pre">none</span></code> on init, on a
+successful <code class="docutils literal notranslate"><span class="pre">openDevice()</span></code> and on every <code class="docutils literal notranslate"><span class="pre">setAutoReconnect</span></code> call, which
+also re-arms a watchdog that gave up.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">System.reconnectCount</span></code> — attempts made this session, so you can
+notice a reconnect you did not see happen.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeDevice</span></code> / <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.activeHost</span></code> — the
+device actually playing, e.g. after <code class="docutils literal notranslate"><span class="pre">fellBackToDefault</span></code>.</p></li>
+</ul>
+<p>On desktop a device unplugged and plugged back in may only be found again
+after <code class="xref py py-meth docutils literal notranslate"><span class="pre">System.refreshDevices()</span></code>, which you can call while the state
+reads <code class="docutils literal notranslate"><span class="pre">reconnecting</span></code> (no stream is open then):</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// in the host's update loop</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">reconnectState</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ReconnectState</span><span class="p">.</span><span class="n">reconnecting</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">sys</span><span class="p">.</span><span class="n">refreshDevices</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">pause()</span></code> closes the stream and <code class="docutils literal notranslate"><span class="pre">resume()</span></code> opens the same device again;
+<code class="docutils literal notranslate"><span class="pre">resume()</span></code> never falls back to another device.</p>
+</section>
+<section id="midi-devices">
+<h2>MIDI devices<a class="headerlink" href="#midi-devices" title="Link to this heading">#</a></h2>
+<p>MIDI device I/O exists in builds with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code>, which is
+on by default on Windows and Linux and off on Android (and macOS). Without
+it the counts below are 0.</p>
+<ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">System.midiInDeviceCount</span></code> / <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.midiOutDeviceCount</span></code>
+count the ports; 0 when the MIDI backend could not start.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">System.midiInDeviceName()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">System.midiOutDeviceName()</span></code>
+return <code class="docutils literal notranslate"><span class="pre">''</span></code> for an index with no port, and for every index when the
+backend is down. A non-empty name always means a real port.</p></li>
+<li><p>Open a port by index with <code class="xref py py-meth docutils literal notranslate"><span class="pre">MidiOut.open()</span></code> or
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">MidiIn.open()</span></code>.
+<code class="docutils literal notranslate"><span class="pre">MidiIn</span></code> callbacks arrive on RtMidi’s input thread and are bridged to
+your isolate as streams.</p></li>
+</ul>
+</section>
+<section id="where-to-go-next">
+<h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="mental_model.html"><span class="doc">Mental model</span></a> — the threads and what <code class="docutils literal notranslate"><span class="pre">update()</span></code> drives.</p></li>
+<li><p><a class="reference internal" href="../api/core.html"><span class="doc">Core</span></a> and <a class="reference internal" href="../api/devices.html"><span class="doc">Devices</span></a> — the reference for
+<code class="xref py py-class docutils literal notranslate"><span class="pre">System</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceSetup</span></code>.</p></li>
+<li><p><a class="reference internal" href="upgrading.html"><span class="doc">Upgrading to package:yse 0.2.0 (libYSE 3.1)</span></a> — everything that changed since libYSE 2.4.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="hello_sound.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Hello, sound</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="upgrading.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Upgrading to package:yse 0.2.0 (libYSE 3.1)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-a-session">Starting a session</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-rate">Sample rate</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#offline-sessions">Offline sessions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-an-audio-device">Choosing an audio device</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#is-audio-flowing">Is audio flowing?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reconnecting-automatically">Reconnecting automatically</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midi-devices">MIDI devices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-go-next">Where to go next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

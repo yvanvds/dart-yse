@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Filters &#8212; dart-yse 0.1</title>
+    <title>Filters &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Signal generators" href="signal_generators.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -551,9 +554,11 @@
 <p>4 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/filters.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/filters.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#bp" id="id1"><code class="docutils literal notranslate"><span class="pre">~bp</span></code></a></p></li>
@@ -573,6 +578,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>DSP (audio-rate)</p>
 </dd>
 </dl>
+<p>The center frequency is in Hz; below 0.001 Hz, including the default 0, the
+filter uses 10 Hz. A higher <code class="docutils literal notranslate"><span class="pre">Q</span></code> makes the band narrower; the default is 1.
+A tone at the center frequency comes out at the input’s level for every
+<code class="docutils literal notranslate"><span class="pre">Q</span></code>. A <code class="docutils literal notranslate"><span class="pre">Q</span></code> low enough to open the band fully (below 0.001, or below about
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">pi</span> <span class="pre">*</span> <span class="pre">frequency</span> <span class="pre">/</span> <span class="pre">samplerate</span></code>) turns filtering off and passes the input
+unchanged.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -680,6 +691,9 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>DSP (audio-rate)</p>
 </dd>
 </dl>
+<p>At 0 Hz, the default, the input passes unchanged. As for <code class="docutils literal notranslate"><span class="pre">~lp</span></code>, the cutoff
+is an approximation that holds well at low frequencies; from about a sixth of
+the sample rate up, the output is the difference between successive samples.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -776,6 +790,10 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>DSP (audio-rate)</p>
 </dd>
 </dl>
+<p>The cutoff argument defaults to 0 Hz, where the filter lets nothing through:
+give it a cutoff (<code class="docutils literal notranslate"><span class="pre">~lp</span> <span class="pre">800</span></code>). The cutoff is an approximation that holds
+well at low frequencies. From about a sixth of the sample rate up (about
+7 kHz at 44.1 kHz), the filter is fully open and passes the input unchanged.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -872,6 +890,14 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>DSP (audio-rate)</p>
 </dd>
 </dl>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">~bp</span></code>, the center frequency comes in as a signal, in Hz, so it can
+be swept smoothly or modulated at audio rate. Feed it from <code class="docutils literal notranslate"><span class="pre">~line</span></code> or an
+oscillator scaled to a frequency range.</p>
+<p><code class="docutils literal notranslate"><span class="pre">sharpness</span></code> sets how narrow the band is: higher is narrower. At 0, the
+default, the left outlet passes the input unchanged and the right outlet is
+silent.</p>
+<p>Nothing comes out unless both the audio input and the center frequency are
+connected.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

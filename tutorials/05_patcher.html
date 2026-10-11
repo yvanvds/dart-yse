@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Patcher: modular synthesis in code &#8212; dart-yse 0.1</title>
+    <title>Patcher: modular synthesis in code &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -48,10 +48,10 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API Reference" href="../api/index.html" />
-    <link rel="prev" title="Tutorials" href="index.html" />
+    <link rel="prev" title="Clocks and clips" href="06_clocks_and_clips.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -683,7 +686,10 @@ build an external patcher editor on top of the engine.</p></li>
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.connectionTargetId()</span></code>, and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.connectionTargetInlet()</span></code> return the wiring graph
 outward from each outlet so you can serialise it yourself or check
-what is connected to what.</p></li>
+what is connected to what. Both return <code class="docutils literal notranslate"><span class="pre">null</span></code> when there is no such
+connection, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.id</span></code> is <code class="docutils literal notranslate"><span class="pre">null</span></code> for a handle that
+refers to no object. IDs start at 0 in every patcher and the smallest free number
+is reused after a delete, so <code class="docutils literal notranslate"><span class="pre">0</span></code> is a real object, never “none”.</p></li>
 <li><p><strong>Send messages directly to a specific inlet</strong> — bypassing the
 named-receiver layer. <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.sendBang()</span></code>,
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.sendInt()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.sendFloat()</span></code>, and
@@ -735,9 +741,27 @@ place:</p>
 </div>
 <p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.parseJson()</span></code> <strong>adds to</strong> the current graph — objects
 already in the patcher are kept, so call <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.clear()</span></code>
-first to replace the patch. After loading,
-re-send the initial control values so the receives have something to
-forward.</p>
+first to replace the patch. Malformed JSON throws
+<code class="xref py py-class docutils literal notranslate"><span class="pre">YseException</span></code>, and a load that fails part-way removes the
+objects it had already created, so the patcher is left as it was. After
+loading, re-send the initial control values so the receives have
+something to forward.</p>
+<p>A few things about the file itself:</p>
+<ul class="simple">
+<li><p><strong>Object IDs are per patcher.</strong> <code class="docutils literal notranslate"><span class="pre">dumpJson</span></code> numbers the objects from
+0 in ID order, so two identical patches save identically. A loaded
+patch is renumbered on its next save; if you keep object IDs outside
+the file, look them up again after loading.</p></li>
+<li><p><strong>The name is saved.</strong> A name set with <code class="xref py py-attr docutils literal notranslate"><span class="pre">Patcher.name</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">Patcher(name:</span> <span class="pre">...)</span></code>) is written as a top-level <code class="docutils literal notranslate"><span class="pre">&quot;name&quot;</span></code> key and
+applied by <code class="docutils literal notranslate"><span class="pre">parseJson</span></code> to a patcher that still has its auto-name; a
+name you already set wins. The name is what puts the patcher’s
+<code class="docutils literal notranslate"><span class="pre">.s</span></code> / <code class="docutils literal notranslate"><span class="pre">.r</span></code> slots on the bus as <code class="docutils literal notranslate"><span class="pre">patcher.&lt;name&gt;.&lt;slot&gt;</span></code> (see
+<a class="reference internal" href="../api/bus.html"><span class="doc">Bus</span></a>).</p></li>
+<li><p><strong>GUI properties ride along.</strong> Whatever an editor stored with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.setGuiProperty()</span></code> is saved under each object’s
+<code class="docutils literal notranslate"><span class="pre">&quot;gui&quot;</span></code> key.</p></li>
+</ul>
 <p>The round trip — patch built once in code, saved to a string,
 rebuilt from that string with no code-side knowledge of its internal
 structure — is what makes external editors possible. Build the patch
@@ -831,7 +855,9 @@ let <code class="xref py py-meth docutils literal notranslate"><span class="pre"
 it.</p></li>
 <li><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Sound</span></code> created from a patcher
 (<code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromPatcher()</span></code>) holds a borrowed pointer to that
-patcher’s native handle. The patcher must outlive the sound.</p></li>
+patcher’s native handle. The patcher must outlive the sound. The
+sound keeps a Dart reference to it, so dropping your own reference
+is safe; disposing the patcher before the sound is not.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Patcher</span></code> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">Finalizable</span></code>, so a dropped reference
 eventually frees the native graph — but for predictable timing
 (especially when the sound that wraps it is also being disposed),
@@ -888,12 +914,12 @@ outlets, parameters, and value ranges.</p></li>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="06_clocks_and_clips.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Tutorials</p>
+        <p class="prev-next-title">Clocks and clips</p>
       </div>
     </a>
     <a class="right-next"

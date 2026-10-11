@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Clip transport &#8212; dart-yse 0.1</title>
+    <title>Clip transport &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="MIDI" href="midi.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -565,7 +568,7 @@ more <code class="xref py py-class docutils literal notranslate"><span class="pr
 <p>A clip and its clock may be disposed in either order: a clip whose clock is
 gone simply stops firing. Stopping or disposing a clip releases every note it
 still has sounding.</p>
-<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::clip">api/clip.html</a>.</p>
+<p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/api/clips.html">YSE::clip</a>.</p>
 </section>
 <section id="cliptransport">
 <h1>ClipTransport<a class="headerlink" href="#cliptransport" title="Link to this heading">#</a></h1>
@@ -621,6 +624,8 @@ unbinds the clip from any clock it was bound to.</p>
 </div>
 <p>Route this clip’s playback to an external MIDI output port. [out] must
 already have opened a port. May be called for several ports.</p>
+<p>The clip holds a Dart reference to [out] until [disconnectMidiOut] or
+[dispose], so garbage collection never frees the port under it.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">disconnectMidiOut</span><span class="p">(</span><span class="n">MidiOut</span><span class="w"> </span><span class="n">out</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -631,6 +636,9 @@ already have opened a port. May be called for several ports.</p>
 <p>Route this clip’s playback to an internal [synth]. The engine drives the
 synth’s note events from the audio thread. [synth] must outlive the clip
 (or be disconnected first). May be called for several synths.</p>
+<p>The clip holds a Dart reference to [synth] until [disconnectSynth] or
+[dispose], so garbage collection never frees the synth under it; don’t
+<cite>.dispose()</cite> the synth while it is connected.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">disconnectSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">)</span>
 </pre></div>
 </div>

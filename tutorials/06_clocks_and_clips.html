@@ -1,0 +1,915 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Clocks and clips &#8212; dart-yse 0.2</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/06_clocks_and_clips';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Patcher: modular synthesis in code" href="05_patcher.html" />
+    <link rel="prev" title="Tutorials" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.2" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.2</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Clocks and clips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_patcher.html">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/core.html">Core</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/reverb.html">Reverb</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/dsp.html">DSP</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/clip.html">Clip transport</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/synth.html">Synth</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/music.html">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/patcher.html">Patcher</a></li>
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/patcher_objects/index.html">Patcher object reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/bus.html">Bus</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../api/live_coding.html">LiveCoding</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../api/enums.html">Enums</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Ftutorials/06_clocks_and_clips.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/06_clocks_and_clips.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Clocks and clips</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mental-model">Mental model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-and-steering-a-clock">Creating and steering a clock</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#playing-a-clip-into-a-synth">Playing a clip into a synth</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#changing-a-clip-while-it-plays">Changing a clip while it plays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timing-rules">Timing rules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#targets">Targets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifetime">Lifetime</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limits">Limits</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clocks-in-a-patch">Clocks in a patch</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-learned">What you learned</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="clocks-and-clips">
+<h1>Clocks and clips<a class="headerlink" href="#clocks-and-clips" title="Link to this heading">#</a></h1>
+<p>Goal: run a named beat clock, change its tempo while it plays, and loop a
+bar of notes against it into a synth or a MIDI output port.</p>
+<p>A <strong>domain clock</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DomainClock</span></code>) counts beats at a tempo. A
+<strong>clip</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ClipTransport</span></code>) holds a list of notes placed in beats and
+plays them against one clock, on the audio thread. Your Dart code never
+schedules a single note: it edits the list and steers the tempo, and the
+engine fires each note in the audio block where the clock passes it. That
+is why clip playback does not jitter when the UI isolate is busy, the way
+a <code class="docutils literal notranslate"><span class="pre">Timer</span></code> driving <code class="docutils literal notranslate"><span class="pre">noteOn</span></code> / <code class="docutils literal notranslate"><span class="pre">noteOff</span></code> over FFI does.</p>
+<p>This tutorial walks through <code class="docutils literal notranslate"><span class="pre">example/demo20_clocks_clips.dart</span></code>. The
+complete source is at <a class="reference external" href="https://github.com/yvanvds/dart-yse/blob/main/example/demo20_clocks_clips.dart">example/demo20_clocks_clips.dart</a>.
+It is the Dart counterpart of upstream’s
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/tutorials/15_clocks_and_clips.html">Clocks and clips</a> tutorial.</p>
+<section id="mental-model">
+<h2>Mental model<a class="headerlink" href="#mental-model" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A clock has a <strong>name</strong>, a <strong>tempo</strong> in BPM and a <strong>beat position</strong>. It
+starts at beat 0 when you create it.</p></li>
+<li><p>The beat position is the running total of the tempo over time. A tempo
+change alters how fast the beats go by and never makes the position jump.</p></li>
+<li><p>The engine advances every clock once per 128-frame block
+(<code class="xref py py-attr docutils literal notranslate"><span class="pre">System.blockSize</span></code>), on the audio thread, while a device is
+open (or on each <code class="xref py py-meth docutils literal notranslate"><span class="pre">System.renderOffline()</span></code> block). The clocks keep
+moving when no sound is playing. They do not move before <code class="docutils literal notranslate"><span class="pre">init()</span></code> or
+while the engine is paused.</p></li>
+<li><p>A clip is bound to one clock and reads it at the start of every block.
+It fires the notes whose beat falls between the previous block and this
+one, so it is accurate to one block: about 2.7 ms at 48 kHz.</p></li>
+</ul>
+<p>Clocks are shared by name: the host, every clip and every patch in the
+process see the same <code class="docutils literal notranslate"><span class="pre">'main'</span></code> clock.</p>
+</section>
+<section id="creating-and-steering-a-clock">
+<h2>Creating and steering a clock<a class="headerlink" href="#creating-and-steering-a-clock" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">sys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="n">instance</span><span class="p">;</span>
+<span class="n">sys</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+
+<span class="kd">final</span><span class="w"> </span><span class="n">clock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DomainClock</span><span class="p">(</span><span class="s1">'main'</span><span class="p">,</span><span class="w"> </span><span class="nl">tempo:</span><span class="w"> </span><span class="m">120</span><span class="p">);</span><span class="w">   </span><span class="c1">// beat 0, 120 BPM</span>
+
+<span class="n">clock</span><span class="p">.</span><span class="n">setTempo</span><span class="p">(</span><span class="m">90</span><span class="p">,</span><span class="w"> </span><span class="nl">ramp:</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span><span class="w"> </span><span class="m">4</span><span class="p">));</span><span class="w">   </span><span class="c1">// glide</span>
+<span class="n">clock</span><span class="p">.</span><span class="n">setTempo</span><span class="p">(</span><span class="m">140</span><span class="p">);</span><span class="w">                                    </span><span class="c1">// jump now</span>
+
+<span class="kd">final</span><span class="w"> </span><span class="n">beat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clock</span><span class="p">.</span><span class="n">beatPosition</span><span class="p">;</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">bpm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clock</span><span class="p">.</span><span class="n">currentTempo</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">DomainClock(name)</span></code> throws <code class="xref py py-class docutils literal notranslate"><span class="pre">YseException</span></code> when a live clock
+already owns the name: the first registration wins. The tempo defaults to
+120 BPM.</p>
+<p><code class="docutils literal notranslate"><span class="pre">setTempo(target,</span> <span class="pre">ramp:)</span></code> changes the tempo in a straight line over
+<code class="docutils literal notranslate"><span class="pre">ramp</span></code>, starting from the tempo the clock has at that moment, so a new
+ramp can take over from one still running. With no ramp the change is
+instant. The engine picks up tempo requests once per block, so of two
+<code class="docutils literal notranslate"><span class="pre">setTempo</span></code> calls within one block only the second counts.</p>
+<p>The tempo is not clamped:</p>
+<ul class="simple">
+<li><p><strong>0 pauses the clock.</strong> The beat position holds, and the clips on it stop
+firing until the tempo rises again.</p></li>
+<li><p><strong>A negative tempo runs it backwards.</strong> Clips fire nothing while the
+clock goes backwards.</p></li>
+</ul>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">DomainClock.beatPosition</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">DomainClock.currentTempo</span></code>
+are cheap reads, fine to poll every frame to draw a playhead. Both return 0
+for a disposed clock; <code class="xref py py-attr docutils literal notranslate"><span class="pre">DomainClock.exists</span></code> tells the two cases
+apart.</p>
+<p>Several clocks can run at once, each at its own tempo. They all advance
+from the same sample clock, so their ratios stay exact: a clock at 90 BPM
+and one at 120 BPM stay at 3:4 for as long as they run.</p>
+</section>
+<section id="playing-a-clip-into-a-synth">
+<h2>Playing a clip into a synth<a class="headerlink" href="#playing-a-clip-into-a-synth" title="Link to this heading">#</a></h2>
+<p>A clip needs a clock, a list of events and at least one target. Here the
+target is a <code class="xref py py-class docutils literal notranslate"><span class="pre">Synth</span></code> playing behind a <code class="xref py py-class docutils literal notranslate"><span class="pre">Sound</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// Add the voices right after Synth().</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">synth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Synth</span><span class="p">()..</span><span class="n">addSineVoices</span><span class="p">(</span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="nl">attack:</span><span class="w"> </span><span class="m">0.01</span><span class="p">,</span><span class="w"> </span><span class="nl">release:</span><span class="w"> </span><span class="m">0.2</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromSynth</span><span class="p">(</span><span class="n">synth</span><span class="p">,</span><span class="w"> </span><span class="nl">volume:</span><span class="w"> </span><span class="m">0.5</span><span class="p">)..</span><span class="n">play</span><span class="p">();</span>
+
+<span class="c1">// One bar of four quarter notes.</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">bar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">final</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">pitch</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">[</span><span class="m">60</span><span class="p">,</span><span class="w"> </span><span class="m">64</span><span class="p">,</span><span class="w"> </span><span class="m">67</span><span class="p">,</span><span class="w"> </span><span class="m">72</span><span class="p">].</span><span class="n">indexed</span><span class="p">)</span>
+<span class="w">    </span><span class="n">ClipEvent</span><span class="p">(</span>
+<span class="w">      </span><span class="nl">startBeat:</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">toDouble</span><span class="p">(),</span>
+<span class="w">      </span><span class="nl">durationBeats:</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span>
+<span class="w">      </span><span class="nl">channel:</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nl">pitch:</span><span class="w"> </span><span class="n">pitch</span><span class="p">,</span>
+<span class="w">      </span><span class="nl">velocity:</span><span class="w"> </span><span class="m">0.8</span><span class="p">,</span>
+<span class="w">    </span><span class="p">),</span>
+<span class="p">];</span>
+
+<span class="kd">final</span><span class="w"> </span><span class="n">clip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ClipTransport</span><span class="p">(</span><span class="n">clock</span><span class="p">)</span>
+<span class="w">  </span><span class="p">..</span><span class="n">connectSynth</span><span class="p">(</span><span class="n">synth</span><span class="p">)</span>
+<span class="w">  </span><span class="p">..</span><span class="n">setEvents</span><span class="p">(</span><span class="n">bar</span><span class="p">,</span><span class="w"> </span><span class="nl">loopBeats:</span><span class="w"> </span><span class="m">4</span><span class="p">)</span>
+<span class="w">  </span><span class="p">..</span><span class="n">play</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Each <code class="xref py py-class docutils literal notranslate"><span class="pre">ClipEvent</span></code> has:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">startBeat</span></code></dt><dd><p>The beat within the loop where the note starts.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">durationBeats</span></code></dt><dd><p>The note length. The note-off comes this many beats after the note-on.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">channel</span></code></dt><dd><p>MIDI channel, <code class="docutils literal notranslate"><span class="pre">1..16</span></code> — the synth’s 1-based numbering (see the channel
+table on <a class="reference internal" href="../api/midi.html"><span class="doc">MIDI</span></a>).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pitch</span></code></dt><dd><p>MIDI note number, <code class="docutils literal notranslate"><span class="pre">0..127</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">velocity</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">0..1</span></code>; defaults to 1.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pitchBend</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">-1..1</span></code>, 0 (the default) for none. A non-zero bend is sent as a
+pitch-wheel message on the note’s channel just before the note-on: use
+the nearest semitone plus a bend for microtonal pitches.</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">ClipTransport(clock)</span></code> binds the clip to the clock by name and throws
+<code class="docutils literal notranslate"><span class="pre">YseException</span></code> if no live clock owns it. <code class="xref py py-meth docutils literal notranslate"><span class="pre">ClipTransport.bind()</span></code>
+rebinds at any time, to the same clock or another; a failed bind throws
+and also unbinds the clip, so it goes silent.</p>
+</section>
+<section id="changing-a-clip-while-it-plays">
+<h2>Changing a clip while it plays<a class="headerlink" href="#changing-a-clip-while-it-plays" title="Link to this heading">#</a></h2>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ClipTransport.setEvents()</span></code> replaces the whole list and sets the
+loop length. The clip picks up the new list at the next block, without
+locking the audio thread, so you can call it as often as the music changes:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">clip</span><span class="p">.</span><span class="n">setEvents</span><span class="p">(</span><span class="n">newBar</span><span class="p">,</span><span class="w"> </span><span class="nl">loopBeats:</span><span class="w"> </span><span class="m">4</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>A note that is sounding when the list changes still gets its note-off on
+time, even if the new list no longer contains it. A <code class="docutils literal notranslate"><span class="pre">loopBeats</span></code> of 0 or
+less turns looping off, so each event plays once; an empty list clears the
+clip.</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ClipTransport.stop()</span></code> ends playback and sends a note-off for exactly
+the notes this clip still has sounding — not a global all-notes-off, so
+other clips on the same synth or port keep theirs. <code class="docutils literal notranslate"><span class="pre">play()</span></code> starts again,
+and <code class="xref py py-attr docutils literal notranslate"><span class="pre">ClipTransport.isPlaying</span></code> reports the state.</p>
+</section>
+<section id="timing-rules">
+<h2>Timing rules<a class="headerlink" href="#timing-rules" title="Link to this heading">#</a></h2>
+<p>Event times are measured on the <strong>clock</strong>, not from the moment you call
+<code class="docutils literal notranslate"><span class="pre">play()</span></code>. That keeps clips in step with each other, with some
+consequences:</p>
+<ul class="simple">
+<li><p><strong>Loops line up with the clock.</strong> A 4-beat loop plays its beat-0 event at
+clock beats 0, 4, 8 and so on. A clip started at clock beat 5.5 first
+plays its beat-2 event, at clock beat 6. Two clips with the same loop
+length on the same clock are always in phase.</p></li>
+<li><p><strong>A clip without a loop plays each event when the clock reaches its</strong>
+<code class="docutils literal notranslate"><span class="pre">startBeat</span></code>. An event the clock has already passed never plays. To play
+a phrase once starting “now”, add the current position:
+<code class="docutils literal notranslate"><span class="pre">startBeat:</span> <span class="pre">clock.beatPosition</span> <span class="pre">+</span> <span class="pre">offset</span></code>.</p></li>
+<li><p><strong>The first block after</strong> <code class="docutils literal notranslate"><span class="pre">play()</span></code> only records where the clock is, so
+an event exactly on the clock position at that moment is skipped.</p></li>
+<li><p><strong>A paused or reversed clock fires nothing</strong>, not even note-offs. Notes
+that are sounding wait until the clock passes their end again, or until
+you call <code class="docutils literal notranslate"><span class="pre">stop()</span></code>.</p></li>
+<li><p><strong>Note-offs go before note-ons</strong> within a block, so a note that ends as
+the same pitch starts again is released first.</p></li>
+</ul>
+<p>A tempo change reaches every clip on the clock in the next block. Nothing
+is rescheduled: a glide from 120 to 90 BPM bends every clip on that clock
+at once.</p>
+</section>
+<section id="targets">
+<h2>Targets<a class="headerlink" href="#targets" title="Link to this heading">#</a></h2>
+<p>A clip sends every note to all of its targets.</p>
+<p><strong>Synths.</strong> <code class="xref py py-meth docutils literal notranslate"><span class="pre">ClipTransport.connectSynth()</span></code> once per synth, up to 8
+per clip; <code class="docutils literal notranslate"><span class="pre">disconnectSynth</span></code> stops the routing. The notes reach the synth
+on the audio thread, in the block where they fire. The clip holds a Dart
+reference to each connected synth, so garbage collection never frees one
+under it; don’t <code class="docutils literal notranslate"><span class="pre">dispose()</span></code> a synth while it is connected.</p>
+<p><strong>MIDI output ports.</strong> On Windows and Linux, a clip can also play to an
+external MIDI device, up to 4 ports per clip:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MidiOut</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="m">0</span><span class="p">);</span><span class="w">   </span><span class="c1">// an unopened port is ignored</span>
+<span class="n">clip</span><span class="p">.</span><span class="n">connectMidiOut</span><span class="p">(</span><span class="n">out</span><span class="p">);</span><span class="w">      </span><span class="c1">// or ClipTransport(clock, midiOut: out)</span>
+</pre></div>
+</div>
+<p>The audio thread still decides when each note fires; it hands the message
+to a separate sender thread, so the audio callback never waits on the
+device. A full sender queue drops a message rather than block. A
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MidiOut</span></code> receives the clip’s 1-based channel as <code class="docutils literal notranslate"><span class="pre">channel</span> <span class="pre">-</span> <span class="pre">1</span></code> on
+the wire.</p>
+<p>Connecting more than 8 synths or 4 ports does nothing: no error, and the
+extra targets get no notes.</p>
+</section>
+<section id="lifetime">
+<h2>Lifetime<a class="headerlink" href="#lifetime" title="Link to this heading">#</a></h2>
+<p>A clip and its clock can be disposed in either order.</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">DomainClock.dispose()</span></code> removes the clock. A clip bound to it
+stops firing; it does not crash.</p></li>
+<li><p>Creating a new clock with the same name does <strong>not</strong> reconnect old clips.
+Call <code class="docutils literal notranslate"><span class="pre">bind</span></code> on each clip again.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ClipTransport.dispose()</span></code> releases the notes the clip is
+sounding, as <code class="docutils literal notranslate"><span class="pre">stop()</span></code> does, so dispose the clip first, then the sound,
+then the synth.</p></li>
+<li><p>A clip survives <code class="docutils literal notranslate"><span class="pre">System.close()</span></code>. Closing removes every clock, so the
+clip stops firing, but it stays safe to call and to dispose, and keeps
+its events, loop length and connections. In the next session create the
+clock again and <code class="docutils literal notranslate"><span class="pre">bind</span></code> the clip to it.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">DomainClock</span></code> is not garbage-collected into the engine (clocks are keyed
+by name, so there is no native pointer to finalize): call <code class="docutils literal notranslate"><span class="pre">dispose()</span></code>
+when you are done with one.</p>
+</section>
+<section id="limits">
+<h2>Limits<a class="headerlink" href="#limits" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>256 notes sounding at once per clip; further note-ons are dropped.</p></li>
+<li><p>Each event plays at most 64 times in one block. This only matters for a
+very short loop at a very high tempo.</p></li>
+<li><p>8 synths and 4 MIDI ports per clip.</p></li>
+</ul>
+</section>
+<section id="clocks-in-a-patch">
+<h2>Clocks in a patch<a class="headerlink" href="#clocks-in-a-patch" title="Link to this heading">#</a></h2>
+<p>Patcher objects use the same clocks by name: <code class="docutils literal notranslate"><span class="pre">.transport</span></code> and
+<code class="docutils literal notranslate"><span class="pre">.setclock</span></code> create clocks, and <code class="docutils literal notranslate"><span class="pre">.tempo</span></code>, <code class="docutils literal notranslate"><span class="pre">.metro</span></code>, <code class="docutils literal notranslate"><span class="pre">.delay</span></code> and the
+other timed objects can count beats on them. A clip and a patch on the same
+clock fire in the same block. See the <a class="reference internal" href="../api/patcher_objects/time.html"><span class="doc">time objects</span></a> in the object reference.</p>
+</section>
+<section id="what-you-learned">
+<h2>What you learned<a class="headerlink" href="#what-you-learned" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">DomainClock</span></code> is a named beat counter. Its tempo can jump,
+glide, pause and run backwards, and its beat position never jumps.</p></li>
+<li><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ClipTransport</span></code> plays a list of beat-timed <code class="xref py py-class docutils literal notranslate"><span class="pre">ClipEvent</span></code>s
+against a clock, on the audio thread, accurate to one block.</p></li>
+<li><p>Loops line up with the clock’s beats, not with the moment you press play.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setEvents</span></code> swaps the list while the clip plays, and sounding notes
+still end on time.</p></li>
+<li><p>A clip and its clock can be disposed in either order; stopping or
+disposing a clip releases the notes it is sounding.</p></li>
+</ul>
+</section>
+<section id="next">
+<h2>Next<a class="headerlink" href="#next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/clip.html"><span class="doc">Clip transport</span></a> and <a class="reference internal" href="../api/core.html"><span class="doc">Core</span></a> — the <code class="xref py py-class docutils literal notranslate"><span class="pre">ClipTransport</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DomainClock</span></code> reference.</p></li>
+<li><p><a class="reference internal" href="../api/synth.html"><span class="doc">Synth</span></a> — voice pools for the clip to play on.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorials</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="05_patcher.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Patcher: modular synthesis in code</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mental-model">Mental model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-and-steering-a-clock">Creating and steering a clock</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#playing-a-clip-into-a-synth">Playing a clip into a synth</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#changing-a-clip-while-it-plays">Changing a clip while it plays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timing-rules">Timing rules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#targets">Targets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifetime">Lifetime</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limits">Limits</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clocks-in-a-patch">Clocks in a patch</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-learned">What you learned</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

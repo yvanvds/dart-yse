@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>DspObject &#8212; dart-yse 0.1</title>
+    <title>DspObject &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -49,7 +49,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -556,10 +559,12 @@ concrete subclasses (filters, delays, modulators).</p>
 then call the matching <cite>set*</cite> methods to configure parameters.</p>
 <p>Inherited control surface ([bypass], [impact], [lfoType],
 [lfoFrequency], [link]) is available on every instance.</p>
-<p>Attach to a [Sound] with [Sound.setDsp]. The Sound holds a borrowed
+<p>Attach to a [Sound] with [Sound.setDsp]. The engine holds a borrowed
 reference — the effect must outlive the sound (and per the YSE
 lifetime contract, also outlive the slow-pool delete tick that
-follows the sound’s destruction).</p>
+follows the sound’s destruction). The Dart side holds the attached head
+and every object [link]ed after it, so garbage collection never frees a
+chain under a live sound or channel.</p>
 <p>Kind-specific accessors (e.g. [q], [sweepSpeed], [setDelayTap],
 [grainGain]) throw [YseException] when called on the wrong kind of
 effect. The underlying C entry points <cite>static_cast</cite> the handle without an
@@ -624,8 +629,10 @@ simultaneously.</p>
 <p>The insert feeds the host buffer to the graph’s <cite>~adc</cite> objects and copies
 the summed <cite>~dac</cite> output back over it, so [patcher] should contain at
 least one of each. The insert <em>borrows</em> [patcher] — it never owns or
-destroys it, so [patcher] must outlive this object. Drive it with the
-inherited control surface ([bypass], [impact], …).</p>
+destroys it, so [patcher] must outlive this object. The insert holds a
+Dart reference to [patcher], so garbage collection never frees it under
+a live insert; don’t <cite>.dispose()</cite> it first. Drive it with the inherited
+control surface ([bypass], [impact], …).</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
@@ -676,8 +683,8 @@ never a new wrapper. It is read from the engine, so it reflects the
 engine’s own relinking: [link] inserts <em>between</em> this object and its
 old successor, and disposing a chained object splices it out.</p>
 <p>Throws [StateError] if the engine reports a successor that no live
-[DspObject] wraps (only possible if that successor’s wrapper is being
-garbage-collected concurrently — keep chained effects reachable).</p>
+[DspObject] wraps. Each object holds its linked successor, so this only
+happens for a chain rewired outside this API.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">frequency</span>
 </pre></div>
 </div>
@@ -767,11 +774,17 @@ chain at this object (tail termination). This is what lets a chain be
 re-linked into a new order without a former non-tail element keeping a
 stale <cite>next</cite> that closes a cycle when the engine walks it (upstream
 yvanvds/yse-soundengine#391).</p>
+<p>The engine only borrows linked objects. Each object holds a Dart
+reference to the one linked after it (following the engine’s own
+insert-between, unlink and splice-on-dispose rewiring), so a chain whose
+head is held — by a [Sound], a <cite>Channel</cite> or your own variable — keeps
+every link alive (#84).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">unlink</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Detach this object’s forward edge, terminating the chain here.</p>
-<p>Convenience for <cite>link(null)</cite> — see [link].</p>
+<p>Convenience for <cite>link(null)</cite> — see [link]. The detached successor is no
+longer held by this object.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setDelayTap</span><span class="p">(</span><span class="n">DelayTap</span><span class="w"> </span><span class="n">tap</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">timeMs</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">gain</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -799,6 +812,8 @@ around [samples].</p>
 </pre></div>
 </div>
 <p>Destroy the underlying native effect and detach the finalizer.</p>
+<p>A chained object is spliced out: its predecessor is relinked to its
+successor, and from then on holds that successor instead.</p>
 </section>
 </section>
 

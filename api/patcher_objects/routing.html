@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Routing &#8212; dart-yse 0.1</title>
+    <title>Routing &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Random" href="random.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -560,9 +563,11 @@
 <p>13 objects. Every entry is
 pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
 / <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
-source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
-control-rate objects. For long-form notes, see the
-<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/routing.html">libYSE page for this category</a>.</p>
+source; the longer notes under each summary are ported from the libYSE
+documentation. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. Links into the patcher guide (messages, time, data,
+files, …) lead to the libYSE documentation, which also has this
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/routing.html">category’s page</a>.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#bucket" id="id1"><code class="docutils literal notranslate"><span class="pre">.bucket</span></code></a></p></li>
@@ -591,6 +596,36 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>By default the register runs one step behind: a number first sends what the
+register holds, then shifts and stores itself at outlet 0. It shows up on the
+next input. With echo mode on (a non-zero second argument), the number is
+stored first and is part of the same burst.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.bucket 3]     1, 2, 3   =&gt;  (out0 out1 out2)  0 0 0,  1 0 0,  2 1 0
+[.bucket 3 1]   1, 2, 3   =&gt;  (out0 out1 out2)  1 0 0,  2 1 0,  3 2 1
+</pre></div>
+</div>
+<p>Every outlet sends on every input, the last outlet first and outlet 0 last
+(see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>). A value keeps the int or float type it
+arrived with.</p>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a number: shift and send.</p></li>
+<li><p>a list that starts with a number: each number is fed in on its own, as if
+sent separately. Words in the list are skipped.</p></li>
+<li><p>bang: send the stored values without shifting.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;n&gt;</span></code>: fill every stage with n and send it out every outlet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: set every stage to 0 without sending anything.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freeze</span></code>: stop all output, including bang, <code class="docutils literal notranslate"><span class="pre">set</span></code> and <code class="docutils literal notranslate"><span class="pre">roll</span></code>, while
+numbers go on shifting in. <code class="docutils literal notranslate"><span class="pre">thaw</span></code> turns output back on; it sends nothing
+by itself, so follow it with a bang to see what was collected.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">L2R</span></code> / <code class="docutils literal notranslate"><span class="pre">R2L</span></code>: new values enter at outlet 0 (the default) or at the
+last outlet. Spelled in capitals.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">roll</span></code>: feed the value at the far end, the one the next input would push
+out, back in as the input. The register rotates and nothing is lost. A
+number after <code class="docutils literal notranslate"><span class="pre">roll</span></code> is ignored.</p></li>
+</ul>
+<p>Any other message is ignored. The direction and the freeze are not saved, and
+changing the arguments starts again from zeros.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -681,6 +716,29 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>bang, int or float: goes out the next outlet whole.</p></li>
+<li><p>a list that starts with a number: dealt one item per outlet, each number
+keeping its int or float type and each word going out as a one-word list.</p></li>
+<li><p>a message that starts with a word (<code class="docutils literal notranslate"><span class="pre">note</span> <span class="pre">60</span> <span class="pre">100</span></code>): goes out the next
+outlet whole.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;n&gt;</span></code>: the next message goes out outlet n. Nothing is sent, and an
+outlet number the object does not have is ignored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thresh</span> <span class="pre">&lt;n&gt;</span></code>: event mode on (non-zero) or off. The creation argument sets
+the same mode; <code class="docutils literal notranslate"><span class="pre">thresh</span></code> is not saved.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.cycle 3]   1, 2, 3, 4   =&gt;  out0: 1, out1: 2, out2: 3, out0: 4
+[.cycle 3]   10 20        =&gt;  out0: 10, out1: 20, and out2 is next
+</pre></div>
+</div>
+<p>In event mode the rotation starts again at outlet 0 for every new logical
+event (see <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>). A chord that arrives as one burst, from
+a list or a <code class="docutils literal notranslate"><span class="pre">.trigger</span></code>, is dealt from outlet 0 each time, however many notes
+the last chord had. Two separate host calls are two events, however close
+together. A <code class="docutils literal notranslate"><span class="pre">set</span></code> holds for the rest of its own event.</p>
+<p>The rotation always starts at outlet 0. It does not know whether a receiver is
+still busy; to give notes to free voices, use <code class="docutils literal notranslate"><span class="pre">.poly</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -771,6 +829,24 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Every message sends the whole state, one int out every outlet, the last
+outlet first. A bank wired to the outlets therefore always matches the
+selection, whatever it missed before. Before anything arrives, outlet 0 is
+selected.</p>
+<p>The right inlet overrides the middle one, and the middle one overrides the
+selection. Each inlet remembers its last number, so turning an override off
+brings back the state underneath it without sending the index again:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.decode 3]                (out0 out1 out2)
+  left 2              =&gt;   0 0 1
+  middle 1            =&gt;   1 1 1
+  right 1             =&gt;   0 0 0
+  right 0             =&gt;   1 1 1
+  middle 0            =&gt;   0 0 1
+</pre></div>
+</div>
+<p>Any non-zero number mutes in the right inlet, negative numbers too; the middle
+inlet only turns on for numbers above 0. The inlets take ints, and the left
+inlet also takes a bang. Floats and lists are not accepted.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -873,6 +949,31 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.funnel 3]     inlet 2 &lt;- 60            =&gt;  2 60
+                inlet 0 &lt;- note 60 100   =&gt;  0 note 60 100
+[.funnel 3 1]   inlet 0 &lt;- 0.5           =&gt;  1 0.5
+</pre></div>
+</div>
+<p>The number in front is always an int. The message after it keeps its
+spelling, so a float stays a float.</p>
+<p><strong>Messages</strong></p>
+<p>Every inlet takes all of these:</p>
+<ul class="simple">
+<li><p>a number: sent with the inlet’s number in front, and stored.</p></li>
+<li><p>a list or a word message: sent with the inlet’s number in front. It is not
+stored.</p></li>
+<li><p>bang: send the inlet’s stored number, with the inlet’s number in front. An
+inlet that has stored nothing sends 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">&lt;n0&gt;</span> <span class="pre">&lt;n1&gt;</span> <span class="pre">...</span></code>: store numbers for inlets 0, 1, 2 … in order,
+without sending anything. Extra numbers are ignored, a short list leaves the
+other inlets alone, and a word in the list skips that inlet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset</span> <span class="pre">&lt;n&gt;</span></code>: the number added to every inlet’s number. The second
+argument sets the same value; <code class="docutils literal notranslate"><span class="pre">offset</span></code> is not saved.</p></li>
+</ul>
+<p>A bare <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">offset</span></code> does nothing.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">.funnel</span> <span class="pre">n</span></code> into a <code class="docutils literal notranslate"><span class="pre">.spray</span> <span class="pre">n</span></code> with the same offset carries n separate
+streams over one cord: what enters inlet i leaves outlet i. <code class="docutils literal notranslate"><span class="pre">.route</span></code> and
+<code class="docutils literal notranslate"><span class="pre">.sel</span></code> can also branch on the number in front.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1071,6 +1172,50 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p><strong>Layout</strong></p>
+<p>The leftmost inlet takes the connection messages and nothing else. The data
+inlets are to its right, and connection messages number them from 0, so
+<code class="docutils literal notranslate"><span class="pre">connect</span> <span class="pre">0</span> <span class="pre">0</span></code> means the first data inlet. The data outlets are numbered from
+0 as well. The rightmost outlet only sends the answer to <code class="docutils literal notranslate"><span class="pre">dumpconnections</span></code>.
+<code class="docutils literal notranslate"><span class="pre">.router</span></code> has the same layout.</p>
+<p><strong>Connection messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;inlet&gt;</span> <span class="pre">&lt;outlet&gt;</span> <span class="pre">&lt;gain&gt;</span></code>: connect with that gain. A gain of 0
+disconnects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connect</span> <span class="pre">&lt;inlet&gt;</span> <span class="pre">&lt;outlet&gt;</span> <span class="pre">[gain]</span></code>: connect. Without a gain the third
+argument is used, 1 by default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">disconnect</span> <span class="pre">&lt;inlet&gt;</span> <span class="pre">&lt;outlet&gt;</span></code>: remove the connection.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: remove every connection.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dumpconnections</span></code>: send one <code class="docutils literal notranslate"><span class="pre">&lt;inlet&gt;</span> <span class="pre">&lt;outlet&gt;</span> <span class="pre">&lt;gain&gt;</span></code> line per
+connection out the rightmost outlet, by inlet and then by outlet. The
+lines have the same form as the first message, so <code class="docutils literal notranslate"><span class="pre">clear</span></code> followed by the
+stored lines restores a routing. A request that arrives during a dump is
+ignored.</p></li>
+</ul>
+<p>A port number the object does not have, extra text after a message, or a
+message in any other form is ignored. <code class="docutils literal notranslate"><span class="pre">dictionary</span> <span class="pre">&lt;name&gt;</span></code> is accepted and
+ignored: reading the connections from a dictionary is not supported.</p>
+<p><strong>Scaling</strong></p>
+<p>A message at a data inlet goes out every connected outlet, the last outlet
+first, scaled by that connection’s gain:</p>
+<ul class="simple">
+<li><p>At a gain of exactly 1 the message passes unchanged: an int stays an int and
+a list is not rewritten. A <code class="docutils literal notranslate"><span class="pre">.matrix</span></code> at gain 1 works like a <code class="docutils literal notranslate"><span class="pre">.router</span></code>.</p></li>
+<li><p>At any other gain each number is multiplied and leaves as a float, also
+when it arrived as an int.</p></li>
+<li><p>A bang stays a bang.</p></li>
+<li><p>A list is scaled item by item when every item is a number. Otherwise, as
+with <code class="docutils literal notranslate"><span class="pre">note</span> <span class="pre">60</span> <span class="pre">100</span></code>, it passes unchanged. A list of more than 256 items
+also passes unscaled.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.matrix 2 2]   connect 0 1 0.5, then 10 into data inlet 0   =&gt;  out1: 5.
+</pre></div>
+</div>
+<p>When several inlets reach one outlet, each message leaves separately; they are
+not added together. Connection words that arrive at a data inlet are passed on
+as data.</p>
+<p>The connections are not saved with the patch, and changing the arguments
+removes them. Store the output of <code class="docutils literal notranslate"><span class="pre">dumpconnections</span></code> to keep a routing.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1185,6 +1330,11 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>What the matching outlet sends is the rest of the message: a list, a single
+int or float, or a bang when nothing is left. The matching rules, the
+no-argument case and examples are under <em>Selector matching</em> in
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>.</p>
+<p>To keep the matched item on the message, use <code class="docutils literal notranslate"><span class="pre">.routepass</span></code>.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1281,6 +1431,12 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The matching rules are the same as for <code class="docutils literal notranslate"><span class="pre">.sel</span></code> and <code class="docutils literal notranslate"><span class="pre">.route</span></code>; see
+<em>Selector matching</em> in <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>. The matched message leaves
+exactly as it arrived, matched item included, so an object further down can
+still see it.</p>
+<p>Without arguments there are no selectors and only the rightmost outlet, which
+everything passes through.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1371,6 +1527,31 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The layout and port numbering are as described under <code class="docutils literal notranslate"><span class="pre">.matrix</span></code>. A data
+message goes out every connected outlet unchanged, the last outlet first.</p>
+<p><strong>Connection messages</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;inlet&gt;</span> <span class="pre">&lt;outlet&gt;</span> <span class="pre">&lt;state&gt;</span></code>: a non-zero state connects, 0 disconnects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connect</span> <span class="pre">&lt;inlet&gt;</span> <span class="pre">&lt;outlet&gt;</span></code> / <code class="docutils literal notranslate"><span class="pre">disconnect</span> <span class="pre">&lt;inlet&gt;</span> <span class="pre">&lt;outlet&gt;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">patch</span> <span class="pre">&lt;inlet&gt;</span> <span class="pre">&lt;outlet&gt;</span></code>: connect, and disconnect every other inlet from
+that outlet, in one step.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear</span></code>: remove every connection.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dump</span></code>: send one <code class="docutils literal notranslate"><span class="pre">&lt;inlet&gt;</span> <span class="pre">&lt;outlet&gt;</span> <span class="pre">&lt;state&gt;</span></code> line for every pair,
+connected or not, by inlet and then by outlet. A request that arrives during
+a dump is ignored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">print</span></code>: accepted and ignored. Use <code class="docutils literal notranslate"><span class="pre">dump</span></code> to read the routing.</p></li>
+</ul>
+<p>A port number the object does not have, or a message in any other form, is
+ignored. The connect messages take exactly the numbers shown; <code class="docutils literal notranslate"><span class="pre">clear</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dump</span></code> and <code class="docutils literal notranslate"><span class="pre">print</span></code> ignore anything after the word.</p>
+<p>An inlet may reach several outlets and several inlets may reach one outlet,
+all at once. Changing a connection takes effect from the next message, so a
+patch can rewire itself while it runs.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.router 2 2]   connect 0 1, connect 1 1   =&gt;  both data inlets reach out1
+</pre></div>
+</div>
+<p>The connections are not saved with the patch, and changing the arguments
+removes them. Store the output of <code class="docutils literal notranslate"><span class="pre">dump</span></code> to keep a routing.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1485,6 +1666,14 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>The matching rules are under <em>Selector matching</em> in
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>. A list matches on its first item, so <code class="docutils literal notranslate"><span class="pre">.sel</span> <span class="pre">5</span></code>
+bangs for <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">6</span></code> as well.</p>
+<p>When there is exactly one selector and it is a number, a right inlet appears.
+A number sent there replaces the selector without sending anything. With more
+than one selector, the selectors cannot be changed after creation.</p>
+<p>There is no setting for near matches. To match computed floats, put a
+<code class="docutils literal notranslate"><span class="pre">.round</span></code> in front.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1587,6 +1776,11 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Chain the right outlet into another <code class="docutils literal notranslate"><span class="pre">.split</span></code> to test the next range, for
+keyboard splits or velocity layers. The default range is 0 to 127.</p>
+<p>Limits given the wrong way round still work: the lower of the two is used as
+the low limit. Numbers leave as floats, also when they arrive as ints. A NaN
+goes out the right outlet.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1700,6 +1894,29 @@ control-rate objects. For long-form notes, see the
 <dd class="field-even"><p>Control-rate</p>
 </dd>
 </dl>
+<p>Value k after the index goes out outlet index + k. Values that would land
+past the last outlet are dropped. The outlets send right to left (see
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/messages.html">Messages and dispatch</a>), and each value keeps its int or float type. A word
+in the list is skipped but still uses up its outlet.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[.spray 4]     1 60 64   =&gt;  out2: 64, then out1: 60
+[.spray 4 1]   1 60      =&gt;  out0: 60
+[.spray 4]     -1 0 1    =&gt;  out3: 1, out2: 0, out1: 1, out0: 0
+</pre></div>
+</div>
+<p><strong>Messages</strong></p>
+<ul class="simple">
+<li><p>a list that starts with a number: the index, then the values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-1</span></code> as the index: the values are repeated across all the outlets, so a
+single value reaches every outlet. This is checked before the offset is
+applied.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset</span> <span class="pre">&lt;n&gt;</span></code>: an index of n reaches outlet 0. The second argument sets the
+same value; <code class="docutils literal notranslate"><span class="pre">offset</span></code> is not saved. Values pushed below outlet 0 by the
+offset are dropped.</p></li>
+</ul>
+<p>A bare number, a bang, an index with nothing after it, or a message that
+starts with any other word is ignored.</p>
+<p>In list mode (a non-zero third argument), the whole rest of the list goes out
+the one indicated outlet as a list. With <code class="docutils literal notranslate"><span class="pre">-1</span></code> every outlet gets it.</p>
 <p><strong>Inlets</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>

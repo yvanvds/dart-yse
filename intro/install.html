@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Install &#8212; dart-yse 0.1</title>
+    <title>Install &#8212; dart-yse 0.2</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/documentation_options.js?v=7f7c277e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="Mental model" href="mental_model.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1" />
+  <meta name="docsearch:version" content="0.2" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -176,7 +176,7 @@
   
   
   
-    <p class="title logo__title">dart-yse 0.1</p>
+    <p class="title logo__title">dart-yse 0.2</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -202,10 +202,13 @@
 <li class="toctree-l1"><a class="reference internal" href="mental_model.html">Mental model</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hello_sound.html">Hello, sound</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sessions_and_devices.html">Sessions and devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="upgrading.html">Upgrading to package:yse 0.2.0 (libYSE 3.1)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/06_clocks_and_clips.html">Clocks and clips</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
 </ul>
 </details></li>
@@ -532,6 +535,7 @@
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-msys2-clang64">Windows (MSYS2 Clang64)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linux-ubuntu-24-04">Linux (Ubuntu 24.04)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#engine-version-and-build-options">Engine version and build options</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#android-via-yse-flutter-libs">Android (via yse_flutter_libs)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verifying-the-install">Verifying the install</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
@@ -605,14 +609,33 @@ dart<span class="w"> </span>run<span class="w"> </span>example/hello_sound.dart
 </pre></div>
 </div>
 </section>
+<section id="engine-version-and-build-options">
+<h2>Engine version and build options<a class="headerlink" href="#engine-version-and-build-options" title="Link to this heading">#</a></h2>
+<p>The submodule is pinned to the libYSE release this package binds
+(<strong>v3.1.0</strong> for <code class="docutils literal notranslate"><span class="pre">package:yse</span></code> 0.2.0); <code class="xref py py-attr docutils literal notranslate"><span class="pre">System.version</span></code> reports
+the library you actually loaded. The bindings follow that pin, so build
+the submodule as checked out rather than another engine version.</p>
+<p>Two upstream CMake options change what the wrapper can do:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-DYSE_ENABLE_PYTHON=ON</span></code> (default <code class="docutils literal notranslate"><span class="pre">OFF</span></code>, desktop only) embeds the
+CPython interpreter behind <code class="xref py py-class docutils literal notranslate"><span class="pre">LiveCoding</span></code>. Without it the API stays
+callable and reports the build through <code class="xref py py-attr docutils literal notranslate"><span class="pre">LiveCoding.enabled</span></code>.
+Upstream’s <code class="docutils literal notranslate"><span class="pre">release-python</span></code> CMake preset sets it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (default <code class="docutils literal notranslate"><span class="pre">ON</span></code> on Windows and Linux, <code class="docutils literal notranslate"><span class="pre">OFF</span></code>
+elsewhere) builds the RtMidi device backend behind <code class="xref py py-class docutils literal notranslate"><span class="pre">MidiIn</span></code> /
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MidiOut</span></code>. Without it the MIDI device counts are 0, and the
+patcher objects marked <em>MIDI device only</em> in the object reference do not
+exist.</p></li>
+</ul>
+</section>
 <section id="android-via-yse-flutter-libs">
 <h2>Android (via yse_flutter_libs)<a class="headerlink" href="#android-via-yse-flutter-libs" title="Link to this heading">#</a></h2>
 <p>Android consumers add a second package — the sibling Flutter plugin
 <code class="docutils literal notranslate"><span class="pre">yse_flutter_libs</span></code> — which cross-compiles <code class="docutils literal notranslate"><span class="pre">libyse.so</span></code> with the NDK
 and bundles it into the APK / AAB:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dependencies</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">yse</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">^0.1.0</span>
-<span class="w">  </span><span class="nt">yse_flutter_libs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">^0.1.0</span>
+<span class="w">  </span><span class="nt">yse</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">^0.2.0</span>
+<span class="w">  </span><span class="nt">yse_flutter_libs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">^0.2.0</span>
 </pre></div>
 </div>
 <p>Requirements: Flutter ≥ 3.22, Android NDK 27.0.12077973 (must match
@@ -623,8 +646,8 @@ negotiate AAudio). Default ABIs are <code class="docutils literal notranslate"><
 </section>
 <section id="verifying-the-install">
 <h2>Verifying the install<a class="headerlink" href="#verifying-the-install" title="Link to this heading">#</a></h2>
-<p>The 11 demos under <code class="docutils literal notranslate"><span class="pre">example/</span></code> are ports of the C++ demos shipped
-with libYSE. Each one exercises a different subsystem; start with the
+<p>The 13 demos under <code class="docutils literal notranslate"><span class="pre">example/</span></code> are mostly ports of the C++ demos
+shipped with libYSE. Each one exercises a different subsystem; start with the
 simplest:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>dart<span class="w"> </span>run<span class="w"> </span>example/hello_sound.dart
 </pre></div>
@@ -689,6 +712,7 @@ simplest:</p>
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-msys2-clang64">Windows (MSYS2 Clang64)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linux-ubuntu-24-04">Linux (Ubuntu 24.04)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#engine-version-and-build-options">Engine version and build options</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#android-via-yse-flutter-libs">Android (via yse_flutter_libs)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verifying-the-install">Verifying the install</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>

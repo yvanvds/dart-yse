@@ -87,7 +87,8 @@ same channel 0-based, so channel 1 there is filter `1` here. May be called for s
 small fixed cap); re-connecting an already-connected synth just updates
 its channel filter. [synth] must outlive the connection —
 [disconnectSynth] it (or close/dispose this port) before disposing the
-synth.
+synth. The port holds a Dart reference to [synth] until [disconnectSynth]
+or [dispose], so garbage collection never frees it under the connection.
 
 .. code-block:: dart
 

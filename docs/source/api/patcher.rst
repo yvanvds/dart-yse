@@ -6,9 +6,9 @@ collection of :class:`PHandle`-shaped objects wired together by inlets
 and outlets. The graph can be built programmatically, driven from
 Dart code, serialised to JSON, and replayed.
 
-Upstream: :yse-cpp:`api/patcher.html <YSE::patcher>` /
-:yse-cpp:`api/patcher.html <YSE::pHandle>` /
-:yse-cpp:`api/patcher.html <YSE::pObjectList>`.
+Upstream: :yse-cpp:`YSE::patcher / pHandle <api/patcher.html>`, and the
+:yse-cpp:`patcher guide <patcher/index.html>` (messages, time, data,
+files, subpatchers, host I/O).
 
 For an end-to-end walk-through, see :doc:`/tutorials/05_patcher`. The
 list of object types ``createObject`` accepts is on the

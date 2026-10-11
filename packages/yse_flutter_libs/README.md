@@ -17,9 +17,12 @@ delivery.
 
 ```yaml
 dependencies:
-  yse: ^0.1.0
-  yse_flutter_libs: ^0.1.0
+  yse: ^0.2.0
+  yse_flutter_libs: ^0.2.0
 ```
+
+Keep both packages on the same minor version: `yse_flutter_libs` 0.2.x
+builds libYSE v3.1.0, the engine whose C ABI `yse` 0.2.x binds.
 
 Then build your Flutter app as normal. The plugin's Gradle module runs the
 engine's CMake build with the Android NDK, producing one `libyse.so` per
@@ -67,6 +70,10 @@ The audio callback runs on a thread owned by Oboe / AAudio. As with desktop
 builds, **never** call into `package:yse` from inside a callback you didn't
 install, and keep all `yse.*` calls on the same isolate that called
 `System.init()`. On Flutter, that is typically the UI isolate.
+
+On low-end devices, set `System.instance.renderThreads = 0` before
+`init()` so the engine renders on the audio thread alone instead of
+starting worker threads; the output is identical.
 
 ## License
 

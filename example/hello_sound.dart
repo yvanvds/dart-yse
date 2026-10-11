@@ -20,7 +20,15 @@ Future<void> main() async {
   final sys = System.instance;
   print('libYSE ${System.version}');
 
-  sys.init();
+  // init() throws when no audio device opens (libYSE 3). A host that must
+  // also run without audio hardware would fall back to initOffline() here.
+  try {
+    sys.init();
+  } on YseException catch (e) {
+    print('Could not open an audio device: $e');
+    exitCode = 1;
+    return;
+  }
   print('Engine initialised (CPU load = ${sys.cpuLoad.toStringAsFixed(3)})');
 
   // Path to a sound file shipped with yse-soundengine for testing.

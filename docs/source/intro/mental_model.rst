@@ -38,6 +38,41 @@ never changes how the mix is summed, so the output is bit-identical at
 any setting. :py:attr:`System.activeRenderThreads` reports the workers
 running now.
 
+**Callbacks and threads.** ``update()`` is where most engine-to-host
+traffic reaches Dart, but not all of it, and the wrapper bridges each kind
+according to the thread the engine calls it on:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 34 36
+
+   * - Callback
+     - Engine calls it on
+     - Reaches Dart
+   * - :py:attr:`System.occlusion`
+     - the thread running ``update()``, once per occlusion-enabled sound
+     - synchronously, inside ``update()`` (it must return a value)
+   * - :py:meth:`Bus.subscribe` / :py:meth:`Bus.tap`
+     - the control thread: inline for a host publish, otherwise during
+       ``update()``; never the audio thread
+     - as stream events, a microtask later
+   * - :py:attr:`Patcher.messages`
+     - whichever engine thread emitted the message (the control thread for
+       ``pass*``, a worker for a timer-driven ``.metro``)
+     - asynchronously, through the isolate's event loop
+   * - :py:attr:`Log.messages`, :py:attr:`MidiIn.rawMessages` /
+       ``parsedMessages``
+     - whichever thread logged, or RtMidi's input thread
+     - asynchronously, through the isolate's event loop
+   * - :py:attr:`LiveCoding.errors`
+     - the thread running ``update()``
+     - as stream events
+
+Audio-thread hooks (a synth's note-rewrite callback, custom voices, custom
+DSP sources) are deliberately not surfaced: the audio thread cannot safely
+re-enter Dart. :doc:`sessions_and_devices` covers what ``update()`` does for
+devices (the auto-reconnect watchdog runs inside it).
+
 **Randomness.** The engine's random generator (behind ``.random``,
 granulator jitter and the LFO random shapes) starts from a fixed seed,
 so a patch renders the same output every run. Call

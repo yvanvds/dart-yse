@@ -22,13 +22,17 @@ class Channel {
   final Pointer<YseChannel> _handle;
   final bool _owned;
 
-  /// Dart-side reference to the insert chain head attached via [dsp].
+  /// Insert chain heads attached via [dsp], keyed by native channel address.
   ///
-  /// The engine holds only a borrowed pointer (see [dsp]); keeping the
-  /// wrapper here lets [dsp] hand back the same [DspObject] instance rather
-  /// than minting a second wrapper (and a second finalizer) over one native
-  /// handle.
-  DspObject? _dsp;
+  /// The engine holds only a borrowed pointer (see [dsp]). Holding the
+  /// wrapper here keeps its finalizer from freeing the effect under a live
+  /// channel, and lets [dsp] hand back the same [DspObject] instance rather
+  /// than minting a second wrapper over one native handle. Kept per handle,
+  /// not per wrapper, because the singleton getters ([master], [fx], …) mint
+  /// a fresh wrapper on every access: `Channel.master.dsp = fx` must hold
+  /// `fx` after that wrapper is gone (#84). A channel wrapper can also be
+  /// dropped without [dispose], leaving the native channel live.
+  static final Map<int, DspObject> _inserts = {};
 
   Channel._(this._b, this._handle, this._owned);
 
@@ -303,18 +307,30 @@ class Channel {
   /// reverb and the channel [volume]. Chain multiple effects with
   /// [DspObject.link] and assign the head. Assign `null` to detach.
   ///
-  /// The channel holds only a borrowed reference: the assigned [DspObject]
+  /// The engine holds only a borrowed reference: the assigned [DspObject]
   /// (and every object linked after it) must outlive the channel, or be
-  /// detached first. This mirrors `Sound.dsp` at the channel level.
+  /// detached first. The wrapper holds a Dart reference to the assigned head
+  /// for this native channel — through any wrapper, including the fresh one
+  /// each singleton getter returns — and each effect holds its linked
+  /// successor, so garbage collection never frees the chain while it is
+  /// attached. The reference is dropped when the head is replaced, the
+  /// channel is [dispose]d, or `System.close()` ends the session. This
+  /// mirrors `Sound.dsp` at the channel level.
   DspObject? get dsp {
     // Consult the engine so the getter reflects the live insert slot, then
-    // hand back the wrapper we already own for that handle.
-    return _b.channel_get_dsp(_handle).address == 0 ? null : _dsp;
+    // hand back the wrapper we already hold for that handle.
+    return _b.channel_get_dsp(_handle).address == 0
+        ? null
+        : _inserts[_handle.address];
   }
 
   set dsp(DspObject? head) {
     _b.channel_set_dsp(_handle, head?.handle ?? nullptr);
-    _dsp = head;
+    if (head == null) {
+      _inserts.remove(_handle.address);
+    } else {
+      _inserts[_handle.address] = head;
+    }
   }
 
   /// Internal: native handle for cross-wrapper plumbing (sound → channel).
@@ -327,6 +343,9 @@ class Channel {
     if (!_owned) return;
     Channel._busNames.remove(_handle.address);
     _b.channel_destroy(_handle);
+    // The engine clears the insert's back-reference when it frees the
+    // channel, so the effect may be collected from here on.
+    Channel._inserts.remove(_handle.address);
   }
 }
 
@@ -334,3 +353,8 @@ class Channel {
 /// the engine drops bus subscriptions with the session. Internal to
 /// `lib/src/`.
 void clearChannelBusNames() => Channel._busNames.clear();
+
+/// Drops every held [Channel.dsp] insert. Called by `System.close()` *after*
+/// the engine has shut down (so no audio callback can still be running an
+/// insert the collector might then free). Internal to `lib/src/`.
+void releaseChannelInserts() => Channel._inserts.clear();

@@ -49,6 +49,12 @@ in `lib/main.dart` drives `sys.update()` from the **UI isolate** (same
 isolate that called `init()`), matching the threading rule documented in
 the dart-yse README.
 
+`lib/main.dart` sets `System.renderThreads = 0` before `init()`, so the
+mix renders on the Oboe audio thread alone with no worker threads. The
+engine's default (`-1`, auto) starts physical cores minus one workers,
+which rarely pays off on low-end phones. The output is bit-identical
+either way.
+
 ## Troubleshooting
 
 - **`libyse.so not found`** — confirm `yse_flutter_libs` is in

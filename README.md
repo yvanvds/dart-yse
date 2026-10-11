@@ -6,13 +6,17 @@ Dart bindings for the [YSE sound engine](https://github.com/yvanvds/yse-soundeng
 ## Status
 
 **Pre-release.** v0.x supports **Windows, Linux, and Android**; iOS / macOS are next.
-The full C++ API is wrapped except for two upstream-deferred areas:
 
-- **Player + synth**: the `Player` class is wrapped but every method
-  crashes because YSE's own `player::create(synth&)` factory is
-  commented out (synth subsystem is awaiting a rewrite). The wrapper
-  is in place so it becomes usable as soon as the engine restores
-  the factory; for now treat `Player` as a placeholder.
+**0.2.0 binds libYSE v3.1.0** (0.1.0 bound libYSE 2.4). This is a breaking
+upgrade: `System.init()` now throws when no audio device opens, the
+default session rate is 48 kHz, `DspBuffer` subclasses are real classes,
+patcher IDs are `int?` and the patcher's bus slots moved under
+`patcher.`. The [upgrade guide](https://yvanvds.github.io/dart-yse/intro/upgrading.html)
+lists every change with before / after code, and
+[CHANGELOG.md](CHANGELOG.md) has the full release notes.
+
+The full C++ API is wrapped except for one upstream-deferred area:
+
 - **Custom DSP sources** (`dspSourceObject` subclassing) and the
   **callback-based `YSE::io` VFS** — these need audio-thread-safe
   callback plumbing that lands in a later release. `BufferIO` covers
@@ -20,10 +24,19 @@ The full C++ API is wrapped except for two upstream-deferred areas:
 
 ## Install
 
-This package consumes YSE through a git submodule and currently
-relies on a locally-built engine shared library
+This package consumes YSE through a git submodule, pinned to the engine
+release the bindings were generated from (libYSE **v3.1.0**), and
+currently relies on a locally-built engine shared library
 (`libyse.dll` on Windows, `libyse.so` on Linux). Until the
-native-assets build hook lands you need a manual setup.
+native-assets build hook lands you need a manual setup. Build the
+submodule as checked out; `System.version` reports the library actually
+loaded.
+
+Two upstream CMake options matter to the wrapper:
+`-DYSE_ENABLE_PYTHON=ON` (default `OFF`, desktop only) embeds the
+interpreter behind `LiveCoding`, and `YSE_ENABLE_MIDI_DEVICE` (default
+`ON` on Windows / Linux) builds the RtMidi backend behind `MidiIn` /
+`MidiOut` and the MIDI-device patcher objects.
 
 ### Windows
 
@@ -129,9 +142,13 @@ CLI / server hosts.
 
 ```yaml
 dependencies:
-  yse: ^0.1.0
-  yse_flutter_libs: ^0.1.0
+  yse: ^0.2.0
+  yse_flutter_libs: ^0.2.0
 ```
+
+Keep the two at the same minor version: `yse_flutter_libs` builds the
+engine from this repository's submodule, and `yse` 0.2.0 needs the
+libYSE 3.1 C ABI it ships.
 
 Requirements:
 
@@ -164,6 +181,11 @@ AAudio. As with desktop builds, never call into `yse` from a callback
 you didn't install, and keep all `yse.*` calls on the same isolate that
 called `System.init()`. On Flutter, that is typically the UI isolate.
 
+**Render threads.** The engine renders with `physical cores - 1` worker
+threads (at most 8) by default. On low-end devices set `System.instance.renderThreads
+= 0` before `init()` to render on the audio thread alone (the output is
+bit-identical); the Android sample does this.
+
 ## Hello, sound
 
 ```dart
@@ -171,7 +193,7 @@ import 'package:yse/yse.dart';
 
 void main() {
   final sys = System.instance;
-  sys.init();
+  sys.init(); // throws YseException when no audio device opens
 
   final sound = Sound.fromFile('drone.ogg', loop: true);
   sound.play();
@@ -194,24 +216,30 @@ if you prefer event-driven code.
 
 | Subsystem | Coverage | Notes |
 |-----------|----------|-------|
-| `System`     | Lifecycle, devices, MIDI device enumeration, global reverb, underwater FX, update loop, version/cpu_load | full |
+| `System`     | Device and offline sessions, `requestedSampleRate`, headless speaker layout, device listing without a stream (`refreshDevices`), auto-reconnect with outcome (`reconnectState`, `activeDevice`), render threads, block size, RNG seeding, occlusion callback, MIDI device enumeration, global reverb, underwater FX, update loop, version / CPU load | full |
+| `DomainClock` / `ClipTransport` | Named, rampable beat clocks; beat-timed clips played on the audio thread into synths and MIDI ports | full |
 | `Listener`   | Position, velocity, orientation | full |
-| `Sound`      | File / buffer / patcher sources, transport, 3D, mixing, DSP-chain attachment | full |
-| `Channel`    | Pre-built singletons, user channels, volume, reverb attach | full |
-| `Reverb`     | Positioned + global, presets, full parameter surface | full |
+| `Sound`      | File / buffer / multichannel buffer / patcher / synth sources, transport, 3D, occlusion, mixing, DSP-chain attachment, `busName` | full |
+| `Channel`    | Pre-built singletons, user channels, aux sends and return buses, insert DSP, peak metering, virtualisation, reverb attach, `busName` | full |
+| `Reverb`     | Positioned + global, presets, full parameter surface, preset values + morph (`ReverbPresetValues`) | full |
 | `Device`     | Read-only descriptors + owned `DeviceSetup` builder | full |
-| `DspBuffer`  | Plain / drawable / file / wavetable subclasses, bulk Float32List I/O, draw_line, load/save, band-limited wavetable generators | full |
-| `DspObject`  | 11 effects (lowpass, highpass, bandpass, sweep, basicDelay + lp/hp variants, phaser, ringMod, difference, granulator) under one handle with the inherited bypass/impact/LFO surface | full |
-| `Patcher`    | Max/MSP-style graph: createObject, connect, JSON round-trip, named-receiver message passing, full `PHandle` introspection | full minus `oscHandler` outbound callback |
-| `MidiFile`   | Load / play / pause / stop | full |
-| `MidiOut`    | Note / pressure / control / program / raw + reset / all-notes-off | full (Windows/Linux) |
-| `Note`/`PNote`/`Scale`/`Motif` | Pitch/volume/length, position, has/nearest/clear, transpose, setFirstPitch | full |
-| `Player`     | Wrapped but unusable — see Status above | deferred upstream |
+| `DspBuffer`  | `DspBuffer` / `DrawableBuffer` / `FileBuffer` / `Wavetable` subclasses, bulk Float32List I/O, drawing, load/save, buffer math, copy/swap, band-limited wavetable generators; `DspMultiBuffer` for multichannel sources | full |
+| `DspObject`  | 11 base effects (lowpass, highpass, bandpass, sweep, basicDelay + lp/hp variants, phaser, ringMod, difference, granulator) with the inherited bypass/impact/LFO surface, chain walking; mix-grade `Compressor`, `ParametricEq`, `Chorus`, `PlateReverb`, `FeedbackDelay`, `MorphingReverb`, `Underwater`; patcher inserts | full |
+| `Patcher`    | Max/MSP-style graph: all 305 objects as `Obj` constants, connect, names and `patcher.<name>.<slot>` bus slots, subpatchers, `messages` stream (the C++ `oscHandler`), GUI value protocol, JSON round-trip, full `PHandle` and registry introspection | full |
+| `Synth`      | Sine / virtual-analog / FM (DX7 banks from file or memory) / SFZ sampler voice pools, per-note 3D positions, `busName` | full minus audio-thread hooks (note-rewrite callback, custom voices) |
+| `Bus`        | Host publish, exact-address subscribe, prefix tap | full |
+| `MidiFile`   | Load / play / pause / stop, synth sink | full |
+| `MidiOut`    | Note / pressure / control / program / `raw3` + `raw` (any length, SysEx) / reset / all-notes-off | full (Windows/Linux) |
+| `MidiIn`     | Raw and parsed message streams, synth sink | full (Windows/Linux) |
+| `Note`/`PNote`/`Scale`/`Motif` | Pitch/volume/length/channel, position, has/nearest/clear, transpose, setFirstPitch | full |
+| `Player`     | Generative sequencer on a `Synth`: pitch / velocity / gap / length ranges, voices, scale (with cross-fade), weighted motifs | full |
+| `LiveCoding` | Submit scripts to the embedded Python interpreter, error stream | full (needs `YSE_ENABLE_PYTHON=ON`) |
 | `Log`        | sendMessage, level, logfile, broadcast `messages` Stream | full |
 | `BufferIO`   | Register `Uint8List` bytes under an ID; load by ID | full |
 
-11 example demos under [`example/`](example/) — ports of the C++
-demos shipped with yse-soundengine, plus a few extras.
+13 example demos under [`example/`](example/) — ports of the C++
+demos shipped with yse-soundengine, plus a few extras (`demo19_bus.dart`,
+`demo20_clocks_clips.dart`, live coding, log + buffer I/O).
 
 ## Threading
 
@@ -221,8 +249,14 @@ demos shipped with yse-soundengine, plus a few extras.
   exposes — never call into `yse` from a callback you didn't
   install.
 - `System.update()` must be called from that isolate every frame
-  (or use `startUpdateTimer`). It drives message delivery and
-  listener-velocity computation.
+  (or use `startUpdateTimer`). It drives message delivery,
+  listener-velocity computation, the occlusion callback, bus delivery
+  and the auto-reconnect watchdog.
+- Engine callbacks reach Dart either synchronously inside `update()`
+  (occlusion) or as stream events (`Bus`, `Patcher.messages`,
+  `Log.messages`, `MidiIn`). The docs'
+  [mental model](https://yvanvds.github.io/dart-yse/intro/mental_model.html)
+  page has the per-callback table.
 
 ## License
 

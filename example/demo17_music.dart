@@ -1,15 +1,11 @@
-// M7 example — music-theory primitives (note, scale, motif).
+// M7 example — music-theory primitives (note, scale, motif) and the
+// generative Player.
 //
 // Builds a 4-note motif, constructs a C-pentatonic Scale, asks the
 // Scale for the nearest in-key pitch to a chromatic input, and
-// inspects the motif's length / size after auto-set.
-//
-// The Player class is wrapped but its upstream factory
-// (`YSE::player::create(synth&)`) is commented out in YSE — the
-// synth subsystem is deferred per the project plan. Calling methods
-// on a freshly-constructed Player crashes (null pimpl deref). When
-// the synth subsystem returns, the Player surface in lib/src/music.dart
-// becomes usable without any wrapper changes.
+// inspects the motif's length / size after auto-set. Then a Player
+// improvises on a sine Synth for a few seconds, kept in key by the
+// scale and drawing on the motif.
 //
 // Run:
 //   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo17_music.dart
@@ -65,8 +61,45 @@ Future<void> main() async {
   // Restrict the motif's legal start pitches to the scale.
   motif.setFirstPitch(scale);
 
+  // A player plays its notes on a synth; a sound renders that synth.
+  // Add the voices right after creating the synth.
+  final synth = Synth()..addSineVoices(8, attack: 0.01, release: 0.3);
+  final sound = Sound.fromSynth(synth, volume: 0.5)
+    ..position = const Pos(0, 0, 1)
+    ..play();
+
+  final player = Player(synth)
+    ..setMinimumPitch(55)
+    ..setMaximumPitch(84)
+    ..setMinimumVelocity(0.4)
+    ..setMaximumVelocity(0.8)
+    ..setMinimumGap(0.05)
+    ..setMaximumGap(0.3)
+    ..setMinimumLength(0.1)
+    ..setMaximumLength(0.5)
+    ..setVoices(2)
+    ..setScale(scale)
+    ..addMotif(motif)
+    ..playMotifs(0.3)
+    ..play();
+  print('Player improvising for 6 seconds...');
+  for (var i = 0; i < 120; i++) {
+    sys.update();
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+  }
+  player.stop();
+
   print('Done. (missed callbacks=${sys.missedCallbacks})');
 
+  // Dispose the player before what it borrows, and give the engine a block
+  // to retire it before its synth goes away.
+  player.dispose();
+  for (var i = 0; i < 10; i++) {
+    sys.update();
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+  }
+  sound.dispose();
+  synth.dispose();
   motif.dispose();
   scale.dispose();
   root.dispose();

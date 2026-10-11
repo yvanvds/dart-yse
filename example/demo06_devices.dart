@@ -4,6 +4,12 @@
 // (host, output channels, sample rates, buffer sizes). The C++ demo lets
 // you switch devices interactively; this CLI port just lists.
 //
+// It lists without opening a stream: an offline session plus
+// System.refreshDevices() (libYSE 3.1), so it also works when the default
+// device is busy or missing. To open one, build a DeviceSetup from a
+// listed Device and call System.openDevice — see the "Sessions and
+// devices" docs page.
+//
 // Run:
 //   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo06_devices.dart
 
@@ -13,7 +19,13 @@ import 'package:yse/yse.dart';
 
 Future<void> main() async {
   final sys = System.instance;
-  sys.init();
+  sys.initOffline();
+
+  if (!sys.refreshDevices()) {
+    print('The audio backend could not start; see the engine log.');
+    sys.close();
+    return;
+  }
 
   print('Default device : ${sys.defaultDevice}');
   print('Default host   : ${sys.defaultHost}');

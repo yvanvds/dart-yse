@@ -7,6 +7,7 @@ import 'channel.dart';
 import 'dsp_buffer.dart';
 import 'dsp_object.dart';
 import 'exception.dart';
+import 'ffi_helpers.dart';
 import 'library.dart';
 import 'patcher.dart';
 import 'pos.dart';
@@ -26,11 +27,15 @@ class Sound implements Finalizable {
   final YseBindings _b;
   Pointer<YseSound> _handle;
 
-  /// The in-memory source the engine reads while this sound plays
-  /// ([DspBuffer] or [DspMultiBuffer]). Holding it keeps the source's
-  /// finalizer from freeing it under a live sound.
-  // ignore: unused_field
-  Object? _source;
+  /// What the engine borrows from this sound: the source it reads while the
+  /// sound plays ([DspBuffer], [DspMultiBuffer], [Patcher] or [Synth]) under
+  /// [_source], and the effect chain head assigned through [dsp] under
+  /// [_dsp]. Held until after the native sound is destroyed, so garbage
+  /// collection never frees either under a live sound, not even when the
+  /// sound becomes unreachable at the same time (#65, #80, #84).
+  late final Borrows _borrows = Borrows(this);
+  static const _source = #source;
+  static const _dsp = #dsp;
 
   Sound._(this._b, this._handle) {
     _finalizer.attach(this, _handle.cast(), detach: this);
@@ -83,8 +88,16 @@ class Sound implements Finalizable {
 
   /// Construct a sound driven by a [Patcher] graph.
   ///
-  /// The patcher must outlive this sound; the engine reads its `~dac`
-  /// output on every audio callback.
+  /// **Lifetime contract:** [patcher] must outlive this sound — the engine
+  /// renders its `~dac` output on every audio callback. The sound holds a
+  /// Dart reference to it, so garbage collection never frees the patcher
+  /// under a live sound; don't `.dispose()` the patcher before disposing the
+  /// sound (the engine keeps rendering the graph it already took over, but
+  /// every control call — [Patcher.passBang], [Patcher.messages], edits —
+  /// is gone with the handle).
+  ///
+  /// Throws [YseException] if the sound cannot be created, or if [patcher]
+  /// is already driving another sound.
   factory Sound.fromPatcher(
     Patcher patcher, {
     Channel? channel,
@@ -99,6 +112,7 @@ class Sound implements Finalizable {
     try {
       final chHandle = channel?.handle ?? nullptr;
       checkStatus(b.sound_load_patcher(h, patcher.handle, chHandle, volume), b);
+      s._borrows[_source] = patcher;
       return s;
     } catch (_) {
       s.dispose();
@@ -130,7 +144,7 @@ class Sound implements Finalizable {
         b.sound_load_buffer(h, buffer.handle, chHandle, loop ? 1 : 0, volume),
         b,
       );
-      s._source = buffer;
+      s._borrows[_source] = buffer;
       return s;
     } catch (_) {
       s.dispose();
@@ -179,7 +193,7 @@ class Sound implements Finalizable {
         ),
         b,
       );
-      s._source = buffer;
+      s._borrows[_source] = buffer;
       return s;
     } catch (_) {
       s.dispose();
@@ -195,8 +209,10 @@ class Sound implements Finalizable {
   /// `add*Voices` methods) before constructing this sound.
   ///
   /// **Lifetime contract:** [synth] must outlive this sound — the audio thread
-  /// renders its voices on every callback. Dispose this sound before the
-  /// synth. Pass `null` for [channel] to route through the master mix.
+  /// renders its voices on every callback. The sound holds a Dart reference to
+  /// it, so garbage collection never frees the synth under a live sound;
+  /// don't `.dispose()` the synth before disposing the sound. Pass `null` for
+  /// [channel] to route through the master mix.
   ///
   /// Throws [YseException] if the sound cannot be created.
   factory Sound.fromSynth(
@@ -216,6 +232,7 @@ class Sound implements Finalizable {
         b.synth_attach_to_sound(synth.handle, h, chHandle, volume),
         b,
       );
+      s._borrows[_source] = synth;
       return s;
     } catch (_) {
       s.dispose();
@@ -334,8 +351,14 @@ class Sound implements Finalizable {
   ///
   /// Pass `null` to clear. The engine holds a borrowed reference to [dsp]
   /// for as long as the sound is live; [dsp] must outlive this sound and
-  /// the engine's slow-pool delete tick that follows its destruction.
-  set dsp(DspObject? dsp) => _b.sound_set_dsp(_handle, dsp?.handle ?? nullptr);
+  /// the engine's slow-pool delete tick that follows its destruction. The
+  /// sound holds a Dart reference to the assigned head, and each effect
+  /// holds the one [DspObject.link]ed after it, so garbage collection never
+  /// frees any part of the chain under a live sound (#80, #84).
+  set dsp(DspObject? dsp) {
+    _b.sound_set_dsp(_handle, dsp?.handle ?? nullptr);
+    _borrows[_dsp] = dsp;
+  }
 
   String? _busName;
 
@@ -380,5 +403,6 @@ class Sound implements Finalizable {
     _finalizer.detach(this);
     _b.sound_destroy(_handle);
     _handle = nullptr;
+    _borrows.release();
   }
 }

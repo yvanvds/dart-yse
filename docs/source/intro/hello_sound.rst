@@ -30,7 +30,9 @@ What just happened
 
 - ``System.instance.init()`` opens the default audio device and starts
   the engine's worker threads. Throws :class:`YseException` when no
-  audio device is available.
+  audio device opens (``example/hello_sound.dart`` catches it); a host
+  that must also run without audio hardware falls back to
+  ``initOffline()``, see :doc:`sessions_and_devices`.
 - ``Sound.fromFile('drone.ogg', loop: true)`` asynchronously loads
   ``drone.ogg`` and returns a :class:`Sound` handle. The file path is
   relative to the working directory; an absolute path is more

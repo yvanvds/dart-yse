@@ -54,12 +54,10 @@ device support.
 Pre-release status
 ------------------
 
-``dart-yse`` is at ``v0.x``. The full C++ API is wrapped except for two
-upstream-deferred areas:
+``dart-yse`` is at ``v0.x``; 0.2.0 binds **libYSE v3.1.0**. Moving from
+0.1.0 (libYSE 2.4) is a breaking upgrade: see :doc:`upgrading`. The full
+C++ API is wrapped except for one upstream-deferred area:
 
-- :class:`Player` (the generative note sequencer) is wrapped but every
-  method crashes because the upstream ``player::create(synth&)``
-  factory is currently commented out. Treat as a placeholder.
 - Custom DSP-source subclassing and the callback-based ``YSE::io`` VFS
   are deferred to a later release. :class:`BufferIO` covers the common
   asset-pack use case in the meantime.
@@ -70,3 +68,6 @@ Where next
 - :doc:`mental_model` — the six concepts you need to know.
 - :doc:`install` — get the package and the native library on disk.
 - :doc:`hello_sound` — a 25-line program that plays a sound.
+- :doc:`sessions_and_devices` — sample rates, offline sessions, choosing
+  and reconnecting audio devices.
+- :doc:`upgrading` — what changed from 0.1.0 / libYSE 2.4.

@@ -17,6 +17,11 @@
 // on the engine's background setup pool, so the tests pump `update()` +
 // `renderOffline()` (with short sleeps) until `voiceCount` reflects the cloned
 // pool, exactly as an app would poll a file-backed sound for readiness.
+//
+// Every voiced synth is created through `newSynth`, which first waits out any
+// synth setup job left queued by the previous test. libYSE v3.1.0 lets such a
+// job claim a new synth before its voices are added, leaving it with none
+// (issue #81, upstream yvanvds/yse-soundengine#1177).
 @TestOn('vm')
 library;
 
@@ -26,19 +31,7 @@ import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
-/// Drive the engine until [synth] has cloned at least [want] voices, or a
-/// bounded timeout elapses. Returns the final voice count.
-int pumpVoices(System sys, Synth synth, int want) {
-  var vc = synth.voiceCount;
-  for (var i = 0; i < 60 && vc < want; i++) {
-    sys.update();
-    sys.renderOffline(128);
-    vc = synth.voiceCount;
-    if (vc >= want) break;
-    sleep(const Duration(milliseconds: 10));
-  }
-  return vc;
-}
+import 'support/synth_ready.dart';
 
 /// Write a tiny valid 16-bit mono PCM WAV so libsndfile has a real sample to
 /// decode for the sampler tests. Returns the file path.
@@ -167,8 +160,7 @@ void main() {
 
   group('Sine voices + playback', () {
     test('voices clone, a sound wraps the synth, and notes play', () {
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
       synth.addSineVoices(6, channel: 0, attack: 0.005, release: 0.05);
 
       // Cloning is async on the setup pool; it starts once a sound renders the
@@ -201,8 +193,7 @@ void main() {
 
   group('Virtual-analog voices', () {
     test('VA voices clone and every VA setter is a safe no-throw', () {
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
       synth.addVaVoices(4);
       final sound = Sound.fromSynth(synth);
       addTearDown(sound.dispose);
@@ -248,8 +239,7 @@ void main() {
 
   group('FM voices', () {
     test('FM voices clone and every headline FM setter is a safe no-throw', () {
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
       synth.addFmVoices(4);
       final sound = Sound.fromSynth(synth);
       addTearDown(sound.dispose);
@@ -294,8 +284,7 @@ void main() {
       );
       expect(inst.isValid, isTrue);
 
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
       synth.addSamplerVoices(inst, 3);
       // The voice group retains its own share, so disposing the instrument
       // right after add-voices is safe.
@@ -326,8 +315,7 @@ void main() {
         high: 72,
       );
 
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
 
       // Split three pools across three channels + key ranges — the point of
       // #41 is that each non-sine pool can register on its own MIDI channel.
@@ -364,8 +352,7 @@ void main() {
 
   group('Per-note position handlers', () {
     test('attaching handlers and steering positions never throws', () {
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
       synth.addSineVoices(4, channel: 0);
       synth.setPositionHandler(const PositionHandler.orbit(radius: 2, rate: 1));
 
@@ -383,8 +370,7 @@ void main() {
     test(
       'getVoicePosition returns the origin for a note that is not sounding',
       () {
-        final synth = Synth();
-        addTearDown(synth.dispose);
+        final synth = newSynth(sys);
         synth.addSineVoices(2, channel: 0);
         final sound = Sound.fromSynth(synth);
         addTearDown(sound.dispose);
@@ -467,8 +453,7 @@ void main() {
     test('an indexOf result selects the patch into an FM synth', () {
       final bank = Dx7Bank.fromBytes(bankBytes);
       addTearDown(bank.dispose);
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
       synth.addFmVoices(2);
       synth.setFmPatch(bank, bank.indexOf('E.PIANO 1')!);
       // Attach before disposing: destroying a never-attached VA/FM synth
@@ -483,8 +468,7 @@ void main() {
     const where = Pos(1, 2, 3);
 
     test('channel, rounded pitch and release map through to the voice', () {
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
       synth.addSineVoices(4, channel: 0, attack: 0.001, release: 0.005);
       // A fixed handler parks every sounding voice at `where`, so
       // getVoicePosition doubles as a "is (channel, note) sounding" probe.
@@ -534,8 +518,7 @@ void main() {
     test('a clip connects and disconnects an internal synth', () {
       final clock = DomainClock('synth-clip', tempo: 120);
       addTearDown(clock.dispose);
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
       synth.addSineVoices(4, channel: 0);
       final sound = Sound.fromSynth(synth);
       addTearDown(sound.dispose);
@@ -559,8 +542,7 @@ void main() {
 
     test('a clock disposed before its clip: no crash, the clip stops '
         'firing (#67)', () {
-      final synth = Synth();
-      addTearDown(synth.dispose);
+      final synth = newSynth(sys);
       synth.addSineVoices(2, channel: 0, attack: 0.001, release: 0.005);
       synth.setPositionHandler(const PositionHandler.fixed(1, 2, 3));
       final sound = Sound.fromSynth(synth);
@@ -603,6 +585,50 @@ void main() {
       // And the clip itself is still safe to drive and dispose afterwards.
       clip.stop();
       clip.dispose();
+    });
+  });
+
+  group('Voice pool setup race (#81)', () {
+    test('adding voices or a handler after the pool is built throws', () {
+      final synth = newSynth(sys);
+      synth.addSineVoices(2, channel: 0);
+      final sound = Sound.fromSynth(synth);
+      addTearDown(sound.dispose);
+      expect(pumpVoices(sys, synth, 2), 2);
+
+      // The engine would drop these with only a log warning.
+      expect(() => synth.addSineVoices(2), throwsStateError);
+      expect(() => synth.addVaVoices(2), throwsStateError);
+      expect(() => synth.addFmVoices(2), throwsStateError);
+      final inst = SfzInstrument.fromSample(samplePath);
+      addTearDown(inst.dispose);
+      expect(() => synth.addSamplerVoices(inst, 2), throwsStateError);
+      expect(
+        () => synth.setPositionHandler(const PositionHandler.fixed(0, 0, 0)),
+        throwsStateError,
+      );
+      expect(synth.voiceCount, 2);
+    });
+
+    test('settleSynthSetup drains a pending setup job before the next '
+        'synth', () {
+      // Leave a synth setup job queued on an idle worker: let the worker go
+      // idle (it then polls in 1 ms sleeps), create a voiceless synth and
+      // render one block, whose synth-manager update queues the job. That job
+      // builds every synth it finds, so a synth created before it runs is
+      // built with no voices and keeps none (upstream
+      // yvanvds/yse-soundengine#1177). Created with a plain Synth() instead
+      // of newSynth, `synth` below ends with 0 voices in 10 of 10 runs.
+      newSynth(sys);
+      sleep(const Duration(milliseconds: 20));
+      sys.renderOffline(1);
+
+      final synth = newSynth(sys);
+      sleep(const Duration(milliseconds: 30));
+      synth.addSineVoices(4, channel: 0);
+      final sound = Sound.fromSynth(synth);
+      addTearDown(sound.dispose);
+      expect(pumpVoices(sys, synth, 4), 4);
     });
   });
 }

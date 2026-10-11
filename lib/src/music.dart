@@ -1,8 +1,12 @@
 import 'dart:ffi';
 
+import 'package:ffi/ffi.dart';
+
 import 'bindings/yse_bindings.g.dart';
 import 'exception.dart';
+import 'ffi_helpers.dart';
 import 'library.dart';
+import 'synth.dart';
 
 /// A single musical event — pitch, volume, length, MIDI channel.
 ///
@@ -208,6 +212,11 @@ class Motif implements Finalizable {
   final YseBindings _b;
   Pointer<YseMotif> _handle;
 
+  /// The [Scale] set through [setFirstPitch], which the engine borrows; held
+  /// until replaced or until this motif's native destroy has run (#84).
+  late final Borrows _borrows = Borrows(this);
+  static const _firstPitch = #firstPitch;
+
   Motif._(this._b, this._handle) {
     _finalizer.attach(this, _handle.cast(), detach: this);
   }
@@ -245,8 +254,15 @@ class Motif implements Finalizable {
   ///
   /// When the [Player] picks a transposition for this motif it picks one
   /// whose starting note belongs to [validPitches].
-  void setFirstPitch(Scale validPitches) =>
-      _b.motif_set_first_pitch(_handle, validPitches.handle);
+  ///
+  /// The engine *borrows* [validPitches] (it keeps a pointer, not a copy), so
+  /// later changes to the scale apply. The motif holds a Dart reference to it
+  /// until the next call or [dispose], so garbage collection never frees it
+  /// under the motif; don't `.dispose()` the scale first.
+  void setFirstPitch(Scale validPitches) {
+    _b.motif_set_first_pitch(_handle, validPitches.handle);
+    _borrows[_firstPitch] = validPitches;
+  }
 
   /// Whether the motif contains any notes.
   bool get isEmpty => _b.motif_empty(_handle) != 0;
@@ -260,6 +276,7 @@ class Motif implements Finalizable {
     _finalizer.detach(this);
     _b.motif_destroy(_handle);
     _handle = nullptr;
+    _borrows.release();
   }
 }
 
@@ -271,13 +288,17 @@ class Motif implements Finalizable {
 /// setters accept an optional [fade] parameter that interpolates from
 /// the current value to the target over that many seconds.
 ///
-/// **Note**: the upstream `YSE::player::create(synth&)` factory is
-/// commented out, and there is no other path to initialise the player's
-/// implementation pointer. Calling any method on a freshly-constructed
-/// [Player] therefore crashes the process (null pimpl dereference) —
-/// this surface is dead until the synth subsystem returns to the public
-/// API. The class is exposed here so the wrapping is in place when that
-/// happens; do not call its methods until then.
+/// A player has no sound of its own: it plays its notes on the [Synth] it is
+/// constructed with. Attach that synth to a playing sound
+/// (`Sound.fromSynth`) to hear them. The engine advances players once per
+/// rendered audio block.
+///
+/// The engine *borrows* the synth, the active [Scale]s and every added
+/// [Motif] — it keeps pointers to them, not copies. The player holds Dart
+/// references to each, so garbage collection never frees one while the
+/// player can still read it (#85); they are released only after the
+/// player's own native destroy. Don't `.dispose()` any of them while the
+/// player is alive.
 class Player implements Finalizable {
   static final _finalizer = NativeFinalizer(
     bindings.addresses.player_destroy.cast(),
@@ -286,23 +307,40 @@ class Player implements Finalizable {
   final YseBindings _b;
   Pointer<YsePlayer> _handle;
 
-  Player._(this._b, this._handle) {
+  /// The synth, the scales the engine's scale cross-fade may still read and
+  /// the motif pool, all borrowed by the engine (#85).
+  late Borrows _borrows = Borrows(this);
+  static const _synth = #synth;
+  static const _scale = #scale;
+  static const _scaleFades = #scaleFades;
+  var _scaleSet = false;
+
+  Player._(this._b, this._handle, Synth synth) {
     _finalizer.attach(this, _handle.cast(), detach: this);
+    _borrows[_synth] = synth;
   }
 
-  /// Construct a player.
+  /// Construct a player that plays its notes on [synth].
   ///
-  /// As of engine v2.3.0 `yse_player_create` takes a `YseSynth*`. The synth
-  /// subsystem does not yet have an idiomatic Dart wrapper (tracked as a
-  /// separate issue in this batch), so a null synth is passed here — matching
-  /// the dead-surface contract documented on this class. Do not call this
-  /// class's methods until the synth wiring lands.
-  factory Player() {
+  /// [synth] must be live (not disposed). The player holds it until the
+  /// player is disposed or collected. Throws [YseException] if the engine
+  /// refuses to create the player.
+  factory Player(Synth synth) {
     final b = bindings;
-    final h = b.player_create(nullptr);
-    if (h.address == 0) throw YseException('yse_player_create returned null');
-    return Player._(b, h);
+    final h = b.player_create(synth.handle);
+    if (h.address == 0) {
+      final cstr = b.last_error();
+      final detail = cstr.address == 0
+          ? 'yse_player_create returned null'
+          : cstr.cast<Utf8>().toDartString();
+      b.clear_last_error();
+      throw YseException(detail);
+    }
+    return Player._(b, h, synth);
   }
+
+  /// The synth this player plays its notes on.
+  Synth get synth => _borrows[_synth]! as Synth;
 
   /// Start producing notes.
   void play() => _b.player_play(_handle);
@@ -359,18 +397,44 @@ class Player implements Finalizable {
 
   /// Constrain generated pitches to [scale].
   ///
-  /// The player keeps its own copy — modifying [scale] after this
-  /// call has no effect on the player.
-  void setScale(Scale scale, {Duration fade = Duration.zero}) =>
-      _b.player_set_scale(_handle, scale.handle, fade.inMilliseconds / 1000.0);
+  /// With a [fade], the player cross-fades from the current scale to [scale]
+  /// over that time (the first call always applies at once).
+  ///
+  /// The engine *borrows* [scale] (it keeps a pointer, not a copy), so later
+  /// changes to it apply. The player holds a Dart reference to every scale
+  /// the cross-fade may still read: the last scale set without a fade and
+  /// each fade target set since. Don't `.dispose()` them while the player is
+  /// alive.
+  void setScale(Scale scale, {Duration fade = Duration.zero}) {
+    final seconds = fade.inMilliseconds / 1000.0;
+    _b.player_set_scale(_handle, scale.handle, seconds);
+    // Mirrors the engine's objectInterpolator: the first set, or any set
+    // without a fade, replaces the current scale outright; a fade only sets a
+    // target, and which earlier target is current depends on audio timing.
+    if (!_scaleSet || seconds <= 0) {
+      _borrows[_scale] = scale;
+      _borrows[_scaleFades] = null;
+    } else {
+      ((_borrows[_scaleFades] ??= <Scale>{}) as Set<Scale>).add(scale);
+    }
+    _scaleSet = true;
+  }
 
   /// Add a [motif] to the player's pool. Picked weighted by [weight].
-  void addMotif(Motif motif, {int weight = 1}) =>
-      _b.player_add_motif(_handle, motif.handle, weight);
+  ///
+  /// The engine *borrows* [motif] (it keeps a pointer, not a copy). The
+  /// player holds a Dart reference to it until [removeMotif] or [dispose];
+  /// don't `.dispose()` the motif before then.
+  void addMotif(Motif motif, {int weight = 1}) {
+    _b.player_add_motif(_handle, motif.handle, weight);
+    _borrows.add(motif);
+  }
 
-  /// Remove a previously added motif.
-  void removeMotif(Motif motif) =>
-      _b.player_remove_motif(_handle, motif.handle);
+  /// Remove a previously added motif, and stop holding it.
+  void removeMotif(Motif motif) {
+    _b.player_remove_motif(_handle, motif.handle);
+    _borrows.remove(motif);
+  }
 
   /// Adjust the selection weight of an already-added motif.
   void adjustMotifWeight(Motif motif, int weight) =>
@@ -397,10 +461,20 @@ class Player implements Finalizable {
       );
 
   /// Destroy the underlying native player and detach the finalizer.
+  ///
+  /// The scales and motifs are released at once. The synth stays held until
+  /// this wrapper is collected: the engine retires a destroyed player on its
+  /// next audio block, and that step still sends note-offs to the synth
+  /// (upstream yvanvds/yse-soundengine#1181). If you dispose the synth
+  /// yourself, let at least one audio block run after this call first (in an
+  /// offline session, render one) — and before `System.close`.
   void dispose() {
     if (_handle.address == 0) return;
     _finalizer.detach(this);
     _b.player_destroy(_handle);
     _handle = nullptr;
+    final synth = _borrows[_synth];
+    _borrows.release();
+    _borrows = Borrows(this)..[_synth] = synth;
   }
 }

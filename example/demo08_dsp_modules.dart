@@ -61,7 +61,8 @@ Future<void> main() async {
   }
 
   // 3) Granulator on the same sound.
-  final gran = DspObject.granulator(poolSize: 44100, maxGrains: 24)
+  // poolSize is in samples: one second at the 48 kHz default session rate.
+  final gran = DspObject.granulator(poolSize: 48000, maxGrains: 24)
     ..grainFrequency = 30
     ..setGrainLength(samples: 4000, random: 1000)
     ..setGrainTranspose(pitch: 1.0, random: 0.2)

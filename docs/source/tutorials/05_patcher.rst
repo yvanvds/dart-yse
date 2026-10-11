@@ -312,7 +312,9 @@ Three rules cover the patcher's memory model:
    it.
 2. A :class:`Sound` created from a patcher
    (:py:meth:`Sound.fromPatcher`) holds a borrowed pointer to that
-   patcher's native handle. The patcher must outlive the sound.
+   patcher's native handle. The patcher must outlive the sound. The
+   sound keeps a Dart reference to it, so dropping your own reference
+   is safe; disposing the patcher before the sound is not.
 3. ``Patcher`` is a :py:class:`Finalizable`, so a dropped reference
    eventually frees the native graph — but for predictable timing
    (especially when the sound that wraps it is also being disposed),

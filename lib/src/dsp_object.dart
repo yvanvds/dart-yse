@@ -39,6 +39,12 @@ class DspObject implements Finalizable {
   Pointer<YseDspObject> _handle;
   final _DspKind _kind;
 
+  /// A source this object borrows natively (the [Patcher] of a
+  /// [DspObject.patcherInsert]). Holding it keeps the source's finalizer from
+  /// freeing it under a live object (#80).
+  // ignore: unused_field
+  Object? _source;
+
   /// Native address → live wrapper, so [next] can hand back the *existing*
   /// Dart object for a linked handle instead of minting a second owning
   /// wrapper (which would double-free through the finalizer). Weak, so the
@@ -126,12 +132,14 @@ class DspObject implements Finalizable {
   /// The insert feeds the host buffer to the graph's `~adc` objects and copies
   /// the summed `~dac` output back over it, so [patcher] should contain at
   /// least one of each. The insert *borrows* [patcher] — it never owns or
-  /// destroys it, so [patcher] must outlive this object. Drive it with the
-  /// inherited control surface ([bypass], [impact], ...).
+  /// destroys it, so [patcher] must outlive this object. The insert holds a
+  /// Dart reference to [patcher], so garbage collection never frees it under
+  /// a live insert; don't `.dispose()` it first. Drive it with the inherited
+  /// control surface ([bypass], [impact], ...).
   factory DspObject.patcherInsert(Patcher patcher) => _wrap(
     bindings.dsp_patcher_insert_create(patcher.handle),
     _DspKind.patcherInsert,
-  );
+  ).._source = patcher;
 
   /// Internal: native handle (used by `Sound.setDsp`).
   Pointer<YseDspObject> get handle => _handle;

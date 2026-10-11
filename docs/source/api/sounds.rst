@@ -13,8 +13,9 @@ via one of its loaders:
 - :py:meth:`Sound.fromPatcher` — the ``~dac`` output of a :class:`Patcher`.
 - :py:meth:`Sound.fromSynth` — a :class:`Synth` voice pool.
 
-A buffer or multi-buffer source must outlive the sound. The sound holds a
-Dart reference to it, so garbage collection never frees it under a live
+Every source must outlive the sound. The sound holds a Dart reference to
+its buffer, patcher or synth (and to the effect assigned to
+:py:attr:`Sound.dsp`), so garbage collection never frees it under a live
 sound; call the source's ``dispose()`` only after disposing the sound.
 
 Upstream: :yse-cpp:`api/sounds.html <YSE::sound>`.

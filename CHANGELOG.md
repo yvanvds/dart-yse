@@ -292,6 +292,19 @@
   already in progress, which leaves one in-flight message able to race
   the marker (upstream yse-soundengine#1176).
 
+- **Sounds and patcher inserts keep their borrowed sources alive** (#80).
+  `Sound.fromPatcher` and `Sound.fromSynth` now hold a Dart reference to
+  their `Patcher` / `Synth`, as `Sound.fromBuffer` already did (#65), and
+  `Sound.dsp` holds the assigned chain head, as `Channel.dsp` already did.
+  `DspObject.patcherInsert` holds its `Patcher`. Before, dropping the
+  caller's only reference let garbage collection run the source's native
+  finalizer while the engine still used it: a dropped `Synth` was freed
+  under its playing sound, and a dropped `Patcher` lost its control
+  surface (the engine keeps rendering a graph it has taken over). Objects
+  linked after a chain head with `DspObject.link` are still not held, so
+  keep them reachable. Explicitly disposing a source before its sound is
+  still unsupported; the docs now say so for every loader.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

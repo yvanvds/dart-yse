@@ -130,7 +130,81 @@ class System {
     _b.system_set_channel_configuration(_handle, layout.native, outputs);
   }
 
-  /// Render N audio blocks synchronously on the calling thread.
+  /// How many worker threads help the audio thread render the mix.
+  ///
+  /// The engine renders each block through a task-graph scheduler: the audio
+  /// thread (or the thread calling [renderOffline]) renders, and worker
+  /// threads take independent parts of the mix in parallel.
+  ///
+  /// * `-1` (the default; any negative value reads back as -1) is auto:
+  ///   physical cores minus one, capped at 8.
+  /// * `0` renders on the audio thread alone and starts no worker —
+  ///   recommended for Android and other constrained hardware.
+  /// * `n > 0` runs exactly `n` workers (at most 64).
+  ///
+  /// The setting only decides which thread renders each part of the mix,
+  /// never how it is summed, so the output is bit-identical at any worker
+  /// count. Whatever the count, a block estimated to cost less than waking a
+  /// worker is rendered by the audio thread alone.
+  ///
+  /// Set this **before** [init] / [initOffline]. With no session or an
+  /// offline one it applies at once; during a device session the value is
+  /// stored for the next init. The setting survives [close]. Read
+  /// [activeRenderThreads] for the workers actually running.
+  ///
+  /// Throws [YseException] (status `YSE_ERR_EXCEPTION`) when the workers
+  /// could not be started.
+  int get renderThreads => _b.system_get_render_threads(_handle);
+  set renderThreads(int count) =>
+      checkStatus(_b.system_set_render_threads(_handle, count), _b);
+
+  /// Render worker threads currently running. Differs from [renderThreads]
+  /// for auto (`-1`, resolved to a core count) and while a device session
+  /// holds a new setting for the next init.
+  int get activeRenderThreads => _b.system_get_active_render_threads(_handle);
+
+  /// Engine block size in frames: the fixed number of samples the engine
+  /// renders per block (128).
+  ///
+  /// [renderOffline] renders `blocks * blockSize` frames. This is
+  /// independent of [activeBufferSize], the device's frames per callback.
+  static int get blockSize => bindings.block_size();
+
+  /// Seed the engine's random generator from the system clock.
+  ///
+  /// The engine is **reproducible by default**: without this call or
+  /// [randomSeed] it starts from a fixed seed, so the same patch renders the
+  /// same "random" output every run. The generator is the one behind the
+  /// patcher's `.random` object (`Obj.gRandom`), granulator jitter, the LFO
+  /// random shapes and the seedable patcher objects. It lives inside the
+  /// engine library, so seeding Dart's or the C runtime's generator
+  /// (`srand()`) has no effect on it. The engine's float draws are in
+  /// `[0, 1)`.
+  ///
+  /// Call from the control isolate (never from an audio callback), typically
+  /// before building the patch or sounds; objects that drew their stream at
+  /// construction keep it. Every engine thread re-seeds on its next draw.
+  static void randomize() => bindings.randomize();
+
+  /// Seed the engine's random generator with a fixed [seed], so the same
+  /// seed replays the same sequence.
+  ///
+  /// The replay is per thread: the n-th engine thread to draw after this
+  /// call gets the same stream every time — in particular the audio thread
+  /// when it is the only one drawing. See [randomize] for what the
+  /// generator drives and when to call this.
+  ///
+  /// Throws [ArgumentError] when [seed] does not fit an unsigned 32-bit
+  /// integer.
+  static void randomSeed(int seed) {
+    if (seed < 0 || seed > 0xFFFFFFFF) {
+      throw ArgumentError.value(seed, 'seed', 'must be in 0..0xFFFFFFFF');
+    }
+    bindings.random_seed(seed);
+  }
+
+  /// Render [blocks] engine blocks (`blocks * blockSize` frames)
+  /// synchronously on the calling thread.
   ///
   /// Only valid after [initOffline]; concurrent use with a live audio
   /// thread races the manager-update path.

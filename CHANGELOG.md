@@ -48,6 +48,16 @@
     device-name getters and `underwaterDepth` (world units below the
     surface, not 0..1).
 
+- **Render threads, block size and RNG seeding** (#57):
+  - New `System.renderThreads` (get/set; `-1` auto, `0` audio thread only,
+    `n` workers; set before init, survives `close`) and
+    `System.activeRenderThreads`.
+  - New static `System.blockSize` (128): `renderOffline(blocks)` renders
+    `blocks * blockSize` frames.
+  - New static `System.randomSeed(seed)` / `System.randomize()` seed the
+    engine's generator (`.random`, granulator jitter, LFO random shapes).
+    The engine is reproducible by default.
+
 - **API reference site.** New `docs/` tree builds a Sphinx site that
   mirrors the upstream libYSE docs site (sphinx-book-theme, same
   intro / tutorials / API layout) so contributors who already know

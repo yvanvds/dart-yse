@@ -156,7 +156,40 @@ enum PCategory {
   time(raw.YsePCategory.YSE_PCAT_TIME),
 
   /// MIDI message objects.
-  midi(raw.YsePCategory.YSE_PCAT_MIDI);
+  midi(raw.YsePCategory.YSE_PCAT_MIDI),
+
+  /// Message steering (`.gate`, `.route`, `.sel`, ...).
+  routing(raw.YsePCategory.YSE_PCAT_ROUTING),
+
+  /// Control flow and ordering (`.trigger`, `.uzi`, ...).
+  control(raw.YsePCategory.YSE_PCAT_CONTROL),
+
+  /// Building and taking apart lists (`.pack`, `.zl`, ...).
+  list(raw.YsePCategory.YSE_PCAT_LIST),
+
+  /// Symbols and text (`.sprintf`, `.regexp`, ...).
+  string(raw.YsePCategory.YSE_PCAT_STRING),
+
+  /// Stores (`.coll`, `.table`, `.bag`, ...).
+  collection(raw.YsePCategory.YSE_PCAT_COLLECTION),
+
+  /// The `.dict` family.
+  dict(raw.YsePCategory.YSE_PCAT_DICT),
+
+  /// The `.array` family.
+  array(raw.YsePCategory.YSE_PCAT_ARRAY),
+
+  /// Random and probabilistic sources.
+  random(raw.YsePCategory.YSE_PCAT_RANDOM),
+
+  /// Audio and host I/O (`~adc`, `~dac`, `.s`, `.r`, `.print`, ...).
+  io(raw.YsePCategory.YSE_PCAT_IO),
+
+  /// Subpatchers and their inlets / outlets.
+  encapsulation(raw.YsePCategory.YSE_PCAT_ENCAPSULATION),
+
+  /// Timed recorders / players (`.seq`, `.mtr`, `.qlist`).
+  sequence(raw.YsePCategory.YSE_PCAT_SEQUENCE);
 
   final raw.YsePCategory native;
   const PCategory(this.native);

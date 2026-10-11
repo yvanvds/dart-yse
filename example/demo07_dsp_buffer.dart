@@ -1,6 +1,6 @@
 // M3 example — in-memory buffer playback.
 //
-// Allocates a DspBuffer.file, loads piano.wav into it, then plays the
+// Allocates a FileBuffer, loads piano.wav into it, then plays the
 // buffer through a Sound (Sound.fromBuffer). Demonstrates the in-memory
 // audio source path — the same buffer can back multiple sounds.
 //
@@ -33,7 +33,7 @@ Future<void> main() async {
   sys.init();
 
   // Load piano.wav into a fileBuffer; allocate large enough for the full file.
-  final buffer = DspBuffer.file(length: 48000 * 5); // up to ~5s @ 48kHz
+  final buffer = FileBuffer(length: 48000 * 5); // up to ~5s @ 48kHz
   buffer.loadFile(_resource('piano.wav'));
   print(
     'Loaded piano.wav: ${buffer.length} samples '
@@ -54,7 +54,7 @@ Future<void> main() async {
   }
 
   // Demonstrate writing a synthetic ramp into a drawable buffer and playing it.
-  final drawable = DspBuffer.drawable(length: 48000); // 1 second @ 48kHz
+  final drawable = DrawableBuffer(length: 48000); // 1 second @ 48kHz
   drawable.drawLine(start: 0, stop: 24000, startValue: -0.5, stopValue: 0.5);
   drawable.drawLine(
     start: 24000,

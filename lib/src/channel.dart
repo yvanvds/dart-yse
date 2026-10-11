@@ -5,6 +5,7 @@ import 'package:ffi/ffi.dart';
 import 'bindings/yse_bindings.g.dart';
 import 'dsp_object.dart';
 import 'exception.dart';
+import 'ffi_helpers.dart';
 import 'library.dart';
 
 /// A node in the channel tree — a group of sounds that mix together.
@@ -158,7 +159,8 @@ class Channel {
   bool get isValid => _b.channel_is_valid(_handle) != 0;
 
   /// Channel name (the value passed to [Channel.create]).
-  String get name => _b.channel_get_name(_handle).cast<Utf8>().toDartString();
+  String get name =>
+      fetchString((buf, cap) => _b.channel_get_name(_handle, buf, cap));
 
   /// Number of output speakers this channel feeds. Index into [peakLinear]
   /// and [peakDb] with values in `[0, numOutputs)`.

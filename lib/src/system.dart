@@ -101,7 +101,7 @@ class System {
   void setAutoReconnect({required bool on, int delayMs = 1000}) =>
       _b.system_auto_reconnect(_handle, on ? 1 : 0, delayMs);
 
-  /// libYSE version string (e.g. "2.0.1").
+  /// libYSE version string (e.g. "3.1.0").
   static String get version {
     final cstr = bindings.version();
     return cstr.cast<Utf8>().toDartString();
@@ -115,11 +115,15 @@ class System {
   /// borrowed from the engine; do not retain references past [close].
   List<Device> get devices {
     final n = _b.system_num_devices(_handle);
-    return List<Device>.generate(
-      n,
-      (i) => Device.borrowed(_b.system_get_device(_handle, i)),
-      growable: false,
-    );
+    final result = <Device>[];
+    for (var i = 0; i < n; i++) {
+      // yse_system_get_device returns NULL past the end of the list; the
+      // count and the list can disagree if a rescan races this loop.
+      final d = _b.system_get_device(_handle, i);
+      if (d.address == 0) break;
+      result.add(Device.borrowed(d));
+    }
+    return List<Device>.unmodifiable(result);
   }
 
   /// Open the audio device described by [setup] with the requested speaker
@@ -266,15 +270,11 @@ class DomainClock {
   factory DomainClock(String name, {double tempo = 120.0}) {
     final b = bindings;
     final sys = b.system_get();
-    final ok = using((arena) {
+    final status = using((arena) {
       final cname = name.toNativeUtf8(allocator: arena);
       return b.system_create_clock(sys, cname.cast(), tempo);
     });
-    if (ok == 0) {
-      throw YseException(
-        'yse_system_create_clock: a live clock already owns the name "$name"',
-      );
-    }
+    checkStatus(status, b);
     return DomainClock._(b, sys, name);
   }
 

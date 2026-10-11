@@ -84,7 +84,8 @@ class Device {
   /// Reported input latency in samples.
   int get inputLatency => _b.device_input_latency(_handle);
 
-  /// Host-assigned device ID.
+  /// Host-assigned device ID, or `-1` when this descriptor refers to no
+  /// device.
   int get id => _b.device_get_id(_handle);
 
   @override

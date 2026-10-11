@@ -121,8 +121,8 @@ void main() {
       }
     }
 
-    // A gSend publishing under "<patcher>.<dataName>". Returns the patcher (so
-    // the caller can dispose it) and the send handle to drive.
+    // A gSend publishing under "patcher.<patcher>.<dataName>". Returns the
+    // patcher (so the caller can dispose it) and the send handle to drive.
     (Patcher, PHandle) makeSender(String dataName) {
       final patcher = Patcher();
       final send = patcher.createObject(Obj.gSend, args: dataName);
@@ -176,39 +176,36 @@ void main() {
       patcher.dispose();
     });
 
-    test(
-      'prefix match is byte-wise: a non-matching tap sees nothing',
-      () async {
-        final (patcher, send) = makeSender('ping');
-        // Default patcher names are "patcher_<N>", so this prefix matches; the
-        // other never can.
-        final matched = <BusFrame>[];
-        final missed = <BusFrame>[];
-        final subM = LiveCoding.bus('patcher_').listen(matched.add);
-        final subX = LiveCoding.bus('phi.ctl.').listen(missed.add);
-        await Future<void>.delayed(Duration.zero);
+    test('prefix match is byte-wise: a non-matching tap sees nothing', () async {
+      final (patcher, send) = makeSender('ping');
+      // gSend publishes under "patcher.<name>.<dataName>" (engine 3.0+), so this
+      // prefix matches; the other never can.
+      final matched = <BusFrame>[];
+      final missed = <BusFrame>[];
+      final subM = LiveCoding.bus('patcher.').listen(matched.add);
+      final subX = LiveCoding.bus('phi.ctl.').listen(missed.add);
+      await Future<void>.delayed(Duration.zero);
 
-        send.sendInt(0, 7);
-        await pumpUntil(() => matched.isNotEmpty);
+      send.sendInt(0, 7);
+      await pumpUntil(() => matched.isNotEmpty);
 
-        expect(matched, isNotEmpty);
-        expect(matched.first.value, const BusInt(7));
-        expect(
-          missed,
-          isEmpty,
-          reason: 'phi.ctl. prefix must not match patcher_*',
-        );
+      expect(matched, isNotEmpty);
+      expect(matched.first.value, const BusInt(7));
+      expect(
+        missed,
+        isEmpty,
+        reason: 'phi.ctl. prefix must not match patcher.*',
+      );
 
-        await subM.cancel();
-        await subX.cancel();
-        patcher.dispose();
-      },
-    );
+      await subM.cancel();
+      await subX.cancel();
+      patcher.dispose();
+    });
 
     test(
       'shares one bridge across listeners and reinstalls after teardown',
       () async {
-        final stream = LiveCoding.bus('patcher_');
+        final stream = LiveCoding.bus('patcher.');
         expect(stream.isBroadcast, isTrue);
 
         final (patcher, send) = makeSender('life');
@@ -232,7 +229,7 @@ void main() {
         // Re-subscribing reinstalls a working tap: delivery here proves
         // teardown left the façade reusable rather than closed/leaked.
         final c = <BusFrame>[];
-        final subC = LiveCoding.bus('patcher_').listen(c.add);
+        final subC = LiveCoding.bus('patcher.').listen(c.add);
         await Future<void>.delayed(Duration.zero);
 
         send.sendInt(0, 2);

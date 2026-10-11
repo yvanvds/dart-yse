@@ -218,6 +218,7 @@
 
 
 
+
 <li class="toctree-l2"><a class="reference internal" href="../sounds.html">Sound</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../channels.html">Channel</a></li>
@@ -272,7 +273,27 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="../patcher_objects.html">Patcher object reference</a></li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../patcher_objects/index.html">Patcher object reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
 
 
@@ -281,6 +302,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
 
 
 
@@ -507,6 +529,7 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
@@ -529,16 +552,26 @@
 <p>Build a graph programmatically with [createObject] + [connect], or
 load one from a JSON dump via [parseJson]. Drive it directly with
 [passBang] / [passInt] / [passFloat] / [passString] into named
-<cite>.r</cite> (<cite>Obj.gReceive</cite>) objects, or hand it to a [Sound] via
-[Sound.fromPatcher] to use it as an audio source.</p>
+<cite>.r</cite> (<cite>Obj.gReceive</cite>) objects, listen to what it sends back out on
+[messages], or hand it to a [Sound] via [Sound.fromPatcher] to use it
+as an audio source.</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Patcher</span><span class="p">({</span><span class="kt">int</span><span class="w"> </span><span class="n">mainOutputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">})</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Patcher</span><span class="p">({</span><span class="kt">int</span><span class="w"> </span><span class="n">mainOutputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="n">name</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Construct a patcher with [mainOutputs] audio output channels.</p>
+<p>Pass [name] to name the patcher from the start (see [name] for the
+rules); <cite>null</cite> or <cite>‘’</cite> keeps the auto-generated <cite>patcher_&lt;N&gt;</cite> name.</p>
 <p>Throws [YseException] if the engine rejects the configuration (e.g. a
-negative [mainOutputs]).</p>
+negative [mainOutputs], or a [name] longer than [maxNameLength]).</p>
+</section>
+<section id="static-accessors">
+<h2>Static accessors<a class="headerlink" href="#static-accessors" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">maxNameLength</span>
+</pre></div>
+</div>
+<p>The longest [name] the engine accepts, in characters.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
@@ -546,10 +579,64 @@ negative [mainOutputs]).</p>
 </pre></div>
 </div>
 <p>Internal: native handle (used by <cite>Sound.fromPatcher</cite>).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">name</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">name</span><span class="p">(</span><span class="kt">String</span><span class="o">?</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The patcher’s name, which scopes every bus slot inside it.</p>
+<p>Every patcher has one: an unnamed patcher gets an auto-generated
+<cite>patcher_&lt;N&gt;</cite>. A <cite>.s</cite> (<cite>Obj.gSend</cite>) object with slot <cite>x</cite> in a patcher
+named <cite>foo</cite> publishes to <cite>patcher.foo.x</cite>, and a <cite>.r</cite> (<cite>Obj.gReceive</cite>)
+with slot <cite>x</cite> hears a [Bus.publish] to <cite>patcher.foo.x</cite>. Note the
+<cite>patcher.</cite> prefix: host code addressing a patcher slot must add it.</p>
+<p>Setting <cite>null</cite> or <cite>‘’</cite> restores the auto-generated name. Renaming
+re-anchors every slot under the new name. Names are <strong>not</strong> unique:
+two patchers with the same name share their slots and stores.</p>
+<p>The name can be set before the engine is initialised; it is applied
+at init. It is saved by [dumpJson] and applied by [parseJson] unless
+a name was already set.</p>
+<p>Throws [YseException] (<cite>invalidArgument</cite>) for a name longer than
+[maxNameLength] characters; the current name is kept.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">objects</span>
 </pre></div>
 </div>
 <p>Number of objects in the patcher.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Stream</span><span class="o">&lt;</span><span class="n">PatcherMessage</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">messages</span>
+</pre></div>
+</div>
+<p>Broadcast stream of the messages this patcher sends to the host.</p>
+<p>A message arrives here when it is sent to a name that <strong>no `.r`
+(`Obj.gReceive`) in this patcher receives</strong>: a <cite>.s</cite> (<cite>Obj.gSend</cite>)
+inside the patch, or a [passBang] / [passInt] / [passFloat] /
+[passString] call with nothing listening. [PatcherMessage.address] is
+that name — the <cite>.s</cite> argument or the <cite>pass*</cite> target — not the
+<cite>patcher.&lt;name&gt;.&lt;slot&gt;</cite> bus address (a <cite>.s</cite> also publishes there; see
+[name] and <cite>Bus</cite>).</p>
+<p>The native send callback is installed when the first listener
+subscribes and cleared when the last one cancels. While it is
+installed, <cite>pass*</cite> returns <cite>true</cite> even for a name nothing receives
+(see [passBang]). Listening before the engine is initialised is fine:
+the callback takes effect at init.</p>
+<p>## Threading</p>
+<p>The engine calls the native callback synchronously on whichever thread
+emitted the message — the control thread for a <cite>pass*</cite> or a
+[PHandle] <cite>send*</cite> that drives a <cite>.s</cite>, but an <strong>engine worker thread</strong>
+for a timer-driven one (a millisecond <cite>.metro</cite> feeding a <cite>.s</cite>). Never
+the audio thread. Because it can run off the control thread, the
+bridge is a <cite>NativeCallable.listener</cite>: each call is posted to this
+isolate and delivered from its event loop, so listeners never run
+inside an engine callback and may call back into the patcher freely.
+Even a message from a <cite>pass*</cite> on this isolate is therefore delivered
+<strong>asynchronously</strong>, after the call returns. Each message’s native
+strings are copied and released exactly once, including messages
+still in flight when the stream is torn down.</p>
+<p>## Lifecycle</p>
+<p>[dispose] and <cite>System.close()</cite> clear the callback and close the stream
+(listeners get <cite>onDone</cite>). After <cite>System.close()</cite>, read [messages]
+again for a fresh stream. Reading it on a disposed patcher throws
+[StateError].</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
@@ -564,18 +651,51 @@ The returned [PHandle] is owned by the patcher — release with
 </pre></div>
 </div>
 <p>Remove [obj] from the patcher.</p>
+<p>Deleting a subpatcher (an [Obj.patcher] object) also deletes
+everything inside it, transitively — nested subpatchers and their
+contents included. Any [PHandle] you still hold that pointed inside
+the deleted group is <strong>dangling</strong> afterwards: do not use it.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">clear</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Remove every object from the patcher.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setContainer</span><span class="p">(</span><span class="n">PHandle</span><span class="w"> </span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">PHandle</span><span class="o">?</span><span class="w"> </span><span class="n">container</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Put [obj] inside the subpatcher [container], or move it back to the
+top level when [container] is <cite>null</cite>.</p>
+<p>A subpatcher is an object of type [Obj.patcher]. It is not a separate
+[Patcher]: create its contents with [createObject] on this patcher,
+then move them inside with this call. Its pins are the boundary
+objects among its direct contents — <cite>.inlet</cite> / <cite>~inlet</cite>
+([Obj.gInlet] / [Obj.dInlet]) and <cite>.outlet</cite> / <cite>~outlet</cite>
+([Obj.gOutlet] / [Obj.dOutlet]), whose one creation argument is the
+pin index. Message and signal boundaries share one index space per
+side. Subpatchers nest.</p>
+<p>Containment is addressing, not storage: nested objects stay in this
+patcher’s one flat graph, so nesting costs the audio thread nothing.
+Moving an object changes no connection, so place objects before you
+[connect] to the subpatcher’s pins.</p>
+<p>Throws [ArgumentError] when [obj] or [container] belongs to another
+patcher. Throws [YseException] when the engine refuses the move —
+[container] is not an [Obj.patcher] object, or the move would put a
+subpatcher inside itself or one of its own descendants. A refused
+move changes nothing.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">connect</span><span class="p">(</span><span class="n">PHandle</span><span class="w"> </span><span class="n">from</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="n">PHandle</span><span class="w"> </span><span class="n">to</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">inlet</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Connect [from]’s [outlet] to [to]’s [inlet].</p>
+<p>Either end may be a subpatcher ([Obj.patcher] object): the pin number
+is resolved to the boundary object inside it that claims that index,
+and the connection is recorded straight to that boundary object (so
+walking the graph or [dumpJson] reports the boundary object’s ID).
+Connecting to a pin no boundary object claims is refused.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">disconnect</span><span class="p">(</span><span class="n">PHandle</span><span class="w"> </span><span class="n">from</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="n">PHandle</span><span class="w"> </span><span class="n">to</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">inlet</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Remove the connection from [from]’s [outlet] to [to]’s [inlet].</p>
+<p>A subpatcher end resolves through its boundary objects as in
+[connect].</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">dumpJson</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -600,24 +720,28 @@ A failed load is rolled back: the patcher is left exactly as it was.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">passBang</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">to</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Send a bang to the named <cite>.r</cite> receive object. Returns false if no
-such receiver exists.</p>
+<p>Send a bang to the named <cite>.r</cite> receive object.</p>
+<p>Returns <cite>true</cite> when a <cite>.r</cite> named [to] took it. While [messages] has a
+listener, a name nothing receives is handed to [messages] instead and
+this <strong>also returns `true`</strong>; it returns <cite>false</cite> only when neither
+takes it. The same holds for [passInt], [passFloat] and [passString].</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">passInt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">to</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Send an integer to a named receiver.</p>
+<p>Send an integer to a named receiver. See [passBang] for the result.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">passFloat</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">to</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Send a float to a named receiver.</p>
+<p>Send a float to a named receiver. See [passBang] for the result.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">passString</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">to</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Send a string to a named receiver.</p>
+<p>Send a string to a named receiver. See [passBang] for the result.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Destroy the underlying native patcher and detach the finalizer.</p>
+<p>Also clears the send callback and closes [messages].</p>
 </section>
 </section>
 
@@ -651,6 +775,7 @@ such receiver exists.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-accessors">Static accessors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>

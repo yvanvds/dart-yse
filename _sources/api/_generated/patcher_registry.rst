@@ -66,6 +66,11 @@ Every registered type as a metadata handle, in registry order.
 
 A fresh JSON snapshot of every registered object's full metadata.
 
+The result is one JSON object keyed by type name; each entry holds
+`name`, `category` (e.g. `OSC`, the `YSE_PCAT_` suffix), `is_dsp`,
+`requires_midi_device`, `description`, `inlets`, `outlets` and
+`params`.
+
 The engine allocates the buffer per call; this getter releases it
 through `yse_free_string` before returning, so no native memory
 leaks. Returns the empty string if the engine reports an allocation

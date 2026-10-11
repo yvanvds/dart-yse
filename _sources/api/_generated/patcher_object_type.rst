@@ -24,7 +24,11 @@ The type identifier (matches one of the [Obj] constants).
 
    String get description
 
-One-line human-readable description of the object.
+Short human-readable summary of the object.
+
+Since libYSE 3.0.1 this is a tooltip-length summary (at most 300
+characters, usually one or two sentences), suited to a palette or a
+hover; the longer notes live in upstream's object reference.
 
 .. code-block:: dart
 
@@ -37,6 +41,18 @@ Documentation category the object is filed under.
    bool get isDsp
 
 Whether this is a DSP / audio-rate object (the `~` prefix convention).
+
+.. code-block:: dart
+
+   bool get requiresMidiDevice
+
+Whether this object holds a MIDI port (`.midiin`, `.midiout`,
+`.notein`, ...).
+
+Such objects exist only in engine builds with MIDI device support
+(not macOS / Android), so a palette or a saved patch can mark them
+non-portable. Read from the registry's metadata JSON
+(`requires_midi_device`); the engine has no dedicated getter.
 
 .. code-block:: dart
 

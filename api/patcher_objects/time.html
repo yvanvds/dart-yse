@@ -1,0 +1,2497 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Time &#8212; dart-yse 0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/patcher_objects/time';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Sequencing" href="sequencing.html" />
+    <link rel="prev" title="Arrays" href="arrays.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core.html">Core</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../reverb.html">Reverb</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../dsp.html">DSP</a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../clip.html">Clip transport</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../synth.html">Synth</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../music.html">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../patcher.html">Patcher</a></li>
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Patcher object reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays.html">Arrays</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/patcher_objects/time.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/api/patcher_objects/time.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Time</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bline"><code class="docutils literal notranslate"><span class="pre">.bline</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clocker"><code class="docutils literal notranslate"><span class="pre">.clocker</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delay"><code class="docutils literal notranslate"><span class="pre">.delay</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#line"><code class="docutils literal notranslate"><span class="pre">.line</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metro"><code class="docutils literal notranslate"><span class="pre">.metro</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipe"><code class="docutils literal notranslate"><span class="pre">.pipe</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#qlim"><code class="docutils literal notranslate"><span class="pre">.qlim</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quickthresh"><code class="docutils literal notranslate"><span class="pre">.quickthresh</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setclock"><code class="docutils literal notranslate"><span class="pre">.setclock</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#speedlim"><code class="docutils literal notranslate"><span class="pre">.speedlim</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tempo"><code class="docutils literal notranslate"><span class="pre">.tempo</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#thresh"><code class="docutils literal notranslate"><span class="pre">.thresh</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timepoint"><code class="docutils literal notranslate"><span class="pre">.timepoint</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timer"><code class="docutils literal notranslate"><span class="pre">.timer</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#translate"><code class="docutils literal notranslate"><span class="pre">.translate</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transport"><code class="docutils literal notranslate"><span class="pre">.transport</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when"><code class="docutils literal notranslate"><span class="pre">.when</span></code></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="time">
+<h1>Time<a class="headerlink" href="#time" title="Link to this heading">#</a></h1>
+<p>Clocks, delays, ramps, rate limiting and tempo.</p>
+<p>17 objects. Every entry is
+pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
+/ <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
+source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. For long-form notes, see the
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/time.html">libYSE page for this category</a>.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#bline" id="id1"><code class="docutils literal notranslate"><span class="pre">.bline</span></code></a></p></li>
+<li><p><a class="reference internal" href="#clocker" id="id2"><code class="docutils literal notranslate"><span class="pre">.clocker</span></code></a></p></li>
+<li><p><a class="reference internal" href="#delay" id="id3"><code class="docutils literal notranslate"><span class="pre">.delay</span></code></a></p></li>
+<li><p><a class="reference internal" href="#line" id="id4"><code class="docutils literal notranslate"><span class="pre">.line</span></code></a></p></li>
+<li><p><a class="reference internal" href="#metro" id="id5"><code class="docutils literal notranslate"><span class="pre">.metro</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pipe" id="id6"><code class="docutils literal notranslate"><span class="pre">.pipe</span></code></a></p></li>
+<li><p><a class="reference internal" href="#qlim" id="id7"><code class="docutils literal notranslate"><span class="pre">.qlim</span></code></a></p></li>
+<li><p><a class="reference internal" href="#quickthresh" id="id8"><code class="docutils literal notranslate"><span class="pre">.quickthresh</span></code></a></p></li>
+<li><p><a class="reference internal" href="#setclock" id="id9"><code class="docutils literal notranslate"><span class="pre">.setclock</span></code></a></p></li>
+<li><p><a class="reference internal" href="#speedlim" id="id10"><code class="docutils literal notranslate"><span class="pre">.speedlim</span></code></a></p></li>
+<li><p><a class="reference internal" href="#tempo" id="id11"><code class="docutils literal notranslate"><span class="pre">.tempo</span></code></a></p></li>
+<li><p><a class="reference internal" href="#thresh" id="id12"><code class="docutils literal notranslate"><span class="pre">.thresh</span></code></a></p></li>
+<li><p><a class="reference internal" href="#timepoint" id="id13"><code class="docutils literal notranslate"><span class="pre">.timepoint</span></code></a></p></li>
+<li><p><a class="reference internal" href="#timer" id="id14"><code class="docutils literal notranslate"><span class="pre">.timer</span></code></a></p></li>
+<li><p><a class="reference internal" href="#translate" id="id15"><code class="docutils literal notranslate"><span class="pre">.translate</span></code></a></p></li>
+<li><p><a class="reference internal" href="#transport" id="id16"><code class="docutils literal notranslate"><span class="pre">.transport</span></code></a></p></li>
+<li><p><a class="reference internal" href="#when" id="id17"><code class="docutils literal notranslate"><span class="pre">.when</span></code></a></p></li>
+</ul>
+</nav>
+<section id="bline">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.bline</span></code></a><a class="headerlink" href="#bline" title="Link to this heading">#</a></h2>
+<p>Ramps a number to a target one step per bang, so whatever bangs it sets the pace. A list of target/count pairs makes a ramp of several segments; the right outlet bangs when the last target is reached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gBline</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>A bang sends the next step. A target, ‘&lt;target&gt; &lt;bangs&gt;’, or target/bangs pairs set the ramp. ‘stop’ and ‘set &lt;value&gt;’ control it.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>any number</p></td>
+<td><p>The ramp, one value per bang, ending exactly on the target. An int or a float, as on .line.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>done</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>A bang when the last target is reached. A ramp cut short by ‘stop’ sends none.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>initial</p></td>
+<td><p>0</p></td>
+<td><p>any number</p></td>
+<td><p>The starting value. Written as a float (‘0.’) it makes the object send floats.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="clocker">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.clocker</span></code></a><a class="headerlink" href="#clocker" title="Link to this heading">#</a></h2>
+<p>While running, sends the time since it was started, in milliseconds, every interval (5 ms by default). With a clock bound, a second outlet sends the beats that clock has moved in the same time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gClocker</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>on/off</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>0 or 1, bang, ‘stop’, ‘reset’, ‘clock &lt;name&gt;’</p></td>
+<td><p>A non-zero number starts or restarts the clocker; 0 or ‘stop’ stops it. A bang starts a stopped clocker and resets a running one to 0, as ‘reset’ does. ‘clock &lt;name&gt;’ sets the clock for the beats outlet and a beat interval.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>interval</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>1+ ms, or a note value / tick count</p></td>
+<td><p>Sets the reporting interval, in milliseconds or as a beat time. A running clocker keeps going at the new interval without restarting.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>elapsed</p></td>
+<td><p>INT</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The time since the start, in whole milliseconds, once per interval while running.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>beats</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0+ beats</p></td>
+<td><p>The beats the bound clock has moved since the start, sent just before the milliseconds. Silent without a clock.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>interval</p></td>
+<td><p>5</p></td>
+<td><p>1+ ms</p></td>
+<td><p>The reporting interval in milliseconds, at least 1.</p></td>
+</tr>
+<tr class="row-odd"><td><p>intervalbeats</p></td>
+<td><p>0</p></td>
+<td><p>0+ beats</p></td>
+<td><p>The reporting interval in beats on the bound clock. 0 uses the millisecond interval instead. A plain number in the right inlet sets it back to 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="delay">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.delay</span></code></a><a class="headerlink" href="#delay" title="Link to this heading">#</a></h2>
+<p>Sends a bang a set time after it receives one: 5 ms by default, or a beat time on a domain clock. It holds one bang at a time; a new bang restarts the wait and ‘stop’ cancels it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDelay</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>bang</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>bang, int, float, list, ‘stop’, ‘clock &lt;name&gt;’</p></td>
+<td><p>A bang starts the wait, forgetting a bang already waiting. A number or a beat time sets the time and starts the wait. ‘stop’ cancels the waiting bang; ‘clock &lt;name&gt;’ sets the clock for beat times.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>time</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms, or a note value / tick count</p></td>
+<td><p>Sets the time for the next bang, in milliseconds or as a beat time. A bang already waiting keeps its time.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>The delayed bang.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>delaytime</p></td>
+<td><p>5</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The delay in milliseconds. A negative value counts as 0.</p></td>
+</tr>
+<tr class="row-odd"><td><p>delaybeats</p></td>
+<td><p>0</p></td>
+<td><p>0+ beats</p></td>
+<td><p>The delay in beats on the bound clock. 0 uses the millisecond delay instead. A plain number in either inlet sets it back to 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="line">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.line</span></code></a><a class="headerlink" href="#line" title="Link to this heading">#</a></h2>
+<p>Ramps a number to a target over a given time, sending a value every grain (20 ms by default) and a bang from the right outlet on arrival. A list of target/time pairs makes a ramp of several segments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gLine</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>any</p></td>
+<td><p>A target, ‘&lt;target&gt; &lt;time&gt; [&lt;grain&gt;]’, or target/time pairs. ‘stop’, ‘pause’, ‘resume’ and ‘set &lt;value&gt;’ control the ramp.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>time</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The time in milliseconds the next target takes. It is used by one target only, then goes back to 0.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>grain</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>1+ ms</p></td>
+<td><p>The time in milliseconds between values. Below 1 it counts as 20. It stays set.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>any number</p></td>
+<td><p>The ramp, one value per grain, ending exactly on the target. An int or a float: see the notes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>done</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>A bang when the last target is reached. A ramp cut short by ‘stop’ sends none.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>initial</p></td>
+<td><p>0</p></td>
+<td><p>any number</p></td>
+<td><p>The starting value. Written as a float (‘0.’) it makes the object send floats.</p></td>
+</tr>
+<tr class="row-odd"><td><p>grain</p></td>
+<td><p>20</p></td>
+<td><p>1+ ms</p></td>
+<td><p>The time in milliseconds between values. Below 1 it counts as 20.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="metro">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.metro</span></code></a><a class="headerlink" href="#metro" title="Link to this heading">#</a></h2>
+<p>Sends a bang at a regular interval while it runs, starting with one bang the moment it starts. The interval is in milliseconds (1000 by default) or a beat time on a domain clock.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gMetro</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>on/off</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>0 or 1, bang, ‘stop’, ‘clock &lt;name&gt;’</p></td>
+<td><p>A non-zero number or a bang starts the metro (a bang restarts a running one from now); 0 or ‘stop’ stops it. ‘clock &lt;name&gt;’ sets the clock for a beat interval.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>period</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>1+ ms, or a note value / tick count</p></td>
+<td><p>Sets the interval, in milliseconds or as a beat time. A running metro keeps going at the new interval without restarting.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>A bang on every tick, and one when the metro starts.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>period</p></td>
+<td><p>1000</p></td>
+<td><p>1+ ms</p></td>
+<td><p>The interval in milliseconds. A change reaches a running metro one tick later.</p></td>
+</tr>
+<tr class="row-odd"><td><p>periodbeats</p></td>
+<td><p>0</p></td>
+<td><p>0+ beats</p></td>
+<td><p>The interval in beats on the bound clock. 0 uses the millisecond interval instead. A plain number in the right inlet sets it back to 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="pipe">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.pipe</span></code></a><a class="headerlink" href="#pipe" title="Link to this heading">#</a></h2>
+<p>Delays ints, floats and lists by a set time (0 ms by default). It holds up to 64 values at once, and each one keeps the delay it arrived with.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gPipe</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>int, float, list, ‘clear’, ‘flush’</p></td>
+<td><p>An int, float or list to delay; each value waits on its own. ‘clear’ drops every waiting value and ‘flush’ sends them all now.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>time</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms</p></td>
+<td><p>Sets the delay in milliseconds for values that arrive after it. Values already waiting keep their delay.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>Each value, unchanged, once its delay is up.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>delaytime</p></td>
+<td><p>0</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The delay in milliseconds. 0 still waits one audio block. A negative value counts as 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="qlim">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.qlim</span></code></a><a class="headerlink" href="#qlim" title="Link to this heading">#</a></h2>
+<p>Limits how often messages pass. A message that arrives before the interval since the last output is up is held and sent when it is up; a newer message replaces it, or with ‘usurp 0’ joins a queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gQlim</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>bang, int, float, list, ‘clock &lt;name&gt;’, ‘threshold &lt;time&gt;’, ‘quantize &lt;time&gt;’</p></td>
+<td><p>Any message, passed or held. ‘clock &lt;name&gt;’, ‘threshold &lt;time&gt;’, ‘quantize &lt;time&gt;’ and ‘usurp &lt;0|1&gt;’ are settings, not data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>interval</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms, or a note value / tick count</p></td>
+<td><p>Sets the minimum time between outputs, in milliseconds or as a beat time. 0 lets everything through.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The messages that got through, unchanged. A held message goes out one interval after the previous output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>interval</p></td>
+<td><p>0</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The minimum time between outputs in milliseconds. 0 lets everything through.</p></td>
+</tr>
+<tr class="row-odd"><td><p>intervalbeats</p></td>
+<td><p>0</p></td>
+<td><p>0+ beats</p></td>
+<td><p>The interval in beats on the bound clock. 0 uses the millisecond interval instead. A plain number in the right inlet sets it back to 0.</p></td>
+</tr>
+<tr class="row-even"><td><p>threshold</p></td>
+<td><p>0</p></td>
+<td><p>0+ ms</p></td>
+<td><p>A window in milliseconds after each output in which every message is dropped. 0 is off.</p></td>
+</tr>
+<tr class="row-odd"><td><p>thresholdbeats</p></td>
+<td><p>0</p></td>
+<td><p>0+ beats</p></td>
+<td><p>The threshold in beats on the bound clock. 0 uses the millisecond threshold instead.</p></td>
+</tr>
+<tr class="row-even"><td><p>quantize</p></td>
+<td><p>0</p></td>
+<td><p>0+ beats</p></td>
+<td><p>A beat grid that output lands on, at most one message per grid line. 0 is off. Needs a bound clock.</p></td>
+</tr>
+<tr class="row-odd"><td><p>usurp</p></td>
+<td><p>1</p></td>
+<td><p>0 or 1</p></td>
+<td><p>1: a new message replaces the one waiting. 0: messages queue, up to 32, and go out one per interval.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="quickthresh">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.quickthresh</span></code></a><a class="headerlink" href="#quickthresh" title="Link to this heading">#</a></h2>
+<p>Collects values that arrive close together into one list, sent a fixed time (40 ms by default) after the first of them. Made for grouping the notes of a chord.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gQuickthresh</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>An int, float or list to add to the group. A bang sends the group now; ‘set &lt;threshold&gt; [&lt;fudge&gt; [&lt;extension&gt;]]’ sets the times.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>threshold</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The window length in milliseconds, counted from the first value of a group.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>fudge</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The last part of the window, in milliseconds, in which a value extends the window. 0 turns the extension off.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>extension</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms</p></td>
+<td><p>How much longer the window runs, in milliseconds, when a value lands in the fudge time. It happens once per group.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The group: a list, or a single number when only one number was collected.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>threshold</p></td>
+<td><p>40</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The window length in milliseconds. A negative value counts as 0.</p></td>
+</tr>
+<tr class="row-odd"><td><p>fudge</p></td>
+<td><p>10</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The last part of the window, in milliseconds, in which a value extends the window. 0 turns the extension off.</p></td>
+</tr>
+<tr class="row-even"><td><p>extension</p></td>
+<td><p>20</p></td>
+<td><p>0+ ms</p></td>
+<td><p>How much longer the window runs, in milliseconds, when a value lands in the fudge time.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="setclock">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.setclock</span></code></a><a class="headerlink" href="#setclock" title="Link to this heading">#</a></h2>
+<p>Creates a named domain clock that runs from the start, and sets its tempo: every number it receives is the new tempo in BPM. A bang sends the clock’s beat position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gSetclock</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>speed</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>BPM, bang, ‘tempo &lt;bpm&gt; [&lt;ramp&gt;]’</p></td>
+<td><p>A number sets the tempo in BPM; 0 stops the clock. ‘tempo &lt;bpm&gt; [&lt;ramp&gt;]’ does the same and can set a glide time. A bang sends the beat position.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>beat</p></td>
+<td><p>FLOAT</p></td>
+<td><p>—</p></td>
+<td><p>The clock’s beat position, on bang.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>clockname</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>The domain clock to create, when the object is added to a patcher. Empty does nothing.</p></td>
+</tr>
+<tr class="row-odd"><td><p>tempo</p></td>
+<td><p>120</p></td>
+<td><p>BPM</p></td>
+<td><p>The tempo in BPM, used when the clock is created and replaced by every number received. Not clamped: 0 stops the clock, a negative tempo runs it backwards.</p></td>
+</tr>
+<tr class="row-even"><td><p>ramp</p></td>
+<td><p>0</p></td>
+<td><p>0+ seconds</p></td>
+<td><p>Seconds each tempo change glides over. 0 is instant. The starting tempo is always instant.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="speedlim">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.speedlim</span></code></a><a class="headerlink" href="#speedlim" title="Link to this heading">#</a></h2>
+<p>Limits how often messages pass. A message that arrives before the interval since the last output is up is dropped, so a burst comes out as its first message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gSpeedlim</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>bang, int, float, list, ‘clock &lt;name&gt;’, ‘threshold &lt;time&gt;’, ‘quantize &lt;time&gt;’</p></td>
+<td><p>Any message, passed or dropped. ‘clock &lt;name&gt;’, ‘threshold &lt;time&gt;’ and ‘quantize &lt;time&gt;’ are settings, not data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>interval</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms, or a note value / tick count</p></td>
+<td><p>Sets the minimum time between outputs, in milliseconds or as a beat time. 0 lets everything through.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The messages that got through, unchanged.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>interval</p></td>
+<td><p>0</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The minimum time between outputs in milliseconds. 0 lets everything through.</p></td>
+</tr>
+<tr class="row-odd"><td><p>intervalbeats</p></td>
+<td><p>0</p></td>
+<td><p>0+ beats</p></td>
+<td><p>The interval in beats on the bound clock. 0 uses the millisecond interval instead. A plain number in the right inlet sets it back to 0.</p></td>
+</tr>
+<tr class="row-even"><td><p>threshold</p></td>
+<td><p>0</p></td>
+<td><p>0+ ms</p></td>
+<td><p>A window in milliseconds after each output in which every message is dropped. 0 is off.</p></td>
+</tr>
+<tr class="row-odd"><td><p>thresholdbeats</p></td>
+<td><p>0</p></td>
+<td><p>0+ beats</p></td>
+<td><p>The threshold in beats on the bound clock. 0 uses the millisecond threshold instead.</p></td>
+</tr>
+<tr class="row-even"><td><p>quantize</p></td>
+<td><p>0</p></td>
+<td><p>0+ beats</p></td>
+<td><p>A beat grid that output lands on, at most one message per grid line. 0 is off. Needs a bound clock.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="tempo">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.tempo</span></code></a><a class="headerlink" href="#tempo" title="Link to this heading">#</a></h2>
+<p>Counts notes on a named domain clock: ‘.tempo main 120 1 16’ sends 0 to 15 in sixteenth notes, over and over. Starting it sets the clock’s tempo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gTempo</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>on/off</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>0 or 1, bang, ‘stop’, ‘tempo &lt;bpm&gt; [&lt;ramp&gt;]’, ‘clock &lt;name&gt;’</p></td>
+<td><p>A bang or a non-zero number starts or restarts the count from 0; 0 or ‘stop’ stops it. ‘tempo &lt;bpm&gt; [&lt;ramp&gt;]’ sets the clock’s tempo; ‘clock &lt;name&gt;’ changes the clock.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>tempo</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>BPM</p></td>
+<td><p>The tempo in BPM, written to the clock at once. It changes the tempo for everything on that clock.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>multiplier</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>1+</p></td>
+<td><p>Multiplies the time between counts, at least 1. A running count keeps its place.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>division</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>1-96</p></td>
+<td><p>The note value to count in, as a division of a whole note (16 is a sixteenth), and the length of the cycle. 1 to 96.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>count</p></td>
+<td><p>INT</p></td>
+<td><p>0 to division - 1</p></td>
+<td><p>The count, from 0 to division - 1 and round again. 0 goes out when the count starts.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>clockname</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>The domain clock to count on. Empty counts nothing. A ‘clock &lt;name&gt;’ message does not change it.</p></td>
+</tr>
+<tr class="row-odd"><td><p>tempo</p></td>
+<td><p>120</p></td>
+<td><p>BPM</p></td>
+<td><p>The tempo in BPM written to the clock on every start. Not clamped: 0 pauses the clock, a negative tempo runs it backwards.</p></td>
+</tr>
+<tr class="row-even"><td><p>multiplier</p></td>
+<td><p>1</p></td>
+<td><p>1+</p></td>
+<td><p>Multiplies the time between counts. The cycle length stays the same.</p></td>
+</tr>
+<tr class="row-odd"><td><p>division</p></td>
+<td><p>16</p></td>
+<td><p>1-96</p></td>
+<td><p>The note value to count in, as a division of a whole note, and the length of the cycle.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="thresh">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.thresh</span></code></a><a class="headerlink" href="#thresh" title="Link to this heading">#</a></h2>
+<p>Collects values that arrive close together into one list, and sends the list once no new value has arrived for the threshold (10 ms by default).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gThresh</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>—</p></td>
+<td><p>An int, float or list to add to the group. Each one restarts the wait.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>threshold</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The quiet time in milliseconds that ends a group.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The group: a list, or a single number when only one number was collected.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>threshold</p></td>
+<td><p>10</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The quiet time in milliseconds that ends a group. A negative value counts as 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="timepoint">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.timepoint</span></code></a><a class="headerlink" href="#timepoint" title="Link to this heading">#</a></h2>
+<p>Sends a bang once when a named domain clock passes a beat position, as in ‘.timepoint main 128’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gTimepoint</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>time</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>beats, ‘clock &lt;name&gt;’, ‘active 0|1’</p></td>
+<td><p>A number sets the beat position and arms the object. ‘active 0|1’ disarms or re-arms it; ‘clock &lt;name&gt;’ changes the clock.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>A bang, once, when the clock passes the beat position.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>clockname</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>The domain clock to watch. Empty watches nothing. A ‘clock &lt;name&gt;’ message does not change it.</p></td>
+</tr>
+<tr class="row-odd"><td><p>time</p></td>
+<td><p>0</p></td>
+<td><p>beats</p></td>
+<td><p>The beat position to bang at.</p></td>
+</tr>
+<tr class="row-even"><td><p>active</p></td>
+<td><p>1</p></td>
+<td><p>0 or 1</p></td>
+<td><p>1 watches the clock, 0 does not.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="timer">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.timer</span></code></a><a class="headerlink" href="#timer" title="Link to this heading">#</a></h2>
+<p>Measures the time between a bang in the left inlet and a bang in the right inlet, in milliseconds and, with a clock name as argument, in beats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gTimer</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>start</p></td>
+<td><p>BANG</p></td>
+<td><p>bang</p></td>
+<td><p>A bang marks the start. Another bang moves the start to now.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>report</p></td>
+<td><p>BANG</p></td>
+<td><p>bang</p></td>
+<td><p>A bang sends the time since the start. The start stays where it is.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>ms</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0+ ms</p></td>
+<td><p>The time since the start, in milliseconds.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>beats</p></td>
+<td><p>FLOAT</p></td>
+<td><p>beats</p></td>
+<td><p>The beats the named clock moved in the same time, sent just before the milliseconds. Silent without a clock.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>clockname</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>The domain clock to measure beats on. Empty measures milliseconds only.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="translate">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.translate</span></code></a><a class="headerlink" href="#translate" title="Link to this heading">#</a></h2>
+<p>Converts a time value between milliseconds, hertz, samples, beats and ticks. Converting between real time and beats uses the current tempo of a named domain clock.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gTranslate</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>a number, a note value, ‘&lt;n&gt; ticks’, bang, ‘in|out &lt;format&gt;’, ‘clock &lt;name&gt;’</p></td>
+<td><p>A number in the input format, or a note value or tick count, to convert. A bang converts the last value again. ‘in &lt;format&gt;’, ‘out &lt;format&gt;’ and ‘clock &lt;name&gt;’ change the settings.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>converted</p></td>
+<td><p>FLOAT</p></td>
+<td><p>—</p></td>
+<td><p>The value in the output format. Nothing when the conversion cannot be made.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>in out clock</p></td>
+<td><p>ms ticks</p></td>
+<td><p>[&lt;format&gt;] [&lt;format&gt;] [&lt;clock name&gt;]</p></td>
+<td><p>The input format, the output format and the clock name, in any order: the first two format words are input and output, any other word is the clock.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="transport">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.transport</span></code></a><a class="headerlink" href="#transport" title="Link to this heading">#</a></h2>
+<p>Starts, stops and sets the tempo of a named domain clock, creating the clock (stopped) if it does not exist yet. A bang sends the clock’s beat position and tempo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gTransport</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>control</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>0 or 1, bang, ‘start’, ‘stop’, ‘tempo &lt;bpm&gt; [&lt;ramp&gt;]’</p></td>
+<td><p>A non-zero number or ‘start’ starts the clock; 0 or ‘stop’ stops it. ‘tempo &lt;bpm&gt; [&lt;ramp&gt;]’ sets the tempo. A bang sends the tempo and the beat position.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>tempo</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>BPM</p></td>
+<td><p>The tempo in BPM. Applied at once while running, kept for the next start while stopped.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>beat</p></td>
+<td><p>FLOAT</p></td>
+<td><p>—</p></td>
+<td><p>The clock’s beat position, on bang.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>tempo</p></td>
+<td><p>FLOAT</p></td>
+<td><p>BPM</p></td>
+<td><p>The clock’s tempo in BPM, on bang, sent just before the beat position. It shows a glide in progress and changes made by the host.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>clockname</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>The domain clock to control, created when the object is added to a patcher. Empty controls nothing.</p></td>
+</tr>
+<tr class="row-odd"><td><p>tempo</p></td>
+<td><p>120</p></td>
+<td><p>BPM</p></td>
+<td><p>The tempo in BPM the clock runs at while started. Not clamped: a negative tempo runs the clock backwards.</p></td>
+</tr>
+<tr class="row-even"><td><p>ramp</p></td>
+<td><p>0</p></td>
+<td><p>0+ seconds</p></td>
+<td><p>Seconds each start or tempo change glides over. 0 is instant. A stop is always instant.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="when">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.when</span></code></a><a class="headerlink" href="#when" title="Link to this heading">#</a></h2>
+<p>On any input, sends the beat position and tempo of a named domain clock. It only reads the clock and never creates one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gWhen</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>query</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>bang, int, float or any list</p></td>
+<td><p>Any message sends the clock’s tempo and beat position. What the message says is ignored.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>beat</p></td>
+<td><p>FLOAT</p></td>
+<td><p>—</p></td>
+<td><p>The clock’s beat position.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>tempo</p></td>
+<td><p>FLOAT</p></td>
+<td><p>BPM</p></td>
+<td><p>The clock’s tempo in BPM, sent just before the beat position. 0 while the clock is stopped; during a glide, the tempo reached so far.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>clockname</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>The domain clock to read. Empty reads nothing.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="arrays.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Arrays</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="sequencing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Sequencing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bline"><code class="docutils literal notranslate"><span class="pre">.bline</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clocker"><code class="docutils literal notranslate"><span class="pre">.clocker</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delay"><code class="docutils literal notranslate"><span class="pre">.delay</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#line"><code class="docutils literal notranslate"><span class="pre">.line</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metro"><code class="docutils literal notranslate"><span class="pre">.metro</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipe"><code class="docutils literal notranslate"><span class="pre">.pipe</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#qlim"><code class="docutils literal notranslate"><span class="pre">.qlim</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quickthresh"><code class="docutils literal notranslate"><span class="pre">.quickthresh</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setclock"><code class="docutils literal notranslate"><span class="pre">.setclock</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#speedlim"><code class="docutils literal notranslate"><span class="pre">.speedlim</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tempo"><code class="docutils literal notranslate"><span class="pre">.tempo</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#thresh"><code class="docutils literal notranslate"><span class="pre">.thresh</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timepoint"><code class="docutils literal notranslate"><span class="pre">.timepoint</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timer"><code class="docutils literal notranslate"><span class="pre">.timer</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#translate"><code class="docutils literal notranslate"><span class="pre">.translate</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transport"><code class="docutils literal notranslate"><span class="pre">.transport</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when"><code class="docutils literal notranslate"><span class="pre">.when</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

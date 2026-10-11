@@ -218,6 +218,7 @@
 
 
 
+
 <li class="toctree-l2"><a class="reference internal" href="../sounds.html">Sound</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../channels.html">Channel</a></li>
@@ -272,7 +273,27 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="../patcher_objects.html">Patcher object reference</a></li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../patcher_objects/index.html">Patcher object reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
 
 
@@ -281,6 +302,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
 
 
 
@@ -537,7 +559,10 @@ copied out of engine-owned storage (never freed by the caller).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">description</span>
 </pre></div>
 </div>
-<p>One-line human-readable description of the object.</p>
+<p>Short human-readable summary of the object.</p>
+<p>Since libYSE 3.0.1 this is a tooltip-length summary (at most 300
+characters, usually one or two sentences), suited to a palette or a
+hover; the longer notes live in upstream’s object reference.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PCategory</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">category</span>
 </pre></div>
 </div>
@@ -546,6 +571,15 @@ copied out of engine-owned storage (never freed by the caller).</p>
 </pre></div>
 </div>
 <p>Whether this is a DSP / audio-rate object (the <cite>~</cite> prefix convention).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">requiresMidiDevice</span>
+</pre></div>
+</div>
+<p>Whether this object holds a MIDI port (<cite>.midiin</cite>, <cite>.midiout</cite>,
+<cite>.notein</cite>, …).</p>
+<p>Such objects exist only in engine builds with MIDI device support
+(not macOS / Android), so a palette or a saved patch can mark them
+non-portable. Read from the registry’s metadata JSON
+(<cite>requires_midi_device</cite>); the engine has no dedicated getter.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">inletCount</span>
 </pre></div>
 </div>

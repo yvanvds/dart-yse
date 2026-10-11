@@ -1,0 +1,2004 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Routing &#8212; dart-yse 0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/patcher_objects/routing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Control flow" href="control_flow.html" />
+    <link rel="prev" title="Random" href="random.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core.html">Core</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../reverb.html">Reverb</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../dsp.html">DSP</a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../clip.html">Clip transport</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../synth.html">Synth</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../music.html">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../patcher.html">Patcher</a></li>
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Patcher object reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/patcher_objects/routing.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/api/patcher_objects/routing.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Routing</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bucket"><code class="docutils literal notranslate"><span class="pre">.bucket</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cycle"><code class="docutils literal notranslate"><span class="pre">.cycle</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decode"><code class="docutils literal notranslate"><span class="pre">.decode</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funnel"><code class="docutils literal notranslate"><span class="pre">.funnel</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gate"><code class="docutils literal notranslate"><span class="pre">.gate</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matrix"><code class="docutils literal notranslate"><span class="pre">.matrix</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#route"><code class="docutils literal notranslate"><span class="pre">.route</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#routepass"><code class="docutils literal notranslate"><span class="pre">.routepass</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#router"><code class="docutils literal notranslate"><span class="pre">.router</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sel"><code class="docutils literal notranslate"><span class="pre">.sel</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#split"><code class="docutils literal notranslate"><span class="pre">.split</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spray"><code class="docutils literal notranslate"><span class="pre">.spray</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#switch"><code class="docutils literal notranslate"><span class="pre">.switch</span></code></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="routing">
+<h1>Routing<a class="headerlink" href="#routing" title="Link to this heading">#</a></h1>
+<p>Steering messages between inlets and outlets.</p>
+<p>13 objects. Every entry is
+pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
+/ <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
+source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. For long-form notes, see the
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/routing.html">libYSE page for this category</a>.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#bucket" id="id1"><code class="docutils literal notranslate"><span class="pre">.bucket</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cycle" id="id2"><code class="docutils literal notranslate"><span class="pre">.cycle</span></code></a></p></li>
+<li><p><a class="reference internal" href="#decode" id="id3"><code class="docutils literal notranslate"><span class="pre">.decode</span></code></a></p></li>
+<li><p><a class="reference internal" href="#funnel" id="id4"><code class="docutils literal notranslate"><span class="pre">.funnel</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gate" id="id5"><code class="docutils literal notranslate"><span class="pre">.gate</span></code></a></p></li>
+<li><p><a class="reference internal" href="#matrix" id="id6"><code class="docutils literal notranslate"><span class="pre">.matrix</span></code></a></p></li>
+<li><p><a class="reference internal" href="#route" id="id7"><code class="docutils literal notranslate"><span class="pre">.route</span></code></a></p></li>
+<li><p><a class="reference internal" href="#routepass" id="id8"><code class="docutils literal notranslate"><span class="pre">.routepass</span></code></a></p></li>
+<li><p><a class="reference internal" href="#router" id="id9"><code class="docutils literal notranslate"><span class="pre">.router</span></code></a></p></li>
+<li><p><a class="reference internal" href="#sel" id="id10"><code class="docutils literal notranslate"><span class="pre">.sel</span></code></a></p></li>
+<li><p><a class="reference internal" href="#split" id="id11"><code class="docutils literal notranslate"><span class="pre">.split</span></code></a></p></li>
+<li><p><a class="reference internal" href="#spray" id="id12"><code class="docutils literal notranslate"><span class="pre">.spray</span></code></a></p></li>
+<li><p><a class="reference internal" href="#switch" id="id13"><code class="docutils literal notranslate"><span class="pre">.switch</span></code></a></p></li>
+</ul>
+</nav>
+<section id="bucket">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.bucket</span></code></a><a class="headerlink" href="#bucket" title="Link to this heading">#</a></h2>
+<p>A shift register for numbers. Each number pushes the stored values one outlet along and every outlet sends what it holds, each one a step older than the outlet to its left.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gBucket</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>A number shifts the register and every outlet sends. A bang sends without shifting. A list of numbers is fed in one number at a time. Also takes ‘set &lt;n&gt;’, ‘clear’, ‘freeze’, ‘thaw’, ‘L2R’, ‘R2L’ and ‘roll’.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out0</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The value this stage holds: outlet 0 the newest, each outlet to its right one step older (the other way round after ‘R2L’). A value keeps its int or float type.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>outlets</p></td>
+<td><p>1</p></td>
+<td><p>1-256, optional echo flag</p></td>
+<td><p>How many outlets (stages) to build. A non-zero second number turns on echo mode: the number that just arrived is sent in the same burst instead of the next one.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="cycle">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.cycle</span></code></a><a class="headerlink" href="#cycle" title="Link to this heading">#</a></h2>
+<p>Sends each message out the next outlet in turn, going back to outlet 0 after the last. Use it to deal notes across a bank of voices or to alternate between processing chains.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gCycle</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>Any message goes out the next outlet in turn. A list of numbers is dealt one item per outlet. ‘set &lt;n&gt;’ makes outlet n the next one; ‘thresh &lt;0/1&gt;’ turns event mode off or on.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out0</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>Each message whose turn falls on this outlet, unchanged.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>outlets</p></td>
+<td><p>1</p></td>
+<td><p>1-256, optional mode</p></td>
+<td><p>How many outlets to build. A non-zero second number turns on event mode: each new event starts again at outlet 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="decode">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.decode</span></code></a><a class="headerlink" href="#decode" title="Link to this heading">#</a></h2>
+<p>Sends 1 out the selected outlet and 0 out all the others, to switch a bank of which exactly one member is on. Two more inlets override the selection: one turns every outlet on, the other mutes them all.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDecode</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>select</p></td>
+<td><p>INT, BANG</p></td>
+<td><p>0 to outlets-1</p></td>
+<td><p>An int selects the outlet that gets 1, and every outlet sends its state. An index with no outlet is ignored. A bang sends the current state again. Outlet 0 is selected at the start.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>secondary</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>All on: an int above 0 sends 1 out every outlet; 0 or less goes back to the selection. The right inlet overrides it.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>primary</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>Mute: a non-zero int sends 0 out every outlet, whatever the other inlets say. 0 brings back the state they describe.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out0</p></td>
+<td><p>INT</p></td>
+<td><p>0 or 1</p></td>
+<td><p>1 when this outlet is selected or all are on, 0 otherwise.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>outlets</p></td>
+<td><p>1</p></td>
+<td><p>1-256</p></td>
+<td><p>How many outlets to build.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="funnel">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.funnel</span></code></a><a class="headerlink" href="#funnel" title="Link to this heading">#</a></h2>
+<p>Merges several inlets onto one outlet, putting the inlet’s number in front of each message so the receiver knows where it came from. The inverse of .spray.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gFunnel</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in0</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>A message goes out with this inlet’s number in front. A number is also stored, and a bang sends the stored number again. ‘set &lt;n0&gt; &lt;n1&gt; …’ and ‘offset &lt;n&gt;’ work in every inlet.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>in1</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>A message goes out with this inlet’s number in front. A number is also stored, and a bang sends the stored number again. ‘set &lt;n0&gt; &lt;n1&gt; …’ and ‘offset &lt;n&gt;’ work in every inlet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>LIST</p></td>
+<td><p>list</p></td>
+<td><p>The inlet’s number plus the offset, followed by the message as it arrived.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>inlets</p></td>
+<td><p>2</p></td>
+<td><p>1-256, optional offset</p></td>
+<td><p>How many inlets to build. A second number is the offset added to every inlet’s number, so inlet 0 sends that value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="gate">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.gate</span></code></a><a class="headerlink" href="#gate" title="Link to this heading">#</a></h2>
+<p>Passes messages from its right inlet out one of its outlets, chosen by a number in the left inlet. Outlets count from 1; 0 closes the gate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gGate</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>select</p></td>
+<td><p>INT</p></td>
+<td><p>0+</p></td>
+<td><p>The outlet to send to, counting from 1. 0 (the start value) or a number with no outlet closes the gate.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Bang, int, float or list to pass to the selected outlet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out0</p></td>
+<td><p>ANY</p></td>
+<td><p>—</p></td>
+<td><p>Sends the message when select is 1.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>out1</p></td>
+<td><p>ANY</p></td>
+<td><p>—</p></td>
+<td><p>Sends the message when select is 2.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>numOutlets</p></td>
+<td><p>2</p></td>
+<td><p>2+</p></td>
+<td><p>How many outlets to build. Fewer than 2 still builds 2.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="matrix">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.matrix</span></code></a><a class="headerlink" href="#matrix" title="Link to this heading">#</a></h2>
+<p>Routes messages from its data inlets to its outlets as set by connection messages, like .router, but each connection has a gain that scales the numbers passing through. At a gain of 1 messages pass unchanged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gMatrix</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>connections</p></td>
+<td><p>LIST</p></td>
+<td><p>list</p></td>
+<td><p>Sets the connections: ‘&lt;inlet&gt; &lt;outlet&gt; &lt;gain&gt;’ (gain 0 disconnects), ‘connect &lt;inlet&gt; &lt;outlet&gt; [gain]’, ‘disconnect &lt;inlet&gt; &lt;outlet&gt;’, ‘clear’ and ‘dumpconnections’. Inlets and outlets count from 0, starting at the first data inlet.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>in0</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>A message here goes out every outlet this inlet is connected to, right to left, scaled by each connection’s gain.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>in1</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>A message here goes out every outlet this inlet is connected to, right to left, scaled by each connection’s gain.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out0</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>Messages from every inlet connected to this outlet, each scaled by its connection’s gain. Messages from different inlets are not added together.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>out1</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>Messages from every inlet connected to this outlet, each scaled by its connection’s gain. Messages from different inlets are not added together.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>connections</p></td>
+<td><p>LIST</p></td>
+<td><p>list</p></td>
+<td><p>The answer to ‘dumpconnections’: one ‘&lt;inlet&gt; &lt;outlet&gt; &lt;gain&gt;’ list per connection.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>inputs</p></td>
+<td><p>2</p></td>
+<td><p>1-256, optional outputs 1-256, optional default gain</p></td>
+<td><p>How many data inlets, then how many data outlets (2 each by default), then the gain ‘connect’ uses when none is given (1 by default).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="route">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.route</span></code></a><a class="headerlink" href="#route" title="Link to this heading">#</a></h2>
+<p>Sends a message out the outlet whose selector matches its first item, with that item removed. A message that matches no selector leaves the rightmost outlet unchanged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gRoute</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Bang, int, float or list. Its first item is matched against the selectors.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>match0</p></td>
+<td><p>ANY</p></td>
+<td><p>0</p></td>
+<td><p>The rest of the message when its first item matches selector 0 (0): a list, a single int or float, or a bang when nothing is left.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>rest</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The message, unchanged, when its first item matched no selector. Wire it into another .route to test further.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>list</p></td>
+<td><p>0</p></td>
+<td><p>any tokens</p></td>
+<td><p>The selectors, one outlet each. A number matches by value, anything else by exact text. With no argument the object matches 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="routepass">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.routepass</span></code></a><a class="headerlink" href="#routepass" title="Link to this heading">#</a></h2>
+<p>Sends a whole message out the outlet whose selector matches its first item, keeping that item on. A message that matches no selector leaves the rightmost outlet unchanged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gRoutepass</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>Bang, int, float or list. Its first item is matched against the selectors, and the message leaves unchanged.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>rest</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The message, unchanged, when it matched no selector. Wire it into another .routepass to test further.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>selectors</p></td>
+<td><p>—</p></td>
+<td><p>any list of numbers and symbols</p></td>
+<td><p>The selectors, one outlet each, at most 256. A number matches by value, anything else by exact text. With no argument there is only the rightmost outlet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="router">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.router</span></code></a><a class="headerlink" href="#router" title="Link to this heading">#</a></h2>
+<p>Routes messages from its data inlets to its outlets, unchanged, as set by connection messages. Any inlet can reach any number of outlets, and the routing can change while the patch runs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gRouter</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>connections</p></td>
+<td><p>LIST</p></td>
+<td><p>list</p></td>
+<td><p>Sets the connections: ‘&lt;inlet&gt; &lt;outlet&gt; &lt;0/1&gt;’, ‘connect &lt;inlet&gt; &lt;outlet&gt;’, ‘disconnect &lt;inlet&gt; &lt;outlet&gt;’, ‘patch &lt;inlet&gt; &lt;outlet&gt;’, ‘clear’ and ‘dump’. Inlets and outlets count from 0, starting at the first data inlet.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>in0</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>A message here goes out, unchanged, every outlet this inlet is connected to, right to left.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>in1</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>A message here goes out, unchanged, every outlet this inlet is connected to, right to left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out0</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>Messages from every inlet connected to this outlet, unchanged.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>out1</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>Messages from every inlet connected to this outlet, unchanged.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>dump</p></td>
+<td><p>LIST</p></td>
+<td><p>list</p></td>
+<td><p>The answer to ‘dump’: one ‘&lt;inlet&gt; &lt;outlet&gt; &lt;state&gt;’ list for every inlet and outlet pair.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>inlets</p></td>
+<td><p>2</p></td>
+<td><p>1-256, optional outlets 1-256</p></td>
+<td><p>How many data inlets, then how many data outlets (2 each by default).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sel">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.sel</span></code></a><a class="headerlink" href="#sel" title="Link to this heading">#</a></h2>
+<p>Bangs the outlet whose selector matches the input. Anything that matches no selector leaves the rightmost outlet unchanged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gSel</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>any</p></td>
+<td><p>Bang, int, float or list to match. A list is matched on its first item, and the rest is dropped on a match.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>value</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Replaces the selector’s value without sending anything. Present only when there is exactly one selector and it is a number.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>match0</p></td>
+<td><p>BANG</p></td>
+<td><p>0</p></td>
+<td><p>A bang when the input matches selector 0 (0).</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>rest</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The input, unchanged, when it matched no selector. Wire it into another .sel to test further.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>selectors</p></td>
+<td><p>0</p></td>
+<td><p>any list of numbers and symbols</p></td>
+<td><p>The selectors, one outlet each, at most 256. A number matches by value, anything else by exact text. With no argument the object matches 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="split">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.split</span></code></a><a class="headerlink" href="#split" title="Link to this heading">#</a></h2>
+<p>Sends a number out the left outlet when it lies between low and high, and out the right outlet when it does not. Both limits are inclusive, and the number is not changed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gSplit</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>The number to test; sends it out one of the outlets.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>low</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Lower limit, inclusive. Stored for the next number.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>high</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>any float</p></td>
+<td><p>Upper limit, inclusive. Stored for the next number.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>FLOAT</p></td>
+<td><p>low to high</p></td>
+<td><p>The number, as a float, when it lies inside [low, high].</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>out</p></td>
+<td><p>FLOAT</p></td>
+<td><p>any float</p></td>
+<td><p>The number, as a float, when it lies outside [low, high].</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>low</p></td>
+<td><p>0</p></td>
+<td><p>any float</p></td>
+<td><p>Lower limit, inclusive.</p></td>
+</tr>
+<tr class="row-odd"><td><p>high</p></td>
+<td><p>127</p></td>
+<td><p>any float</p></td>
+<td><p>Upper limit, inclusive.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="spray">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.spray</span></code></a><a class="headerlink" href="#spray" title="Link to this heading">#</a></h2>
+<p>Takes a list whose first number is an outlet index and sends the values after it out that outlet and the ones to its right. The inverse of .funnel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gSpray</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>LIST</p></td>
+<td><p>list</p></td>
+<td><p>A list: an outlet index, then the values for that outlet and the ones to its right. An index of -1 sends the values to every outlet. ‘offset &lt;n&gt;’ shifts the outlet numbering.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out0</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The value addressed to this outlet, or the whole rest of the list in list mode.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>out1</p></td>
+<td><p>ANY</p></td>
+<td><p>any</p></td>
+<td><p>The value addressed to this outlet, or the whole rest of the list in list mode.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>outlets</p></td>
+<td><p>2</p></td>
+<td><p>1-256, optional offset and list mode</p></td>
+<td><p>How many outlets to build. A second number is the offset: an index equal to it reaches outlet 0. A non-zero third number turns on list mode, which sends the whole rest of the list out the one indicated outlet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="switch">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.switch</span></code></a><a class="headerlink" href="#switch" title="Link to this heading">#</a></h2>
+<p>Passes messages from one of its right-hand inlets to the outlet, chosen by a number in the left inlet. Inlets count from 1; 0 closes the switch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gSwitch</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>select</p></td>
+<td><p>INT</p></td>
+<td><p>0+</p></td>
+<td><p>Which inlet passes, counting from 1 for the inlet next to this one. 0 (the start value) or a number with no inlet passes nothing.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>in0</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Bang, int, float or list, passed on when select is 1.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>in1</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>Bang, int, float or list, passed on when select is 2.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>out</p></td>
+<td><p>ANY</p></td>
+<td><p>—</p></td>
+<td><p>Messages from the selected inlet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>numInlets</p></td>
+<td><p>2</p></td>
+<td><p>2+</p></td>
+<td><p>How many inlets to pass from. Fewer than 2 still builds 2.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="random.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Random</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="control_flow.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Control flow</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bucket"><code class="docutils literal notranslate"><span class="pre">.bucket</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cycle"><code class="docutils literal notranslate"><span class="pre">.cycle</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decode"><code class="docutils literal notranslate"><span class="pre">.decode</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funnel"><code class="docutils literal notranslate"><span class="pre">.funnel</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gate"><code class="docutils literal notranslate"><span class="pre">.gate</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matrix"><code class="docutils literal notranslate"><span class="pre">.matrix</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#route"><code class="docutils literal notranslate"><span class="pre">.route</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#routepass"><code class="docutils literal notranslate"><span class="pre">.routepass</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#router"><code class="docutils literal notranslate"><span class="pre">.router</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sel"><code class="docutils literal notranslate"><span class="pre">.sel</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#split"><code class="docutils literal notranslate"><span class="pre">.split</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spray"><code class="docutils literal notranslate"><span class="pre">.spray</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#switch"><code class="docutils literal notranslate"><span class="pre">.switch</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

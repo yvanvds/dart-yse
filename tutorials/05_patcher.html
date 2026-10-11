@@ -218,6 +218,7 @@
 
 
 
+
 <li class="toctree-l2"><a class="reference internal" href="../api/sounds.html">Sound</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../api/channels.html">Channel</a></li>
@@ -272,7 +273,27 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="../api/patcher_objects.html">Patcher object reference</a></li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/patcher_objects/index.html">Patcher object reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/patcher_objects/subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/utils.html">Utilities</a></li>
 
 
@@ -281,6 +302,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/log.html">Log</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../api/bus.html">Bus</a></li>
+
 
 
 
@@ -513,6 +535,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#driving-an-object-directly-via-phandle">Driving an object directly via PHandle</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enumerating-the-graph">Enumerating the graph</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#persistence">Persistence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subpatchers">Subpatchers</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifetime-and-cleanup">Lifetime and cleanup</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-find-the-full-object-reference">Where to find the full object reference</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-learned">What you learned</a></li>
@@ -562,7 +585,7 @@ only when you push data into it with
 <code class="xref py py-class docutils literal notranslate"><span class="pre">Obj</span></code> class — pass any of them to
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> in place of raw string literals.
 Every object’s accepted inlets, outlets, parameters, and message
-types are listed on the <a class="reference internal" href="../api/patcher_objects.html"><span class="doc">Patcher object reference</span></a> reference page,
+types are listed on the <a class="reference internal" href="../api/patcher_objects/index.html"><span class="doc">Patcher object reference</span></a> reference page,
 generated directly from the engine source so it can never drift from
 what <code class="docutils literal notranslate"><span class="pre">createObject</span></code> actually accepts.</p>
 </section>
@@ -668,7 +691,8 @@ would call.</p></li>
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.setParams()</span></code> re-runs the object’s creation parser
 on a new argument string — equivalent to deleting and recreating it
 but with the connections preserved.</p></li>
-<li><p><strong>Bridge a GUI.</strong> <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.guiValue</span></code>,
+<li><p><strong>Bridge a GUI.</strong> <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.guiValue</span></code> (see the “GUI controls”
+section of <a class="reference internal" href="../api/patcher.html"><span class="doc">Patcher</span></a>),
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.getGuiProperty()</span></code>, and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">PHandle.setGuiProperty()</span></code> expose the per-object metadata an
 external editor reads and writes back.</p></li>
@@ -707,8 +731,9 @@ place:</p>
 <span class="n">p2</span><span class="p">.</span><span class="n">parseJson</span><span class="p">(</span><span class="n">File</span><span class="p">(</span><span class="s1">'mypatch.yap'</span><span class="p">).</span><span class="n">readAsStringSync</span><span class="p">());</span>
 </pre></div>
 </div>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.parseJson()</span></code> replaces the current graph wholesale —
-any objects already in the patcher are discarded. After loading,
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.parseJson()</span></code> <strong>adds to</strong> the current graph — objects
+already in the patcher are kept, so call <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.clear()</span></code>
+first to replace the patch. After loading,
 re-send the initial control values so the receives have something to
 forward.</p>
 <p>The round trip — patch built once in code, saved to a string,
@@ -716,6 +741,83 @@ rebuilt from that string with no code-side knowledge of its internal
 structure — is what makes external editors possible. Build the patch
 in a desktop tool, ship the resulting JSON as an asset, deserialise
 it at runtime.</p>
+</section>
+<section id="subpatchers">
+<h2>Subpatchers<a class="headerlink" href="#subpatchers" title="Link to this heading">#</a></h2>
+<p>A subpatcher groups part of a graph into one object. The parent
+connects to the group by pin number, like any other object, and does
+not need to know what is inside. It is an object of type
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Obj.patcher</span></code> — <strong>not</strong> a separate <code class="xref py py-class docutils literal notranslate"><span class="pre">Patcher</span></code>. Create
+its contents with <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> on the same patcher,
+then move them inside with <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.setContainer()</span></code>.</p>
+<p>The pins of a subpatcher are the <strong>boundary objects</strong> among its direct
+contents. Each takes one argument, its index (default 0):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.inlet</span></code> / <code class="docutils literal notranslate"><span class="pre">.outlet</span></code> (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Obj.gInlet</span></code> /
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Obj.gOutlet</span></code>) carry messages.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">~inlet</span></code> / <code class="docutils literal notranslate"><span class="pre">~outlet</span></code> (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Obj.dInlet</span></code> /
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Obj.dOutlet</span></code>) carry audio.</p></li>
+</ul>
+<p>Messages and signals share <strong>one</strong> index space per side, so a
+<code class="docutils literal notranslate"><span class="pre">.inlet</span> <span class="pre">0</span></code> next to a <code class="docutils literal notranslate"><span class="pre">~inlet</span> <span class="pre">1</span></code> gives the subpatcher two inlets.
+Give every boundary object its own number.</p>
+<p>This builds a half-gain stage and plays a sine through it:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">//  ~sine -&gt; [ ~inlet 0 -&gt; ~* 0.5 -&gt; ~outlet 0 ] -&gt; ~dac</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Patcher</span><span class="p">();</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">sub</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">patcher</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">inlet</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dInlet</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">'0'</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">gain</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dMultiply</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">'0.5'</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">outlet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dOutlet</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">'0'</span><span class="p">);</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">final</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">[</span><span class="n">inlet</span><span class="p">,</span><span class="w"> </span><span class="n">gain</span><span class="p">,</span><span class="w"> </span><span class="n">outlet</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">p</span><span class="p">.</span><span class="n">setContainer</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">sub</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">p</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">inlet</span><span class="p">,</span><span class="w"> </span><span class="nl">outlet:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="nl">to:</span><span class="w"> </span><span class="n">gain</span><span class="p">,</span><span class="w"> </span><span class="nl">inlet:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+<span class="n">p</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">gain</span><span class="p">,</span><span class="w"> </span><span class="nl">outlet:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="nl">to:</span><span class="w"> </span><span class="n">outlet</span><span class="p">,</span><span class="w"> </span><span class="nl">inlet:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+
+<span class="c1">// The parent wires the group by pin number only.</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">sine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dSine</span><span class="p">,</span><span class="w"> </span><span class="nl">args:</span><span class="w"> </span><span class="s1">'440'</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">dac</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">createObject</span><span class="p">(</span><span class="n">Obj</span><span class="p">.</span><span class="n">dDac</span><span class="p">);</span>
+<span class="n">p</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sine</span><span class="p">,</span><span class="w"> </span><span class="nl">outlet:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="nl">to:</span><span class="w"> </span><span class="n">sub</span><span class="p">,</span><span class="w"> </span><span class="nl">inlet:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+<span class="n">p</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span><span class="w"> </span><span class="nl">outlet:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="nl">to:</span><span class="w"> </span><span class="n">dac</span><span class="p">,</span><span class="w"> </span><span class="nl">inlet:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Things to know:</p>
+<ul class="simple">
+<li><p><strong>Place objects before you connect.</strong> Moving an object changes no
+connection. <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.connect()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.disconnect()</span></code> on a subpatcher look up the boundary
+object that claims the pin and record the edge straight to it, so
+walking the graph (or <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.dumpJson()</span></code>) reports the
+boundary object’s ID, not the subpatcher’s.</p></li>
+<li><p><strong>Ask the subpatcher for its shape.</strong> A subpatcher owns no pins of
+its own, so <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.inputs</span></code> / <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.outputs</span></code>
+answer 0. <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.subpatcherInlets</span></code> /
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.subpatcherOutlets</span></code> report one past the highest
+index claimed on that side.</p></li>
+<li><p><strong>Containment reads back.</strong> <code class="xref py py-attr docutils literal notranslate"><span class="pre">PHandle.container</span></code> is the
+subpatcher an object is directly inside, or <code class="docutils literal notranslate"><span class="pre">null</span></code> at the top
+level. <code class="docutils literal notranslate"><span class="pre">p.setContainer(obj,</span> <span class="pre">null)</span></code> moves it back out. Subpatchers
+nest.</p></li>
+<li><p><strong>Illegal moves throw.</strong> A container that is not a <code class="docutils literal notranslate"><span class="pre">patcher</span></code>
+object, or a move that would put a subpatcher inside itself or one
+of its descendants, throws <code class="xref py py-class docutils literal notranslate"><span class="pre">YseException</span></code> and changes
+nothing. A handle from another <code class="xref py py-class docutils literal notranslate"><span class="pre">Patcher</span></code> throws
+<code class="docutils literal notranslate"><span class="pre">ArgumentError</span></code>.</p></li>
+<li><p><strong>Deleting is transitive.</strong> <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.deleteObject()</span></code> on a
+subpatcher deletes everything inside it, nested subpatchers
+included. Any <code class="xref py py-class docutils literal notranslate"><span class="pre">PHandle</span></code> you held that pointed inside is
+dangling afterwards.</p></li>
+<li><p><strong>It costs nothing to nest.</strong> Every object stays in the patcher’s
+one flat graph, so the audio thread’s work does not grow with
+nesting depth.</p></li>
+<li><p><strong>Names are not local.</strong> <code class="docutils literal notranslate"><span class="pre">.s</span></code> / <code class="docutils literal notranslate"><span class="pre">.r</span></code> inside a subpatcher use the
+whole patcher’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">Patcher.name</span></code>, like everything else.</p></li>
+<li><p><strong>Saving works unchanged.</strong> <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.dumpJson()</span></code> writes each
+object’s container, and <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.parseJson()</span></code> restores the
+same nesting.</p></li>
+</ul>
+<p>Upstream’s <a class="reference external" href="https://github.com/yvanvds/yse-soundengine/blob/main/documentation/source/patcher/subpatchers.rst">patcher subpatchers guide</a>
+covers the same model from the C++ side.</p>
 </section>
 <section id="lifetime-and-cleanup">
 <h2>Lifetime and cleanup<a class="headerlink" href="#lifetime-and-cleanup" title="Link to this heading">#</a></h2>
@@ -738,10 +840,10 @@ call <code class="xref py py-meth docutils literal notranslate"><span class="pre
 <h2>Where to find the full object reference<a class="headerlink" href="#where-to-find-the-full-object-reference" title="Link to this heading">#</a></h2>
 <p>The full set of registered object types — every inlet, outlet,
 parameter, and accepted message type — is on the
-<a class="reference internal" href="../api/patcher_objects.html"><span class="doc">Patcher object reference</span></a> reference page. That page is generated
-directly from the engine source (the same JSON snapshot the upstream
-libYSE docs render), so it can never drift from what
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> actually accepts.</p>
+<a class="reference internal" href="../api/patcher_objects/index.html"><span class="doc">Patcher object reference</span></a> reference, one page per category.
+Those pages are generated from the registry of the engine this package
+binds (a JSON snapshot that a test keeps in step with the registry), so
+they list exactly what <code class="xref py py-meth docutils literal notranslate"><span class="pre">Patcher.createObject()</span></code> accepts.</p>
 </section>
 <section id="what-you-learned">
 <h2>What you learned<a class="headerlink" href="#what-you-learned" title="Link to this heading">#</a></h2>
@@ -765,7 +867,7 @@ external editor on top.</p></li>
 <ul class="simple">
 <li><p><a class="reference internal" href="../api/patcher.html"><span class="doc">Patcher</span></a> — the full <code class="xref py py-class docutils literal notranslate"><span class="pre">Patcher</span></code> and
 <code class="xref py py-class docutils literal notranslate"><span class="pre">PHandle</span></code> class reference.</p></li>
-<li><p><a class="reference internal" href="../api/patcher_objects.html"><span class="doc">Patcher object reference</span></a> — every patcher object, with inlets,
+<li><p><a class="reference internal" href="../api/patcher_objects/index.html"><span class="doc">Patcher object reference</span></a> — every patcher object, with inlets,
 outlets, parameters, and value ranges.</p></li>
 <li><p><a class="reference internal" href="index.html"><span class="doc">Tutorials</span></a> — index of remaining tutorials.</p></li>
 </ul>
@@ -826,6 +928,7 @@ outlets, parameters, and value ranges.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#driving-an-object-directly-via-phandle">Driving an object directly via PHandle</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enumerating-the-graph">Enumerating the graph</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#persistence">Persistence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subpatchers">Subpatchers</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifetime-and-cleanup">Lifetime and cleanup</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-find-the-full-object-reference">Where to find the full object reference</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-learned">What you learned</a></li>

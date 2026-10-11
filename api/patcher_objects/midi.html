@@ -1,0 +1,4870 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MIDI &#8212; dart-yse 0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/patcher_objects/midi';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GUI controls" href="gui.html" />
+    <link rel="prev" title="Sequencing" href="sequencing.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core.html">Core</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../reverb.html">Reverb</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../dsp.html">DSP</a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../clip.html">Clip transport</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../synth.html">Synth</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../music.html">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../patcher.html">Patcher</a></li>
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Patcher object reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequencing.html">Sequencing</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/patcher_objects/midi.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/api/patcher_objects/midi.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>MIDI</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bendin"><code class="docutils literal notranslate"><span class="pre">.bendin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bendout"><code class="docutils literal notranslate"><span class="pre">.bendout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#borax"><code class="docutils literal notranslate"><span class="pre">.borax</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#channelpressure"><code class="docutils literal notranslate"><span class="pre">.channelpressure</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlchange"><code class="docutils literal notranslate"><span class="pre">.controlchange</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ctlin"><code class="docutils literal notranslate"><span class="pre">.ctlin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flush"><code class="docutils literal notranslate"><span class="pre">.flush</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#makenote"><code class="docutils literal notranslate"><span class="pre">.makenote</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiflush"><code class="docutils literal notranslate"><span class="pre">.midiflush</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiformat"><code class="docutils literal notranslate"><span class="pre">.midiformat</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiin"><code class="docutils literal notranslate"><span class="pre">.midiin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiinfo"><code class="docutils literal notranslate"><span class="pre">.midiinfo</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiout"><code class="docutils literal notranslate"><span class="pre">.midiout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiparse"><code class="docutils literal notranslate"><span class="pre">.midiparse</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mpeconfig"><code class="docutils literal notranslate"><span class="pre">.mpeconfig</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mpeformat"><code class="docutils literal notranslate"><span class="pre">.mpeformat</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mpeparse"><code class="docutils literal notranslate"><span class="pre">.mpeparse</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notein"><code class="docutils literal notranslate"><span class="pre">.notein</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noteoff"><code class="docutils literal notranslate"><span class="pre">.noteoff</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noteon"><code class="docutils literal notranslate"><span class="pre">.noteon</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nrpnin"><code class="docutils literal notranslate"><span class="pre">.nrpnin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nrpnout"><code class="docutils literal notranslate"><span class="pre">.nrpnout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#offer"><code class="docutils literal notranslate"><span class="pre">.offer</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pgmin"><code class="docutils literal notranslate"><span class="pre">.pgmin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#poly"><code class="docutils literal notranslate"><span class="pre">.poly</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#polyin"><code class="docutils literal notranslate"><span class="pre">.polyin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#polypressure"><code class="docutils literal notranslate"><span class="pre">.polypressure</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#programchange"><code class="docutils literal notranslate"><span class="pre">.programchange</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rpnin"><code class="docutils literal notranslate"><span class="pre">.rpnin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rpnout"><code class="docutils literal notranslate"><span class="pre">.rpnout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rtin"><code class="docutils literal notranslate"><span class="pre">.rtin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stripnote"><code class="docutils literal notranslate"><span class="pre">.stripnote</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sustain"><code class="docutils literal notranslate"><span class="pre">.sustain</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sxformat"><code class="docutils literal notranslate"><span class="pre">.sxformat</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sysexin"><code class="docutils literal notranslate"><span class="pre">.sysexin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#touchin"><code class="docutils literal notranslate"><span class="pre">.touchin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xbendin"><code class="docutils literal notranslate"><span class="pre">.xbendin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xbendin2"><code class="docutils literal notranslate"><span class="pre">.xbendin2</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xbendout"><code class="docutils literal notranslate"><span class="pre">.xbendout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xbendout2"><code class="docutils literal notranslate"><span class="pre">.xbendout2</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xctlin"><code class="docutils literal notranslate"><span class="pre">.xctlin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xctlout"><code class="docutils literal notranslate"><span class="pre">.xctlout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xmidiin"><code class="docutils literal notranslate"><span class="pre">.xmidiin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xnotein"><code class="docutils literal notranslate"><span class="pre">.xnotein</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xnoteout"><code class="docutils literal notranslate"><span class="pre">.xnoteout</span></code></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="midi">
+<h1>MIDI<a class="headerlink" href="#midi" title="Link to this heading">#</a></h1>
+<p>Formatting, parsing and note handling for MIDI, and MIDI device I/O.</p>
+<p>45 objects. Every entry is
+pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
+/ <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
+source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. For long-form notes, see the
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/midi.html">libYSE page for this category</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Objects marked <em>MIDI device only</em> below hold a MIDI device port. They
+exist only in builds with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> — not on macOS or
+Android.</p>
+</div>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#bendin" id="id1"><code class="docutils literal notranslate"><span class="pre">.bendin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#bendout" id="id2"><code class="docutils literal notranslate"><span class="pre">.bendout</span></code></a></p></li>
+<li><p><a class="reference internal" href="#borax" id="id3"><code class="docutils literal notranslate"><span class="pre">.borax</span></code></a></p></li>
+<li><p><a class="reference internal" href="#channelpressure" id="id4"><code class="docutils literal notranslate"><span class="pre">.channelpressure</span></code></a></p></li>
+<li><p><a class="reference internal" href="#controlchange" id="id5"><code class="docutils literal notranslate"><span class="pre">.controlchange</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ctlin" id="id6"><code class="docutils literal notranslate"><span class="pre">.ctlin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#flush" id="id7"><code class="docutils literal notranslate"><span class="pre">.flush</span></code></a></p></li>
+<li><p><a class="reference internal" href="#makenote" id="id8"><code class="docutils literal notranslate"><span class="pre">.makenote</span></code></a></p></li>
+<li><p><a class="reference internal" href="#midiflush" id="id9"><code class="docutils literal notranslate"><span class="pre">.midiflush</span></code></a></p></li>
+<li><p><a class="reference internal" href="#midiformat" id="id10"><code class="docutils literal notranslate"><span class="pre">.midiformat</span></code></a></p></li>
+<li><p><a class="reference internal" href="#midiin" id="id11"><code class="docutils literal notranslate"><span class="pre">.midiin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#midiinfo" id="id12"><code class="docutils literal notranslate"><span class="pre">.midiinfo</span></code></a></p></li>
+<li><p><a class="reference internal" href="#midiout" id="id13"><code class="docutils literal notranslate"><span class="pre">.midiout</span></code></a></p></li>
+<li><p><a class="reference internal" href="#midiparse" id="id14"><code class="docutils literal notranslate"><span class="pre">.midiparse</span></code></a></p></li>
+<li><p><a class="reference internal" href="#mpeconfig" id="id15"><code class="docutils literal notranslate"><span class="pre">.mpeconfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="#mpeformat" id="id16"><code class="docutils literal notranslate"><span class="pre">.mpeformat</span></code></a></p></li>
+<li><p><a class="reference internal" href="#mpeparse" id="id17"><code class="docutils literal notranslate"><span class="pre">.mpeparse</span></code></a></p></li>
+<li><p><a class="reference internal" href="#notein" id="id18"><code class="docutils literal notranslate"><span class="pre">.notein</span></code></a></p></li>
+<li><p><a class="reference internal" href="#noteoff" id="id19"><code class="docutils literal notranslate"><span class="pre">.noteoff</span></code></a></p></li>
+<li><p><a class="reference internal" href="#noteon" id="id20"><code class="docutils literal notranslate"><span class="pre">.noteon</span></code></a></p></li>
+<li><p><a class="reference internal" href="#nrpnin" id="id21"><code class="docutils literal notranslate"><span class="pre">.nrpnin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#nrpnout" id="id22"><code class="docutils literal notranslate"><span class="pre">.nrpnout</span></code></a></p></li>
+<li><p><a class="reference internal" href="#offer" id="id23"><code class="docutils literal notranslate"><span class="pre">.offer</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pgmin" id="id24"><code class="docutils literal notranslate"><span class="pre">.pgmin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#poly" id="id25"><code class="docutils literal notranslate"><span class="pre">.poly</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polyin" id="id26"><code class="docutils literal notranslate"><span class="pre">.polyin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#polypressure" id="id27"><code class="docutils literal notranslate"><span class="pre">.polypressure</span></code></a></p></li>
+<li><p><a class="reference internal" href="#programchange" id="id28"><code class="docutils literal notranslate"><span class="pre">.programchange</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rpnin" id="id29"><code class="docutils literal notranslate"><span class="pre">.rpnin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rpnout" id="id30"><code class="docutils literal notranslate"><span class="pre">.rpnout</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rtin" id="id31"><code class="docutils literal notranslate"><span class="pre">.rtin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#stripnote" id="id32"><code class="docutils literal notranslate"><span class="pre">.stripnote</span></code></a></p></li>
+<li><p><a class="reference internal" href="#sustain" id="id33"><code class="docutils literal notranslate"><span class="pre">.sustain</span></code></a></p></li>
+<li><p><a class="reference internal" href="#sxformat" id="id34"><code class="docutils literal notranslate"><span class="pre">.sxformat</span></code></a></p></li>
+<li><p><a class="reference internal" href="#sysexin" id="id35"><code class="docutils literal notranslate"><span class="pre">.sysexin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#touchin" id="id36"><code class="docutils literal notranslate"><span class="pre">.touchin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#xbendin" id="id37"><code class="docutils literal notranslate"><span class="pre">.xbendin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#xbendin2" id="id38"><code class="docutils literal notranslate"><span class="pre">.xbendin2</span></code></a></p></li>
+<li><p><a class="reference internal" href="#xbendout" id="id39"><code class="docutils literal notranslate"><span class="pre">.xbendout</span></code></a></p></li>
+<li><p><a class="reference internal" href="#xbendout2" id="id40"><code class="docutils literal notranslate"><span class="pre">.xbendout2</span></code></a></p></li>
+<li><p><a class="reference internal" href="#xctlin" id="id41"><code class="docutils literal notranslate"><span class="pre">.xctlin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#xctlout" id="id42"><code class="docutils literal notranslate"><span class="pre">.xctlout</span></code></a></p></li>
+<li><p><a class="reference internal" href="#xmidiin" id="id43"><code class="docutils literal notranslate"><span class="pre">.xmidiin</span></code></a></p></li>
+<li><p><a class="reference internal" href="#xnotein" id="id44"><code class="docutils literal notranslate"><span class="pre">.xnotein</span></code></a></p></li>
+<li><p><a class="reference internal" href="#xnoteout" id="id45"><code class="docutils literal notranslate"><span class="pre">.xnoteout</span></code></a></p></li>
+</ul>
+</nav>
+<section id="bendin">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.bendin</span></code></a><a class="headerlink" href="#bendin" title="Link to this heading">#</a></h2>
+<p>MIDI pitch-bend input at 7-bit resolution: reports the pitch wheel as 0-127 with 64 at rest. .xbendin reports the full 14 bits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mBendin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>bend</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The wheel position: 0 fully down, 64 at rest, 127 fully up.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="bendout">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.bendout</span></code></a><a class="headerlink" href="#bendout" title="Link to this heading">#</a></h2>
+<p>Builds a 7-bit MIDI pitch-bend message for .midiout: 0-127 with 64 at rest. .xbendout sends the full 14 bits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mBendout</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>bend</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Pitch bend, 64 at rest; sends the message.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The pitch-bend message, for .midiout. The fine byte is 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="borax">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.borax</span></code></a><a class="headerlink" href="#borax" title="Link to this heading">#</a></h2>
+<p>Reports statistics about a stream of notes: serial number, voice, how many notes are sounding, durations and the time between attacks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mBorax</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>int, float, list, ‘delta’</p></td>
+<td><p>A pitch is measured as a note-on, or as a note-off when the stored velocity is 0. A list “pitch velocity” sets the velocity first. “delta” reports the time since the last note-on.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127</p></td>
+<td><p>Velocity for the pitches that follow; sends nothing. 0 means a note-off. Not clamped.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>reset</p></td>
+<td><p>BANG</p></td>
+<td><p>bang</p></td>
+<td><p>A bang reports a note-off for every sounding note, then sets every counter back to 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>serial</p></td>
+<td><p>INT</p></td>
+<td><p>1+</p></td>
+<td><p>The note’s number, counting note-ons from 1. The same at its note-on and its note-off. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>voice</p></td>
+<td><p>INT</p></td>
+<td><p>1-128</p></td>
+<td><p>The voice the note took: the lowest free number, from 1.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>poly</p></td>
+<td><p>INT</p></td>
+<td><p>0-128</p></td>
+<td><p>How many notes are sounding, on every note-on and note-off.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The pitch of the note that started or ended.</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The stored velocity at a note-on, 0 at a note-off.</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>notesoff</p></td>
+<td><p>INT</p></td>
+<td><p>1+</p></td>
+<td><p>How many notes have ended, sent at each note-off.</p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p>duration</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0+ ms</p></td>
+<td><p>How long the note that just ended lasted, in milliseconds.</p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p>deltacount</p></td>
+<td><p>INT</p></td>
+<td><p>1+</p></td>
+<td><p>How many delta times have been reported, sent with each one.</p></td>
+</tr>
+<tr class="row-even"><td><p>8</p></td>
+<td><p>delta</p></td>
+<td><p>FLOAT</p></td>
+<td><p>0+ ms</p></td>
+<td><p>Milliseconds since the previous note-on, sent at each note-on after the first and on “delta”.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="channelpressure">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.channelpressure</span></code></a><a class="headerlink" href="#channelpressure" title="Link to this heading">#</a></h2>
+<p>Builds a MIDI channel-aftertouch message for .midiout. Each pressure value on the inlet sends one message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mChanPress</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pressure</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Pressure for the whole channel; sends the message.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The channel-pressure message, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="controlchange">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.controlchange</span></code></a><a class="headerlink" href="#controlchange" title="Link to this heading">#</a></h2>
+<p>Builds a MIDI control-change message for .midiout. Each value on the inlet sends one message, on the controller and channel the arguments set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mControl</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Controller value; sends the message.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The control-change message, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+<tr class="row-odd"><td><p>controller</p></td>
+<td><p>0</p></td>
+<td><p>0-127</p></td>
+<td><p>Controller number.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="ctlin">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.ctlin</span></code></a><a class="headerlink" href="#ctlin" title="Link to this heading">#</a></h2>
+<p>MIDI control-change input. Reports the value, controller number and channel of every control change received on a MIDI input port: knobs, faders, wheels and pedals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mCtlin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The controller’s value. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>controller</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The controller number: 1 is the modulation wheel, 7 volume, 64 the sustain pedal.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+<tr class="row-even"><td><p>controller</p></td>
+<td><p>-1</p></td>
+<td><p>-1 to 127</p></td>
+<td><p>Controller number to listen to, 0-127, or -1 for all controllers. Any other value means all controllers.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="flush">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.flush</span></code></a><a class="headerlink" href="#flush" title="Link to this heading">#</a></h2>
+<p>Passes pitch/velocity pairs through and remembers which notes are sounding. A bang releases them all with velocity 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mFlush</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>int, float, list, ‘bang’, ‘clear’</p></td>
+<td><p>A pitch passes through with the stored velocity. A list “pitch velocity” sets the velocity first. A bang releases every sounding note; “clear” forgets them.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127</p></td>
+<td><p>Velocity for the pitches that follow; sends nothing. 0 means a release. Not clamped.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The pitch, as it passes and again when a bang releases it. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The stored velocity as a pair passes, or 0 for a release.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="makenote">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.makenote</span></code></a><a class="headerlink" href="#makenote" title="Link to this heading">#</a></h2>
+<p>Plays a note: sends a pitch and velocity now, and the same pitch with velocity 0 after a duration in milliseconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mMakenote</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>int, float, list, ‘stop’, ‘clear’</p></td>
+<td><p>A pitch plays a note with the stored velocity and duration. A list “pitch velocity” sets the velocity first. “stop” releases every sounding note; “clear” forgets them.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127</p></td>
+<td><p>Velocity for the notes that follow; sends nothing. Clamped to 0-127. With 0, the pair passes through and no release is scheduled.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>duration</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0+ ms</p></td>
+<td><p>Duration in milliseconds for the notes that follow; sends nothing. A negative value counts as 0. Note values and ticks are not supported.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The pitch, when the note plays and again when it is released. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The velocity when the note plays, 0 when it is released.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>velocity</p></td>
+<td><p>0</p></td>
+<td><p>0-127</p></td>
+<td><p>Starting velocity. With 0, notes pass through and no release is scheduled, so set it or send a velocity before playing.</p></td>
+</tr>
+<tr class="row-odd"><td><p>duration</p></td>
+<td><p>0</p></td>
+<td><p>0+ ms</p></td>
+<td><p>Starting duration in milliseconds. 0 releases each note on the next audio block.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="midiflush">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.midiflush</span></code></a><a class="headerlink" href="#midiflush" title="Link to this heading">#</a></h2>
+<p>Passes a MIDI byte stream through and remembers which notes it left sounding. A bang sends a note-off for each of them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mMidiflush</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>MIDI bytes as a list of byte values, a message from a sender object, or one int at a time; all pass through. A bang sends a note-off for every sounding note.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>ANY</p></td>
+<td><p>0-255</p></td>
+<td><p>The stream, unchanged, plus the note-offs a bang sends, as lists such as 128 60 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="midiformat">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.midiformat</span></code></a><a class="headerlink" href="#midiformat" title="Link to this heading">#</a></h2>
+<p>Builds raw MIDI messages from notes, controllers, program changes, pressure and pitch bend. The inverse of .midiparse; each message leaves as a list of byte values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mFormat</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>note</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127 0-127</p></td>
+<td><p>“pitch velocity”; a bare pitch sends velocity 0, a release. Sends a note-on.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>poly</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127 0-127</p></td>
+<td><p>Polyphonic key pressure as “pitch pressure”; a bare pitch sends 0.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>control</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127 0-127</p></td>
+<td><p>Control change as “controller value”; a bare number sends value 0.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>program</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>1-128</p></td>
+<td><p>Program change, numbered from 1.</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>aftertouch</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Channel pressure: one value for the whole channel.</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>bend</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Pitch bend, coarse byte, 64 at rest. The fine byte is sent as 0.</p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p>channel</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>1-16</p></td>
+<td><p>Channel for the messages that follow. Stores only; starts at 1.</p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p>raw</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>Byte values passed straight to the outlet, as a list or one at a time. A value outside 0-255 is dropped; a list is cut at 128 bytes.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>One message per list, such as 144 60 100: a note-on for middle C, velocity 100, channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="midiin">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.midiin</span></code></a><a class="headerlink" href="#midiin" title="Link to this heading">#</a></h2>
+<p>Raw MIDI input. Every byte received on a MIDI input port leaves the outlet as an int, in arrival order and uninterpreted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mIn</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>byte</p></td>
+<td><p>INT</p></td>
+<td><p>0-255</p></td>
+<td><p>Each received byte as an int. Status bytes keep their value on the wire (144-159 is a note-on, 240 starts a system-exclusive dump); data bytes are 0-127.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="midiinfo">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.midiinfo</span></code></a><a class="headerlink" href="#midiinfo" title="Link to this heading">#</a></h2>
+<p>Lists the machine’s MIDI ports. A bang sends the number of ports, then an index and a name for each, so a patch can find a device by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mMidiinfo</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>bang</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang sends the listing. “input” and “output” switch which ports are listed; “refresh” scans the machine again and sends the listing when the scan is done.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>name</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The port’s name, spaces included, cut at 63 characters. Sent after its index.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>index</p></td>
+<td><p>INT</p></td>
+<td><p>0-31</p></td>
+<td><p>The port’s index: the port argument .midiout, .notein and the other MIDI objects take. Counted from 0.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>count</p></td>
+<td><p>INT</p></td>
+<td><p>0-32</p></td>
+<td><p>How many ports there are. Sent first; 0 when there are none.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>direction</p></td>
+<td><p>input</p></td>
+<td><p>input | output</p></td>
+<td><p>Which ports to list: “input” or “output”. Anything else means “input”.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="midiout">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.midiout</span></code></a><a class="headerlink" href="#midiout" title="Link to this heading">#</a></h2>
+<p>Sends MIDI messages to an output port. Each list on the inlet is one message, as byte values or as built by the MIDI sender objects; a few words send common channel-mode messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mOut</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>One MIDI message: a list of byte values such as 144 60 100, or a message from a sender object such as .noteon. Messages that arrive before the port is open, including the first, are dropped.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>device-dependent</p></td>
+<td><p>MIDI output port, counted from 0; .midiinfo lists them.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="midiparse">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.midiparse</span></code></a><a class="headerlink" href="#midiparse" title="Link to this heading">#</a></h2>
+<p>Splits a raw MIDI byte stream into notes, controllers, program changes, pressure, pitch bend and channel. Messages it does not decode leave the rightmost outlet as bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mParse</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>MIDI bytes, one int at a time or as a list of byte values. A value outside 0-255 is ignored.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>note</p></td>
+<td><p>LIST</p></td>
+<td><p>0-127 0-127</p></td>
+<td><p>Note as “pitch velocity”; a release reports velocity 0.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>poly</p></td>
+<td><p>LIST</p></td>
+<td><p>0-127 0-127</p></td>
+<td><p>Polyphonic key pressure as “pitch pressure”.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>control</p></td>
+<td><p>LIST</p></td>
+<td><p>0-127 0-127</p></td>
+<td><p>Control change as “controller value”.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>program</p></td>
+<td><p>INT</p></td>
+<td><p>1-128</p></td>
+<td><p>Program change, numbered from 1.</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>aftertouch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Channel pressure: one value for the whole channel.</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>bend</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Pitch bend, coarse byte only, 64 at rest.</p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on. Sent before the typed outlet.</p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p>raw</p></td>
+<td><p>LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>Every other message as a list of byte values: system exclusive, song position, time code, clock and the rest.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="mpeconfig">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.mpeconfig</span></code></a><a class="headerlink" href="#mpeconfig" title="Link to this heading">#</a></h2>
+<p>Builds the MPE configuration message that tells a device how many member channels an MPE zone uses. A value on the inlet sends it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mMpeconfig</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>members</p></td>
+<td><p>INT</p></td>
+<td><p>0-15</p></td>
+<td><p>Number of member channels; sends the message. 0 switches MPE off on the device.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>Three control-change messages on the zone’s master channel, as byte lists for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>zone</p></td>
+<td><p>0</p></td>
+<td><p>0-1</p></td>
+<td><p>0 for the lower zone (master channel 1, members counting up from 2) or 1 for the upper zone (master channel 16, members counting down from 15). Anything other than 1 means the lower zone.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="mpeformat">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.mpeformat</span></code></a><a class="headerlink" href="#mpeformat" title="Link to this heading">#</a></h2>
+<p>Builds MPE messages: notes, per-note pitch bend, pressure and slide, on the member channel set by the right inlet. The inverse of .mpeparse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mMpeformat</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>note</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127 0-127</p></td>
+<td><p>“pitch velocity”; a bare pitch sends velocity 0, a release. Sends a note-on.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>bend</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>Per-note pitch bend, 8192 at rest, at the full 14 bits.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>pressure</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Per-note pressure, sent as channel pressure.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>slide</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Per-note slide, sent as controller 74.</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>channel</p></td>
+<td><p>FLOAT, INT</p></td>
+<td><p>1-16</p></td>
+<td><p>Member channel for the messages that follow. Stores only; starts at 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>One message per list, such as 146 60 100: a note-on for middle C on channel 3.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="mpeparse">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.mpeparse</span></code></a><a class="headerlink" href="#mpeparse" title="Link to this heading">#</a></h2>
+<p>Reads an MPE MIDI stream and reports notes, per-note pitch bend, pressure and slide, each with its channel and the channel’s role in the zone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mMpeparse</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>MIDI bytes, one int at a time or as a list of byte values. A value outside 0-255 is ignored.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>note</p></td>
+<td><p>LIST</p></td>
+<td><p>0-127 0-127</p></td>
+<td><p>Note as “pitch velocity”; a release reports velocity 0.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>bend</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>Pitch bend at the full 14 bits, 8192 at rest.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>pressure</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Channel pressure: on a member channel, that note’s pressure.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>slide</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Controller 74.</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on: in MPE, the note it belongs to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>role</p></td>
+<td><p>INT</p></td>
+<td><p>0-2</p></td>
+<td><p>The channel’s role: 2 master, 1 member, 0 outside the zone. Sent first.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>zone</p></td>
+<td><p>0</p></td>
+<td><p>0-1</p></td>
+<td><p>0 for the lower zone (master channel 1, members counting up from 2) or 1 for the upper zone (master channel 16, members counting down from 15). Anything other than 1 means the lower zone.</p></td>
+</tr>
+<tr class="row-odd"><td><p>members</p></td>
+<td><p>15</p></td>
+<td><p>0-15</p></td>
+<td><p>Member channels to assume until a configuration message in the stream changes it.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="notein">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.notein</span></code></a><a class="headerlink" href="#notein" title="Link to this heading">#</a></h2>
+<p>MIDI note input. Every note-on and note-off received on a MIDI input port leaves as pitch, velocity and channel; a release reports velocity 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mNotein</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The note number; middle C is 60. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>How hard the key was struck, or 0 for a release: a note-off message and a note-on with velocity 0 both report 0.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="noteoff">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.noteoff</span></code></a><a class="headerlink" href="#noteoff" title="Link to this heading">#</a></h2>
+<p>Builds a MIDI note-off message for .midiout. A pitch on the left inlet sends it, with the release velocity stored on the right inlet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mNoteOff</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Note number; sends the message.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Release velocity, stored for the next pitch.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The note-off message, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="noteon">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.noteon</span></code></a><a class="headerlink" href="#noteon" title="Link to this heading">#</a></h2>
+<p>Builds a MIDI note-on message for .midiout. A pitch on the left inlet sends it, with the velocity stored on the right inlet; velocity 0 is a release.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mNoteOn</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Note number; sends the message.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Note velocity, stored for the next pitch.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The note-on message, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="nrpnin">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.nrpnin</span></code></a><a class="headerlink" href="#nrpnin" title="Link to this heading">#</a></h2>
+<p>Non-registered parameter (NRPN) input. Follows the control changes that select and write a device’s own parameter, and reports each value written with its parameter number and channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mNrpnin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>The value written. Sent last. A device that sends only the coarse byte moves in steps of 128.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>parameter</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>The non-registered parameter written. What each number means is in the sending device’s documentation.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the value arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="nrpnout">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.nrpnout</span></code></a><a class="headerlink" href="#nrpnout" title="Link to this heading">#</a></h2>
+<p>Writes a 14-bit value to a non-registered parameter (NRPN), a device’s own parameter, as four MIDI control-change messages for .midiout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mNrpnout</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>The value to write; sends all four messages. A device that reads only the coarse byte sees the value in steps of 128.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>parameter</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>Non-registered parameter number, stored for the next value. What each number means is in the receiving device’s documentation.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Four control-change messages, for .midiout: the parameter number’s coarse and fine bytes, then the value’s coarse byte on controller 6 and fine byte on controller 38.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="offer">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.offer</span></code></a><a class="headerlink" href="#offer" title="Link to this heading">#</a></h2>
+<p>Stores x,y pairs of ints and hands each y back once: an x with no y waiting looks up its pair, sends the y and deletes the pair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mOffer</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>x</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>int, float, list ‘&lt;x&gt; &lt;y&gt;’, bang, ‘clear’</p></td>
+<td><p>With a y armed, stores the pair x,y. Otherwise looks up x: sends the matching pair’s y and deletes the pair. A list “x y” stores a pair; a bang sends every stored y; “clear” deletes all pairs.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>y</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>any int</p></td>
+<td><p>Arms a y for the next x; sends nothing. A second y replaces the first. 0 is a valid y.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>y</p></td>
+<td><p>INT</p></td>
+<td><p>any int</p></td>
+<td><p>The y of a pair looked up by x, or every stored y, oldest first, on a bang.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="pgmin">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.pgmin</span></code></a><a class="headerlink" href="#pgmin" title="Link to this heading">#</a></h2>
+<p>MIDI program-change input. Reports each program change received on a MIDI input port as 1-128, the numbering most devices display.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mPgmin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>program</p></td>
+<td><p>INT</p></td>
+<td><p>1-128</p></td>
+<td><p>The program number: the value on the wire plus one.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="poly">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.poly</span></code></a><a class="headerlink" href="#poly" title="Link to this heading">#</a></h2>
+<p>Assigns notes to a numbered pool of voices. Each note-on takes a free voice, and its release comes out with the same voice number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mPoly</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>int, float, list, ‘stop’</p></td>
+<td><p>A pitch takes a voice, or frees one when the stored velocity is 0. A list “pitch velocity” sets the velocity first. “stop” releases every sounding voice.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127</p></td>
+<td><p>Velocity for the pitches that follow; sends nothing. 0 means a release. Not clamped.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>voice</p></td>
+<td><p>INT</p></td>
+<td><p>1-128</p></td>
+<td><p>The voice number, from 1: the same for a note’s attack and its release. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The pitch of the note being started or released.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The stored velocity for a note-on, 0 for a release.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>overflow</p></td>
+<td><p>LIST</p></td>
+<td><p>pitch velocity</p></td>
+<td><p>“pitch velocity” for a note no voice could take, and “pitch 0” for a release whose pitch no voice holds.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>voices</p></td>
+<td><p>16</p></td>
+<td><p>1-128</p></td>
+<td><p>Number of voices. Clamped to 1-128.</p></td>
+</tr>
+<tr class="row-odd"><td><p>steal</p></td>
+<td><p>0</p></td>
+<td><p>0 or non-zero</p></td>
+<td><p>0 sends notes that find no free voice to the overflow outlet. Any other value takes the voice of the note held longest, releasing that note first.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="polyin">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.polyin</span></code></a><a class="headerlink" href="#polyin" title="Link to this heading">#</a></h2>
+<p>MIDI polyphonic key-pressure input. Reports the pressure on each held key separately, as pitch, pressure and channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mPolyin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The key the pressure belongs to, numbered as .notein numbers it. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>pressure</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The pressure on that key.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="polypressure">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.polypressure</span></code></a><a class="headerlink" href="#polypressure" title="Link to this heading">#</a></h2>
+<p>Builds a MIDI polyphonic key-pressure message for .midiout. A pitch on the left inlet sends it, with the pressure stored on the right inlet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mPolyPress</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Note number of the pressed key; sends the message.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>pressure</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Pressure on that key, stored for the next pitch.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The poly-pressure message, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="programchange">
+<h2><a class="toc-backref" href="#id28" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.programchange</span></code></a><a class="headerlink" href="#programchange" title="Link to this heading">#</a></h2>
+<p>Builds a MIDI program-change message for .midiout. Each program number on the inlet, 0-127 as on the wire, sends one message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mProgChange</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>program</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Program number as on the wire, from 0; sends the message.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The program-change message, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="rpnin">
+<h2><a class="toc-backref" href="#id29" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.rpnin</span></code></a><a class="headerlink" href="#rpnin" title="Link to this heading">#</a></h2>
+<p>Registered parameter (RPN) input. Follows the control changes that select and write a parameter, and reports each value written with its parameter number and channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mRpnin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>The value written. Sent last. A device that sends only the coarse byte moves in steps of 128.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>parameter</p></td>
+<td><p>INT</p></td>
+<td><p>0-16382</p></td>
+<td><p>The registered parameter written: 0 pitch-bend range, 1 fine tuning, 2 coarse tuning, 3 tuning program, 4 tuning bank.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the value arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="rpnout">
+<h2><a class="toc-backref" href="#id30" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.rpnout</span></code></a><a class="headerlink" href="#rpnout" title="Link to this heading">#</a></h2>
+<p>Writes a 14-bit value to a registered parameter (RPN), such as pitch-bend range, as four MIDI control-change messages for .midiout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mRpnout</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>The value to write; sends all four messages. A device that reads only the coarse byte sees the value in steps of 128.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>parameter</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>Registered parameter number, stored for the next value: 0 pitch-bend range, 1 fine tuning, 2 coarse tuning, 3 tuning program, 4 tuning bank, 16383 null.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Four control-change messages, for .midiout: the parameter number’s coarse and fine bytes, then the value’s coarse byte on controller 6 and fine byte on controller 38.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="rtin">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.rtin</span></code></a><a class="headerlink" href="#rtin" title="Link to this heading">#</a></h2>
+<p>MIDI clock input. Reports the system real-time messages a sequencer or drum machine sends: timing clock, start, continue, stop and reset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mRtin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>status</p></td>
+<td><p>INT</p></td>
+<td><p>248-255</p></td>
+<td><p>The message: 248 timing clock (24 per quarter note), 250 start, 251 continue, 252 stop, 255 reset.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="stripnote">
+<h2><a class="toc-backref" href="#id32" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.stripnote</span></code></a><a class="headerlink" href="#stripnote" title="Link to this heading">#</a></h2>
+<p>Passes note-ons and drops releases: a pitch goes through only when its velocity is not 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mStripnote</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>int, float, list</p></td>
+<td><p>A pitch passes with the stored velocity, unless that velocity is 0. A list “pitch velocity” sets the velocity first.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127</p></td>
+<td><p>Velocity for the pitches that follow; sends nothing. Not clamped.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The pitch of a note-on. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The velocity of a note-on; never 0.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sustain">
+<h2><a class="toc-backref" href="#id33" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.sustain</span></code></a><a class="headerlink" href="#sustain" title="Link to this heading">#</a></h2>
+<p>A sustain pedal for pitch/velocity pairs. While the pedal is down, releases are held back; lifting it sends them all.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mSustain</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>int, float, list, ‘sustain 0/1’, ‘flush’, ‘clear’</p></td>
+<td><p>A pitch passes with the stored velocity; a release is held back while the pedal is down. Also takes “pitch velocity”, “sustain 0/1”, “flush” and “clear”.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0-127</p></td>
+<td><p>Velocity for the pitches that follow; sends nothing. 0 means a release. Not clamped.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>pedal</p></td>
+<td><p>FLOAT, INT, LIST</p></td>
+<td><p>0 (up) or non-zero (down)</p></td>
+<td><p>Non-zero presses the pedal. 0 lifts it and sends every held release. The pedal starts up.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The pitch, as a pair passes or as a held release is sent. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>int</p></td>
+<td><p>The stored velocity as a pair passes, or 0 for a release.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sxformat">
+<h2><a class="toc-backref" href="#id34" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.sxformat</span></code></a><a class="headerlink" href="#sxformat" title="Link to this heading">#</a></h2>
+<p>Builds a system-exclusive message from a template of constant bytes, placeholders filled from the inlets, and an optional checksum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mSxformat</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>$i1</p></td>
+<td><p>FLOAT, INT, BANG, LIST</p></td>
+<td><p>-1 to 127</p></td>
+<td><p>Value for $i1; sends the message. A list fills $i1, $i2 and so on, then sends; a bang sends with the stored values. A negative value leaves its byte out; above 127 is clamped.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>sysex</p></td>
+<td><p>LIST</p></td>
+<td><p>0-255</p></td>
+<td><p>The message as a list of byte values, such as 240 67 0 1 247.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>sysex</p></td>
+<td><p>—</p></td>
+<td><p>0-255, $i1-$i9, sumstart, sum</p></td>
+<td><p>The message, one token per byte: a number 0-255, a placeholder $i1 to $i9 filled from the inlets, “sumstart” to start the checksum region, or “sum” for the checksum byte.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sysexin">
+<h2><a class="toc-backref" href="#id35" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.sysexin</span></code></a><a class="headerlink" href="#sysexin" title="Link to this heading">#</a></h2>
+<p>System-exclusive input. Every byte of every system-exclusive message received on a MIDI input port leaves as an int, from 240 to 247; other messages are filtered out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mSysexin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>byte</p></td>
+<td><p>INT</p></td>
+<td><p>0-247</p></td>
+<td><p>Each byte of a system-exclusive message, in arrival order: 240, the manufacturer ID, the data, then 247.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="touchin">
+<h2><a class="toc-backref" href="#id36" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.touchin</span></code></a><a class="headerlink" href="#touchin" title="Link to this heading">#</a></h2>
+<p>MIDI channel-aftertouch input. Reports the pressure on the keys after they are down, as one value for the whole channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mTouchin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pressure</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Channel pressure: one value however many keys are held. Per-key pressure is .polyin’s.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="xbendin">
+<h2><a class="toc-backref" href="#id37" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.xbendin</span></code></a><a class="headerlink" href="#xbendin" title="Link to this heading">#</a></h2>
+<p>MIDI pitch-bend input at full 14-bit resolution: reports the pitch wheel as 0-16383 with 8192 at rest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mXbendin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>bend</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>The wheel position: 0 fully down, 8192 at rest, 16383 fully up.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="xbendin2">
+<h2><a class="toc-backref" href="#id38" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.xbendin2</span></code></a><a class="headerlink" href="#xbendin2" title="Link to this heading">#</a></h2>
+<p>MIDI pitch-bend input reported as its two bytes: the coarse byte, with 64 at rest, and the fine byte below it. Pairs with .xbendout2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mXbendin2</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>msb</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The coarse byte, 64 at rest: the value .bendin reports. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>lsb</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The fine byte: 128 steps between one coarse value and the next.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="xbendout">
+<h2><a class="toc-backref" href="#id39" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.xbendout</span></code></a><a class="headerlink" href="#xbendout" title="Link to this heading">#</a></h2>
+<p>Builds a 14-bit MIDI pitch-bend message for .midiout: 0-16383 with 8192 at rest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mXbendout</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>bend</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>Pitch bend, 8192 at rest; sends the message.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The pitch-bend message, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="xbendout2">
+<h2><a class="toc-backref" href="#id40" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.xbendout2</span></code></a><a class="headerlink" href="#xbendout2" title="Link to this heading">#</a></h2>
+<p>Builds a 14-bit MIDI pitch-bend message for .midiout from its coarse and fine bytes, the form .xbendin2 reports.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mXbendout2</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>msb</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Coarse byte, 64 at rest; sends the message.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>lsb</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Fine byte, stored for the next coarse byte.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The pitch-bend message, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="xctlin">
+<h2><a class="toc-backref" href="#id41" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.xctlin</span></code></a><a class="headerlink" href="#xctlin" title="Link to this heading">#</a></h2>
+<p>14-bit MIDI control-change input. Combines controllers 0-31 with their fine partners 32-63 and reports each move as one value of 0-16383.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mXctlin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>The controller’s value. Sent last. A device that sends only the coarse controller moves in steps of 128.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>controller</p></td>
+<td><p>INT</p></td>
+<td><p>0-31</p></td>
+<td><p>The coarse controller number, whichever of the pair moved.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+<tr class="row-even"><td><p>controller</p></td>
+<td><p>-1</p></td>
+<td><p>-1 to 31</p></td>
+<td><p>Coarse controller number to listen to, 0-31, or -1 for all of them. Any other value means all of them.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="xctlout">
+<h2><a class="toc-backref" href="#id42" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.xctlout</span></code></a><a class="headerlink" href="#xctlout" title="Link to this heading">#</a></h2>
+<p>Sends a 14-bit controller value as two MIDI control-change messages for .midiout: the coarse half on controller 0-31, then the fine half on that number plus 32.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mXctlout</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>value</p></td>
+<td><p>INT</p></td>
+<td><p>0-16383</p></td>
+<td><p>Controller value; sends both messages.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>controller</p></td>
+<td><p>INT</p></td>
+<td><p>0-31</p></td>
+<td><p>Coarse controller number, stored for the next value. The fine half goes to this number plus 32.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Two control-change messages, coarse then fine, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="xmidiin">
+<h2><a class="toc-backref" href="#id43" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.xmidiin</span></code></a><a class="headerlink" href="#xmidiin" title="Link to this heading">#</a></h2>
+<p>Raw MIDI input framed into messages. Each complete message received on a MIDI input port leaves as one list of byte values, such as 144 60 100.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mXmidiin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>0-255 per byte</p></td>
+<td><p>One message per list: the status byte, then its data bytes. A clock byte is a list of one; a system-exclusive dump longer than 256 bytes leaves in 256-byte lists.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="xnotein">
+<h2><a class="toc-backref" href="#id44" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.xnotein</span></code></a><a class="headerlink" href="#xnotein" title="Link to this heading">#</a></h2>
+<p>MIDI note input with release velocity. Reports pitch, velocity, release velocity and channel; a note-off reports velocity 0 and how fast the key came up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mXnotein</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+<dt class="field-odd">Availability<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MIDI device only</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only available when libYSE is built with <code class="docutils literal notranslate"><span class="pre">YSE_ENABLE_MIDI_DEVICE</span></code> (on by default on Windows and Linux desktop builds). On macOS and Android the option is off and this object is not registered, so a patch that uses it is not portable to those platforms. Check <code class="docutils literal notranslate"><span class="pre">PatcherObjectType.requiresMidiDevice</span></code> or <code class="docutils literal notranslate"><span class="pre">Obj.isValid</span></code> at runtime.</p>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>The note number; middle C is 60. Sent last.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>How hard the key was struck, or 0 for a release, as .notein reports.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>release</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>How fast the key came up, from a note-off message. 0 on a note-on, including one with velocity 0.</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>channel</p></td>
+<td><p>INT</p></td>
+<td><p>1-16</p></td>
+<td><p>The channel the message arrived on, 1-16. Sent before the outlets to its left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>port</p></td>
+<td><p>0</p></td>
+<td><p>0-7</p></td>
+<td><p>MIDI input port to listen to, counted from 0; .midiinfo lists them. A port that cannot be opened leaves the object silent, and the patch still loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-16</p></td>
+<td><p>MIDI channel to listen to, 1-16, or 0 for all channels. Any other value means all channels. The channel outlet stays either way.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="xnoteout">
+<h2><a class="toc-backref" href="#id45" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.xnoteout</span></code></a><a class="headerlink" href="#xnoteout" title="Link to this heading">#</a></h2>
+<p>Builds a MIDI note message with release velocity for .midiout. A velocity above 0 sends a note-on; 0 sends a note-off carrying the release velocity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.mXnoteout</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pitch</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Note number; sends the message.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>velocity</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Note velocity, stored for the next pitch. 0 makes the message a note-off.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>release</p></td>
+<td><p>INT</p></td>
+<td><p>0-127</p></td>
+<td><p>Release velocity, stored for the next pitch and used only when the velocity is 0. Starts at 64.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>midi</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The note-on or note-off message, for .midiout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel</p></td>
+<td><p>0</p></td>
+<td><p>0-15</p></td>
+<td><p>MIDI channel, counted from 0: 0 is channel 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="sequencing.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Sequencing</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="gui.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">GUI controls</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bendin"><code class="docutils literal notranslate"><span class="pre">.bendin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bendout"><code class="docutils literal notranslate"><span class="pre">.bendout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#borax"><code class="docutils literal notranslate"><span class="pre">.borax</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#channelpressure"><code class="docutils literal notranslate"><span class="pre">.channelpressure</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlchange"><code class="docutils literal notranslate"><span class="pre">.controlchange</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ctlin"><code class="docutils literal notranslate"><span class="pre">.ctlin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flush"><code class="docutils literal notranslate"><span class="pre">.flush</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#makenote"><code class="docutils literal notranslate"><span class="pre">.makenote</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiflush"><code class="docutils literal notranslate"><span class="pre">.midiflush</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiformat"><code class="docutils literal notranslate"><span class="pre">.midiformat</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiin"><code class="docutils literal notranslate"><span class="pre">.midiin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiinfo"><code class="docutils literal notranslate"><span class="pre">.midiinfo</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiout"><code class="docutils literal notranslate"><span class="pre">.midiout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#midiparse"><code class="docutils literal notranslate"><span class="pre">.midiparse</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mpeconfig"><code class="docutils literal notranslate"><span class="pre">.mpeconfig</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mpeformat"><code class="docutils literal notranslate"><span class="pre">.mpeformat</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mpeparse"><code class="docutils literal notranslate"><span class="pre">.mpeparse</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notein"><code class="docutils literal notranslate"><span class="pre">.notein</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noteoff"><code class="docutils literal notranslate"><span class="pre">.noteoff</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noteon"><code class="docutils literal notranslate"><span class="pre">.noteon</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nrpnin"><code class="docutils literal notranslate"><span class="pre">.nrpnin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nrpnout"><code class="docutils literal notranslate"><span class="pre">.nrpnout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#offer"><code class="docutils literal notranslate"><span class="pre">.offer</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pgmin"><code class="docutils literal notranslate"><span class="pre">.pgmin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#poly"><code class="docutils literal notranslate"><span class="pre">.poly</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#polyin"><code class="docutils literal notranslate"><span class="pre">.polyin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#polypressure"><code class="docutils literal notranslate"><span class="pre">.polypressure</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#programchange"><code class="docutils literal notranslate"><span class="pre">.programchange</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rpnin"><code class="docutils literal notranslate"><span class="pre">.rpnin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rpnout"><code class="docutils literal notranslate"><span class="pre">.rpnout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rtin"><code class="docutils literal notranslate"><span class="pre">.rtin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stripnote"><code class="docutils literal notranslate"><span class="pre">.stripnote</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sustain"><code class="docutils literal notranslate"><span class="pre">.sustain</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sxformat"><code class="docutils literal notranslate"><span class="pre">.sxformat</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sysexin"><code class="docutils literal notranslate"><span class="pre">.sysexin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#touchin"><code class="docutils literal notranslate"><span class="pre">.touchin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xbendin"><code class="docutils literal notranslate"><span class="pre">.xbendin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xbendin2"><code class="docutils literal notranslate"><span class="pre">.xbendin2</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xbendout"><code class="docutils literal notranslate"><span class="pre">.xbendout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xbendout2"><code class="docutils literal notranslate"><span class="pre">.xbendout2</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xctlin"><code class="docutils literal notranslate"><span class="pre">.xctlin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xctlout"><code class="docutils literal notranslate"><span class="pre">.xctlout</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xmidiin"><code class="docutils literal notranslate"><span class="pre">.xmidiin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xnotein"><code class="docutils literal notranslate"><span class="pre">.xnotein</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xnoteout"><code class="docutils literal notranslate"><span class="pre">.xnoteout</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

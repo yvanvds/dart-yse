@@ -1,0 +1,1938 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Dictionaries &#8212; dart-yse 0.1</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/patcher_objects/dictionaries';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Arrays" href="arrays.html" />
+    <link rel="prev" title="Collections" href="collections.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">dart-yse 0.1</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    dart-yse
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">What is dart-yse?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/mental_model.html">Mental model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/hello_sound.html">Hello, sound</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_patcher.html">Patcher: modular synthesis in code</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core.html">Core</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../sounds.html">Sound</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../channels.html">Channel</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../devices.html">Devices</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../listener.html">Listener</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../reverb.html">Reverb</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../dsp.html">DSP</a></li>
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../clip.html">Clip transport</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../synth.html">Synth</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../music.html">Music</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../patcher.html">Patcher</a></li>
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Patcher object reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collections.html">Collections</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../buffer_io.html">BufferIO</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../live_coding.html">LiveCoding</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../enums.html">Enums</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/yvanvds/dart-yse/issues/new?title=Issue%20on%20page%20%2Fapi/patcher_objects/dictionaries.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/api/patcher_objects/dictionaries.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Dictionaries</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict"><code class="docutils literal notranslate"><span class="pre">.dict</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-compare"><code class="docutils literal notranslate"><span class="pre">.dict.compare</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-deserialize"><code class="docutils literal notranslate"><span class="pre">.dict.deserialize</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-group"><code class="docutils literal notranslate"><span class="pre">.dict.group</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-iter"><code class="docutils literal notranslate"><span class="pre">.dict.iter</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-join"><code class="docutils literal notranslate"><span class="pre">.dict.join</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-pack"><code class="docutils literal notranslate"><span class="pre">.dict.pack</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-print"><code class="docutils literal notranslate"><span class="pre">.dict.print</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-route"><code class="docutils literal notranslate"><span class="pre">.dict.route</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-serialize"><code class="docutils literal notranslate"><span class="pre">.dict.serialize</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-slice"><code class="docutils literal notranslate"><span class="pre">.dict.slice</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-strip"><code class="docutils literal notranslate"><span class="pre">.dict.strip</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-unpack"><code class="docutils literal notranslate"><span class="pre">.dict.unpack</span></code></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="dictionaries">
+<h1>Dictionaries<a class="headerlink" href="#dictionaries" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">.dict</span></code> family: keyed, nested data.</p>
+<p>13 objects. Every entry is
+pulled directly from the engine registry, which reads the <code class="docutils literal notranslate"><span class="pre">ADD_DESCRIPTION</span></code>
+/ <code class="docutils literal notranslate"><span class="pre">INLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">OUTLET_DOC</span></code> / <code class="docutils literal notranslate"><span class="pre">PARAM_DOC</span></code> macros in the libYSE
+source. The <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix marks DSP / audio-rate objects; <code class="docutils literal notranslate"><span class="pre">.</span></code> marks
+control-rate objects. For long-form notes, see the
+<a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/patcher/objects/dictionaries.html">libYSE page for this category</a>.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#dict" id="id1"><code class="docutils literal notranslate"><span class="pre">.dict</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-compare" id="id2"><code class="docutils literal notranslate"><span class="pre">.dict.compare</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-deserialize" id="id3"><code class="docutils literal notranslate"><span class="pre">.dict.deserialize</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-group" id="id4"><code class="docutils literal notranslate"><span class="pre">.dict.group</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-iter" id="id5"><code class="docutils literal notranslate"><span class="pre">.dict.iter</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-join" id="id6"><code class="docutils literal notranslate"><span class="pre">.dict.join</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-pack" id="id7"><code class="docutils literal notranslate"><span class="pre">.dict.pack</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-print" id="id8"><code class="docutils literal notranslate"><span class="pre">.dict.print</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-route" id="id9"><code class="docutils literal notranslate"><span class="pre">.dict.route</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-serialize" id="id10"><code class="docutils literal notranslate"><span class="pre">.dict.serialize</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-slice" id="id11"><code class="docutils literal notranslate"><span class="pre">.dict.slice</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-strip" id="id12"><code class="docutils literal notranslate"><span class="pre">.dict.strip</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dict-unpack" id="id13"><code class="docutils literal notranslate"><span class="pre">.dict.unpack</span></code></a></p></li>
+</ul>
+</nav>
+<section id="dict">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict</span></code></a><a class="headerlink" href="#dict" title="Link to this heading">#</a></h2>
+<p>A key/value store shared by name. Keys nest with ‘::’ (voice::1::freq), a value is any message, and the contents are saved with the patch. A bang sends the reference ‘dictionary &lt;name&gt;’ that the other .dict objects take.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDict</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>in</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>at most 256 entries</p></td>
+<td><p>‘set &lt;path&gt; &lt;value…&gt;’ stores a value, ‘get &lt;path&gt;’ sends one, ‘delete &lt;path&gt;’ removes one, ‘clear’ empties the dictionary, ‘getsize’ sends the entry count and ‘getkeys’ the top-level keys. A bang sends the reference out of outlet 1.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>data</p></td>
+<td><p>ANY</p></td>
+<td><p>—</p></td>
+<td><p>The value a ‘get’ fetched: one number leaves as an int or a float, anything else as a list. Also the count from ‘getsize’ and the key list from ‘getkeys’.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>‘dictionary &lt;name&gt;’ on a bang: the reference the other .dict objects accept. Silent for an unnamed dictionary.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>miss</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>Bang when a ‘get’ names a path the dictionary does not hold.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The dictionary’s name. Every .dict with this name in the patcher shares one dictionary. Empty gives this object a private dictionary. Cannot be changed while the patch runs.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-compare">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.compare</span></code></a><a class="headerlink" href="#dict-compare" title="Link to this heading">#</a></h2>
+<p>Compares two named dictionaries and sends 1 when they hold the same entries, 0 when they do not. On a difference, the key paths that differ follow from the right outlet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictCompare</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>compare</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang compares the two dictionaries. So does the left dictionary’s reference ‘dictionary &lt;name&gt;’.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Accepts the right dictionary’s reference and does nothing with it, so its .dict can be wired here.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>equal</p></td>
+<td><p>INT</p></td>
+<td><p>0 or 1</p></td>
+<td><p>1 when the two dictionaries hold the same entries, 0 when they do not. Sent before the differing paths.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>paths</p></td>
+<td><p>ANY</p></td>
+<td><p>at most 256 paths</p></td>
+<td><p>The key paths that differ, as a list, sent after the verdict. Silent when the dictionaries are equal.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>left</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the left dictionary. Empty compares an empty dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p>right</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the right dictionary. Empty compares an empty dictionary.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-deserialize">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.deserialize</span></code></a><a class="headerlink" href="#dict-deserialize" title="Link to this heading">#</a></h2>
+<p>Fills a named dictionary from JSON text, replacing its contents, and sends its reference. Takes a JSON object as a message, or ‘read &lt;file&gt;’ for a larger document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictDeserialize</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>json</p></td>
+<td><p>LIST</p></td>
+<td><p>at most 255 characters inline; a file up to 128 KiB</p></td>
+<td><p>A JSON object as one list message, such as the text .dict.serialize sends. It replaces the dictionary’s contents one block later. ‘read &lt;file&gt;’ loads the JSON from a file; a bare ‘read’ reads the last file again.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>‘dictionary &lt;name&gt;’ once a document has been loaded. Silent for an unnamed dictionary and for a document that could not be read.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to fill. Empty fills a private dictionary and sends nothing.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-group">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.group</span></code></a><a class="headerlink" href="#dict-group" title="Link to this heading">#</a></h2>
+<p>Groups a named dictionary’s entries by value into a target dictionary, as ‘&lt;group&gt;::&lt;original path&gt;’. With a key argument, each record is grouped by the value it holds at that key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictGroup</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>group</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang groups the source dictionary into the target and sends the target’s reference. So does the source dictionary’s reference ‘dictionary &lt;name&gt;’.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>target reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Accepts the target dictionary’s reference and does nothing with it, so its .dict can be wired here.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>‘dictionary &lt;target&gt;’ after each grouping. Silent for an unnamed target.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>source</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to group. Empty groups an empty dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p>target</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary that receives the result. Each grouping replaces its contents.</p></td>
+</tr>
+<tr class="row-even"><td><p>key</p></td>
+<td><p>—</p></td>
+<td><p>any key path segment</p></td>
+<td><p>The key each record’s group is read from: with ‘instrument’, the entries under ‘&lt;record&gt;::’ group under the value at ‘&lt;record&gt;::instrument’. Empty groups each entry by its own value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-iter">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.iter</span></code></a><a class="headerlink" href="#dict-iter" title="Link to this heading">#</a></h2>
+<p>Walks a named dictionary, sending one ‘&lt;path&gt; &lt;value&gt;’ list per entry, then a bang from the right outlet when it is done.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictIter</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>walk</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang walks the dictionary: one pair per entry out of the left outlet, then a bang out of the right one. So does the dictionary’s reference ‘dictionary &lt;name&gt;’.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pair</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>One entry per message: its whole ‘::’ path followed by its value, in the order the entries were first written. An entry with an empty value leaves as its path alone.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>done</p></td>
+<td><p>BANG</p></td>
+<td><p>—</p></td>
+<td><p>Bang after the last pair, also for an empty dictionary.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to walk. Empty walks an empty dictionary: no pairs, only the done bang.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-join">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.join</span></code></a><a class="headerlink" href="#dict-join" title="Link to this heading">#</a></h2>
+<p>Merges two named dictionaries into a target dictionary: the left one’s entries, overlaid with the right one’s. Where both hold a key path, the right value wins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictJoin</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>join</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang joins the two dictionaries into the target and sends the target’s reference. So does the left dictionary’s reference ‘dictionary &lt;name&gt;’.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>right reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Accepts the right dictionary’s reference and does nothing with it, so its .dict can be wired here.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>‘dictionary &lt;target&gt;’ after each join. Silent for an unnamed target.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>left</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the base dictionary. Empty joins an empty dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p>right</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary laid over the base: its value wins on a shared key path. Empty joins an empty dictionary.</p></td>
+</tr>
+<tr class="row-even"><td><p>target</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary that receives the result. Each join replaces its contents. It may be one of the two sources.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-pack">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.pack</span></code></a><a class="headerlink" href="#dict-pack" title="Link to this heading">#</a></h2>
+<p>Builds a named dictionary from its inlets, one inlet per key path: ‘.dict.pack synth freq gain’. The left inlet stores its value, writes the dictionary and sends its reference; the other inlets only store.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictPack</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>pack</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>With no key paths, a bang writes an empty dictionary and sends its reference.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>‘dictionary &lt;name&gt;’ after each write. Silent for an unnamed dictionary.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to write. Empty writes a private dictionary and sends nothing.</p></td>
+</tr>
+<tr class="row-odd"><td><p>keys</p></td>
+<td><p>—</p></td>
+<td><p>key paths</p></td>
+<td><p>One key path per inlet, in order. Paths nest with ‘::’. A path longer than 128 characters is logged and gets no inlet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-print">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.print</span></code></a><a class="headerlink" href="#dict-print" title="Link to this heading">#</a></h2>
+<p>Prints a named dictionary to the engine log as indented JSON, one line per row, each line labelled with the dictionary’s name. A debugging aid with no outlets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictPrint</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>dump</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang prints the dictionary to the engine log. So does the dictionary’s reference ‘dictionary &lt;name&gt;’.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to print, also used as the label in front of every line (at most 32 characters of it). Empty prints {} under the label ‘dict.print’.</p></td>
+</tr>
+<tr class="row-odd"><td><p>lines</p></td>
+<td><p>64</p></td>
+<td><p>1-256</p></td>
+<td><p>The most lines this object sends to the log per engine update. Lines past it are dropped and one notice line says so. A value that is not a number keeps the default.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-route">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.route</span></code></a><a class="headerlink" href="#dict-route" title="Link to this heading">#</a></h2>
+<p>Sends a named dictionary’s reference out of the outlet of the first key argument it holds, or out of the rightmost outlet when it holds none. Use it to send dictionaries of different shapes to different parts of a patch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictRoute</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>route</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang routes the dictionary: its reference leaves the outlet of the first key argument it holds, or the rightmost outlet when it holds none. So does the dictionary’s reference ‘dictionary &lt;name&gt;’.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>none</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The dictionary’s reference, when it holds none of the keys. Wire it into the next .dict.route to test more keys.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to route. Empty makes the object do nothing.</p></td>
+</tr>
+<tr class="row-odd"><td><p>keys</p></td>
+<td><p>—</p></td>
+<td><p>key paths</p></td>
+<td><p>One key per outlet, in order. A key may be a path (‘voice::1’); it matches an entry at that path or under it. The rightmost outlet is always added for no match.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-serialize">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.serialize</span></code></a><a class="headerlink" href="#dict-serialize" title="Link to this heading">#</a></h2>
+<p>Sends a named dictionary as one line of JSON text. ‘write &lt;file&gt;’ saves the same JSON to a file instead, for a dictionary too large to send as a message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictSerialize</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>serialize</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang sends the dictionary as JSON text. So does the dictionary’s reference ‘dictionary &lt;name&gt;’. ‘write &lt;file&gt;’ saves the same JSON to a file instead; a bare ‘write’ writes to the last file again.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>json</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>The dictionary as one line of compact JSON, in one list message. Nothing is sent when the text would be longer than 255 characters.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to convert. Empty converts an empty dictionary, which gives {}.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-slice">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.slice</span></code></a><a class="headerlink" href="#dict-slice" title="Link to this heading">#</a></h2>
+<p>Splits a named dictionary at a key path. Entries under the path go into the slice dictionary with the path removed from their keys; all other entries go into the remainder dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictSlice</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>slice</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang splits the source dictionary into the slice and remainder dictionaries and sends both references. So does the source dictionary’s reference ‘dictionary &lt;name&gt;’.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>slice reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Accepts the slice dictionary’s reference and does nothing with it, so its .dict can be wired here.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>remainder reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>Accepts the remainder dictionary’s reference and does nothing with it, so its .dict can be wired here.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>slice reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>‘dictionary &lt;slice&gt;’ after each split, sent after the remainder. Silent for an unnamed slice dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>remainder reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>‘dictionary &lt;remainder&gt;’ after each split, sent first. Silent for an unnamed remainder dictionary.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>source</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to split. Empty splits an empty dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p>slice</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary that receives the entries under the path, with the path removed. Each split replaces its contents.</p></td>
+</tr>
+<tr class="row-even"><td><p>remainder</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary that receives every other entry, keys unchanged. Each split replaces its contents.</p></td>
+</tr>
+<tr class="row-odd"><td><p>path</p></td>
+<td><p>—</p></td>
+<td><p>any key path</p></td>
+<td><p>The key path to split at: ‘voice::1’ takes every ‘voice::1::…’ entry. Empty takes nothing.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-strip">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.strip</span></code></a><a class="headerlink" href="#dict-strip" title="Link to this heading">#</a></h2>
+<p>Removes every entry under a key path from a named dictionary, in place, then sends its reference. An entry stored at exactly the path is kept.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictStrip</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>strip</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang removes every entry under the path and sends the dictionary’s reference. So does the dictionary’s reference ‘dictionary &lt;name&gt;’.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Outlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>dictionary reference</p></td>
+<td><p>LIST</p></td>
+<td><p>—</p></td>
+<td><p>‘dictionary &lt;name&gt;’ after each strip. Silent for an unnamed dictionary.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to edit. Empty strips an empty dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p>path</p></td>
+<td><p>—</p></td>
+<td><p>any key path</p></td>
+<td><p>The key path whose entries are removed: ‘voice::1’ removes every ‘voice::1::…’ entry. An entry at exactly the path is kept. Empty removes nothing.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dict-unpack">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">.dict.unpack</span></code></a><a class="headerlink" href="#dict-unpack" title="Link to this heading">#</a></h2>
+<p>Sends the values at a named dictionary’s key paths out of separate outlets, one outlet per key path argument, right to left. The inverse of .dict.pack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Dart<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Obj.gDictUnpack</span></code></p>
+</dd>
+<dt class="field-even">Kind<span class="colon">:</span></dt>
+<dd class="field-even"><p>Control-rate</p>
+</dd>
+</dl>
+<p><strong>Inlets</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 6.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Accepts</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>unpack</p></td>
+<td><p>BANG, LIST</p></td>
+<td><p>—</p></td>
+<td><p>A bang sends the value of each key path out of its outlet, right to left. So does the dictionary’s reference ‘dictionary &lt;name&gt;’.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Parameters</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 18.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>—</p></td>
+<td><p>any identifier</p></td>
+<td><p>The name of the dictionary to read. Empty reads an empty dictionary, so nothing is sent.</p></td>
+</tr>
+<tr class="row-odd"><td><p>keys</p></td>
+<td><p>—</p></td>
+<td><p>key paths</p></td>
+<td><p>One key path per outlet, in order. Paths nest with ‘::’. A path longer than 128 characters is logged and gets no outlet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="collections.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Collections</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="arrays.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Arrays</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict"><code class="docutils literal notranslate"><span class="pre">.dict</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-compare"><code class="docutils literal notranslate"><span class="pre">.dict.compare</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-deserialize"><code class="docutils literal notranslate"><span class="pre">.dict.deserialize</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-group"><code class="docutils literal notranslate"><span class="pre">.dict.group</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-iter"><code class="docutils literal notranslate"><span class="pre">.dict.iter</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-join"><code class="docutils literal notranslate"><span class="pre">.dict.join</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-pack"><code class="docutils literal notranslate"><span class="pre">.dict.pack</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-print"><code class="docutils literal notranslate"><span class="pre">.dict.print</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-route"><code class="docutils literal notranslate"><span class="pre">.dict.route</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-serialize"><code class="docutils literal notranslate"><span class="pre">.dict.serialize</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-slice"><code class="docutils literal notranslate"><span class="pre">.dict.slice</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-strip"><code class="docutils literal notranslate"><span class="pre">.dict.strip</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dict-unpack"><code class="docutils literal notranslate"><span class="pre">.dict.unpack</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yvan Vander Sanden
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, Yvan Vander Sanden.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

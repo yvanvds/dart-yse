@@ -218,6 +218,7 @@
 
 
 
+
 <li class="toctree-l2"><a class="reference internal" href="../sounds.html">Sound</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../channels.html">Channel</a></li>
@@ -272,7 +273,27 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="../patcher_objects.html">Patcher object reference</a></li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../patcher_objects/index.html">Patcher object reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
 
 
@@ -281,6 +302,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
 
 
 
@@ -873,7 +895,8 @@ decisions, and listener velocity calculations.</p>
 <p>Shut down the engine and release the audio device.</p>
 <p>Also removes the [occlusion] callback, releases every <cite>Bus</cite>
 subscription and tap, closing their streams (re-subscribe after the
-next init), and forgets every <cite>Channel.busName</cite> (the engine drops the
+next init), clears the send callback of every <cite>Patcher</cite> with a
+<cite>Patcher.messages</cite> listener (closing that stream), and forgets every <cite>Channel.busName</cite> (the engine drops the
 channel’s bus subscription with the session).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">pause</span><span class="p">()</span>
 </pre></div>

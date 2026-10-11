@@ -218,6 +218,7 @@
 
 
 
+
 <li class="toctree-l2"><a class="reference internal" href="../sounds.html">Sound</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../channels.html">Channel</a></li>
@@ -272,7 +273,27 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="../patcher_objects.html">Patcher object reference</a></li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../patcher_objects/index.html">Patcher object reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../patcher_objects/subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
 
 
@@ -281,6 +302,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../log.html">Log</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../bus.html">Bus</a></li>
+
 
 
 
@@ -527,8 +549,35 @@
 <p>Handle to one object inside a [Patcher].</p>
 <p>Owned by the patcher — destruction is via [Patcher.deleteObject], not
 by the [PHandle] going out of scope.</p>
+<p>Two [PHandle]s are equal when they refer to the same engine object, so a
+handle read back from [container] compares equal to the one returned by
+[Patcher.createObject].</p>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hashCode</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PHandle</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">container</span>
+</pre></div>
+</div>
+<p>The subpatcher this object is directly inside, or <cite>null</cite> at the top
+level. Change it with [Patcher.setContainer].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">subpatcherInlets</span>
+</pre></div>
+</div>
+<p>How many inlets this subpatcher presents to its parent: one past the
+highest index claimed by a <cite>.inlet</cite> or <cite>~inlet</cite> among its direct
+contents (messages and signals share one numbering). A subpatcher
+whose only <cite>.inlet</cite> has index 2 reports 3. <cite>0</cite> when this object is
+not an [Obj.patcher].</p>
+<p>Ask this, not [inputs]: a subpatcher owns no pins of its own, so
+[inputs] answers 0 for it.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">subpatcherOutlets</span>
+</pre></div>
+</div>
+<p>How many outlets this subpatcher presents to its parent; the
+<cite>.outlet</cite> / <cite>~outlet</cite> counterpart of [subpatcherInlets]. Ask this, not
+[outputs], which answers 0 for a subpatcher.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">type</span>
 </pre></div>
 </div>
@@ -544,8 +593,39 @@ by the [PHandle] going out of scope.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">guiValue</span>
 </pre></div>
 </div>
-<p>Current GUI display value for objects that have one
-(sliders, toggles, …).</p>
+<p>The object’s whole live GUI state as one string — what a host polls to
+draw the control. For a scalar control (<cite>.slider</cite>, <cite>.i</cite>, <cite>.f</cite>, <cite>.dial</cite>,
+<cite>.incdec</cite>, <cite>.t</cite>) that is its value; for a structured one
+(<cite>.multislider</cite>, <cite>.rslider</cite>, <cite>.matrixctrl</cite>, …) it is every cell,
+space separated, in index order. Empty for an object with no GUI state.</p>
+<p>This is the <em>coherent</em> read: one engine call, one snapshot. The
+per-cell reads ([guiValueCount], [guiValueAt]) are sampled one call at
+a time and may mix cells from before and after an edit.</p>
+<p>A poll may be <strong>destructive</strong>: <cite>.b</cite> reports a pending press and clears
+it. Per object, poll either this getter or the per-cell reads once per
+frame — never both, or a consume-on-read object reports its event to
+one and not the other.</p>
+<p>When [guiValueIsSettable] is <cite>true</cite>, [restoreGuiValue] with this
+string puts the state back. Not to be confused with [getGuiProperty],
+which is editor decoration persisted with the patch, not live state.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">guiValueCount</span>
+</pre></div>
+</div>
+<p>How many cells the object’s GUI state has: 1 for a scalar control, the
+bank size for a <cite>.multislider</cite>, and so on. Objects without GUI state
+still answer 1 (their single cell is empty).</p>
+<p>The count can change between this read and a following [guiValueAt]
+(a list on inlet 0 resizes a <cite>.multislider</cite>); a read past the end
+answers the empty string rather than failing.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">guiValueIsSettable</span>
+</pre></div>
+</div>
+<p>Whether this object accepts its own GUI state back on inlet 0: <cite>true</cite>
+when [restoreGuiValue] restores what [guiValue] read and
+[setGuiValueAt] writes one cell.</p>
+<p><cite>false</cite> for objects that predate the protocol, and deliberately for
+<cite>.b</cite>, whose value is a consume-on-read press — an event a restore could
+only replay.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">id</span>
 </pre></div>
 </div>
@@ -560,13 +640,48 @@ number.</p>
 </pre></div>
 </div>
 <p>Number of inlets on this object.</p>
+<p><cite>0</cite> for a subpatcher ([Obj.patcher]): its pins belong to the boundary
+objects inside it. Use [subpatcherInlets] instead.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">outputs</span>
 </pre></div>
 </div>
 <p>Number of outlets on this object.</p>
+<p><cite>0</cite> for a subpatcher ([Obj.patcher]); use [subpatcherOutlets].</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="o">==</span><span class="p">(</span><span class="kt">Object</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">String</span><span class="w"> </span><span class="n">guiValueAt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>One cell of the GUI state, or <cite>‘’</cite> for an [index] at or past
+[guiValueCount]. Cell 0 of a scalar control equals [guiValue].</p>
+<p>The targeted read for repainting one cell without re-parsing the whole
+state. Reads of several cells are <strong>not atomic</strong> across cells; use
+[guiValue] when a coherent snapshot matters. See [guiValue] for the
+destructive-poll rule.</p>
+<p>Throws [RangeError] for a negative [index].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">restoreGuiValue</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">state</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Restore a GUI state previously read from [guiValue].</p>
+<p>There is no GUI-value setter in the engine by design: this sends
+[state] as an ordinary list on inlet 0 (exactly
+<cite>sendList(0, state)</cite>), so it passes through the object’s own clamps
+and may emit on its outlets like any other message.</p>
+<p>Throws [StateError] when [guiValueIsSettable] is <cite>false</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setGuiValueAt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Write one cell of the GUI state: sends <cite>set &lt;index&gt; &lt;value&gt;</cite> on
+inlet 0. On a <cite>.textedit</cite> — a one-cell control whose cell is free text
+and so has no <cite>set</cite> form — [value] is sent as the whole state instead.</p>
+<p>The engine drops a cell write whose index is past its live count;
+this wrapper rejects one past the count it reads now.</p>
+<p>Throws [StateError] when [guiValueIsSettable] is <cite>false</cite>, and
+[RangeError] when [index] is outside <cite>0 &lt;= index &lt; guiValueCount</cite>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">isDspInput</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">inlet</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -614,10 +729,16 @@ when there is no such edge (the engine’s <cite>YSE_PATCHER_INLET_NONE</cite>).
 </pre></div>
 </div>
 <p>Read a GUI property by [key].</p>
+<p>GUI properties are editor decoration — geometry, colour, anything the
+host wants persisted with the patch (serialised under the <cite>“gui”</cite> key
+by [Patcher.dumpJson]). They are opaque to the engine and are <strong>not</strong>
+live control state; that is [guiValue].</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setGuiProperty</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Write a GUI property.</p>
+<p>Write a GUI property: editor decoration stored with the patch, not the
+object’s live state. To change what a control holds, use
+[restoreGuiValue] or [setGuiValueAt].</p>
 </section>
 </section>
 

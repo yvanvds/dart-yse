@@ -63,7 +63,7 @@ you can read both views of the API side by side. Look for the
    :caption: Patcher
 
    patcher
-   patcher_objects
+   patcher_objects/index
 
 .. toctree::
    :maxdepth: 1

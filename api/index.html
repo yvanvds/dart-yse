@@ -214,6 +214,7 @@
 
 
 
+
 <li class="toctree-l2"><a class="reference internal" href="sounds.html">Sound</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="channels.html">Channel</a></li>
@@ -268,7 +269,27 @@
 
 
 
-<li class="toctree-l2"><a class="reference internal" href="patcher_objects.html">Patcher object reference</a></li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="patcher_objects/index.html">Patcher object reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/signal_generators.html">Signal generators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/math.html">Math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/random.html">Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/routing.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/control_flow.html">Control flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/lists.html">Lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/strings.html">Strings and symbols</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/collections.html">Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/dictionaries.html">Dictionaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/arrays.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/time.html">Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/sequencing.html">Sequencing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/midi.html">MIDI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/gui.html">GUI controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/input_output.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="patcher_objects/subpatchers.html">Subpatchers</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">Utilities</a></li>
 
 
@@ -277,6 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="log.html">Log</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="bus.html">Bus</a></li>
+
 
 
 
@@ -523,6 +545,7 @@ you can read both views of the API side by side. Look for the
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core.html#system">System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html#typedef-occlusionfn">typedef OcclusionFn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core.html#domainclock">DomainClock</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core.html#id3">Pos</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core.html#yseexception">YseException</a></li>
@@ -603,6 +626,7 @@ you can read both views of the API side by side. Look for the
 <li class="toctree-l1"><a class="reference internal" href="patcher.html">Patcher</a></li>
 <li class="toctree-l1"><a class="reference internal" href="patcher.html#id2">Patcher</a></li>
 <li class="toctree-l1"><a class="reference internal" href="patcher.html#id3">PHandle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patcher.html#patchermessage">PatcherMessage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="patcher.html#enum-outtype">enum OutType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="patcher.html#patcherregistry">PatcherRegistry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="patcher.html#patcherobjecttype">PatcherObjectType</a></li>
@@ -610,7 +634,7 @@ you can read both views of the API side by side. Look for the
 <li class="toctree-l1"><a class="reference internal" href="patcher.html#patcheroutlet">PatcherOutlet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="patcher.html#patcherparam">PatcherParam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="patcher.html#obj">Obj</a></li>
-<li class="toctree-l1"><a class="reference internal" href="patcher_objects.html">Patcher object reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patcher_objects/index.html">Patcher object reference</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -626,6 +650,7 @@ you can read both views of the API side by side. Look for the
 <li class="toctree-l1"><a class="reference internal" href="bus.html">Bus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bus.html#id1">Bus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bus.html#busvalue">BusValue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bus.html#typedef-busframe">typedef BusFrame</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bus.html#busbang">BusBang</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bus.html#busint">BusInt</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bus.html#busfloat">BusFloat</a></li>

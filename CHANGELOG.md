@@ -77,6 +77,22 @@
     channel, so `Channel.master.busName` reads back across wrappers.
     `System.close()` forgets it.
 
+- **List audio devices without opening one** (#51, upstream
+  yse-soundengine#1026):
+  - New `System.refreshDevices()` fills `System.devices` (and
+    `defaultDevice` / `defaultHost`) without opening a stream. It works
+    before `init`, on an `initOffline()` session and on a running device
+    session, and returns `false` with an empty list when the audio
+    backend cannot start.
+  - It also starts the backend, so `openDevice()` now works on an
+    `initOffline()` session in a process that never called `init()`.
+  - Hot-plug: with no stream open the backend restarts and picks up
+    devices plugged in or removed since. With a stream open the list is
+    re-read from the existing enumeration, so a new device appears only
+    after the device is closed and the list is refreshed again.
+  - The refresh replaces the list; match devices by name and host, not
+    by index.
+
 - **API reference site.** New `docs/` tree builds a Sphinx site that
   mirrors the upstream libYSE docs site (sphinx-book-theme, same
   intro / tutorials / API layout) so contributors who already know

@@ -393,11 +393,12 @@ class System {
 
   /// All audio devices visible to the engine.
   ///
-  /// [init] enumerates the devices. [initOffline] enumerates none, so an
-  /// offline session lists nothing until the engine's device list is
-  /// refreshed, and a headless host may list nothing at all. Each [Device]
-  /// descriptor is borrowed from the engine; do not retain references past
-  /// [close] or past a refresh of the list.
+  /// [init] enumerates the devices as a side effect of opening the default
+  /// one. [initOffline] enumerates none, so an offline session lists nothing
+  /// until [refreshDevices] fills the list, and a machine with no audio
+  /// hardware may list nothing at all. Each [Device] descriptor is borrowed
+  /// from the engine; do not retain references past [close] or past a
+  /// [refreshDevices] call, which replaces the list.
   List<Device> get devices {
     final n = _b.system_num_devices(_handle);
     final result = <Device>[];
@@ -411,6 +412,66 @@ class System {
     return List<Device>.unmodifiable(result);
   }
 
+  /// Enumerate the audio devices without opening a stream, and report
+  /// whether the audio backend could be reached to do it.
+  ///
+  /// [init] fills [devices] as part of opening the default device, which may
+  /// be the wrong one, held by another application, or at the wrong rate.
+  /// This fills it without opening anything, so a host can resolve a stored
+  /// device first and then [openDevice] exactly that one. Valid before
+  /// [init] (no session at all), on an [initOffline] session, and on a
+  /// running device session:
+  ///
+  /// ```dart
+  /// sys.initOffline();
+  /// if (sys.refreshDevices()) {
+  ///   final stored = sys.devices.where(
+  ///     (d) => d.name == storedName && d.hostName == storedHost,
+  ///   );
+  ///   // build a DeviceSetup from stored.first, then sys.openDevice(setup)
+  /// }
+  /// ```
+  ///
+  /// On desktop this starts the audio backend (PortAudio) if it is not
+  /// running yet, without opening a stream. That is also what lets
+  /// [openDevice] work on an [initOffline] session in a process that never
+  /// called [init].
+  ///
+  /// **Hot-plug.** With no stream open, the backend is restarted, so the
+  /// list includes devices plugged in or removed since it last started.
+  /// With a stream open (after [init], or a successful [openDevice]) the
+  /// stream is never touched, and the list is re-read from the backend's
+  /// existing enumeration: on PortAudio a device plugged in or removed while
+  /// the stream runs does not show up until you [closeCurrentDevice] (or
+  /// [close]) and call this again.
+  ///
+  /// The refresh replaces the list: [Device] descriptors and [DeviceSetup]s
+  /// built from the old list are invalid afterwards, and an index may now
+  /// name a different device. Match devices by [Device.name] and
+  /// [Device.hostName], not by index. [defaultDevice] and [defaultHost] are
+  /// re-read too.
+  ///
+  /// Returns `true` when the list is current; it may still be empty (a
+  /// machine with no audio devices). Returns `false` when the backend could
+  /// not start: [devices] is then empty and the backend's error is in the
+  /// engine log. Throws [YseException] only for an unexpected engine error.
+  ///
+  /// On a bare headless Linux machine starting PortAudio can hang (which is
+  /// why [initOffline] does not start it), so headless tools that never
+  /// need a device should not call this.
+  bool refreshDevices() {
+    final status = _b.system_refresh_devices(_handle);
+    if (status == YseStatus.YSE_ERR_AUDIO_DEVICE) {
+      // An expected outcome on a machine with no reachable audio backend,
+      // reported as false rather than an exception (libYSE's C++ API returns
+      // false here too). The detail is in the engine log.
+      _b.clear_last_error();
+      return false;
+    }
+    checkStatus(status, _b);
+    return true;
+  }
+
   /// Open the audio device described by [setup] with the requested speaker
   /// [layout] (defaults to stereo-when-possible).
   ///
@@ -421,6 +482,11 @@ class System {
   /// session with no audio backend running. On failure the running stream
   /// and the speaker layout are left untouched. Up to libYSE 2.4 these
   /// failures were only logged and this call returned normally.
+  ///
+  /// On an [initOffline] session, call [refreshDevices] first: it starts the
+  /// audio backend and lists the devices to pick from. Without it, a process
+  /// that has only run offline sessions has no backend running and this
+  /// throws.
   ///
   /// The stream opens at the locked [sessionSampleRate];
   /// [DeviceSetup.sampleRate] cannot change a running session's rate (see

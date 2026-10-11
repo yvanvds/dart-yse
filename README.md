@@ -1,5 +1,7 @@
 # yse
 
+[![pub package](https://img.shields.io/pub/v/yse.svg)](https://pub.dev/packages/yse)
+
 Dart bindings for the [YSE sound engine](https://github.com/yvanvds/yse-soundengine)
 — 3D audio playback, mixing, DSP, MIDI, and generative music. Runs on
 **Windows x64, Linux x64 and Android** (arm64-v8a, x86_64); the engine is

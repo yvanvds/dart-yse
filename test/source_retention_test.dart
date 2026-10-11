@@ -222,6 +222,45 @@ List<int> get emptyMidiFile => [
   return (WeakReference(clip), WeakReference(synth));
 }
 
+// ─── #85: Player borrows its synth, scales and motifs ────────────────────
+
+/// A player over a fresh voice-less synth (safe to destroy unattached,
+/// upstream yvanvds/yse-soundengine#1175), with every strong reference to the
+/// synth dropped. Returns weak handles on it and on an unused control synth.
+@pragma('vm:never-inline')
+(Player, WeakReference<Synth>, WeakReference<Synth>) playerOverSynth() {
+  final synth = Synth();
+  return (Player(synth), WeakReference(synth), WeakReference(Synth()));
+}
+
+@pragma('vm:never-inline')
+(WeakReference<Scale>, WeakReference<Scale>) setPlayerScale(
+  Player player, {
+  Duration fade = Duration.zero,
+}) {
+  final scale = Scale()..add(60);
+  player.setScale(scale, fade: fade);
+  return (WeakReference(scale), WeakReference(Scale()));
+}
+
+@pragma('vm:never-inline')
+(WeakReference<Motif>, WeakReference<Motif>) addPlayerMotif(Player player) {
+  final motif = Motif()..add(PNote(position: 0, pitch: 60, length: 0.1));
+  player.addMotif(motif, weight: 2);
+  return (WeakReference(motif), WeakReference(Motif()));
+}
+
+@pragma('vm:never-inline')
+void removePlayerMotif(Player player, WeakReference<Motif> motif) =>
+    player.removeMotif(motif.target!);
+
+/// A player and its synth, with every strong reference to both dropped.
+@pragma('vm:never-inline')
+(WeakReference<Player>, WeakReference<Synth>) abandonedPlayer() {
+  final synth = Synth();
+  return (WeakReference(Player(synth)), WeakReference(synth));
+}
+
 void main() {
   final sys = System.instance;
 
@@ -408,6 +447,88 @@ void main() {
     });
   });
 
+  group('Player (#85)', () {
+    test('a player holds its synth', () {
+      final (player, synth, control) = playerOverSynth();
+      addTearDown(player.dispose);
+
+      expect(collectUntilCleared(control), isTrue, reason: 'GC never ran');
+      expect(synth.target, isNotNull, reason: 'the player must hold its synth');
+      expect(identical(player.synth, synth.target), isTrue);
+    });
+
+    test(
+      'setScale holds the scale until a later unfaded scale replaces it',
+      () {
+        final (player, _, _) = playerOverSynth();
+        addTearDown(player.dispose);
+        final (first, control) = setPlayerScale(player);
+
+        expect(collectUntilCleared(control), isTrue, reason: 'GC never ran');
+        expect(
+          first.target,
+          isNotNull,
+          reason: 'the player must hold its scale',
+        );
+
+        final (second, _) = setPlayerScale(player);
+        expect(
+          collectUntilCleared(first),
+          isTrue,
+          reason: 'replaced: released',
+        );
+        expect(second.target, isNotNull);
+      },
+    );
+
+    test('a faded setScale holds the current scale and every fade target', () {
+      final (player, _, _) = playerOverSynth();
+      addTearDown(player.dispose);
+      const fade = Duration(seconds: 1);
+      final (base, _) = setPlayerScale(player);
+      final (t1, _) = setPlayerScale(player, fade: fade);
+      final (t2, control) = setPlayerScale(player, fade: fade);
+
+      expect(collectUntilCleared(control), isTrue, reason: 'GC never ran');
+      expect(base.target, isNotNull, reason: 'may still be the current scale');
+      expect(t1.target, isNotNull, reason: 'may have become the current scale');
+      expect(t2.target, isNotNull, reason: 'the fade target');
+
+      // An unfaded set replaces the current scale outright.
+      setPlayerScale(player);
+      expect(collectUntilCleared(base), isTrue);
+      expect(collectUntilCleared(t1), isTrue);
+      expect(collectUntilCleared(t2), isTrue);
+    });
+
+    test('addMotif holds the motif until removeMotif', () {
+      final (player, _, _) = playerOverSynth();
+      addTearDown(player.dispose);
+      final (motif, control) = addPlayerMotif(player);
+
+      expect(collectUntilCleared(control), isTrue, reason: 'GC never ran');
+      expect(motif.target, isNotNull, reason: 'the player must hold its motif');
+
+      removePlayerMotif(player, motif);
+      expect(collectUntilCleared(motif), isTrue);
+    });
+
+    test('dispose releases scales and motifs but keeps the synth', () {
+      final (player, synth, _) = playerOverSynth();
+      final (scale, _) = setPlayerScale(player);
+      final (motif, _) = addPlayerMotif(player);
+      player.dispose();
+
+      expect(collectUntilCleared(scale), isTrue);
+      expect(collectUntilCleared(motif), isTrue);
+      expect(
+        synth.target,
+        isNotNull,
+        reason: 'the retiring player still sends note-offs to its synth',
+      );
+    });
+  });
+
   // When an owner and what it borrows become unreachable in the same
   // collection, their NativeFinalizers run in unspecified order. Borrowed
   // objects must still be destroyed strictly after the owner: they stay held
@@ -442,6 +563,14 @@ void main() {
       final (clip, synth) = abandonedClip(clock);
 
       expect(collectUntilCleared(clip), isTrue, reason: 'GC never ran');
+      expect(synth.target, isNotNull, reason: 'the synth must outlive it');
+      expect(await collectAsyncUntilCleared(synth), isTrue);
+    });
+
+    test('a player is destroyed before its synth (#85)', () async {
+      final (player, synth) = abandonedPlayer();
+
+      expect(collectUntilCleared(player), isTrue, reason: 'GC never ran');
       expect(synth.target, isNotNull, reason: 'the synth must outlive it');
       expect(await collectAsyncUntilCleared(synth), isTrue);
     });

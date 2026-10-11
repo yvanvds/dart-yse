@@ -45,9 +45,8 @@ Phase 4 — MIDI and music
 - ``demo16_midi.dart`` — enumerate MIDI output ports and send
   Note-On / Note-Off via :class:`MidiOut`.
 - ``demo17_music.dart`` — build :class:`Note` / :class:`PNote` /
-  :class:`Scale` / :class:`Motif` objects (the building blocks of the
-  generative :class:`Player`; see the Status note in the README about
-  Player itself).
+  :class:`Scale` / :class:`Motif` objects, then let a generative
+  :class:`Player` improvise on a :class:`Synth` with them.
 
 Phase 5 — Modular synthesis
 ---------------------------

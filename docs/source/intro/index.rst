@@ -54,12 +54,9 @@ device support.
 Pre-release status
 ------------------
 
-``dart-yse`` is at ``v0.x``. The full C++ API is wrapped except for two
-upstream-deferred areas:
+``dart-yse`` is at ``v0.x``. The full C++ API is wrapped except for one
+upstream-deferred area:
 
-- :class:`Player` (the generative note sequencer) is wrapped but every
-  method crashes because the upstream ``player::create(synth&)``
-  factory is currently commented out. Treat as a placeholder.
 - Custom DSP-source subclassing and the callback-based ``YSE::io`` VFS
   are deferred to a later release. :class:`BufferIO` covers the common
   asset-pack use case in the meantime.

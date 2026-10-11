@@ -6,13 +6,8 @@ Dart bindings for the [YSE sound engine](https://github.com/yvanvds/yse-soundeng
 ## Status
 
 **Pre-release.** v0.x supports **Windows, Linux, and Android**; iOS / macOS are next.
-The full C++ API is wrapped except for two upstream-deferred areas:
+The full C++ API is wrapped except for one upstream-deferred area:
 
-- **Player + synth**: the `Player` class is wrapped but every method
-  crashes because YSE's own `player::create(synth&)` factory is
-  commented out (synth subsystem is awaiting a rewrite). The wrapper
-  is in place so it becomes usable as soon as the engine restores
-  the factory; for now treat `Player` as a placeholder.
 - **Custom DSP sources** (`dspSourceObject` subclassing) and the
   **callback-based `YSE::io` VFS** — these need audio-thread-safe
   callback plumbing that lands in a later release. `BufferIO` covers
@@ -206,7 +201,7 @@ if you prefer event-driven code.
 | `MidiFile`   | Load / play / pause / stop | full |
 | `MidiOut`    | Note / pressure / control / program / raw + reset / all-notes-off | full (Windows/Linux) |
 | `Note`/`PNote`/`Scale`/`Motif` | Pitch/volume/length, position, has/nearest/clear, transpose, setFirstPitch | full |
-| `Player`     | Wrapped but unusable — see Status above | deferred upstream |
+| `Player`     | Generative sequencer on a `Synth`: pitch / velocity / gap / length ranges, voices, scale (with cross-fade), weighted motifs | full |
 | `Log`        | sendMessage, level, logfile, broadcast `messages` Stream | full |
 | `BufferIO`   | Register `Uint8List` bytes under an ID; load by ID | full |
 

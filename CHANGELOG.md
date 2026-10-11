@@ -330,6 +330,24 @@
     its scale: the engine borrows both. `Player` cannot be constructed
     yet, so it does not hold them (#85).
 
+- **`Player` works: it plays on a `Synth`** (#85). **Breaking:** the
+  constructor is now `Player(Synth synth)`. Since engine v2.3.0
+  `yse_player_create` takes the synth the player plays its notes on and
+  returns NULL without one; the wrapper passed `nullptr` (since #22), so
+  `Player()` always threw `YseException` and the class was unusable.
+  Attach the synth to a playing `Sound.fromSynth` to hear the player; the
+  new `Player.synth` returns it. The player now holds what the engine
+  borrows: its synth, every scale the scale cross-fade may still read (the
+  last one set without a fade and each fade target since) and its motif
+  pool (`addMotif` holds, `removeMotif` releases). All are released only
+  after the player's native destroy; `dispose()` releases the scales and
+  motifs at once and keeps the synth until the wrapper is collected,
+  because the engine still sends note-offs to it when it retires the
+  player on its next audio block (upstream yse-soundengine#1181). If you
+  dispose the synth yourself, let one block run after `player.dispose()`
+  first. `example/demo17_music.dart` now plays a player; README and docs
+  no longer call `Player` a placeholder.
+
 - **Late voice groups throw instead of vanishing** (#81, upstream
   yse-soundengine#1177). `Synth.addSineVoices` / `addVaVoices` /
   `addFmVoices` / `addSamplerVoices` and `Synth.setPositionHandler` throw

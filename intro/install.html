@@ -540,7 +540,7 @@
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#engine-version-and-build-options">Engine version and build options</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#android-via-yse-flutter-libs">Android (via yse_flutter_libs)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#android">Android</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verifying-the-install">Verifying the install</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
 </ul>
@@ -557,28 +557,29 @@
   <section id="install">
 <h1>Install<a class="headerlink" href="#install" title="Link to this heading">#</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">dart-yse</span></code> is a pure Dart FFI package that loads the <code class="docutils literal notranslate"><span class="pre">libyse</span></code> shared
-library at runtime. On Windows x64 and Linux x64 the package brings that
-library with it:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>dart<span class="w"> </span>pub<span class="w"> </span>add<span class="w"> </span>yse
+library at runtime. On Windows x64, Linux x64 and Android (arm64-v8a,
+x86_64) the package brings that library with it:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>dart<span class="w"> </span>pub<span class="w"> </span>add<span class="w"> </span>yse<span class="w">        </span><span class="c1"># or, in a Flutter app: flutter pub add yse</span>
 </pre></div>
 </div>
 <p>The package’s native-assets build hook downloads the prebuilt libYSE
 release its bindings were generated from (<strong>v3.1.0</strong>), checks it against
 the sha256 digest embedded in the package and bundles it into your app,
 together with the engine’s runtime DLLs on Windows. <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">run</span></code>,
-<code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">build</span> <span class="pre">cli</span></code> and <code class="docutils literal notranslate"><span class="pre">flutter</span> <span class="pre">run</span></code> pick it up with no
-further setup. Requirements and caveats:</p>
+<code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">build</span> <span class="pre">cli</span></code>, <code class="docutils literal notranslate"><span class="pre">flutter</span> <span class="pre">run</span></code> and <code class="docutils literal notranslate"><span class="pre">flutter</span> <span class="pre">build</span></code>
+pick it up with no further setup. Requirements and caveats:</p>
 <ul class="simple">
 <li><p>Dart SDK ≥ 3.10 (Flutter ≥ 3.38), where build hooks are stable.</p></li>
 <li><p>The first build of a project needs network access once; the download
-is cached under <code class="docutils literal notranslate"><span class="pre">.dart_tool/</span></code> and later builds work offline.</p></li>
+(about 58 MB for Android) is cached under <code class="docutils literal notranslate"><span class="pre">.dart_tool/</span></code> and later
+builds work offline.</p></li>
 <li><p>Linux needs the runtime libraries the engine links:
 <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">-y</span> <span class="pre">libportaudio2</span> <span class="pre">libsndfile1</span> <span class="pre">librtmidi6</span></code>.</p></li>
 <li><p>On Windows, a second <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">run</span></code> / <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">test</span></code> in the same project
 fails while a program using <code class="docutils literal notranslate"><span class="pre">yse</span></code> is still running there (the SDK
 re-copies the bundled DLLs, which Windows locks while loaded).</p></li>
-<li><p>Android uses the <code class="docutils literal notranslate"><span class="pre">yse_flutter_libs</span></code> plugin (below); macOS and iOS have
-no engine release yet.</p></li>
+<li><p>Android apps need <code class="docutils literal notranslate"><span class="pre">minSdk</span></code> 26 (below); macOS and iOS have no engine
+release yet.</p></li>
 </ul>
 <p>The loader looks for the library in this order: the directory in
 <code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code>, the release the build hook bundled, and
@@ -702,25 +703,35 @@ patcher objects marked <em>MIDI device only</em> in the object reference do not
 exist.</p></li>
 </ul>
 </section>
-<section id="android-via-yse-flutter-libs">
-<h2>Android (via yse_flutter_libs)<a class="headerlink" href="#android-via-yse-flutter-libs" title="Link to this heading">#</a></h2>
-<p>Android consumers add a second package — the sibling Flutter plugin
-<code class="docutils literal notranslate"><span class="pre">yse_flutter_libs</span></code> — which bundles <code class="docutils literal notranslate"><span class="pre">libyse.so</span></code> into the APK / AAB:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dependencies</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">yse</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">^0.2.0</span>
-<span class="w">  </span><span class="nt">yse_flutter_libs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">^0.2.0</span>
+<section id="android">
+<h2>Android<a class="headerlink" href="#android" title="Link to this heading">#</a></h2>
+<p>A Flutter Android app needs <code class="docutils literal notranslate"><span class="pre">yse</span></code> alone:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>flutter<span class="w"> </span>pub<span class="w"> </span>add<span class="w"> </span>yse
 </pre></div>
 </div>
-<p>The plugin packages the engine’s prebuilt Android release
-(<code class="docutils literal notranslate"><span class="pre">libyse-&lt;tag&gt;-android.tar.gz</span></code>). Gradle downloads it on the first
-build, checks its sha256 and caches it under the Gradle user home, so no
-NDK build of the engine is needed. For offline builds, set the Gradle
-property <code class="docutils literal notranslate"><span class="pre">yse.engineDir</span></code> to an unpacked copy of the asset. Compiling
-the engine with the NDK instead is opt-in (<code class="docutils literal notranslate"><span class="pre">yse.buildFromSource=true</span></code>,
-NDK 27.0.12077973); the plugin’s README describes both.</p>
-<p>Requirements: Flutter ≥ 3.38, AGP ≥ 8.5, <code class="docutils literal notranslate"><span class="pre">minSdk</span></code> 26 (so Oboe can
-negotiate AAudio). The ABIs are <code class="docutils literal notranslate"><span class="pre">arm64-v8a</span></code> and <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, the ones
-the engine’s Android release ships.</p>
+<p>The build hook downloads the engine’s prebuilt Android release
+(<code class="docutils literal notranslate"><span class="pre">libyse-&lt;tag&gt;-android.tar.gz</span></code>) once per project, checks its sha256 and
+hands Flutter the target ABI’s <code class="docutils literal notranslate"><span class="pre">lib/&lt;abi&gt;/libyse.so</span></code>, which ends up in
+the APK / AAB under <code class="docutils literal notranslate"><span class="pre">lib/&lt;abi&gt;/</span></code>. The library links Oboe, libsndfile and
+the C++ runtime statically, so nothing else is bundled, and no NDK build
+of the engine is needed.</p>
+<p>Requirements: Flutter ≥ 3.38 and <code class="docutils literal notranslate"><span class="pre">minSdk</span></code> 26 (so Oboe can negotiate
+AAudio; Flutter’s app template defaults lower). The ABIs are
+<code class="docutils literal notranslate"><span class="pre">arm64-v8a</span></code> and <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, the ones the engine’s Android release ships.</p>
+<p>For offline builds, an unreleased engine or 32-bit ABIs, the hook’s
+<code class="docutils literal notranslate"><span class="pre">engine_dir</span></code> user-define bundles a local folder laid out like the
+unpacked release (<code class="docutils literal notranslate"><span class="pre">lib/&lt;abi&gt;/libyse.so</span></code>) instead of downloading:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># the app's pubspec.yaml</span>
+<span class="nt">hooks</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">user_defines</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">yse</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">engine_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/libyse-android</span>
+</pre></div>
+</div>
+<p>The project README shows how to build that folder with the NDK.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">yse_flutter_libs</span></code> plugin that earlier pre-releases used for
+Android is deprecated and not published; apps that still list it keep
+building, but should remove it.</p>
 <p>See the project README for the end-to-end Flutter sample under
 <code class="docutils literal notranslate"><span class="pre">example/android_sample/</span></code>.</p>
 </section>
@@ -797,7 +808,7 @@ simplest:</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#engine-version-and-build-options">Engine version and build options</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#android-via-yse-flutter-libs">Android (via yse_flutter_libs)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#android">Android</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verifying-the-install">Verifying the install</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
 </ul>

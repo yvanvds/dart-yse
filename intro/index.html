@@ -572,8 +572,8 @@ engine.</p></li>
 and effects. Pre-built channels for music, ambient, voice, GUI, and
 SFX are available out of the box.</p></li>
 <li><p><strong>Embeddable</strong>. Pure Dart FFI — no Flutter dependency. Runs on
-desktop, server-side Dart, and Flutter (Android via the sibling
-<code class="docutils literal notranslate"><span class="pre">yse_flutter_libs</span></code> plugin).</p></li>
+desktop, server-side Dart, and Flutter (Android included: the
+package’s build hook bundles the engine).</p></li>
 </ul>
 </section>
 <section id="what-dart-yse-is-not">
@@ -596,8 +596,7 @@ Clang64)</p></li>
 <li><p><strong>Linux</strong> (x64; prebuilt engine, or built from source with Clang or
 GCC; tested on Ubuntu 24.04)</p></li>
 <li><p><strong>Android</strong> (API 26+, <code class="docutils literal notranslate"><span class="pre">arm64-v8a</span></code> and <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>; prebuilt engine
-bundled by the <code class="docutils literal notranslate"><span class="pre">yse_flutter_libs</span></code> Flutter plugin, or built from source
-with NDK 27)</p></li>
+bundled by the package’s build hook, or built from source with NDK 27)</p></li>
 </ul>
 <p>The audio backends are PortAudio on desktop and Oboe (AAudio with
 OpenSL ES fallback) on Android — chosen by the engine, not the wrapper.

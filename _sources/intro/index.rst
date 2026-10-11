@@ -24,8 +24,8 @@ What dart-yse is
   and effects. Pre-built channels for music, ambient, voice, GUI, and
   SFX are available out of the box.
 - **Embeddable**. Pure Dart FFI — no Flutter dependency. Runs on
-  desktop, server-side Dart, and Flutter (Android via the sibling
-  ``yse_flutter_libs`` plugin).
+  desktop, server-side Dart, and Flutter (Android included: the
+  package's build hook bundles the engine).
 
 What dart-yse is not
 --------------------
@@ -46,8 +46,7 @@ Supported platforms
 - **Linux** (x64; prebuilt engine, or built from source with Clang or
   GCC; tested on Ubuntu 24.04)
 - **Android** (API 26+, ``arm64-v8a`` and ``x86_64``; prebuilt engine
-  bundled by the ``yse_flutter_libs`` Flutter plugin, or built from source
-  with NDK 27)
+  bundled by the package's build hook, or built from source with NDK 27)
 
 The audio backends are PortAudio on desktop and Oboe (AAudio with
 OpenSL ES fallback) on Android — chosen by the engine, not the wrapper.

@@ -2,30 +2,31 @@ Install
 =======
 
 ``dart-yse`` is a pure Dart FFI package that loads the ``libyse`` shared
-library at runtime. On Windows x64 and Linux x64 the package brings that
-library with it:
+library at runtime. On Windows x64, Linux x64 and Android (arm64-v8a,
+x86_64) the package brings that library with it:
 
 .. code-block:: sh
 
-   dart pub add yse
+   dart pub add yse        # or, in a Flutter app: flutter pub add yse
 
 The package's native-assets build hook downloads the prebuilt libYSE
 release its bindings were generated from (**v3.1.0**), checks it against
 the sha256 digest embedded in the package and bundles it into your app,
 together with the engine's runtime DLLs on Windows. ``dart run``,
-``dart test``, ``dart build cli`` and ``flutter run`` pick it up with no
-further setup. Requirements and caveats:
+``dart test``, ``dart build cli``, ``flutter run`` and ``flutter build``
+pick it up with no further setup. Requirements and caveats:
 
 - Dart SDK ≥ 3.10 (Flutter ≥ 3.38), where build hooks are stable.
 - The first build of a project needs network access once; the download
-  is cached under ``.dart_tool/`` and later builds work offline.
+  (about 58 MB for Android) is cached under ``.dart_tool/`` and later
+  builds work offline.
 - Linux needs the runtime libraries the engine links:
   ``sudo apt-get install -y libportaudio2 libsndfile1 librtmidi6``.
 - On Windows, a second ``dart run`` / ``dart test`` in the same project
   fails while a program using ``yse`` is still running there (the SDK
   re-copies the bundled DLLs, which Windows locks while loaded).
-- Android uses the ``yse_flutter_libs`` plugin (below); macOS and iOS have
-  no engine release yet.
+- Android apps need ``minSdk`` 26 (below); macOS and iOS have no engine
+  release yet.
 
 The loader looks for the library in this order: the directory in
 ``YSE_DLL_PATH``, the release the build hook bundled, and
@@ -162,29 +163,43 @@ Two upstream CMake options change what the wrapper can do:
   patcher objects marked *MIDI device only* in the object reference do not
   exist.
 
-Android (via yse_flutter_libs)
-------------------------------
+Android
+-------
 
-Android consumers add a second package — the sibling Flutter plugin
-``yse_flutter_libs`` — which bundles ``libyse.so`` into the APK / AAB:
+A Flutter Android app needs ``yse`` alone:
+
+.. code-block:: sh
+
+   flutter pub add yse
+
+The build hook downloads the engine's prebuilt Android release
+(``libyse-<tag>-android.tar.gz``) once per project, checks its sha256 and
+hands Flutter the target ABI's ``lib/<abi>/libyse.so``, which ends up in
+the APK / AAB under ``lib/<abi>/``. The library links Oboe, libsndfile and
+the C++ runtime statically, so nothing else is bundled, and no NDK build
+of the engine is needed.
+
+Requirements: Flutter ≥ 3.38 and ``minSdk`` 26 (so Oboe can negotiate
+AAudio; Flutter's app template defaults lower). The ABIs are
+``arm64-v8a`` and ``x86_64``, the ones the engine's Android release ships.
+
+For offline builds, an unreleased engine or 32-bit ABIs, the hook's
+``engine_dir`` user-define bundles a local folder laid out like the
+unpacked release (``lib/<abi>/libyse.so``) instead of downloading:
 
 .. code-block:: yaml
 
-   dependencies:
-     yse: ^0.2.0
-     yse_flutter_libs: ^0.2.0
+   # the app's pubspec.yaml
+   hooks:
+     user_defines:
+       yse:
+         engine_dir: /path/to/libyse-android
 
-The plugin packages the engine's prebuilt Android release
-(``libyse-<tag>-android.tar.gz``). Gradle downloads it on the first
-build, checks its sha256 and caches it under the Gradle user home, so no
-NDK build of the engine is needed. For offline builds, set the Gradle
-property ``yse.engineDir`` to an unpacked copy of the asset. Compiling
-the engine with the NDK instead is opt-in (``yse.buildFromSource=true``,
-NDK 27.0.12077973); the plugin's README describes both.
+The project README shows how to build that folder with the NDK.
 
-Requirements: Flutter ≥ 3.38, AGP ≥ 8.5, ``minSdk`` 26 (so Oboe can
-negotiate AAudio). The ABIs are ``arm64-v8a`` and ``x86_64``, the ones
-the engine's Android release ships.
+The ``yse_flutter_libs`` plugin that earlier pre-releases used for
+Android is deprecated and not published; apps that still list it keep
+building, but should remove it.
 
 See the project README for the end-to-end Flutter sample under
 ``example/android_sample/``.

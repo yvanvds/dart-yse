@@ -88,8 +88,8 @@ the dart-yse repository root:
    dart run example/demo13_patcher.dart
    # ...
 
-Set ``YSE_DLL_PATH`` to the directory holding ``libyse`` first. With the
-prebuilt engine that is the path ``dart run tool/fetch_engine.dart``
-prints (see :doc:`/intro/install`). An engine built from source lands in
-``third_party/yse-soundengine/build/bin/``, which the wrapper also finds
-without the variable when run from the repository root.
+On Windows x64 and Linux x64 the examples run against the engine the
+package's build hook bundles, with no setup (see :doc:`/intro/install`).
+To use another build, such as one from source in
+``third_party/yse-soundengine/build/bin/``, set ``YSE_DLL_PATH`` to the
+directory holding ``libyse`` first.

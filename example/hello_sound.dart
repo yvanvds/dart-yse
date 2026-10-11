@@ -6,9 +6,9 @@
 // Run from the dart-yse package root:
 //   dart run example/hello_sound.dart
 //
-// Requires:
-//   - third_party/yse-soundengine/build/bin/libyse.dll built locally, OR
-//   - YSE_DLL_PATH env var pointing at a directory containing libyse.dll.
+// On Windows x64 / Linux x64 the engine comes from the package's build hook;
+// set YSE_DLL_PATH to a directory containing libyse.dll / libyse.so to use
+// another build.
 
 // ignore_for_file: avoid_print
 

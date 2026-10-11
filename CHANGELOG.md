@@ -13,6 +13,27 @@ release**. The new docs page *Upgrading to package:yse 0.2.0*
 https://yvanvds.github.io/dart-yse/intro/upgrading.html) gives the old and
 new Dart code for every change below (#70).
 
+### The engine comes with the package
+
+- **Native-assets build hook** (#95). `hook/build.dart` downloads the
+  prebuilt libYSE v3.1.0 release for Windows x64 and Linux x64, checks it
+  against the sha256 digest embedded in the package
+  (`lib/src/engine_release.dart`, tested against the submodule pin and the
+  release), and bundles it as a code asset, so `dart pub add yse` followed
+  by `dart run`, `dart test`, `dart build cli` or `flutter run` needs no
+  manual engine setup. On Windows the engine's runtime DLLs are bundled
+  next to `libyse.dll`. The download is cached under `.dart_tool/`; later
+  builds work offline. Linux needs the PortAudio, libsndfile and RtMidi
+  runtime packages; Android still gets the engine from `yse_flutter_libs`.
+- **Requires Dart 3.10** (Flutter 3.38), where build hooks are stable; the
+  SDK constraint moved from `^3.8.0` to `^3.10.0`. New dependencies:
+  `hooks`, `code_assets` and `crypto`.
+- **Loader order** is now `YSE_DLL_PATH`, then the bundled release, then
+  the submodule's source build (`third_party/yse-soundengine/build/bin`).
+  In a dart-yse checkout a source build is therefore only used when
+  `YSE_DLL_PATH` names it. The unreleased-engine banner (#89) treats the
+  bundled release as pinned.
+
 ### Breaking changes
 
 - **`System.init()` throws when no device opens** (#56). It throws

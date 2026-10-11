@@ -1,14 +1,22 @@
 DSP
 ===
 
-Float-buffer storage (:class:`DspBuffer`) and chainable effect
-modules (:class:`DspObject`). Both surfaces flatten an inheritance
-hierarchy on the C++ side into named factory constructors and
-subclass-specific accessors that throw if used on the wrong kind.
+Float-buffer storage (:class:`DspBuffer` and its subclasses
+:class:`DrawableBuffer`, :class:`FileBuffer` and :class:`Wavetable`, which
+mirror the C++ inheritance chain so the type system decides which
+operations a buffer supports) and chainable effect modules
+(:class:`DspObject`, which flattens its hierarchy into named factory
+constructors and subclass-specific accessors).
 
 Upstream: :yse-cpp:`api/dsp.html <YSE::DSP>`.
 
 .. include:: _generated/dsp_buffer.rst
+
+.. include:: _generated/drawable_buffer.rst
+
+.. include:: _generated/file_buffer.rst
+
+.. include:: _generated/wavetable.rst
 
 .. include:: _generated/dsp_object.rst
 

@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+- **Engine bumped to libYSE v3.1.0** (from v2.4.0-3); bindings regenerated.
+  The 3.0 C ABI is not compatible with 2.4, so this carries breaking
+  wrapper changes (#55):
+  - `DspBuffer` subclasses are now real Dart subclasses. `DspBuffer.plain`
+    stays; `DspBuffer.drawable` / `.file` / `.wavetable` are replaced by
+    `DrawableBuffer(...)`, `FileBuffer(...)` and `Wavetable(...)`. The 3.0
+    C API no longer checks the subclass (it `static_cast`s), so calling
+    e.g. `drawLine` on a plain buffer was undefined behaviour; the type
+    system now rules it out.
+  - `PHandle.id`, `PHandle.connectionTargetId` and
+    `PHandle.connectionTargetInlet` return `int?`, with `null` for the
+    engine's `YSE_PATCHER_ID_NONE` / `YSE_PATCHER_INLET_NONE` sentinels.
+    Patcher IDs now start at 0 and are reused after a delete.
+  - `Patcher()` and `Patcher.parseJson` throw `YseException` on failure.
+    `parseJson` adds to the existing patch (call `clear()` first to
+    replace it) and rolls back a failed load.
+  - `DomainClock` / `ClipTransport.bind` report failures through
+    `YseException` with the engine's error detail.
+  - `PCategory` gains the 11 new 3.0 registry categories.
+  - `Obj.dOut` (`~out`) is removed; no engine object ever implemented it.
+  - Engine behaviour changes picked up: `bandPass` has unity gain at its
+    centre frequency (upstream #1022).
+
 - **API reference site.** New `docs/` tree builds a Sphinx site that
   mirrors the upstream libYSE docs site (sphinx-book-theme, same
   intro / tutorials / API layout) so contributors who already know

@@ -71,7 +71,14 @@ void main() {
     test('duplicate name is rejected (first registration wins)', () {
       final name = freshName('dup');
       final a = DomainClock(name, tempo: 100);
-      expect(() => DomainClock(name, tempo: 200), throwsA(isA<YseException>()));
+      // Routed through checkStatus (engine 3.0 returns YseStatus): the
+      // exception carries the engine status, not a hand-rolled message.
+      expect(
+        () => DomainClock(name, tempo: 200),
+        throwsA(
+          isA<YseException>().having((e) => e.status, 'status', isNotNull),
+        ),
+      );
       a.dispose();
     });
 
@@ -182,7 +189,12 @@ void main() {
     test('binding to a nonexistent clock throws', () {
       final clock = DomainClock(freshName('temp'), tempo: 120);
       clock.dispose(); // clock no longer live
-      expect(() => ClipTransport(clock), throwsA(isA<YseException>()));
+      expect(
+        () => ClipTransport(clock),
+        throwsA(
+          isA<YseException>().having((e) => e.status, 'status', isNotNull),
+        ),
+      );
     });
 
     test('dispose is idempotent', () {

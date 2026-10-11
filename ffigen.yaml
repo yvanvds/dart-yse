@@ -1,6 +1,8 @@
 # ffigen — generates low-level FFI bindings from the C ABI header into
 # lib/src/bindings/yse_bindings.g.dart. Hand-written idiomatic wrappers in
-# lib/src/*.dart consume these. Regenerate with:  dart run ffigen
+# lib/src/*.dart consume these. Regenerate with:
+#   dart run ffigen --config ffigen.yaml
+# (ffigen >= 20 no longer finds this file on its own.)
 name: YseBindings
 description: Low-level FFI bindings for libyse_c.dll (do not use directly).
 
@@ -27,7 +29,8 @@ headers:
 
 preamble: |
   // GENERATED FILE — DO NOT EDIT.
-  // Regenerate with `dart run ffigen` after the C ABI header changes.
+  // Regenerate with `dart run ffigen --config ffigen.yaml` after the C ABI
+  // header changes.
   // ignore_for_file: type=lint, camel_case_types, non_constant_identifier_names
 
 comments:

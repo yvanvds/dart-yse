@@ -32,6 +32,20 @@ void main() {
     sys.close();
   });
 
+  group('Channel name', () {
+    // yse_channel_get_name copies into a caller buffer since engine 3.0
+    // (upstream #905); the wrapper must size-query then fetch.
+    test('reads back the name given at creation', () {
+      final ch = Channel.create(
+        'a-rather-long-channel-name',
+        parent: Channel.master,
+      );
+      addTearDown(ch.dispose);
+      expect(ch.name, 'a-rather-long-channel-name');
+      expect(Channel.master.name, isNotEmpty);
+    });
+  });
+
   group('Return buses', () {
     test('createReturn produces a return; an ordinary channel is not', () {
       final ret = Channel.createReturn('reverb-return');

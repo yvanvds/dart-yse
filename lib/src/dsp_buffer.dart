@@ -10,15 +10,23 @@ import 'library.dart';
 /// Single-channel float audio buffer — the fundamental container for
 /// sample-level audio data in libYSE.
 ///
-/// Construct via the factory matching the subclass you need:
-///   - [DspBuffer.plain] — bare storage; pass to [Sound.fromBuffer].
-///   - [DspBuffer.drawable] — adds `drawLine` and envelope shaping.
-///   - [DspBuffer.file] — adds [loadFile] / [saveFile].
-///   - [DspBuffer.wavetable] — single-cycle wavetable + classic waveform
-///     generators (saw/square/triangle).
+/// The engine's buffer classes form a single inheritance chain, mirrored
+/// here so the type system decides which operations a buffer supports:
 ///
-/// Subclass-specific methods throw [YseException] if the underlying
-/// handle isn't of the expected type.
+///   - [DspBuffer] ([DspBuffer.plain]) — bare storage; pass to
+///     [Sound.fromBuffer].
+///   - [DrawableBuffer] — adds [DrawableBuffer.drawLine] /
+///     [DrawableBuffer.drawFlat].
+///   - [FileBuffer] — a drawable buffer that adds [FileBuffer.loadFile] /
+///     [FileBuffer.saveFile].
+///   - [Wavetable] — a file buffer that adds the band-limited waveform
+///     generators (saw / square / triangle).
+///
+/// The C API cannot check a buffer's subclass at runtime (it `static_cast`s
+/// the handle and trusts the caller), so calling a subclass entry point on
+/// a narrower buffer would write through a mistyped pointer. Each wrapper
+/// class is only ever constructed around a handle from its own native
+/// constructor, so a [DspBuffer.plain] simply has no `drawLine`.
 ///
 /// **Lifetime:** the buffer must outlive any [Sound] created from it.
 /// The engine keeps a reference for as long as the sound is live.
@@ -30,7 +38,9 @@ class DspBuffer implements Finalizable {
   final YseBindings _b;
   Pointer<YseDspBuffer> _handle;
 
-  DspBuffer._(this._b, this._handle) {
+  DspBuffer._(Pointer<YseDspBuffer> handle)
+    : _b = bindings,
+      _handle = _checked(handle) {
     _finalizer.attach(this, _handle.cast(), detach: this);
   }
 
@@ -39,27 +49,14 @@ class DspBuffer implements Finalizable {
   /// [overflow] is extra samples appended past the end, used by sources
   /// that need a wrap-around copy of the first samples at the tail
   /// (wavetables set this internally).
-  factory DspBuffer.plain({required int length, int overflow = 0}) =>
-      _wrap(bindings.dsp_buffer_create(length, overflow));
+  DspBuffer.plain({required int length, int overflow = 0})
+    : this._(bindings.dsp_buffer_create(length, overflow));
 
-  /// Buffer with drawing primitives (drawLine, envelope shaping).
-  factory DspBuffer.drawable({required int length, int overflow = 0}) =>
-      _wrap(bindings.dsp_drawable_buffer_create(length, overflow));
-
-  /// Drawable buffer with built-in file load and save.
-  factory DspBuffer.file({required int length, int overflow = 0}) =>
-      _wrap(bindings.dsp_file_buffer_create(length, overflow));
-
-  /// Pre-computed single-cycle wavetable. Use the [createSaw] /
-  /// [createSquare] / [createTriangle] methods to populate it.
-  factory DspBuffer.wavetable({required int length}) =>
-      _wrap(bindings.dsp_wavetable_create(length));
-
-  static DspBuffer _wrap(Pointer<YseDspBuffer> handle) {
+  static Pointer<YseDspBuffer> _checked(Pointer<YseDspBuffer> handle) {
     if (handle.address == 0) {
       throw YseException('yse_dsp_buffer create returned null');
     }
-    return DspBuffer._(bindings, handle);
+    return handle;
   }
 
   /// Internal: native handle (used by `Sound.fromBuffer`).
@@ -138,11 +135,26 @@ class DspBuffer implements Finalizable {
     });
   }
 
-  // ─── drawableBuffer ──────────────────────────────────────────────────────
+  /// Destroy the underlying native buffer and detach the finalizer.
+  void dispose() {
+    if (_handle.address == 0) return;
+    _finalizer.detach(this);
+    _b.dsp_buffer_destroy(_handle);
+    _handle = nullptr;
+  }
+}
+
+/// A [DspBuffer] with drawing primitives ([drawLine], [drawFlat]).
+///
+/// Mirrors the engine's `drawableBuffer`.
+class DrawableBuffer extends DspBuffer {
+  DrawableBuffer._(super.handle) : super._();
+
+  /// Drawable buffer of [length] samples (plus [overflow] tail samples).
+  DrawableBuffer({required int length, int overflow = 0})
+    : this._(bindings.dsp_drawable_buffer_create(length, overflow));
 
   /// Draw a linear ramp from `(start, startValue)` to `(stop, stopValue)`.
-  ///
-  /// Throws [YseException] if this buffer is not a drawable subclass.
   void drawLine({
     required int start,
     required int stop,
@@ -156,8 +168,6 @@ class DspBuffer implements Finalizable {
   }
 
   /// Fill the range `[start, stop]` with [value].
-  ///
-  /// Throws [YseException] if this buffer is not a drawable subclass.
   void drawFlat({
     required int start,
     required int stop,
@@ -165,8 +175,18 @@ class DspBuffer implements Finalizable {
   }) {
     checkStatus(_b.dsp_buffer_draw_flat(_handle, start, stop, value), _b);
   }
+}
 
-  // ─── fileBuffer ──────────────────────────────────────────────────────────
+/// A [DrawableBuffer] with built-in audio file load and save.
+///
+/// Mirrors the engine's `fileBuffer`.
+class FileBuffer extends DrawableBuffer {
+  FileBuffer._(super.handle) : super._();
+
+  /// File buffer of [length] samples (plus [overflow] tail samples). Size
+  /// it large enough for the file you intend to [loadFile].
+  FileBuffer({required int length, int overflow = 0})
+    : this._(bindings.dsp_file_buffer_create(length, overflow));
 
   /// Load one channel from an audio file.
   ///
@@ -185,8 +205,19 @@ class DspBuffer implements Finalizable {
       checkStatus(_b.dsp_buffer_save_file(_handle, cstr.cast()), _b);
     });
   }
+}
 
-  // ─── wavetable ───────────────────────────────────────────────────────────
+/// Pre-computed single-cycle wavetable. Populate it with [createSaw] /
+/// [createSquare] / [createTriangle].
+///
+/// Mirrors the engine's `wavetable`, which derives from `fileBuffer`, so
+/// a wavetable can also be drawn into, loaded and saved.
+class Wavetable extends FileBuffer {
+  Wavetable._(super.handle) : super._();
+
+  /// Wavetable of [length] samples.
+  Wavetable({required int length})
+    : this._(bindings.dsp_wavetable_create(length));
 
   /// Fill the wavetable with a band-limited sawtooth wave.
   void createSaw({required int harmonics, required int length}) {
@@ -204,13 +235,5 @@ class DspBuffer implements Finalizable {
       _b.dsp_wavetable_create_triangle(_handle, harmonics, length),
       _b,
     );
-  }
-
-  /// Destroy the underlying native buffer and detach the finalizer.
-  void dispose() {
-    if (_handle.address == 0) return;
-    _finalizer.detach(this);
-    _b.dsp_buffer_destroy(_handle);
-    _handle = nullptr;
   }
 }

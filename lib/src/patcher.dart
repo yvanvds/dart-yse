@@ -10,6 +10,7 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/yse_bindings.g.dart';
 import 'enums.dart';
+import 'exception.dart';
 import 'ffi_helpers.dart';
 import 'library.dart';
 
@@ -27,7 +28,6 @@ class Obj {
   // I/O.
   static const String dDac = '~dac';
   static const String dAdc = '~adc';
-  static const String dOut = '~out';
   static const String dLine = '~line';
   static const String gReceive = '.r';
   static const String gSend = '.s';
@@ -114,6 +114,9 @@ class Patcher implements Finalizable {
   }
 
   /// Construct a patcher with [mainOutputs] audio output channels.
+  ///
+  /// Throws [YseException] if the engine rejects the configuration (e.g. a
+  /// negative [mainOutputs]).
   factory Patcher({int mainOutputs = 2}) {
     final b = bindings;
     final h = b.patcher_create();
@@ -121,7 +124,12 @@ class Patcher implements Finalizable {
       throw StateError('yse_patcher_create returned null');
     }
     final p = Patcher._(b, h);
-    b.patcher_init(h, mainOutputs);
+    try {
+      checkStatus(b.patcher_init(h, mainOutputs), b);
+    } catch (_) {
+      p.dispose();
+      rethrow;
+    }
     return p;
   }
 
@@ -174,11 +182,21 @@ class Patcher implements Finalizable {
   String dumpJson() =>
       fetchString((buf, cap) => _b.patcher_dump_json(_handle, buf, cap));
 
-  /// Replace the current graph with the contents of a JSON dump.
-  void parseJson(String content) => using((arena) {
-    final cstr = content.toNativeUtf8(allocator: arena);
-    _b.patcher_parse_json(_handle, cstr.cast());
-  });
+  /// Load a JSON dump (as produced by [dumpJson]) into this patcher.
+  ///
+  /// Loading **adds to** the current graph: objects already in the patcher
+  /// are kept and the loaded ones are created next to them. Call [clear]
+  /// first to replace the patch.
+  ///
+  /// Throws [YseException] if [content] is malformed JSON or not a patch.
+  /// A failed load is rolled back: the patcher is left exactly as it was.
+  void parseJson(String content) {
+    final status = using((arena) {
+      final cstr = content.toNativeUtf8(allocator: arena);
+      return _b.patcher_parse_json(_handle, cstr.cast());
+    });
+    checkStatus(status, _b);
+  }
 
   // ─── enumeration ───────────────────────────────────────────────────────
 
@@ -256,8 +274,15 @@ class PHandle {
     (buf, cap) => bindings.phandle_get_gui_value(_handle, buf, cap),
   );
 
-  /// Patcher-assigned unique ID.
-  int get id => bindings.phandle_get_id(_handle);
+  /// Patcher-assigned ID, or `null` when this handle refers to no object
+  /// (the engine's `YSE_PATCHER_ID_NONE`).
+  ///
+  /// IDs start at 0 in every patcher, so 0 is a real ID. They are dense and
+  /// **reused**: deleting an object frees its number for the next object
+  /// created, so an ID identifies an object only while that object is
+  /// alive. Keep the [PHandle] if you need a reference that outlives the
+  /// number.
+  int? get id => _idOrNull(bindings.phandle_get_id(_handle));
 
   /// Number of inlets on this object.
   int get inputs => bindings.phandle_get_inputs(_handle);
@@ -279,13 +304,25 @@ class PHandle {
   int connectionCount(int outlet) =>
       bindings.phandle_get_connections(_handle, outlet);
 
-  /// ID of the target object of one [connection] from [outlet].
-  int connectionTargetId(int outlet, int connection) =>
-      bindings.phandle_get_connection_target(_handle, outlet, connection);
+  /// ID of the target object of one [connection] from [outlet], or `null`
+  /// when there is no such edge (the engine's `YSE_PATCHER_ID_NONE`: an
+  /// outlet or connection index out of range). See [id] for ID lifetime.
+  int? connectionTargetId(int outlet, int connection) => _idOrNull(
+    bindings.phandle_get_connection_target(_handle, outlet, connection),
+  );
 
-  /// Inlet on the target reached by [connection] from [outlet].
-  int connectionTargetInlet(int outlet, int connection) =>
-      bindings.phandle_get_connection_target_inlet(_handle, outlet, connection);
+  /// Inlet on the target reached by [connection] from [outlet], or `null`
+  /// when there is no such edge (the engine's `YSE_PATCHER_INLET_NONE`).
+  int? connectionTargetInlet(int outlet, int connection) {
+    final inlet = bindings.phandle_get_connection_target_inlet(
+      _handle,
+      outlet,
+      connection,
+    );
+    return inlet == YSE_PATCHER_INLET_NONE ? null : inlet;
+  }
+
+  static int? _idOrNull(int id) => id == YSE_PATCHER_ID_NONE ? null : id;
 
   /// Send a bang to [inlet].
   void sendBang(int inlet) => bindings.phandle_set_bang(_handle, inlet);

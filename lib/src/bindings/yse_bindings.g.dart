@@ -1,5 +1,6 @@
 // GENERATED FILE — DO NOT EDIT.
-// Regenerate with `dart run ffigen` after the C ABI header changes.
+// Regenerate with `dart run ffigen --config ffigen.yaml` after the C ABI
+// header changes.
 // ignore_for_file: type=lint, camel_case_types, non_constant_identifier_names
 
 // AUTO GENERATED FILE, DO NOT EDIT.
@@ -58,6 +59,21 @@ class YseBindings {
   late final _clear_last_error = _clear_last_errorPtr
       .asFunction<void Function()>();
 
+  /// Release a string the library allocated and handed to the caller — any
+  /// function whose comment says its result is released with yse_free_string
+  /// (e.g. yse_patcher_get_metadata_json). NULL is a no-op. Never pass it a
+  /// pointer to engine-owned storage or a buffer the caller allocated.
+  void free_string(ffi.Pointer<ffi.Char> s) {
+    return _free_string(s);
+  }
+
+  late final _free_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+        'yse_free_string',
+      );
+  late final _free_string = _free_stringPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
   /// Borrowed singleton pointer — never destroy.
   ffi.Pointer<YseSystem> system_get() {
     return _system_get();
@@ -71,6 +87,12 @@ class YseBindings {
       .asFunction<ffi.Pointer<YseSystem> Function()>();
 
   /// Lifecycle.
+  ///
+  /// yse_system_init() returns YSE_OK only when a stream on the default output
+  /// device is running. With no default device, or one that refuses to open or
+  /// start the stream, it returns YSE_ERR_AUDIO_DEVICE and leaves the engine
+  /// closed; yse_system_init_offline() runs the engine without a device
+  /// (issue #973).
   YseStatus system_init(ffi.Pointer<YseSystem> sys) {
     return YseStatus.fromValue(_system_init(sys));
   }
@@ -137,6 +159,10 @@ class YseBindings {
   late final _system_pause = _system_pausePtr
       .asFunction<void Function(ffi.Pointer<YseSystem>)>();
 
+  /// Restarts the device this session already had. A session brought up with
+  /// yse_system_init_offline() has none, so this is a no-op there rather than an
+  /// open of the platform default; yse_system_open_device() is the deliberate way
+  /// to give such a session a device (issue #719).
   void system_resume(ffi.Pointer<YseSystem> sys) {
     return _system_resume(sys);
   }
@@ -149,6 +175,15 @@ class YseBindings {
       .asFunction<void Function(ffi.Pointer<YseSystem>)>();
 
   /// Diagnostics.
+  ///
+  /// yse_system_missed_callbacks() counts consecutive yse_system_update() ticks
+  /// during which the device delivered no audio callback; 0 means audio is
+  /// flowing right now. A stream that has just been started reads non-zero until
+  /// its first callback lands (the backend's start call returns before the device
+  /// runs), so poll this until it reaches 0 to wait for a device to come up — a
+  /// value that keeps climbing is a starved audio thread or a disconnected
+  /// device. yse_system_auto_reconnect() does not act on this counter; it
+  /// distinguishes start-up from a stall itself (issue #681).
   int system_missed_callbacks(ffi.Pointer<YseSystem> sys) {
     return _system_missed_callbacks(sys);
   }
@@ -170,6 +205,94 @@ class YseBindings {
       );
   late final _system_cpu_load = _system_cpu_loadPtr
       .asFunction<double Function(ffi.Pointer<YseSystem>)>();
+
+  /// Request the audio sample rate for the next engine session (issue #646).
+  /// The sample rate is an application setting, fixed per session: call this
+  /// before yse_system_init / yse_system_init_offline. The device may refuse or
+  /// negotiate a different rate — the negotiated result stays authoritative and
+  /// is reported by yse_system_get_sample_rate(); a refused request is a log
+  /// line plus the negotiated fallback, never an error. Offline / headless
+  /// sessions run exactly at the requested rate. Pass 0 to clear the request
+  /// (the backend then opens at the device default; the pre-negotiation initial
+  /// value is 48000). Changing a running session's rate means yse_system_close()
+  /// followed by a new init; calling this mid-session only stores the request
+  /// for the next session. The request survives close.
+  void system_request_sample_rate(ffi.Pointer<YseSystem> sys, int rate_hz) {
+    return _system_request_sample_rate(sys, rate_hz);
+  }
+
+  late final _system_request_sample_ratePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSystem>, ffi.UnsignedInt)
+        >
+      >('yse_system_request_sample_rate');
+  late final _system_request_sample_rate = _system_request_sample_ratePtr
+      .asFunction<void Function(ffi.Pointer<YseSystem>, int)>();
+
+  /// Currently requested sample rate in Hz, or 0 when no request is set.
+  int system_get_requested_sample_rate(ffi.Pointer<YseSystem> sys) {
+    return _system_get_requested_sample_rate(sys);
+  }
+
+  late final _system_get_requested_sample_ratePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseSystem>)>
+      >('yse_system_get_requested_sample_rate');
+  late final _system_get_requested_sample_rate =
+      _system_get_requested_sample_ratePtr
+          .asFunction<int Function(ffi.Pointer<YseSystem>)>();
+
+  /// Render thread count (issue #861): how many worker threads help the audio
+  /// thread render the mix. count < 0 (default -1) is auto — physical cores minus
+  /// one, capped at 8; 0 is serial — the audio thread renders alone and no
+  /// worker is started (constrained hardware, Android); n > 0 is exactly n
+  /// workers (at most 64). Whatever the count, no worker is woken for a block
+  /// estimated to cost less than the wake (in real-time rendering the audio
+  /// thread renders it alone); the setting decides only which thread renders
+  /// each part of the mix, never how it is summed. Call before yse_system_init /
+  /// yse_system_init_offline: with no session or an offline one it applies at once; during a device
+  /// session it is stored for the next init. The setting survives close. Returns YSE_ERR_EXCEPTION
+  /// (see yse_last_error) if the workers could not be started.
+  ///
+  /// yse_system_get_render_threads() returns the setting (-1 = auto);
+  /// yse_system_get_active_render_threads() the workers currently running. Both
+  /// return 0 on a NULL handle.
+  YseStatus system_set_render_threads(ffi.Pointer<YseSystem> sys, int count) {
+    return YseStatus.fromValue(_system_set_render_threads(sys, count));
+  }
+
+  late final _system_set_render_threadsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YseSystem>, ffi.Int)
+        >
+      >('yse_system_set_render_threads');
+  late final _system_set_render_threads = _system_set_render_threadsPtr
+      .asFunction<int Function(ffi.Pointer<YseSystem>, int)>();
+
+  int system_get_render_threads(ffi.Pointer<YseSystem> sys) {
+    return _system_get_render_threads(sys);
+  }
+
+  late final _system_get_render_threadsPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseSystem>)>>(
+        'yse_system_get_render_threads',
+      );
+  late final _system_get_render_threads = _system_get_render_threadsPtr
+      .asFunction<int Function(ffi.Pointer<YseSystem>)>();
+
+  int system_get_active_render_threads(ffi.Pointer<YseSystem> sys) {
+    return _system_get_active_render_threads(sys);
+  }
+
+  late final _system_get_active_render_threadsPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseSystem>)>>(
+        'yse_system_get_active_render_threads',
+      );
+  late final _system_get_active_render_threads =
+      _system_get_active_render_threadsPtr
+          .asFunction<int Function(ffi.Pointer<YseSystem>)>();
 
   /// Engine session sample rate in Hz. Stays constant for the lifetime of an
   /// init()/close() session, including across pause/resume cycles where the
@@ -273,6 +396,25 @@ class YseBindings {
   late final _system_audio_test = _system_audio_testPtr
       .asFunction<void Function(ffi.Pointer<YseSystem>, int)>();
 
+  /// Re-open the audio output stream when the device stops delivering callbacks
+  /// (headphones unplugged, device removed). delay_ms is what its name has always
+  /// said and now is: milliseconds of silence before an attempt, and the interval
+  /// between further attempts while the device stays unavailable. Negative values
+  /// are clamped to 0. Up to and including v2.4.0 the value was compared against a
+  /// count of yse_system_update() calls instead, so the same number meant a
+  /// different wait per host (issue #681).
+  ///
+  /// A stream that has been started but has not delivered its first callback yet
+  /// is not stalled, and is never torn down for it: it gets a half-second start-up
+  /// grace regardless of delay_ms.
+  ///
+  /// The stream is reopened on the device the session had (issue #1027): the
+  /// device of the last successful yse_system_open_device(), looked up again by
+  /// name and host, with the channel count and buffer size it was opened with. A
+  /// session that never opened a device reopens the current default device. When
+  /// the session's device cannot be reopened nothing is opened and the watchdog
+  /// tries again later. Same as yse_system_auto_reconnect_config() with no
+  /// fallback and no attempt limit.
   void system_auto_reconnect(ffi.Pointer<YseSystem> sys, int on, int delay_ms) {
     return _system_auto_reconnect(sys, on, delay_ms);
   }
@@ -286,8 +428,138 @@ class YseBindings {
   late final _system_auto_reconnect = _system_auto_reconnectPtr
       .asFunction<void Function(ffi.Pointer<YseSystem>, int, int)>();
 
+  /// yse_system_auto_reconnect() with a fallback policy and an attempt limit
+  /// (issue #1027). fallback_to_default != 0 opens the default output device when
+  /// the session's own device cannot be reopened (the speaker layout is narrowed
+  /// if the default device has fewer outputs); the session does not move back by
+  /// itself when its device returns. max_attempts > 0 stops the watchdog after
+  /// that many consecutive failed attempts, with the state then reading
+  /// YSE_RS_FAILED; 0 or less retries forever. Every call resets the state to
+  /// YSE_RS_NONE and re-arms a watchdog that gave up.
+  ///
+  /// On desktop the device is looked up in the audio backend's enumeration as it
+  /// stands; a device unplugged and plugged back in may only be found after
+  /// yse_system_refresh_devices(), which a host can call while the state reads
+  /// YSE_RS_RECONNECTING (no stream is open then).
+  void system_auto_reconnect_config(
+    ffi.Pointer<YseSystem> sys,
+    int on,
+    int delay_ms,
+    int fallback_to_default,
+    int max_attempts,
+  ) {
+    return _system_auto_reconnect_config(
+      sys,
+      on,
+      delay_ms,
+      fallback_to_default,
+      max_attempts,
+    );
+  }
+
+  late final _system_auto_reconnect_configPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseSystem>,
+            ffi.Int,
+            ffi.Int,
+            ffi.Int,
+            ffi.Int,
+          )
+        >
+      >('yse_system_auto_reconnect_config');
+  late final _system_auto_reconnect_config = _system_auto_reconnect_configPtr
+      .asFunction<void Function(ffi.Pointer<YseSystem>, int, int, int, int)>();
+
+  /// What the reconnection watchdog last did, and how many attempts it has made
+  /// this session (successful or not; reset by init). The state goes back to
+  /// YSE_RS_NONE on init, a successful yse_system_open_device() and every
+  /// auto_reconnect call. Both may be read from any thread. A NULL handle reads
+  /// YSE_RS_NONE / 0.
+  YseReconnectState system_get_reconnect_state(ffi.Pointer<YseSystem> sys) {
+    return YseReconnectState.fromValue(_system_get_reconnect_state(sys));
+  }
+
+  late final _system_get_reconnect_statePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseSystem>)>
+      >('yse_system_get_reconnect_state');
+  late final _system_get_reconnect_state = _system_get_reconnect_statePtr
+      .asFunction<int Function(ffi.Pointer<YseSystem>)>();
+
+  int system_get_reconnect_count(ffi.Pointer<YseSystem> sys) {
+    return _system_get_reconnect_count(sys);
+  }
+
+  late final _system_get_reconnect_countPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseSystem>)>
+      >('yse_system_get_reconnect_count');
+  late final _system_get_reconnect_count = _system_get_reconnect_countPtr
+      .asFunction<int Function(ffi.Pointer<YseSystem>)>();
+
+  /// Name and host API of the device whose output stream is open right now —
+  /// empty when none is. Compare with yse_device_get_name() /
+  /// yse_device_get_type_name() to see which device the session is actually on,
+  /// e.g. after a fallback (issue #1027). snprintf-style: returns the full
+  /// length, writes at most cap - 1 bytes plus NUL. Call from the thread that
+  /// drives yse_system_update().
+  int system_active_device(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _system_active_device(sys, buf, cap);
+  }
+
+  late final _system_active_devicePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseSystem>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_system_active_device');
+  late final _system_active_device = _system_active_devicePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  int system_active_host(
+    ffi.Pointer<YseSystem> sys,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _system_active_host(sys, buf, cap);
+  }
+
+  late final _system_active_hostPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YseSystem>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_system_active_host');
+  late final _system_active_host = _system_active_hostPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseSystem>, ffi.Pointer<ffi.Char>, int)
+      >();
+
   /// Devices. Returned YseDevice* pointers are borrowed from the engine and
   /// must not be destroyed. See yse_device.h for the descriptor accessors.
+  ///
+  /// yse_system_get_device() is bound-checked: an idx at or beyond
+  /// yse_system_num_devices() returns NULL and sets the last error, so probing
+  /// or iterating with a stale count is safe. yse_system_init() enumerates the
+  /// devices; yse_system_init_offline() enumerates none, so an offline session
+  /// lists nothing until yse_system_refresh_devices() is called, and a headless
+  /// host may list nothing at all. An empty list makes index 0 out of range.
   int system_num_devices(ffi.Pointer<YseSystem> sys) {
     return _system_num_devices(sys);
   }
@@ -320,6 +592,46 @@ class YseBindings {
         ffi.Pointer<YseDevice> Function(ffi.Pointer<YseSystem>, int)
       >();
 
+  /// Enumerate the audio devices without opening a stream (issue #1026). Valid
+  /// before yse_system_init(), on an offline session and on a running device
+  /// session. On desktop it starts the audio backend if it is not running, which
+  /// also lets yse_system_open_device() work on an offline session in a process
+  /// that never called yse_system_init(). With no stream open the backend is
+  /// restarted so hot-plugged devices show up; an open stream is never touched,
+  /// and the list is then re-read from the backend's current enumeration.
+  ///
+  /// The list is replaced: YseDevice pointers obtained earlier, and setups built
+  /// from them, are invalid afterwards, and an index may now name a different
+  /// device. Resolve a stored device by name and host again.
+  ///
+  /// Returns YSE_OK when the list is current (it may be empty), or
+  /// YSE_ERR_AUDIO_DEVICE when the backend could not start, with an empty list,
+  /// the failure in yse_last_error() and the backend's own error text in the
+  /// log. Starting PortAudio can hang a bare
+  /// headless Linux runner, so headless tools should not call this.
+  YseStatus system_refresh_devices(ffi.Pointer<YseSystem> sys) {
+    return YseStatus.fromValue(_system_refresh_devices(sys));
+  }
+
+  late final _system_refresh_devicesPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YseSystem>)>
+      >('yse_system_refresh_devices');
+  late final _system_refresh_devices = _system_refresh_devicesPtr
+      .asFunction<int Function(ffi.Pointer<YseSystem>)>();
+
+  /// yse_system_open_device() returns YSE_OK only when a stream was opened for
+  /// `setup`. A setup the engine refuses — no output device, an output device
+  /// whose id is -1 or no longer resolves, a stream open error, or an offline
+  /// session with no audio backend — returns YSE_ERR_AUDIO_DEVICE and sets
+  /// yse_last_error(); the running stream and the speaker layout are left
+  /// untouched (issue #900).
+  ///
+  /// On desktop, yse_system_init_offline() does not start the audio backend and
+  /// open_device does not start it on demand: call yse_system_refresh_devices()
+  /// first to start it and pick the device from a current list. The
+  /// stream opens at the locked session rate; a device that refuses that rate is
+  /// a logged YSE_ERR_AUDIO_DEVICE (issue #972).
   YseStatus system_open_device(
     ffi.Pointer<YseSystem> sys,
     ffi.Pointer<YseDeviceSetup> setup,
@@ -353,6 +665,38 @@ class YseBindings {
       );
   late final _system_close_current_device = _system_close_current_devicePtr
       .asFunction<void Function(ffi.Pointer<YseSystem>)>();
+
+  /// Set the speaker layout without opening a device (issue #668).
+  ///
+  /// yse_system_open_device() derives the layout from the device it actually
+  /// opened, so a session with no device — yse_system_init_offline(), headless
+  /// CI, yse_system_render_offline() benchmarks — otherwise stays on the stereo
+  /// layout init installs. Call this after init/init_offline (initialisation
+  /// installs the stereo default itself, so an earlier call is overwritten); the
+  /// next audio callback or render_offline block picks the new layout up and
+  /// resizes the mixer to match.
+  ///
+  /// `outputs` is the number of output channels and must be at least 1; a
+  /// zero-output layout would silence the engine, so it is refused with a log
+  /// line. YSE_CT_AUTO derives a layout from `outputs`; YSE_CT_CUSTOM allocates
+  /// `outputs` speakers whose positions are set afterwards.
+  void system_set_channel_configuration(
+    ffi.Pointer<YseSystem> sys,
+    YseChannelType layout,
+    int outputs,
+  ) {
+    return _system_set_channel_configuration(sys, layout.value, outputs);
+  }
+
+  late final _system_set_channel_configurationPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSystem>, ffi.UnsignedInt, ffi.Int)
+        >
+      >('yse_system_set_channel_configuration');
+  late final _system_set_channel_configuration =
+      _system_set_channel_configurationPtr
+          .asFunction<void Function(ffi.Pointer<YseSystem>, int, int)>();
 
   int system_default_device(
     ffi.Pointer<YseSystem> sys,
@@ -401,6 +745,11 @@ class YseBindings {
       >();
 
   /// MIDI devices (Windows / Linux only — Android builds report 0).
+  ///
+  /// The name getters write an empty, NUL-terminated buffer and return 0 when
+  /// there is no such device: an `id` at or past the matching count, or any `id`
+  /// at all on a host whose MIDI backend failed to initialise (issue #585). A
+  /// non-empty name therefore always means a real port.
   int system_num_midi_in_devices(ffi.Pointer<YseSystem> sys) {
     return _system_num_midi_in_devices(sys);
   }
@@ -473,20 +822,22 @@ class YseBindings {
         int Function(ffi.Pointer<YseSystem>, int, ffi.Pointer<ffi.Char>, int)
       >();
 
-  /// Returns 1 on success, 0 if `sys`/`name` is NULL, the name is empty, or a
-  /// live clock already owns the name (first registration wins).
-  int system_create_clock(
+  /// YSE_OK on success; YSE_ERR_INVALID_HANDLE on a NULL `sys`,
+  /// YSE_ERR_INVALID_ARGUMENT when `name` is NULL or empty or a live clock
+  /// already owns it (first registration wins — the existing clock is left
+  /// unchanged). Every failure leaves its reason in yse_last_error().
+  YseStatus system_create_clock(
     ffi.Pointer<YseSystem> sys,
     ffi.Pointer<ffi.Char> name,
     double initial_tempo,
   ) {
-    return _system_create_clock(sys, name, initial_tempo);
+    return YseStatus.fromValue(_system_create_clock(sys, name, initial_tempo));
   }
 
   late final _system_create_clockPtr =
       _lookup<
         ffi.NativeFunction<
-          ffi.Int Function(
+          ffi.UnsignedInt Function(
             ffi.Pointer<YseSystem>,
             ffi.Pointer<ffi.Char>,
             ffi.Float,
@@ -657,6 +1008,79 @@ class YseBindings {
       >('yse_system_set_underwater_depth');
   late final _system_set_underwater_depth = _system_set_underwater_depthPtr
       .asFunction<void Function(ffi.Pointer<YseSystem>, double)>();
+
+  void system_set_occlusion_callback(
+    ffi.Pointer<YseSystem> sys,
+    YseOcclusionCallback cb,
+    ffi.Pointer<ffi.Void> user_data,
+  ) {
+    return _system_set_occlusion_callback(sys, cb, user_data);
+  }
+
+  late final _system_set_occlusion_callbackPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseSystem>,
+            YseOcclusionCallback,
+            ffi.Pointer<ffi.Void>,
+          )
+        >
+      >('yse_system_set_occlusion_callback');
+  late final _system_set_occlusion_callback = _system_set_occlusion_callbackPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YseSystem>,
+          YseOcclusionCallback,
+          ffi.Pointer<ffi.Void>,
+        )
+      >();
+
+  /// Engine block size in frames (issue #908): the fixed number of samples the
+  /// engine renders per block (128). yse_system_render_offline(sys, blocks)
+  /// renders blocks * yse_block_size() frames. Independent of the device's
+  /// frames-per-callback reported by yse_system_get_active_buffer_size().
+  int block_size() {
+    return _block_size();
+  }
+
+  late final _block_sizePtr =
+      _lookup<ffi.NativeFunction<ffi.UnsignedInt Function()>>('yse_block_size');
+  late final _block_size = _block_sizePtr.asFunction<int Function()>();
+
+  /// Engine random generator (issue #908) — the one behind the patcher's .random
+  /// object, granulator jitter, the LFO random shapes and the seed-0 stream of
+  /// the seedable patcher objects. These run inside the engine library, so they
+  /// seed the engine's own generator even when the host links it as a shared
+  /// library (the C++ YSE::Randomize() inline would seed the host's copy).
+  ///
+  /// Without either call the engine is reproducible by default. yse_randomize()
+  /// seeds from the system clock; yse_random_seed() seeds with a fixed value, so
+  /// the same seed replays the same sequence on the n-th thread to draw after
+  /// the call — in particular on the audio thread when it is the only one
+  /// drawing. Every engine thread re-seeds on its next draw, so the audio
+  /// thread's running stream is affected too. Call from a control thread (not
+  /// from an audio callback), typically before creating the patch or sounds
+  /// whose output should be reproducible; objects that drew their stream at
+  /// construction keep it.
+  void randomize() {
+    return _randomize();
+  }
+
+  late final _randomizePtr = _lookup<ffi.NativeFunction<ffi.Void Function()>>(
+    'yse_randomize',
+  );
+  late final _randomize = _randomizePtr.asFunction<void Function()>();
+
+  void random_seed(int seed) {
+    return _random_seed(seed);
+  }
+
+  late final _random_seedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.UnsignedInt)>>(
+        'yse_random_seed',
+      );
+  late final _random_seed = _random_seedPtr.asFunction<void Function(int)>();
 
   /// Borrowed singleton pointer — never destroy.
   ffi.Pointer<YseListener> listener_get() {
@@ -1144,18 +1568,59 @@ class YseBindings {
   late final _channel_is_valid = _channel_is_validPtr
       .asFunction<int Function(ffi.Pointer<YseChannel>)>();
 
-  ffi.Pointer<ffi.Char> channel_get_name(ffi.Pointer<YseChannel> ch) {
-    return _channel_get_name(ch);
+  /// Copy the channel's log name (the `name` passed at create — not the bus name
+  /// set by yse_channel_set_name) into buf, snprintf-style: writes at most cap-1
+  /// bytes plus a NUL, returns the full length. Pass buf=NULL/cap=0 to size the
+  /// buffer first. Returns 0 (and clears buf) on a NULL handle.
+  int channel_get_name(
+    ffi.Pointer<YseChannel> ch,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _channel_get_name(ch, buf, cap);
   }
 
   late final _channel_get_namePtr =
       _lookup<
         ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(ffi.Pointer<YseChannel>)
+          ffi.Size Function(
+            ffi.Pointer<YseChannel>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
         >
       >('yse_channel_get_name');
   late final _channel_get_name = _channel_get_namePtr
-      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<YseChannel>)>();
+      .asFunction<
+        int Function(ffi.Pointer<YseChannel>, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  /// Assign a bus-addressable name to the channel (mirrors YSE::channel::name,
+  /// issue #905). Once named "foo", the channel subscribes to the global named
+  /// bus address channel.foo.volume (float, also accepts int), so a host can set
+  /// its volume with yse_bus_publish_float("channel.foo.volume", v). Independent
+  /// of the log name. NULL or "" clears the name and removes the subscription;
+  /// renaming re-subscribes under the new name. Names are unique per channel: a
+  /// duplicate is rejected and logged engine-side (first registration wins — no
+  /// error return, matching yse_synth_set_name). Only effective while the engine
+  /// is between init and close.
+  void channel_set_name(
+    ffi.Pointer<YseChannel> ch,
+    ffi.Pointer<ffi.Char> name,
+  ) {
+    return _channel_set_name(ch, name);
+  }
+
+  late final _channel_set_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseChannel>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_channel_set_name');
+  late final _channel_set_name = _channel_set_namePtr
+      .asFunction<
+        void Function(ffi.Pointer<YseChannel>, ffi.Pointer<ffi.Char>)
+      >();
 
   /// Output peak metering — see channelInterface.hpp for semantics.
   ///
@@ -1304,6 +1769,11 @@ class YseBindings {
 
   /// Initialize a sound from a file on disk. Must be called once after
   /// yse_sound_create() and before any other method.
+  ///
+  /// The `loop` and `volume` arguments of the load functions below seed the
+  /// sound's state: after a successful load, yse_sound_get_looping() and
+  /// yse_sound_get_volume() report them back until a setter overrides them
+  /// (issue #583). A failed load leaves the sound at its defaults.
   YseStatus sound_load_file(
     ffi.Pointer<YseSound> s,
     ffi.Pointer<ffi.Char> filename,
@@ -1378,6 +1848,47 @@ class YseBindings {
         )
       >();
 
+  /// Initialize a sound from an in-memory multichannel buffer (the
+  /// sound::create(MULTICHANNELBUFFER&) overload, issue #909): channel i of `mb`
+  /// feeds the sound's channel i, so a two-channel buffer plays as a stereo
+  /// source. Build `mb` with yse_dsp_multi_buffer_create() (see yse_dsp.h). The
+  /// engine reads `mb` for as long as the sound plays, so it must outlive the
+  /// sound — the same lifetime contract as yse_sound_load_buffer().
+  YseStatus sound_load_multi_buffer(
+    ffi.Pointer<YseSound> s,
+    ffi.Pointer<YseDspMultiBuffer> mb,
+    ffi.Pointer<YseChannel> ch,
+    int loop,
+    double volume,
+  ) {
+    return YseStatus.fromValue(
+      _sound_load_multi_buffer(s, mb, ch, loop, volume),
+    );
+  }
+
+  late final _sound_load_multi_bufferPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseSound>,
+            ffi.Pointer<YseDspMultiBuffer>,
+            ffi.Pointer<YseChannel>,
+            ffi.Int,
+            ffi.Float,
+          )
+        >
+      >('yse_sound_load_multi_buffer');
+  late final _sound_load_multi_buffer = _sound_load_multi_bufferPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseSound>,
+          ffi.Pointer<YseDspMultiBuffer>,
+          ffi.Pointer<YseChannel>,
+          int,
+          double,
+        )
+      >();
+
   /// Initialize a sound from a patcher graph. The patcher must outlive the
   /// sound.
   YseStatus sound_load_patcher(
@@ -1442,6 +1953,31 @@ class YseBindings {
       );
   late final _sound_is_streaming = _sound_is_streamingPtr
       .asFunction<int Function(ffi.Pointer<YseSound>)>();
+
+  /// Assign a bus-addressable name to the sound (mirrors YSE::sound::name, issue
+  /// #905). Once named "foo", the sound subscribes to the global named bus
+  /// addresses sound.foo.volume and sound.foo.speed (float, also accept int) and
+  /// sound.foo.position (list of 3 floats), so a host can drive it with
+  /// yse_bus_publish_*. Values that arrive before a load succeeds are dropped.
+  /// NULL or "" clears the name and removes the subscriptions; renaming
+  /// re-subscribes under the new name. Names are unique per sound: a duplicate
+  /// is rejected and logged engine-side (first registration wins — no error
+  /// return, matching yse_synth_set_name). Only effective while the engine is
+  /// between init and close.
+  void sound_set_name(ffi.Pointer<YseSound> s, ffi.Pointer<ffi.Char> name) {
+    return _sound_set_name(s, name);
+  }
+
+  late final _sound_set_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSound>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_sound_set_name');
+  late final _sound_set_name = _sound_set_namePtr
+      .asFunction<
+        void Function(ffi.Pointer<YseSound>, ffi.Pointer<ffi.Char>)
+      >();
 
   /// Transport.
   void sound_play(ffi.Pointer<YseSound> s) {
@@ -2024,6 +2560,11 @@ class YseBindings {
   late final _device_get_buffer_size = _device_get_buffer_sizePtr
       .asFunction<int Function(ffi.Pointer<YseDevice>, int)>();
 
+  /// 0 from yse_device_default_buffer_size() means "the host does not advertise
+  /// one", not "zero frames": passed on to yse_device_setup_set_buffer_size() it
+  /// asks the backend to choose. The PortAudio enumerator reports 0 for every
+  /// device (PaDeviceInfo has no equivalent field), so read the negotiated size
+  /// back from yse_system_get_active_buffer_size() once the device is open.
   int device_default_buffer_size(ffi.Pointer<YseDevice> dev) {
     return _device_default_buffer_size(dev);
   }
@@ -2057,6 +2598,13 @@ class YseBindings {
   late final _device_input_latency = _device_input_latencyPtr
       .asFunction<int Function(ffi.Pointer<YseDevice>)>();
 
+  /// -1 from yse_device_get_id() means "no device", not "device index -1": it is
+  /// PortAudio's paNoDevice, what a descriptor reports before the engine fills it
+  /// in, and what a NULL handle reports. Every device from
+  /// yse_system_get_device() carries a real, non-negative index. Handing a setup
+  /// whose output device still reads -1 to yse_system_open_device() is refused:
+  /// it returns YSE_ERR_AUDIO_DEVICE, logs the reason and leaves the running
+  /// stream alone.
   int device_get_id(ffi.Pointer<YseDevice> dev) {
     return _device_get_id(dev);
   }
@@ -2127,6 +2675,11 @@ class YseBindings {
         void Function(ffi.Pointer<YseDeviceSetup>, ffi.Pointer<YseDevice>)
       >();
 
+  /// Sample rate to open the device at, in Hz; 0 (the default) means no request.
+  /// The session rate is fixed while a session runs: when it differs from the
+  /// session rate, yse_system_open_device() logs a warning and opens the stream
+  /// at the session rate. Choose the rate with yse_system_request_sample_rate()
+  /// before yse_system_init() instead.
   void device_setup_set_sample_rate(
     ffi.Pointer<YseDeviceSetup> setup,
     double value,
@@ -2158,6 +2711,21 @@ class YseBindings {
       >('yse_device_setup_set_buffer_size');
   late final _device_setup_set_buffer_size = _device_setup_set_buffer_sizePtr
       .asFunction<void Function(ffi.Pointer<YseDeviceSetup>, int)>();
+
+  /// Output channel count of the device attached with
+  /// yse_device_setup_set_output() — the count yse_system_open_device() opens
+  /// the stream with. 0 before an output device is set, and for a NULL setup.
+  int device_setup_get_output_channels(ffi.Pointer<YseDeviceSetup> setup) {
+    return _device_setup_get_output_channels(setup);
+  }
+
+  late final _device_setup_get_output_channelsPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YseDeviceSetup>)>
+      >('yse_device_setup_get_output_channels');
+  late final _device_setup_get_output_channels =
+      _device_setup_get_output_channelsPtr
+          .asFunction<int Function(ffi.Pointer<YseDeviceSetup>)>();
 
   /// Owned reverb zone — yse_reverb_create() runs both the C++ constructor
   /// and reverb::create() so the handle is ready to configure immediately.
@@ -2471,6 +3039,59 @@ class YseBindings {
   late final _reverb_set_preset = _reverb_set_presetPtr
       .asFunction<void Function(ffi.Pointer<YseReverb>, int)>();
 
+  /// Write the parameter set of a named preset into *out — the exact values
+  /// yse_reverb_set_preset() applies. A preset outside the enum yields the
+  /// YSE_REVERB_OFF values. NULL out is a no-op.
+  void reverb_preset_get_values(
+    YseReverbPreset preset,
+    ffi.Pointer<YseReverbPresetValues> out,
+  ) {
+    return _reverb_preset_get_values(preset.value, out);
+  }
+
+  late final _reverb_preset_get_valuesPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.UnsignedInt, ffi.Pointer<YseReverbPresetValues>)
+        >
+      >('yse_reverb_preset_get_values');
+  late final _reverb_preset_get_values = _reverb_preset_get_valuesPtr
+      .asFunction<void Function(int, ffi.Pointer<YseReverbPresetValues>)>();
+
+  /// Linear blend of two parameter sets into *out: every field is
+  /// a + (b - a) * t with t clamped to [0, 1], so t = 0 gives a and t = 1 gives
+  /// b. `out` may alias `a` or `b`. NULL out is a no-op; a NULL a or b
+  /// zero-fills *out.
+  void reverb_preset_morph(
+    ffi.Pointer<YseReverbPresetValues> a,
+    ffi.Pointer<YseReverbPresetValues> b,
+    double t,
+    ffi.Pointer<YseReverbPresetValues> out,
+  ) {
+    return _reverb_preset_morph(a, b, t, out);
+  }
+
+  late final _reverb_preset_morphPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseReverbPresetValues>,
+            ffi.Pointer<YseReverbPresetValues>,
+            ffi.Float,
+            ffi.Pointer<YseReverbPresetValues>,
+          )
+        >
+      >('yse_reverb_preset_morph');
+  late final _reverb_preset_morph = _reverb_preset_morphPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YseReverbPresetValues>,
+          ffi.Pointer<YseReverbPresetValues>,
+          double,
+          ffi.Pointer<YseReverbPresetValues>,
+        )
+      >();
+
   /// Constructors — one per subclass. The returned handle owns its native
   /// storage; pair with yse_dsp_buffer_destroy.
   ffi.Pointer<YseDspBuffer> dsp_buffer_create(int length, int overflow) {
@@ -2758,6 +3379,162 @@ class YseBindings {
   late final _dsp_buffer_mul_scalar = _dsp_buffer_mul_scalarPtr
       .asFunction<void Function(ffi.Pointer<YseDspBuffer>, double)>();
 
+  /// Sample-wise buffer math (operator+= / -= / *= / /= on a buffer, issue #909):
+  /// buf[i] op= other[i] over the first min(length(buf), length(other)) samples;
+  /// samples past the shorter length are left untouched. Division by a zero
+  /// sample yields 0, not inf. `buf` and `other` may be the same handle. A NULL
+  /// `buf` or `other` is a no-op.
+  void dsp_buffer_add_buffer(
+    ffi.Pointer<YseDspBuffer> buf,
+    ffi.Pointer<YseDspBuffer> other,
+  ) {
+    return _dsp_buffer_add_buffer(buf, other);
+  }
+
+  late final _dsp_buffer_add_bufferPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.Pointer<YseDspBuffer>,
+          )
+        >
+      >('yse_dsp_buffer_add_buffer');
+  late final _dsp_buffer_add_buffer = _dsp_buffer_add_bufferPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseDspBuffer>, ffi.Pointer<YseDspBuffer>)
+      >();
+
+  void dsp_buffer_sub_buffer(
+    ffi.Pointer<YseDspBuffer> buf,
+    ffi.Pointer<YseDspBuffer> other,
+  ) {
+    return _dsp_buffer_sub_buffer(buf, other);
+  }
+
+  late final _dsp_buffer_sub_bufferPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.Pointer<YseDspBuffer>,
+          )
+        >
+      >('yse_dsp_buffer_sub_buffer');
+  late final _dsp_buffer_sub_buffer = _dsp_buffer_sub_bufferPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseDspBuffer>, ffi.Pointer<YseDspBuffer>)
+      >();
+
+  void dsp_buffer_mul_buffer(
+    ffi.Pointer<YseDspBuffer> buf,
+    ffi.Pointer<YseDspBuffer> other,
+  ) {
+    return _dsp_buffer_mul_buffer(buf, other);
+  }
+
+  late final _dsp_buffer_mul_bufferPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.Pointer<YseDspBuffer>,
+          )
+        >
+      >('yse_dsp_buffer_mul_buffer');
+  late final _dsp_buffer_mul_buffer = _dsp_buffer_mul_bufferPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseDspBuffer>, ffi.Pointer<YseDspBuffer>)
+      >();
+
+  void dsp_buffer_div_buffer(
+    ffi.Pointer<YseDspBuffer> buf,
+    ffi.Pointer<YseDspBuffer> other,
+  ) {
+    return _dsp_buffer_div_buffer(buf, other);
+  }
+
+  late final _dsp_buffer_div_bufferPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.Pointer<YseDspBuffer>,
+          )
+        >
+      >('yse_dsp_buffer_div_buffer');
+  late final _dsp_buffer_div_buffer = _dsp_buffer_div_bufferPtr
+      .asFunction<
+        void Function(ffi.Pointer<YseDspBuffer>, ffi.Pointer<YseDspBuffer>)
+      >();
+
+  /// Copy `count` samples from src[src_pos...] into dst[dst_pos...]
+  /// (buffer::copyFrom, issue #909). Both ranges must lie inside their buffer's
+  /// length: a range that runs past the end copies nothing and returns
+  /// YSE_ERR_INVALID_ARGUMENT (the engine call would silently skip it). src and
+  /// dst may be the same handle only for ranges that do not overlap. Returns
+  /// YSE_ERR_INVALID_HANDLE for a NULL handle.
+  YseStatus dsp_buffer_copy_from(
+    ffi.Pointer<YseDspBuffer> dst,
+    ffi.Pointer<YseDspBuffer> src,
+    int src_pos,
+    int dst_pos,
+    int count,
+  ) {
+    return YseStatus.fromValue(
+      _dsp_buffer_copy_from(dst, src, src_pos, dst_pos, count),
+    );
+  }
+
+  late final _dsp_buffer_copy_fromPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.Pointer<YseDspBuffer>,
+            ffi.UnsignedInt,
+            ffi.UnsignedInt,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_dsp_buffer_copy_from');
+  late final _dsp_buffer_copy_from = _dsp_buffer_copy_fromPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YseDspBuffer>,
+          ffi.Pointer<YseDspBuffer>,
+          int,
+          int,
+          int,
+        )
+      >();
+
+  /// Exchange the samples of two buffers of the same length (buffer::swap, issue
+  /// #909). Each buffer keeps its own storage, sample-rate adjustment and
+  /// subclass; only the sample values move. Returns YSE_ERR_INVALID_ARGUMENT
+  /// (nothing swapped) when the lengths differ and YSE_ERR_INVALID_HANDLE for a
+  /// NULL handle. Swapping a handle with itself is a successful no-op.
+  YseStatus dsp_buffer_swap(
+    ffi.Pointer<YseDspBuffer> a,
+    ffi.Pointer<YseDspBuffer> b,
+  ) {
+    return YseStatus.fromValue(_dsp_buffer_swap(a, b));
+  }
+
+  late final _dsp_buffer_swapPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YseDspBuffer>,
+            ffi.Pointer<YseDspBuffer>,
+          )
+        >
+      >('yse_dsp_buffer_swap');
+  late final _dsp_buffer_swap = _dsp_buffer_swapPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseDspBuffer>, ffi.Pointer<YseDspBuffer>)
+      >();
+
   /// drawableBuffer-only.
   YseStatus dsp_buffer_draw_line(
     ffi.Pointer<YseDspBuffer> buf,
@@ -2835,6 +3612,14 @@ class YseBindings {
         int Function(ffi.Pointer<YseDspBuffer>, ffi.Pointer<ffi.Char>, int)
       >();
 
+  /// Writes the buffer to a mono 32-bit float WAV file. filename is used
+  /// verbatim (no extension is appended). The file is written at the sample
+  /// rate of the file this buffer was last loaded from, or at the engine rate
+  /// if it was never loaded from one. Returns YSE_ERR_GENERIC (reason in
+  /// yse_last_error) when the file cannot be created, the buffer is empty, or a
+  /// custom BufferIO backend is active (yse_buffer_io_set_active(io, 1)): that
+  /// backend is read-only, so save refuses rather than bypass it (#580, #637).
+  /// File I/O — never call it from the audio callback.
   YseStatus dsp_buffer_save_file(
     ffi.Pointer<YseDspBuffer> buf,
     ffi.Pointer<ffi.Char> filename,
@@ -2855,6 +3640,24 @@ class YseBindings {
       .asFunction<
         int Function(ffi.Pointer<YseDspBuffer>, ffi.Pointer<ffi.Char>)
       >();
+
+  /// Native sample rate, in Hz, of the file this buffer was last loaded from;
+  /// 0 before a successful yse_dsp_buffer_load_file() and for a NULL handle.
+  /// Unlike yse_dsp_buffer_sample_rate_adjustment() — a ratio against the
+  /// engine rate in effect at load time — this does not change when the engine
+  /// is re-initialised at another rate, so hosts can re-derive the playback
+  /// speed against the live rate (#637).
+  double dsp_buffer_get_file_sample_rate(ffi.Pointer<YseDspBuffer> buf) {
+    return _dsp_buffer_get_file_sample_rate(buf);
+  }
+
+  late final _dsp_buffer_get_file_sample_ratePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspBuffer>)>
+      >('yse_dsp_buffer_get_file_sample_rate');
+  late final _dsp_buffer_get_file_sample_rate =
+      _dsp_buffer_get_file_sample_ratePtr
+          .asFunction<double Function(ffi.Pointer<YseDspBuffer>)>();
 
   /// wavetable-only.
   YseStatus dsp_wavetable_create_saw(
@@ -2913,6 +3716,62 @@ class YseBindings {
       >('yse_dsp_wavetable_create_triangle');
   late final _dsp_wavetable_create_triangle = _dsp_wavetable_create_trianglePtr
       .asFunction<int Function(ffi.Pointer<YseDspBuffer>, int, int)>();
+
+  /// Build a multichannel buffer holding a COPY of `count` channel buffers, in
+  /// order (channels[0] is the first output channel). The source handles are not
+  /// retained: change or destroy them afterwards without affecting this one.
+  /// Channels may differ in length; a sound plays the length of the shortest.
+  /// Returns NULL with yse_last_error() set when `channels` is NULL, `count` is 0,
+  /// or any entry is NULL.
+  ffi.Pointer<YseDspMultiBuffer> dsp_multi_buffer_create(
+    ffi.Pointer<ffi.Pointer<YseDspBuffer>> channels,
+    int count,
+  ) {
+    return _dsp_multi_buffer_create(channels, count);
+  }
+
+  late final _dsp_multi_buffer_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDspMultiBuffer> Function(
+            ffi.Pointer<ffi.Pointer<YseDspBuffer>>,
+            ffi.UnsignedInt,
+          )
+        >
+      >('yse_dsp_multi_buffer_create');
+  late final _dsp_multi_buffer_create = _dsp_multi_buffer_createPtr
+      .asFunction<
+        ffi.Pointer<YseDspMultiBuffer> Function(
+          ffi.Pointer<ffi.Pointer<YseDspBuffer>>,
+          int,
+        )
+      >();
+
+  void dsp_multi_buffer_destroy(ffi.Pointer<YseDspMultiBuffer> mb) {
+    return _dsp_multi_buffer_destroy(mb);
+  }
+
+  late final _dsp_multi_buffer_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspMultiBuffer>)>
+      >('yse_dsp_multi_buffer_destroy');
+  late final _dsp_multi_buffer_destroy = _dsp_multi_buffer_destroyPtr
+      .asFunction<void Function(ffi.Pointer<YseDspMultiBuffer>)>();
+
+  /// Number of channels; 0 on NULL.
+  int dsp_multi_buffer_get_channel_count(ffi.Pointer<YseDspMultiBuffer> mb) {
+    return _dsp_multi_buffer_get_channel_count(mb);
+  }
+
+  late final _dsp_multi_buffer_get_channel_countPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YseDspMultiBuffer>)
+        >
+      >('yse_dsp_multi_buffer_get_channel_count');
+  late final _dsp_multi_buffer_get_channel_count =
+      _dsp_multi_buffer_get_channel_countPtr
+          .asFunction<int Function(ffi.Pointer<YseDspMultiBuffer>)>();
 
   /// ─── constructors ──────────────────────────────────────────────────────
   ffi.Pointer<YseDspObject> dsp_lowpass_create() {
@@ -3111,6 +3970,17 @@ class YseBindings {
   late final _dsp_morphing_reverb_create = _dsp_morphing_reverb_createPtr
       .asFunction<ffi.Pointer<YseDspObject> Function()>();
 
+  ffi.Pointer<YseDspObject> dsp_underwater_create() {
+    return _dsp_underwater_create();
+  }
+
+  late final _dsp_underwater_createPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<YseDspObject> Function()>>(
+        'yse_dsp_underwater_create',
+      );
+  late final _dsp_underwater_create = _dsp_underwater_createPtr
+      .asFunction<ffi.Pointer<YseDspObject> Function()>();
+
   /// Patcher-as-insert (#167 module, #370 C API). Wraps a YsePatcher graph as a
   /// chainable insert effect (YSE::DSP::patcherInsert): a hand-patched network
   /// (a filter-delay, a custom EQ, ...) drives a sound or channel insert slot,
@@ -3283,6 +4153,25 @@ class YseBindings {
   late final _dsp_object_link = _dsp_object_linkPtr
       .asFunction<
         void Function(ffi.Pointer<YseDspObject>, ffi.Pointer<YseDspObject>)
+      >();
+
+  /// The object linked after `obj` (the dspObject::link() getter, issue #909), or
+  /// NULL at the end of a chain / on a NULL handle — so a host can walk a chain it
+  /// built. The result is the very handle the host linked in: borrowed here, and
+  /// still owned (and destroyed) through whichever handle created it.
+  ffi.Pointer<YseDspObject> dsp_object_get_next(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_object_get_next(obj);
+  }
+
+  late final _dsp_object_get_nextPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDspObject> Function(ffi.Pointer<YseDspObject>)
+        >
+      >('yse_dsp_object_get_next');
+  late final _dsp_object_get_next = _dsp_object_get_nextPtr
+      .asFunction<
+        ffi.Pointer<YseDspObject> Function(ffi.Pointer<YseDspObject>)
       >();
 
   /// ─── filter modules ───────────────────────────────────────────────────
@@ -4567,6 +5456,39 @@ class YseBindings {
   late final _dsp_morphing_reverb_get_morph = _dsp_morphing_reverb_get_morphPtr
       .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
 
+  /// ─── underwater (#327 module, #909 C API) ────────────────────────────────
+  /// The engine's underwater treatment as an ordinary chainable insert: mixes
+  /// every channel toward a position-neutral, low-passed average as `depth`
+  /// (distance below the water surface, world units) grows. depth <= 1 is
+  /// transparent, 1..5 crossfades, >= 5 is fully neutral; negative values clamp to
+  /// 0. Writes are allocation-free and wait-free, callable from any control
+  /// thread. The wet/dry balance is inherent in depth, so the inherited
+  /// yse_dsp_object_set_impact() is NOT applied. Independent of the engine's own
+  /// instance driven by yse_system_set_underwater_depth().
+  void dsp_underwater_set_depth(ffi.Pointer<YseDspObject> obj, double depth) {
+    return _dsp_underwater_set_depth(obj, depth);
+  }
+
+  late final _dsp_underwater_set_depthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseDspObject>, ffi.Float)
+        >
+      >('yse_dsp_underwater_set_depth');
+  late final _dsp_underwater_set_depth = _dsp_underwater_set_depthPtr
+      .asFunction<void Function(ffi.Pointer<YseDspObject>, double)>();
+
+  double dsp_underwater_get_depth(ffi.Pointer<YseDspObject> obj) {
+    return _dsp_underwater_get_depth(obj);
+  }
+
+  late final _dsp_underwater_get_depthPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Float Function(ffi.Pointer<YseDspObject>)>
+      >('yse_dsp_underwater_get_depth');
+  late final _dsp_underwater_get_depth = _dsp_underwater_get_depthPtr
+      .asFunction<double Function(ffi.Pointer<YseDspObject>)>();
+
   /// ─── patcher lifecycle ──────────────────────────────────────────────
   ffi.Pointer<YsePatcher> patcher_create() {
     return _patcher_create();
@@ -4590,16 +5512,82 @@ class YseBindings {
   late final _patcher_destroy = _patcher_destroyPtr
       .asFunction<void Function(ffi.Pointer<YsePatcher>)>();
 
-  void patcher_init(ffi.Pointer<YsePatcher> p, int main_outputs) {
-    return _patcher_init(p, main_outputs);
+  /// Give the patcher `main_outputs` audio outputs. YSE_OK on success (and on
+  /// a repeat call, which the engine ignores: the first count stays);
+  /// YSE_ERR_INVALID_HANDLE on a NULL patcher, YSE_ERR_INVALID_ARGUMENT on a
+  /// negative count, YSE_ERR_EXCEPTION if the engine threw. Every failure
+  /// leaves its reason in yse_last_error(). Control thread only.
+  YseStatus patcher_init(ffi.Pointer<YsePatcher> p, int main_outputs) {
+    return YseStatus.fromValue(_patcher_init(p, main_outputs));
   }
 
   late final _patcher_initPtr =
       _lookup<
-        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePatcher>, ffi.Int)>
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<YsePatcher>, ffi.Int)
+        >
       >('yse_patcher_init');
   late final _patcher_init = _patcher_initPtr
-      .asFunction<void Function(ffi.Pointer<YsePatcher>, int)>();
+      .asFunction<int Function(ffi.Pointer<YsePatcher>, int)>();
+
+  /// Name the patcher (issue #896). The name scopes every bus slot and shared
+  /// store inside it: they are addressed as "patcher.<name>.<slot>". Two
+  /// patchers with the same name share those slots; uniqueness is not
+  /// enforced. Renaming re-anchors every name-scoped object transparently.
+  ///
+  /// NULL or "" restores the auto-generated "patcher_<N>" name. Called before
+  /// yse_patcher_init, the name is stashed and applied at init; NULL / ""
+  /// there drops a stashed name so init keeps the auto-name.
+  ///
+  /// A name longer than 55 characters is refused: YSE_ERR_INVALID_ARGUMENT,
+  /// the reason in yse_last_error(), and the current name kept.
+  /// YSE_ERR_INVALID_HANDLE on a NULL patcher. Control thread only.
+  YseStatus patcher_set_name(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<ffi.Char> name,
+  ) {
+    return YseStatus.fromValue(_patcher_set_name(p, name));
+  }
+
+  late final _patcher_set_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('yse_patcher_set_name');
+  late final _patcher_set_name = _patcher_set_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>)
+      >();
+
+  /// The current name, snprintf style — returns the full length and accepts a
+  /// NULL buffer as a size query. Before yse_patcher_init this is the stashed
+  /// name, or "" when there is none: the auto-name is assigned at init.
+  int patcher_get_name(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _patcher_get_name(p, buf, cap);
+  }
+
+  late final _patcher_get_namePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_patcher_get_name');
+  late final _patcher_get_name = _patcher_get_namePtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>, int)
+      >();
 
   /// ─── object management ─────────────────────────────────────────────
   ffi.Pointer<YsePHandle> patcher_create_object(
@@ -4658,6 +5646,9 @@ class YseBindings {
   late final _patcher_clear = _patcher_clearPtr
       .asFunction<void Function(ffi.Pointer<YsePatcher>)>();
 
+  /// Draw / remove a cord. Both handles must be objects of `p`: a NULL handle,
+  /// or one created by another patcher, is ignored (the engine logs the
+  /// refusal) and the graph is left unchanged.
   void patcher_connect(
     ffi.Pointer<YsePatcher> p,
     ffi.Pointer<YsePHandle> from,
@@ -4735,6 +5726,114 @@ class YseBindings {
   late final _patcher_is_valid_object = _patcher_is_valid_objectPtr
       .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
+  /// Put obj inside the subpatcher `container`, or pass NULL for `container`
+  /// to move obj back out to the top level. Refused (logged, no change) when
+  /// container is not a "patcher" object in this patcher, when either handle
+  /// belongs elsewhere, or when the move would put a subpatcher inside
+  /// itself or one of its own descendants.
+  ///
+  /// Publishes no new graph — containment changes no edge and no pin. What
+  /// it changes is what yse_patcher_connect / _disconnect mean when handed
+  /// the subpatcher, and what yse_patcher_delete_object takes with it: a
+  /// deleted subpatcher takes its contents, transitively.
+  void patcher_set_container(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<YsePHandle> obj,
+    ffi.Pointer<YsePHandle> container,
+  ) {
+    return _patcher_set_container(p, obj, container);
+  }
+
+  late final _patcher_set_containerPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<YsePHandle>,
+            ffi.Pointer<YsePHandle>,
+          )
+        >
+      >('yse_patcher_set_container');
+  late final _patcher_set_container = _patcher_set_containerPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YsePatcher>,
+          ffi.Pointer<YsePHandle>,
+          ffi.Pointer<YsePHandle>,
+        )
+      >();
+
+  /// The subpatcher obj is inside, or NULL when it is at the top level (and
+  /// NULL on a NULL argument). Borrowed, like every other handle here.
+  ffi.Pointer<YsePHandle> patcher_get_container(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<YsePHandle> obj,
+  ) {
+    return _patcher_get_container(p, obj);
+  }
+
+  late final _patcher_get_containerPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YsePHandle> Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<YsePHandle>,
+          )
+        >
+      >('yse_patcher_get_container');
+  late final _patcher_get_container = _patcher_get_containerPtr
+      .asFunction<
+        ffi.Pointer<YsePHandle> Function(
+          ffi.Pointer<YsePatcher>,
+          ffi.Pointer<YsePHandle>,
+        )
+      >();
+
+  /// How many inlets / outlets a subpatcher presents to its parent: one past
+  /// the highest index claimed by a boundary object among its contents —
+  /// ".inlet" and "~inlet" (resp. ".outlet" and "~outlet") alike, counted in
+  /// their one shared numbering — so a sparsely numbered boundary reports the range a parent
+  /// can address rather than the number of boundary objects. 0 when the
+  /// handle is not a subpatcher.
+  ///
+  /// A "patcher" object owns no pins of its own, so yse_phandle_get_inputs
+  /// answers 0 for one — these are the questions to ask instead.
+  int patcher_subpatcher_inlets(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<YsePHandle> container,
+  ) {
+    return _patcher_subpatcher_inlets(p, container);
+  }
+
+  late final _patcher_subpatcher_inletsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<YsePHandle>)
+        >
+      >('yse_patcher_subpatcher_inlets');
+  late final _patcher_subpatcher_inlets = _patcher_subpatcher_inletsPtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<YsePHandle>)
+      >();
+
+  int patcher_subpatcher_outlets(
+    ffi.Pointer<YsePatcher> p,
+    ffi.Pointer<YsePHandle> container,
+  ) {
+    return _patcher_subpatcher_outlets(p, container);
+  }
+
+  late final _patcher_subpatcher_outletsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<YsePHandle>)
+        >
+      >('yse_patcher_subpatcher_outlets');
+  late final _patcher_subpatcher_outlets = _patcher_subpatcher_outletsPtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<YsePHandle>)
+      >();
+
   /// ─── persistence ───────────────────────────────────────────────────
   int patcher_dump_json(
     ffi.Pointer<YsePatcher> p,
@@ -4759,22 +5858,35 @@ class YseBindings {
         int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>, int)
       >();
 
-  void patcher_parse_json(
+  /// Load a patch previously produced by yse_patcher_dump_json. Loading adds
+  /// to the patcher: objects already in it are kept, and the loaded ones are
+  /// created next to them. Call yse_patcher_clear first to replace the patch
+  /// (issue #939). YSE_OK on
+  /// success; YSE_ERR_INVALID_HANDLE on a NULL patcher,
+  /// YSE_ERR_INVALID_ARGUMENT on NULL content, YSE_ERR_NOT_INITIALIZED before
+  /// yse_patcher_init, and YSE_ERR_EXCEPTION when the content is malformed
+  /// JSON or not a patch. Every failure leaves its reason in
+  /// yse_last_error() and the patcher exactly as it was: nothing of the file
+  /// is loaded (issue #938). Control thread only.
+  YseStatus patcher_parse_json(
     ffi.Pointer<YsePatcher> p,
     ffi.Pointer<ffi.Char> content,
   ) {
-    return _patcher_parse_json(p, content);
+    return YseStatus.fromValue(_patcher_parse_json(p, content));
   }
 
   late final _patcher_parse_jsonPtr =
       _lookup<
         ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>)
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YsePatcher>,
+            ffi.Pointer<ffi.Char>,
+          )
         >
       >('yse_patcher_parse_json');
   late final _patcher_parse_json = _patcher_parse_jsonPtr
       .asFunction<
-        void Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>)
+        int Function(ffi.Pointer<YsePatcher>, ffi.Pointer<ffi.Char>)
       >();
 
   /// ─── enumeration ───────────────────────────────────────────────────
@@ -4831,7 +5943,10 @@ class YseBindings {
         ffi.Pointer<YsePHandle> Function(ffi.Pointer<YsePatcher>, int)
       >();
 
-  /// ─── message I/O ───────────────────────────────────────────────────
+  /// Deliver a value to the ".r <to>" receivers in this patcher. 1 when one
+  /// exists — or when a send callback is installed (see below): a message no
+  /// receiver answers is then handed to the callback instead, and still
+  /// reports 1. 0 when neither takes it, and on a NULL argument.
   int patcher_pass_bang(ffi.Pointer<YsePatcher> p, ffi.Pointer<ffi.Char> to) {
     return _patcher_pass_bang(p, to);
   }
@@ -4920,6 +6035,64 @@ class YseBindings {
         )
       >();
 
+  /// Install the send callback; NULL for cb clears it. user_data is opaque and
+  /// forwarded to every call. Replaces any previous callback, but a message
+  /// already being dispatched on another thread may still reach the previous
+  /// (cb, user_data) pair — always as a pair, never one install's cb with
+  /// another's user_data. yse_patcher_destroy is the point after which no
+  /// callback runs: it returns only once every call in progress on another
+  /// thread has finished. Called before yse_patcher_init, the callback is kept
+  /// and takes effect at init.
+  ///
+  /// While a callback is installed, pass_* answers 1 for a name nothing
+  /// receives; once cleared, 0 again.
+  ///
+  /// May be called from inside the callback. Do not destroy the patcher from
+  /// inside its own callback, and do not install, clear or destroy while
+  /// holding a lock the callback itself takes: both wait for calls in progress
+  /// on other threads. YSE_ERR_INVALID_HANDLE on a NULL patcher,
+  /// YSE_ERR_EXCEPTION (reason in yse_last_error()) if the install could not
+  /// allocate — the previous callback is then kept.
+  YseStatus patcher_set_send_callback(
+    ffi.Pointer<YsePatcher> p,
+    YsePatcherSendCallback cb,
+    ffi.Pointer<ffi.Void> user_data,
+  ) {
+    return YseStatus.fromValue(_patcher_set_send_callback(p, cb, user_data));
+  }
+
+  late final _patcher_set_send_callbackPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<YsePatcher>,
+            YsePatcherSendCallback,
+            ffi.Pointer<ffi.Void>,
+          )
+        >
+      >('yse_patcher_set_send_callback');
+  late final _patcher_set_send_callback = _patcher_set_send_callbackPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<YsePatcher>,
+          YsePatcherSendCallback,
+          ffi.Pointer<ffi.Void>,
+        )
+      >();
+
+  /// Release a message delivered to a YsePatcherSendCallback: pass its
+  /// `address`. NULL is a no-op.
+  void patcher_free_message(ffi.Pointer<ffi.Char> address) {
+    return _patcher_free_message(address);
+  }
+
+  late final _patcher_free_messagePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+        'yse_patcher_free_message',
+      );
+  late final _patcher_free_message = _patcher_free_messagePtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
   /// ─── handle accessors ─────────────────────────────────────────────
   int phandle_get_type(
     ffi.Pointer<YsePHandle> h,
@@ -4990,6 +6163,10 @@ class YseBindings {
         int Function(ffi.Pointer<YsePHandle>, ffi.Pointer<ffi.Char>, int)
       >();
 
+  /// The whole state as one string: the value for a scalar control, or every
+  /// cell space separated in index order for a structured one. Empty for an
+  /// object with no GUI state. snprintf style — returns the full length and
+  /// accepts a NULL buffer as a size query.
   int phandle_get_gui_value(
     ffi.Pointer<YsePHandle> h,
     ffi.Pointer<ffi.Char> buf,
@@ -5013,6 +6190,79 @@ class YseBindings {
         int Function(ffi.Pointer<YsePHandle>, ffi.Pointer<ffi.Char>, int)
       >();
 
+  /// How many cells this object's GUI state has; 1 for a scalar control, 0
+  /// on NULL.
+  int phandle_get_gui_value_count(ffi.Pointer<YsePHandle> h) {
+    return _phandle_get_gui_value_count(h);
+  }
+
+  late final _phandle_get_gui_value_countPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<YsePHandle>)>
+      >('yse_phandle_get_gui_value_count');
+  late final _phandle_get_gui_value_count = _phandle_get_gui_value_countPtr
+      .asFunction<int Function(ffi.Pointer<YsePHandle>)>();
+
+  /// One cell, and the empty string for an index at or past the count.
+  /// Cell 0 of a scalar control is exactly yse_phandle_get_gui_value.
+  int phandle_get_gui_value_at(
+    ffi.Pointer<YsePHandle> h,
+    int index,
+    ffi.Pointer<ffi.Char> buf,
+    int cap,
+  ) {
+    return _phandle_get_gui_value_at(h, index, buf, cap);
+  }
+
+  late final _phandle_get_gui_value_atPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(
+            ffi.Pointer<YsePHandle>,
+            ffi.UnsignedInt,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+          )
+        >
+      >('yse_phandle_get_gui_value_at');
+  late final _phandle_get_gui_value_at = _phandle_get_gui_value_atPtr
+      .asFunction<
+        int Function(ffi.Pointer<YsePHandle>, int, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  /// Whether this object accepts its own GUI state back on inlet 0 — 1 when
+  /// the round trip holds, 0 otherwise and on NULL.
+  ///
+  /// 1 means yse_phandle_set_list(h, 0, <what get_gui_value returned>)
+  /// restores the state that was read, and yse_phandle_set_list(h, 0,
+  /// "set <index> <value>") writes one cell — except on a one-cell control
+  /// whose cell is free text (".textedit"), which drops the "set" form so it
+  /// can hold the text "set 0 hello"; there the whole-state write is the
+  /// cell write, and the round trip still holds. That is the write half of the
+  /// protocol, and the whole of it: there is no GUI-value setter. State goes
+  /// into an object as an ordinary message on the control thread, so it
+  /// passes through the object's own clamps and outlet sends and never races
+  /// the audio thread.
+  ///
+  /// The scalar controls (".slider", ".i", ".f", ".dial", ".incdec", ".t")
+  /// hold the round trip since their #846 migration. 0 for the objects that
+  /// still predate the protocol — and for ".b" deliberately: its value is a
+  /// consume-on-read press report, an event a restore could only replay.
+  int phandle_gui_value_is_settable(ffi.Pointer<YsePHandle> h) {
+    return _phandle_gui_value_is_settable(h);
+  }
+
+  late final _phandle_gui_value_is_settablePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YsePHandle>)>>(
+        'yse_phandle_gui_value_is_settable',
+      );
+  late final _phandle_gui_value_is_settable = _phandle_gui_value_is_settablePtr
+      .asFunction<int Function(ffi.Pointer<YsePHandle>)>();
+
+  /// Editor decoration — geometry, colour, anything the host wants persisted
+  /// with the patch. Opaque to the engine and serialised under the "gui" key
+  /// by yse_patcher_dump_json. Not live control state: that is the GUI value
+  /// protocol above.
   int phandle_get_gui_property(
     ffi.Pointer<YsePHandle> h,
     ffi.Pointer<ffi.Char> key,
@@ -5198,6 +6448,14 @@ class YseBindings {
   late final _phandle_output_data_type = _phandle_output_data_typePtr
       .asFunction<int Function(ffi.Pointer<YsePHandle>, int)>();
 
+  /// Storage ID of this object within its patcher — the number the object is
+  /// written as by yse_patcher_dump_json, and the key
+  /// yse_patcher_get_handle_from_id takes. YSE_PATCHER_ID_NONE on NULL.
+  /// IDs are dense and are reused: deleting an object frees its number for
+  /// the next object created, so an ID identifies an object only while that
+  /// object is alive. An ID cached across a yse_patcher_delete_object may
+  /// resolve to a different object, not to NULL — keep the YsePHandle* if
+  /// you need a reference that outlives the number.
   int phandle_get_id(ffi.Pointer<YsePHandle> h) {
     return _phandle_get_id(h);
   }
@@ -5209,6 +6467,10 @@ class YseBindings {
   late final _phandle_get_id = _phandle_get_idPtr
       .asFunction<int Function(ffi.Pointer<YsePHandle>)>();
 
+  /// Number of edges leaving `outlet`. 0 on NULL and 0 for an outlet past the
+  /// object's outlet count — yse_phandle_set_params can shrink that count, so an
+  /// outlet number cached across a re-parse may name nothing; compare against
+  /// yse_phandle_get_outputs to tell an absent outlet from an idle one.
   int phandle_get_connections(ffi.Pointer<YsePHandle> h, int outlet) {
     return _phandle_get_connections(h, outlet);
   }
@@ -5222,6 +6484,9 @@ class YseBindings {
   late final _phandle_get_connections = _phandle_get_connectionsPtr
       .asFunction<int Function(ffi.Pointer<YsePHandle>, int)>();
 
+  /// ID of the object one edge leaving `outlet` arrives at.
+  /// YSE_PATCHER_ID_NONE on NULL, on an outlet past the object's outlet
+  /// count, or on a connection past that outlet's edge count.
   int phandle_get_connection_target(
     ffi.Pointer<YsePHandle> h,
     int outlet,
@@ -5243,6 +6508,9 @@ class YseBindings {
   late final _phandle_get_connection_target = _phandle_get_connection_targetPtr
       .asFunction<int Function(ffi.Pointer<YsePHandle>, int, int)>();
 
+  /// Inlet on the target object that this edge arrives at.
+  /// YSE_PATCHER_INLET_NONE on NULL, on an outlet past the object's outlet
+  /// count, or on a connection past that outlet's edge count.
   int phandle_get_connection_target_inlet(
     ffi.Pointer<YsePHandle> h,
     int outlet,
@@ -5505,8 +6773,16 @@ class YseBindings {
   /// Returns a fresh malloc'd JSON snapshot of every registered object's
   /// metadata. One-stop shop for bindings that want to cache the metadata
   /// or regenerate their own reference at build time. The caller must
-  /// release the buffer with yse_free_string(); returns NULL on
-  /// allocation failure.
+  /// release the buffer with yse_free_string() (declared in yse_common.h);
+  /// returns NULL on allocation failure.
+  ///
+  /// Each object entry carries "name", "category" (the YsePCategory name
+  /// without its YSE_PCAT_ prefix, e.g. "ROUTING"), "is_dsp",
+  /// "requires_midi_device", "description", "inlets", "outlets" and
+  /// "params". "requires_midi_device" is true for the objects that hold a
+  /// MIDI device port; those exist only in builds with
+  /// YSE_ENABLE_MIDI_DEVICE (not macOS or Android), so a palette built from
+  /// one platform's metadata can mark them as non-portable.
   ffi.Pointer<ffi.Char> patcher_get_metadata_json() {
     return _patcher_get_metadata_json();
   }
@@ -5517,17 +6793,6 @@ class YseBindings {
       );
   late final _patcher_get_metadata_json = _patcher_get_metadata_jsonPtr
       .asFunction<ffi.Pointer<ffi.Char> Function()>();
-
-  void free_string(ffi.Pointer<ffi.Char> s) {
-    return _free_string(s);
-  }
-
-  late final _free_stringPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-        'yse_free_string',
-      );
-  late final _free_string = _free_stringPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
 
   /// ─── standard MIDI file playback ───────────────────────────────────
   ffi.Pointer<YseMidiFile> midi_file_create() {
@@ -5893,6 +7158,39 @@ class YseBindings {
   late final _midi_out_raw3 = _midi_out_raw3Ptr
       .asFunction<void Function(ffi.Pointer<YseMidiOut>, int, int, int)>();
 
+  /// Send `length` bytes from `data` as one message, exactly as given — no
+  /// padding and no truncation (issue #903, mirrors
+  /// YSE::midiOut::Raw(const unsigned char*, size_t)). Use it for two-byte
+  /// messages (program change, channel pressure) and for SysEx. The bytes are
+  /// copied out before the call returns. A NULL handle, NULL data or a zero
+  /// length is a no-op.
+  void midi_out_raw(
+    ffi.Pointer<YseMidiOut> m,
+    ffi.Pointer<ffi.UnsignedChar> data,
+    int length,
+  ) {
+    return _midi_out_raw(m, data, length);
+  }
+
+  late final _midi_out_rawPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<YseMidiOut>,
+            ffi.Pointer<ffi.UnsignedChar>,
+            ffi.Size,
+          )
+        >
+      >('yse_midi_out_raw');
+  late final _midi_out_raw = _midi_out_rawPtr
+      .asFunction<
+        void Function(
+          ffi.Pointer<YseMidiOut>,
+          ffi.Pointer<ffi.UnsignedChar>,
+          int,
+        )
+      >();
+
   ffi.Pointer<YseMidiIn> midi_in_create() {
     return _midi_in_create();
   }
@@ -6165,17 +7463,24 @@ class YseBindings {
   late final _clip_destroy = _clip_destroyPtr
       .asFunction<void Function(ffi.Pointer<YseClip>)>();
 
-  /// Bind the clip to a live domain clock by name. Returns 1 on success, 0 if no
-  /// live clock owns the name (or on NULL args). The bound clock must outlive the
-  /// clip.
-  int clip_bind(ffi.Pointer<YseClip> c, ffi.Pointer<ffi.Char> clock_name) {
-    return _clip_bind(c, clock_name);
+  /// Bind the clip to a live domain clock by name. YSE_OK on success;
+  /// YSE_ERR_INVALID_HANDLE on a NULL clip, YSE_ERR_INVALID_ARGUMENT on a NULL
+  /// name or when no live clock owns the name — which also unbinds the clip
+  /// from any clock it was bound to. Every failure leaves its reason in
+  /// yse_last_error(). Binding shares the clock's lifetime, so
+  /// yse_system_destroy_clock() on a bound clock is safe in any order: the
+  /// clock stops advancing and the clip simply stops firing.
+  YseStatus clip_bind(
+    ffi.Pointer<YseClip> c,
+    ffi.Pointer<ffi.Char> clock_name,
+  ) {
+    return YseStatus.fromValue(_clip_bind(c, clock_name));
   }
 
   late final _clip_bindPtr =
       _lookup<
         ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<YseClip>, ffi.Pointer<ffi.Char>)
+          ffi.UnsignedInt Function(ffi.Pointer<YseClip>, ffi.Pointer<ffi.Char>)
         >
       >('yse_clip_bind');
   late final _clip_bind = _clip_bindPtr
@@ -6604,6 +7909,28 @@ class YseBindings {
       );
   late final _pnote_get_length = _pnote_get_lengthPtr
       .asFunction<double Function(ffi.Pointer<YsePNote>)>();
+
+  void pnote_set_channel(ffi.Pointer<YsePNote> n, int channel) {
+    return _pnote_set_channel(n, channel);
+  }
+
+  late final _pnote_set_channelPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePNote>, ffi.Int)>
+      >('yse_pnote_set_channel');
+  late final _pnote_set_channel = _pnote_set_channelPtr
+      .asFunction<void Function(ffi.Pointer<YsePNote>, int)>();
+
+  int pnote_get_channel(ffi.Pointer<YsePNote> n) {
+    return _pnote_get_channel(n);
+  }
+
+  late final _pnote_get_channelPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<YsePNote>)>>(
+        'yse_pnote_get_channel',
+      );
+  late final _pnote_get_channel = _pnote_get_channelPtr
+      .asFunction<int Function(ffi.Pointer<YsePNote>)>();
 
   /// ─── scale — set of allowed pitches ────────────────────────────────
   ffi.Pointer<YseScale> scale_create() {
@@ -7267,6 +8594,33 @@ class YseBindings {
   late final _dx7_import_sysex = _dx7_import_sysexPtr
       .asFunction<ffi.Pointer<YseDx7Bank> Function(ffi.Pointer<ffi.Char>)>();
 
+  /// Parse a DX7 SysEx image already in memory (dx7SysEx::parse, issue #909) —
+  /// for hosts that ship banks as bundled assets rather than files (Android APKs,
+  /// resource packs). Accepts the same formats as yse_dx7_import_sysex(); `data`
+  /// is read during the call only, not retained. Returns NULL on failure (NULL
+  /// data, zero length, bad header, wrong length, checksum mismatch) with
+  /// yse_last_error() set.
+  ffi.Pointer<YseDx7Bank> dx7_import_sysex_memory(
+    ffi.Pointer<ffi.UnsignedChar> data,
+    int length,
+  ) {
+    return _dx7_import_sysex_memory(data, length);
+  }
+
+  late final _dx7_import_sysex_memoryPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseDx7Bank> Function(
+            ffi.Pointer<ffi.UnsignedChar>,
+            ffi.Size,
+          )
+        >
+      >('yse_dx7_import_sysex_memory');
+  late final _dx7_import_sysex_memory = _dx7_import_sysex_memoryPtr
+      .asFunction<
+        ffi.Pointer<YseDx7Bank> Function(ffi.Pointer<ffi.UnsignedChar>, int)
+      >();
+
   /// Number of patches in the bank. 0 on a NULL or already-destroyed handle.
   int dx7_get_patch_count(ffi.Pointer<YseDx7Bank> h) {
     return _dx7_get_patch_count(h);
@@ -7306,6 +8660,24 @@ class YseBindings {
   late final _dx7_get_patch_name = _dx7_get_patch_namePtr
       .asFunction<
         int Function(ffi.Pointer<YseDx7Bank>, int, ffi.Pointer<ffi.Char>, int)
+      >();
+
+  /// Index of the first patch whose (space-trimmed) name equals `name` exactly
+  /// (dx7Bank::indexOf, issue #909), for yse_synth_fm_set_patch(). Returns -1 when
+  /// no patch matches, and for a NULL name or a NULL / destroyed handle.
+  int dx7_find_patch(ffi.Pointer<YseDx7Bank> h, ffi.Pointer<ffi.Char> name) {
+    return _dx7_find_patch(h, name);
+  }
+
+  late final _dx7_find_patchPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YseDx7Bank>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_dx7_find_patch');
+  late final _dx7_find_patch = _dx7_find_patchPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseDx7Bank>, ffi.Pointer<ffi.Char>)
       >();
 
   /// Release a bank handle. A double free or a NULL handle is a logged no-op,
@@ -8171,6 +9543,37 @@ class YseBindings {
   late final _synth_note_off = _synth_note_offPtr
       .asFunction<void Function(ffi.Pointer<YseSynth>, int, int, double)>();
 
+  /// Start / release a note described by a YseNote (see yse_music.h), mirroring
+  /// synth::noteOn/noteOff(const MUSIC::note&) (issue #909): the note's channel
+  /// is the channel, its pitch rounded to the nearest integer is the note number,
+  /// and its volume is the velocity. The note is read, not retained. A NULL
+  /// synth or note is a no-op.
+  void synth_note_on_note(ffi.Pointer<YseSynth> h, ffi.Pointer<YseNote> note) {
+    return _synth_note_on_note(h, note);
+  }
+
+  late final _synth_note_on_notePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Pointer<YseNote>)
+        >
+      >('yse_synth_note_on_note');
+  late final _synth_note_on_note = _synth_note_on_notePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, ffi.Pointer<YseNote>)>();
+
+  void synth_note_off_note(ffi.Pointer<YseSynth> h, ffi.Pointer<YseNote> note) {
+    return _synth_note_off_note(h, note);
+  }
+
+  late final _synth_note_off_notePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<YseSynth>, ffi.Pointer<YseNote>)
+        >
+      >('yse_synth_note_off_note');
+  late final _synth_note_off_note = _synth_note_off_notePtr
+      .asFunction<void Function(ffi.Pointer<YseSynth>, ffi.Pointer<YseNote>)>();
+
   /// Release every held note on `channel` (0 = all channels). A bulk note-off:
   /// voices enter their normal release, they are not cut.
   void synth_all_notes_off(ffi.Pointer<YseSynth> h, int channel) {
@@ -8280,7 +9683,12 @@ class YseBindings {
       .asFunction<void Function(ffi.Pointer<YseSynth>, int, int)>();
 
   /// Install (or clear, with NULL) the audio-thread note-rewrite hook. The
-  /// engine stores the pointer atomically; passing NULL disables the hook.
+  /// engine stores the hook atomically; passing NULL disables the hook.
+  /// The callback is always invoked through its own YseSynthNoteCallback
+  /// signature (note_on is a full int, 0 or 1) via an internal trampoline.
+  /// At most 256 DISTINCT callback functions can be installed per process
+  /// (synths sharing one callback share a trampoline); past that the call
+  /// leaves the previous hook installed and sets yse_last_error().
   /// See the YseSynthNoteCallback contract above.
   void synth_set_note_callback(
     ffi.Pointer<YseSynth> h,
@@ -8714,6 +10122,48 @@ class YseBindings {
         int Function(ffi.Pointer<YseBufferIO>, ffi.Pointer<ffi.Char>)
       >();
 
+  /// Look up / unregister a buffer by the ADDRESS the host passed to
+  /// yse_buffer_io_add() (BufferIO::BufferExists / RemoveBuffer, issue #909).
+  /// Only meaningful with store_copy=0: a store_copy=1 layer registers its own
+  /// copy, so the host's address never matches and both return 0. Return 1 when
+  /// a registration matched (and, for remove, was dropped), 0 otherwise or on a
+  /// NULL argument.
+  int buffer_io_exists(
+    ffi.Pointer<YseBufferIO> io,
+    ffi.Pointer<ffi.Char> buffer,
+  ) {
+    return _buffer_io_exists(io, buffer);
+  }
+
+  late final _buffer_io_existsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YseBufferIO>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_buffer_io_exists');
+  late final _buffer_io_exists = _buffer_io_existsPtr
+      .asFunction<
+        int Function(ffi.Pointer<YseBufferIO>, ffi.Pointer<ffi.Char>)
+      >();
+
+  int buffer_io_remove(
+    ffi.Pointer<YseBufferIO> io,
+    ffi.Pointer<ffi.Char> buffer,
+  ) {
+    return _buffer_io_remove(io, buffer);
+  }
+
+  late final _buffer_io_removePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<YseBufferIO>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_buffer_io_remove');
+  late final _buffer_io_remove = _buffer_io_removePtr
+      .asFunction<
+        int Function(ffi.Pointer<YseBufferIO>, ffi.Pointer<ffi.Char>)
+      >();
+
   /// Compile-time feature query. Returns 1 if the library was built with
   /// YSE_ENABLE_PYTHON=ON, else 0. Safe to call regardless of build
   /// configuration or engine state.
@@ -8732,15 +10182,15 @@ class YseBindings {
   /// On a YSE_ENABLE_PYTHON=OFF build, the registered error callback (if any) is
   /// invoked synchronously, before this returns, with the literal string
   /// "YSE compiled without YSE_ENABLE_PYTHON".
-  void run_script(ffi.Pointer<ffi.Char> src) {
-    return _run_script(src);
+  void python_run_script(ffi.Pointer<ffi.Char> src) {
+    return _python_run_script(src);
   }
 
-  late final _run_scriptPtr =
+  late final _python_run_scriptPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-        'yse_run_script',
+        'yse_python_run_script',
       );
-  late final _run_script = _run_scriptPtr
+  late final _python_run_script = _python_run_scriptPtr
       .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
 
   /// Register the error callback. Pass NULL to clear. Thread-safe via atomic
@@ -8751,21 +10201,24 @@ class YseBindings {
   /// On an ON build the callback fires on the host thread that drives
   /// yse_system_update(), once per failed script. Works identically on an OFF
   /// build (it just stores the pointer), so a host may register unconditionally.
-  void set_script_error_callback(
-    yse_script_error_cb cb,
+  void python_set_script_error_callback(
+    YseScriptErrorCallback cb,
     ffi.Pointer<ffi.Void> userdata,
   ) {
-    return _set_script_error_callback(cb, userdata);
+    return _python_set_script_error_callback(cb, userdata);
   }
 
-  late final _set_script_error_callbackPtr =
+  late final _python_set_script_error_callbackPtr =
       _lookup<
         ffi.NativeFunction<
-          ffi.Void Function(yse_script_error_cb, ffi.Pointer<ffi.Void>)
+          ffi.Void Function(YseScriptErrorCallback, ffi.Pointer<ffi.Void>)
         >
-      >('yse_set_script_error_callback');
-  late final _set_script_error_callback = _set_script_error_callbackPtr
-      .asFunction<void Function(yse_script_error_cb, ffi.Pointer<ffi.Void>)>();
+      >('yse_python_set_script_error_callback');
+  late final _python_set_script_error_callback =
+      _python_set_script_error_callbackPtr
+          .asFunction<
+            void Function(YseScriptErrorCallback, ffi.Pointer<ffi.Void>)
+          >();
 
   /// Subscribe `cb` to every bus publish whose address starts with `prefix`
   /// (plain byte-wise prefix match; an empty string matches every address).
@@ -8783,7 +10236,7 @@ class YseBindings {
   /// returns.
   ffi.Pointer<YseBusTap> bus_tap_create(
     ffi.Pointer<ffi.Char> prefix,
-    yse_bus_tap_cb cb,
+    YseBusTapCallback cb,
     ffi.Pointer<ffi.Void> user_data,
   ) {
     return _bus_tap_create(prefix, cb, user_data);
@@ -8794,7 +10247,7 @@ class YseBindings {
         ffi.NativeFunction<
           ffi.Pointer<YseBusTap> Function(
             ffi.Pointer<ffi.Char>,
-            yse_bus_tap_cb,
+            YseBusTapCallback,
             ffi.Pointer<ffi.Void>,
           )
         >
@@ -8803,7 +10256,7 @@ class YseBindings {
       .asFunction<
         ffi.Pointer<YseBusTap> Function(
           ffi.Pointer<ffi.Char>,
-          yse_bus_tap_cb,
+          YseBusTapCallback,
           ffi.Pointer<ffi.Void>,
         )
       >();
@@ -8819,6 +10272,155 @@ class YseBindings {
       );
   late final _bus_tap_destroy = _bus_tap_destroyPtr
       .asFunction<void Function(ffi.Pointer<YseBusTap>)>();
+
+  /// ── Publish (issue #904) ─────────────────────────────────────────────────
+  ///
+  /// Publish a value to one exact bus address — the same path a script's
+  /// yse.send() takes, so it reaches everything a script can: a named synth's
+  /// "synth.<name>.note", a patcher's .r on "patcher.<name>.<slot>", a named
+  /// channel's "channel.<name>.volume", exact subscriptions and prefix taps.
+  ///
+  /// Thread attribution: the publish is tagged as a control-rate (non-audio)
+  /// publish, like a script's. On the control thread (the one driving
+  /// yse_system_update()) it dispatches synchronously — every subscriber and
+  /// tap has run when the call returns. From any other host thread it is
+  /// parked in the bus's control inbox (a short mutex-guarded append, no
+  /// dispatch) and delivered during the next yse_system_update(). Do not call
+  /// these from inside a real-time audio callback, and do not publish from
+  /// another thread concurrently with yse_system_close().
+  ///
+  /// Returns YSE_ERR_NOT_INITIALIZED when the engine is down,
+  /// YSE_ERR_INVALID_ARGUMENT for a NULL or empty address (or a NULL string /
+  /// a NULL list with a non-zero count), YSE_ERR_EXCEPTION on an internal
+  /// failure — each with the reason in yse_last_error(). A publish no one
+  /// listens to is not an error.
+  YseStatus bus_publish_bang(ffi.Pointer<ffi.Char> address) {
+    return YseStatus.fromValue(_bus_publish_bang(address));
+  }
+
+  late final _bus_publish_bangPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<ffi.Char>)>
+      >('yse_bus_publish_bang');
+  late final _bus_publish_bang = _bus_publish_bangPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  YseStatus bus_publish_int(ffi.Pointer<ffi.Char> address, int value) {
+    return YseStatus.fromValue(_bus_publish_int(address, value));
+  }
+
+  late final _bus_publish_intPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<ffi.Char>, ffi.Int)
+        >
+      >('yse_bus_publish_int');
+  late final _bus_publish_int = _bus_publish_intPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>, int)>();
+
+  YseStatus bus_publish_float(ffi.Pointer<ffi.Char> address, double value) {
+    return YseStatus.fromValue(_bus_publish_float(address, value));
+  }
+
+  late final _bus_publish_floatPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<ffi.Char>, ffi.Float)
+        >
+      >('yse_bus_publish_float');
+  late final _bus_publish_float = _bus_publish_floatPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>, double)>();
+
+  /// `value` is NUL-terminated UTF-8, copied before the call returns.
+  YseStatus bus_publish_string(
+    ffi.Pointer<ffi.Char> address,
+    ffi.Pointer<ffi.Char> value,
+  ) {
+    return YseStatus.fromValue(_bus_publish_string(address, value));
+  }
+
+  late final _bus_publish_stringPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)
+        >
+      >('yse_bus_publish_string');
+  late final _bus_publish_string = _bus_publish_stringPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  /// `values` is copied before the call returns; it may be NULL when `count` is
+  /// 0 (an empty list).
+  YseStatus bus_publish_list(
+    ffi.Pointer<ffi.Char> address,
+    ffi.Pointer<ffi.Float> values,
+    int count,
+  ) {
+    return YseStatus.fromValue(_bus_publish_list(address, values, count));
+  }
+
+  late final _bus_publish_listPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Float>,
+            ffi.Size,
+          )
+        >
+      >('yse_bus_publish_list');
+  late final _bus_publish_list = _bus_publish_listPtr
+      .asFunction<
+        int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Float>, int)
+      >();
+
+  /// Subscribe `cb` to every publish on exactly `address`. Returns NULL — with
+  /// the reason in yse_last_error() — if `address` is NULL or empty, `cb` is
+  /// NULL, or the engine is not initialised.
+  ///
+  /// Delivery, lifecycle and threading follow the tap rules above: callbacks
+  /// fire on the control thread (inline for a control-thread publish, else
+  /// during yse_system_update()); yse_system_close() invalidates every live
+  /// subscription (the handle stays safe to release, but does not reattach
+  /// after a re-init); call subscribe and unsubscribe on the control thread,
+  /// which guarantees no callback fires after unsubscribe returns.
+  ffi.Pointer<YseBusSub> bus_subscribe(
+    ffi.Pointer<ffi.Char> address,
+    YseBusSubCallback cb,
+    ffi.Pointer<ffi.Void> user_data,
+  ) {
+    return _bus_subscribe(address, cb, user_data);
+  }
+
+  late final _bus_subscribePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<YseBusSub> Function(
+            ffi.Pointer<ffi.Char>,
+            YseBusSubCallback,
+            ffi.Pointer<ffi.Void>,
+          )
+        >
+      >('yse_bus_subscribe');
+  late final _bus_subscribe = _bus_subscribePtr
+      .asFunction<
+        ffi.Pointer<YseBusSub> Function(
+          ffi.Pointer<ffi.Char>,
+          YseBusSubCallback,
+          ffi.Pointer<ffi.Void>,
+        )
+      >();
+
+  /// Unsubscribe and release the subscription. Null-safe no-op.
+  void bus_unsubscribe(ffi.Pointer<YseBusSub> sub) {
+    return _bus_unsubscribe(sub);
+  }
+
+  late final _bus_unsubscribePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseBusSub>)>>(
+        'yse_bus_unsubscribe',
+      );
+  late final _bus_unsubscribe = _bus_unsubscribePtr
+      .asFunction<void Function(ffi.Pointer<YseBusSub>)>();
 
   late final addresses = _SymbolAddresses(this);
 }
@@ -8838,6 +10440,10 @@ class _SymbolAddresses {
   get reverb_destroy => _library._reverb_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspBuffer>)>>
   get dsp_buffer_destroy => _library._dsp_buffer_destroyPtr;
+  ffi.Pointer<
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspMultiBuffer>)>
+  >
+  get dsp_multi_buffer_destroy => _library._dsp_multi_buffer_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YseDspObject>)>>
   get dsp_object_destroy => _library._dsp_object_destroyPtr;
   ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<YsePatcher>)>>
@@ -8944,6 +10550,37 @@ enum YseChannelType {
   };
 }
 
+/// Mirrors YSE::RECONNECT_STATE in headers/enums.hpp: what the
+/// yse_system_auto_reconnect() watchdog last did (issue #1027).
+enum YseReconnectState {
+  /// < No attempt since init, a device open, or the last auto_reconnect call.
+  YSE_RS_NONE(0),
+
+  /// < The last attempt opened nothing; the watchdog tries again.
+  YSE_RS_RECONNECTING(1),
+
+  /// < The last attempt reopened the session's own device.
+  YSE_RS_RESTORED(2),
+
+  /// < The default output device was opened instead.
+  YSE_RS_FELL_BACK_TO_DEFAULT(3),
+
+  /// < The attempt limit was reached; the watchdog stopped trying.
+  YSE_RS_FAILED(4);
+
+  final int value;
+  const YseReconnectState(this.value);
+
+  static YseReconnectState fromValue(int value) => switch (value) {
+    0 => YSE_RS_NONE,
+    1 => YSE_RS_RECONNECTING,
+    2 => YSE_RS_RESTORED,
+    3 => YSE_RS_FELL_BACK_TO_DEFAULT,
+    4 => YSE_RS_FAILED,
+    _ => throw ArgumentError('Unknown value for YseReconnectState: $value'),
+  };
+}
+
 /// Mirrors YSE::ERROR_LEVEL in headers/enums.hpp.
 enum YseErrorLevel {
   YSE_EL_NONE(0),
@@ -9016,22 +10653,22 @@ enum YseLfoType {
 /// Mirrors YSE::SYNTH::VA_WAVEFORM in synth/vaVoice.hpp — the oscillator
 /// waveform selector for the virtual-analog voice (yse_synth_va_set_osc_wave).
 enum YseVaWaveform {
-  /// Band-limited sawtooth.
+  /// < Band-limited sawtooth.
   YSE_VA_SAW(0),
 
-  /// Band-limited pulse with variable width (PWM).
+  /// < Band-limited pulse with variable width (PWM).
   YSE_VA_PULSE(1),
 
-  /// Band-limited triangle.
+  /// < Band-limited triangle.
   YSE_VA_TRIANGLE(2),
 
-  /// Sine.
+  /// < Sine.
   YSE_VA_SINE(3),
 
-  /// White noise.
+  /// < White noise.
   YSE_VA_NOISE(4),
 
-  /// Morph across the wavetable bank.
+  /// < Morph across the wavetable bank.
   YSE_VA_WAVETABLE(5);
 
   final int value;
@@ -9085,10 +10722,10 @@ enum YseDspDelayTap {
 /// Mirrors YSE::DSP::MODULES::chorusMode (chorus.hpp) — the chorus/flanger
 /// topology switch.
 enum YseChorusMode {
-  /// Longer base delay, wide slow sweep.
+  /// < Longer base delay, wide slow sweep.
   YSE_CHORUS_MODE_CHORUS(0),
 
-  /// Short base delay, feedback comb.
+  /// < Short base delay, feedback comb.
   YSE_CHORUS_MODE_FLANGER(1);
 
   final int value;
@@ -9126,10 +10763,10 @@ enum YseEqBand {
 /// Mirrors YSE::DSP::MODULES::compressorDetector (compressor.hpp) — the
 /// level-detector mode.
 enum YseCompressorDetector {
-  /// Instantaneous linked peak.
+  /// < Instantaneous linked peak.
   YSE_COMPRESSOR_DETECT_PEAK(0),
 
-  /// Short mean-square window.
+  /// < Short mean-square window.
   YSE_COMPRESSOR_DETECT_RMS(1);
 
   final int value;
@@ -9145,16 +10782,65 @@ enum YseCompressorDetector {
 /// Mirrors YSE::PATCHER::pCategory in patcher/pEnums.h. The patcher
 /// registry exposes this through the metadata API so binding-side
 /// documentation generators can group objects without inspecting the
-/// engine source.
+/// engine source. Values are only ever appended, so a number a host stored
+/// keeps its meaning. GENERIC is the fallback for an object that fits no
+/// other category.
 enum YsePCategory {
   YSE_PCAT_UNSET(0),
+
+  /// < Signal generators (~sine, ~noise, ~line, ...).
   YSE_PCAT_OSC(1),
+
+  /// < Filters.
   YSE_PCAT_FILTER(2),
+
+  /// < Arithmetic, conversion, analysis.
   YSE_PCAT_MATH(3),
+
+  /// < Uncategorisable fallback.
   YSE_PCAT_GENERIC(4),
+
+  /// < User-facing controls and message boxes.
   YSE_PCAT_GUI(5),
+
+  /// < Timing utilities (.metro, .delay, .line, ...).
   YSE_PCAT_TIME(6),
-  YSE_PCAT_MIDI(7);
+
+  /// < MIDI formatting, parsing and device I/O.
+  YSE_PCAT_MIDI(7),
+
+  /// < Steering messages (.gate, .route, .sel, ...).
+  YSE_PCAT_ROUTING(8),
+
+  /// < Control flow and ordering (.trigger, .uzi, ...).
+  YSE_PCAT_CONTROL(9),
+
+  /// < Building and taking apart lists (.pack, .zl, ...).
+  YSE_PCAT_LIST(10),
+
+  /// < Symbols and text (.sprintf, .regexp, ...).
+  YSE_PCAT_STRING(11),
+
+  /// < Stores (.coll, .table, .bag, ...).
+  YSE_PCAT_COLLECTION(12),
+
+  /// < The .dict family.
+  YSE_PCAT_DICT(13),
+
+  /// < The .array family.
+  YSE_PCAT_ARRAY(14),
+
+  /// < Random and probabilistic sources.
+  YSE_PCAT_RANDOM(15),
+
+  /// < Audio and host I/O (~adc, ~dac, .s, .r, .print, ...).
+  YSE_PCAT_IO(16),
+
+  /// < Subpatchers and their inlets/outlets.
+  YSE_PCAT_ENCAPSULATION(17),
+
+  /// < Timed recorders / players (.seq, .mtr, .qlist).
+  YSE_PCAT_SEQUENCE(18);
 
   final int value;
   const YsePCategory(this.value);
@@ -9168,6 +10854,17 @@ enum YsePCategory {
     5 => YSE_PCAT_GUI,
     6 => YSE_PCAT_TIME,
     7 => YSE_PCAT_MIDI,
+    8 => YSE_PCAT_ROUTING,
+    9 => YSE_PCAT_CONTROL,
+    10 => YSE_PCAT_LIST,
+    11 => YSE_PCAT_STRING,
+    12 => YSE_PCAT_COLLECTION,
+    13 => YSE_PCAT_DICT,
+    14 => YSE_PCAT_ARRAY,
+    15 => YSE_PCAT_RANDOM,
+    16 => YSE_PCAT_IO,
+    17 => YSE_PCAT_ENCAPSULATION,
+    18 => YSE_PCAT_SEQUENCE,
     _ => throw ArgumentError('Unknown value for YsePCategory: $value'),
   };
 }
@@ -9203,16 +10900,16 @@ enum YseInletAccepts {
 /// plus the YSE_POSITION_HANDLER_COUNT sentinel and the is_base_of asserts in
 /// yse_enums_check.cpp. Keep YSE_POSITION_HANDLER_COUNT last.
 enum YseSynthPositionHandler {
-  /// staticHandler — one fixed position.
+  /// < staticHandler — one fixed position.
   YSE_POSITION_HANDLER_STATIC(0),
 
-  /// randomSpreadHandler — seeded scatter.
+  /// < randomSpreadHandler — seeded scatter.
   YSE_POSITION_HANDLER_RANDOM_SPREAD(1),
 
-  /// orbitHandler — the swarm handler.
+  /// < orbitHandler — the swarm handler.
   YSE_POSITION_HANDLER_ORBIT(2),
 
-  /// sentinel — number of kinds; keep last.
+  /// < sentinel — number of kinds; keep last.
   YSE_POSITION_HANDLER_COUNT(3);
 
   final int value;
@@ -9293,6 +10990,43 @@ final class YseDevice extends ffi.Opaque {}
 
 final class YseDeviceSetup extends ffi.Opaque {}
 
+typedef YseOcclusionCallbackFunction =
+    ffi.Float Function(
+      ffi.Pointer<yse_pos_t> src,
+      ffi.Pointer<yse_pos_t> listener,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef DartYseOcclusionCallbackFunction =
+    double Function(
+      ffi.Pointer<yse_pos_t> src,
+      ffi.Pointer<yse_pos_t> listener,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+
+/// Sound occlusion (issue #906). The callback returns how much geometry sits
+/// between `src` and `listener`, 0 (clear line of sight) to 1 (fully blocked);
+/// the result is clamped to that range and applied as a gain duck
+/// (gain *= 1 - occlusion) to every sound with yse_sound_set_occlusion(s, 1).
+/// Typical hosts raycast through their world geometry here.
+///
+/// Threading: the callback runs on the thread that calls yse_system_update(),
+/// once per occlusion-enabled sound per update — never on the audio callback
+/// thread, so it may lock, allocate or query a physics engine. `src` and
+/// `listener` point to stack copies valid only for the duration of the call;
+/// positions are already multiplied by the engine's distance factor.
+///
+/// There is one occlusion callback per process. Installing replaces the
+/// previous callback + user_data as one unit; NULL `cb` removes it (sounds
+/// then keep the last occlusion value they received). Install and remove may
+/// be called from any host thread, including from inside the callback itself.
+/// A dispatch never pairs one install's callback with another's user_data, and
+/// every update that starts after the install returns uses the new pair; an
+/// update already running on another thread may finish its current call with
+/// the old one, so keep old user_data alive until that update has returned.
+/// A NULL `sys` is a no-op.
+typedef YseOcclusionCallback =
+    ffi.Pointer<ffi.NativeFunction<YseOcclusionCallbackFunction>>;
+
 final class YseListener extends ffi.Opaque {}
 
 final class YseDspObject extends ffi.Opaque {}
@@ -9301,47 +11035,90 @@ final class YseSound extends ffi.Opaque {}
 
 final class YseDspBuffer extends ffi.Opaque {}
 
+final class YseDspMultiBuffer extends ffi.Opaque {}
+
 final class YsePatcher extends ffi.Opaque {}
 
-/// Plain-old-data mirror of YSE::REVERB::presetValues (reverb/reverbPresets.hpp)
-/// — one complete reverb parameter set: the payload of a named preset and the
-/// custom endpoint type of the morphing reverb. Fields are copied one by one
-/// across the ABI; the layout is not assumed to match the engine struct.
+/// Plain-old-data mirror of YSE::REVERB::presetValues — one complete reverb
+/// parameter set: the payload of a named preset and the custom endpoint type
+/// of the morphing reverb. Fields are copied one by one across the ABI; the
+/// layout is not assumed to match the engine struct.
 final class YseReverbPresetValues extends ffi.Struct {
-  /// simulated room size, [0, 1]
+  /// < simulated room size, [0, 1]
   @ffi.Float()
   external double roomsize;
 
-  /// high-frequency damping, [0, 1]
+  /// < high-frequency damping, [0, 1]
   @ffi.Float()
   external double damp;
 
-  /// unprocessed level, [0, 1]
+  /// < unprocessed level, [0, 1]
   @ffi.Float()
   external double dry;
 
-  /// reverberated level, [0, 1]
+  /// < reverberated level, [0, 1]
   @ffi.Float()
   external double wet;
 
-  /// tail modulation rate, Hz (0 = off)
+  /// < tail modulation rate, Hz (0 = off)
   @ffi.Float()
   external double mod_frequency;
 
-  /// tail modulation depth (0 = off)
+  /// < tail modulation depth (0 = off)
   @ffi.Float()
   external double mod_width;
 
-  /// early reflection delays, samples, [0, 2999]
+  /// < early reflection delays, samples, [0, 2999]
   @ffi.Array.multi([4])
   external ffi.Array<ffi.Float> early_time;
 
-  /// early reflection gains, [0, 1]
+  /// < early reflection gains, [0, 1]
   @ffi.Array.multi([4])
   external ffi.Array<ffi.Float> early_gain;
 }
 
 final class YsePHandle extends ffi.Opaque {}
+
+typedef YsePatcherSendCallbackFunction =
+    ffi.Void Function(
+      ffi.Pointer<ffi.Void> user_data,
+      ffi.Pointer<ffi.Char> address,
+      ffi.UnsignedInt kind,
+      ffi.Int i,
+      ffi.Float f,
+      ffi.Pointer<ffi.Char> s,
+    );
+typedef DartYsePatcherSendCallbackFunction =
+    void Function(
+      ffi.Pointer<ffi.Void> user_data,
+      ffi.Pointer<ffi.Char> address,
+      YseOutType kind,
+      int i,
+      double f,
+      ffi.Pointer<ffi.Char> s,
+    );
+
+/// A message the patcher sends to a name no ".r" in it receives: a ".s"
+/// inside the patch, or a yse_patcher_pass_* call, with nothing listening.
+///
+/// `address` is the name it was sent to — the ".s" argument or the pass_*
+/// `to`, not the "patcher.<name>.<slot>" bus address. `kind` says which
+/// value it carries: YSE_OUT_BANG (none), YSE_OUT_INT (`i`), YSE_OUT_FLOAT
+/// (`f`) or YSE_OUT_LIST (`s`). The fields a kind does not use are 0 and
+/// NULL.
+///
+/// The receiver OWNS the strings: `address` and `s` are one malloc'd block,
+/// released with yse_patcher_free_message(address), which frees `s` with it —
+/// never free `s` on its own. They stay valid after the callback returns, so
+/// an asynchronous host (a Dart NativeCallable.listener) can read them later.
+///
+/// Threading: called synchronously on whichever thread emitted the message —
+/// the host's own for a pass_* or a yse_phandle_set_* that drives a ".s", an
+/// engine worker for a timer-driven one (a millisecond ".metro"). Never the
+/// audio callback: a ".s" fired while the patch renders stays inside it. Keep
+/// it cheap and thread-safe.
+typedef YsePatcherSendCallback =
+    ffi.Pointer<ffi.NativeFunction<YsePatcherSendCallbackFunction>>;
 
 final class YseMidiFile extends ffi.Opaque {}
 
@@ -9402,27 +11179,27 @@ final class YseClip extends ffi.Opaque {}
 /// One timed note event, positioned in beats on the bound domain clock.
 /// Layout-compatible with YSE::clipEvent.
 final class YseClipEvent extends ffi.Struct {
-  /// beat within the loop at which the note starts (>= 0)
+  /// < beat within the loop at which the note starts (>= 0)
   @ffi.Double()
   external double start_beat;
 
-  /// note length in beats
+  /// < note length in beats
   @ffi.Double()
   external double duration_beats;
 
-  /// MIDI channel, 1..16
+  /// < MIDI channel, 1..16
   @ffi.Int()
   external int channel;
 
-  /// MIDI note number, 0..127
+  /// < MIDI note number, 0..127
   @ffi.Int()
   external int pitch;
 
-  /// normalized to [0, 1]
+  /// < normalized to [0, 1]
   @ffi.Float()
   external double velocity;
 
-  /// optional per-note bend, [-1, 1]; 0 = none
+  /// < optional per-note bend, [-1, 1]; 0 = none
   @ffi.Float()
   external double pitch_bend;
 }
@@ -9450,33 +11227,33 @@ final class YseDx7Bank extends ffi.Opaque {}
 /// envelope times in seconds; `max_length` caps a non-looping one-shot in
 /// seconds. Mirrors YSE::SYNTH::samplerConfig.
 final class YseSamplerConfig extends ffi.Struct {
-  /// Instrument label (may be NULL).
+  /// < Instrument label (may be NULL).
   external ffi.Pointer<ffi.Char> name;
 
-  /// Absolute path to the sample file (sample=).
+  /// < Absolute path to the sample file (sample=).
   external ffi.Pointer<ffi.Char> file;
 
-  /// Root note (key that plays untransposed).
+  /// < Root note (key that plays untransposed).
   @ffi.Int()
   external int root;
 
-  /// Lowest playable key.
+  /// < Lowest playable key.
   @ffi.Int()
   external int low;
 
-  /// Highest playable key.
+  /// < Highest playable key.
   @ffi.Int()
   external int high;
 
-  /// Amplitude-envelope attack, seconds.
+  /// < Amplitude-envelope attack, seconds.
   @ffi.Float()
   external double attack;
 
-  /// Amplitude-envelope release, seconds.
+  /// < Amplitude-envelope release, seconds.
   @ffi.Float()
   external double release;
 
-  /// One-shot length cap, seconds (non-looping regions).
+  /// < One-shot length cap, seconds (non-looping regions).
   @ffi.Float()
   external double max_length;
 }
@@ -9527,35 +11304,35 @@ final class YseSynthPositionParams extends ffi.Struct {
   @ffi.Float()
   external double static_z;
 
-  /// radius of the scatter sphere around the centre
+  /// < radius of the scatter sphere around the centre
   @ffi.Float()
   external double spread_radius;
 
-  /// base RNG seed (a given seed reproduces the scatter)
+  /// < base RNG seed (a given seed reproduces the scatter)
   @ffi.UnsignedInt()
   external int spread_seed;
 
-  /// base orbit radius
+  /// < base orbit radius
   @ffi.Float()
   external double orbit_radius;
 
-  /// extra radius added at full velocity
+  /// < extra radius added at full velocity
   @ffi.Float()
   external double orbit_velocity_radius;
 
-  /// fraction of extra radius at full aftertouch
+  /// < fraction of extra radius at full aftertouch
   @ffi.Float()
   external double orbit_aftertouch_widen;
 
-  /// orbit angular speed, radians per second
+  /// < orbit angular speed, radians per second
   @ffi.Float()
   external double orbit_rate;
 
-  /// vertical offset of the orbit plane
+  /// < vertical offset of the orbit plane
   @ffi.Float()
   external double orbit_height;
 
-  /// rate multiplier once the note is released
+  /// < rate multiplier once the note is released
   @ffi.Float()
   external double orbit_release_slow;
 }
@@ -9578,12 +11355,12 @@ typedef YseLogCallback =
 
 final class YseBufferIO extends ffi.Opaque {}
 
-typedef yse_script_error_cbFunction =
+typedef YseScriptErrorCallbackFunction =
     ffi.Void Function(
       ffi.Pointer<ffi.Char> traceback_utf8,
       ffi.Pointer<ffi.Void> userdata,
     );
-typedef Dartyse_script_error_cbFunction =
+typedef DartYseScriptErrorCallbackFunction =
     void Function(
       ffi.Pointer<ffi.Char> traceback_utf8,
       ffi.Pointer<ffi.Void> userdata,
@@ -9592,8 +11369,8 @@ typedef Dartyse_script_error_cbFunction =
 /// Callback that receives formatted tracebacks from uncaught Python exceptions
 /// and syntax errors. `traceback_utf8` is owned by the engine and valid only
 /// for the duration of the call — copy it if you need to retain it.
-typedef yse_script_error_cb =
-    ffi.Pointer<ffi.NativeFunction<yse_script_error_cbFunction>>;
+typedef YseScriptErrorCallback =
+    ffi.Pointer<ffi.NativeFunction<YseScriptErrorCallbackFunction>>;
 
 final class YseBusTap extends ffi.Opaque {}
 
@@ -9620,7 +11397,7 @@ enum YseBusValueKind {
   };
 }
 
-typedef yse_bus_tap_cbFunction =
+typedef YseBusTapCallbackFunction =
     ffi.Void Function(
       ffi.Pointer<ffi.Char> address,
       ffi.UnsignedInt kind,
@@ -9631,7 +11408,7 @@ typedef yse_bus_tap_cbFunction =
       ffi.Size list_len,
       ffi.Pointer<ffi.Void> user_data,
     );
-typedef Dartyse_bus_tap_cbFunction =
+typedef DartYseBusTapCallbackFunction =
     void Function(
       ffi.Pointer<ffi.Char> address,
       YseBusValueKind kind,
@@ -9655,6 +11432,41 @@ typedef Dartyse_bus_tap_cbFunction =
 ///
 /// `address`, `str` and `list` are owned by the engine and valid ONLY for the
 /// duration of the call — copy anything you need to retain before returning.
-/// There is no free function (same contract as yse_script_error_cb).
-typedef yse_bus_tap_cb =
-    ffi.Pointer<ffi.NativeFunction<yse_bus_tap_cbFunction>>;
+/// There is no free function (same contract as YseScriptErrorCallback).
+typedef YseBusTapCallback =
+    ffi.Pointer<ffi.NativeFunction<YseBusTapCallbackFunction>>;
+
+final class YseBusSub extends ffi.Opaque {}
+
+typedef YseBusSubCallbackFunction =
+    ffi.Void Function(
+      ffi.Pointer<ffi.Char> address,
+      ffi.UnsignedInt kind,
+      ffi.Int i,
+      ffi.Float f,
+      ffi.Pointer<ffi.Char> str,
+      ffi.Pointer<ffi.Float> list,
+      ffi.Size list_len,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef DartYseBusSubCallbackFunction =
+    void Function(
+      ffi.Pointer<ffi.Char> address,
+      YseBusValueKind kind,
+      int i,
+      double f,
+      ffi.Pointer<ffi.Char> str,
+      ffi.Pointer<ffi.Float> list,
+      int list_len,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+
+/// Same frame contract as YseBusTapCallback: `address` is the subscribed
+/// address, exactly one payload parameter is meaningful per `kind`, and every
+/// pointer is engine-owned and valid only for the duration of the call.
+typedef YseBusSubCallback =
+    ffi.Pointer<ffi.NativeFunction<YseBusSubCallbackFunction>>;
+
+const int YSE_PATCHER_ID_NONE = 4294967295;
+
+const int YSE_PATCHER_INLET_NONE = 4294967295;

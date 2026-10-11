@@ -104,13 +104,11 @@ class ClipTransport implements Finalizable {
   ///
   /// Throws [YseException] if no live clock owns `clock.name`.
   void bind(DomainClock clock) {
-    final ok = using((arena) {
+    final status = using((arena) {
       final cname = clock.name.toNativeUtf8(allocator: arena);
       return _b.clip_bind(_handle, cname.cast());
     });
-    if (ok == 0) {
-      throw YseException('yse_clip_bind: no live clock named "${clock.name}"');
-    }
+    checkStatus(status, _b);
   }
 
   /// Route this clip's playback to an external MIDI output port. [out] must

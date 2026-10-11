@@ -30,7 +30,7 @@ class LiveCoding {
   /// through [errors] (during [System].`update()`).
   static void run(String src) => using((arena) {
     final cstr = src.toNativeUtf8(allocator: arena);
-    bindings.run_script(cstr.cast());
+    bindings.python_run_script(cstr.cast());
   });
 
   static StreamController<String>? _controller;
@@ -55,7 +55,7 @@ class LiveCoding {
       onCancel: () {
         if (_controller?.hasListener ?? false) return;
         // Last listener gone — uninstall the bridge.
-        bindings.set_script_error_callback(nullptr, nullptr);
+        bindings.python_set_script_error_callback(nullptr, nullptr);
         _callable?.close();
         _callable = null;
         _controller?.close();
@@ -70,7 +70,7 @@ class LiveCoding {
           // string is invalid the moment this closure does.
           controller.add(traceback.cast<Utf8>().toDartString());
         });
-    bindings.set_script_error_callback(callable.nativeFunction, nullptr);
+    bindings.python_set_script_error_callback(callable.nativeFunction, nullptr);
     _callable = callable;
     _controller = controller;
     return controller.stream;
@@ -120,7 +120,7 @@ class LiveCoding {
       },
     );
 
-    final callable = NativeCallable<yse_bus_tap_cbFunction>.isolateLocal((
+    final callable = NativeCallable<YseBusTapCallbackFunction>.isolateLocal((
       Pointer<Char> address,
       int kind,
       int i,
@@ -315,7 +315,7 @@ final class BusList extends BusValue {
 /// handle. Torn down together when the prefix's last listener cancels.
 class _BusBridge {
   final StreamController<BusFrame> controller;
-  final NativeCallable<yse_bus_tap_cbFunction> callable;
+  final NativeCallable<YseBusTapCallbackFunction> callable;
   final Pointer<YseBusTap> tap;
 
   _BusBridge(this.controller, this.callable, this.tap);

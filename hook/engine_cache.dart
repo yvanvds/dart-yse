@@ -1,5 +1,5 @@
 // Download, verification and caching of the prebuilt libYSE release for the
-// native-assets build hook (hook/build.dart, #95).
+// native-assets build hook (hook/build.dart, #95, #96).
 //
 // Kept apart from the hook's `main` so the cache logic is unit-tested without
 // a hooks runner (test/engine_cache_test.dart). Only dart:io and
@@ -56,8 +56,22 @@ bool isCached(
 /// The shared libraries a release ships for [platform] in [libDir]: on
 /// Windows `libyse.dll` plus every runtime DLL next to it (libc++, PortAudio,
 /// RtMidi, libsndfile and its codecs, libwinpthread), which must be bundled
-/// together; elsewhere the engine library alone.
-List<File> releaseLibraries(String libDir, ReleasePlatform platform) {
+/// together; on Android the engine library of the ABI [abi]
+/// (`<abi>/libyse.so`, which needs only system libraries); elsewhere the
+/// engine library alone.
+List<File> releaseLibraries(
+  String libDir,
+  ReleasePlatform platform, {
+  String? abi,
+}) {
+  if (platform == ReleasePlatform.android) {
+    if (abi == null) {
+      throw ArgumentError.notNull('abi');
+    }
+    return [
+      File(_join([libDir, abi, 'libyse.so'])),
+    ];
+  }
   if (platform == ReleasePlatform.windowsX64) {
     final dlls =
         Directory(libDir)
@@ -71,6 +85,43 @@ List<File> releaseLibraries(String libDir, ReleasePlatform platform) {
   return [
     for (final f in platform.libFiles) File(_join([libDir, ...f.split('/')])),
   ];
+}
+
+/// The libraries to bundle for [platform] (and Android [abi]) from
+/// [engineDir], a local folder laid out like an unpacked release: the
+/// `engine_dir` user-define of the build hook. Throws [EngineFetchError] when
+/// one of them is missing, except that an [optional] library that is
+/// missing yields an empty list (a 32-bit Android ABI the folder does not
+/// cover gets no engine, as with the release).
+List<File> localLibraries(
+  String engineDir,
+  ReleasePlatform platform, {
+  String? abi,
+  bool optional = false,
+}) {
+  final libDir = _join([engineDir, platform.libSubdir]);
+  if (!Directory(libDir).existsSync()) {
+    throw EngineFetchError(
+      'the engine_dir user-define names $engineDir, which has no '
+      '${platform.libSubdir}${Platform.pathSeparator} folder. It must be laid '
+      'out like an unpacked ${archiveTopDir(engineTag, platform)} release.',
+    );
+  }
+  final libs = releaseLibraries(libDir, platform, abi: abi);
+  final missing = [
+    for (final l in libs)
+      if (!l.existsSync()) l.path,
+  ];
+  if (optional && missing.isNotEmpty) return const [];
+  if (libs.isEmpty || missing.isNotEmpty) {
+    throw EngineFetchError(
+      'the engine_dir user-define names $engineDir, but '
+      '${missing.isEmpty ? 'it holds no engine library' : '${missing.join(', ')} is missing'}. '
+      'It must be laid out like an unpacked '
+      '${archiveTopDir(engineTag, platform)} release.',
+    );
+  }
+  return libs;
 }
 
 /// Makes sure [platform]'s release of [engineTag] is unpacked under

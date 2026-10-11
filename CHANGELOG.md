@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.2.0 — libYSE 3.1.0
+## 0.2.0
+
+Binds libYSE 3.1.0. First release published to pub.dev.
 
 **Engine bumped to libYSE v3.1.0** (from v2.4.0-3); bindings regenerated
 (#55). v3.1.0 is v3.0.1 plus upstream #1022 (`bandPass` unity gain),
@@ -24,7 +26,26 @@ new Dart code for every change below (#70).
   manual engine setup. On Windows the engine's runtime DLLs are bundled
   next to `libyse.dll`. The download is cached under `.dart_tool/`; later
   builds work offline. Linux needs the PortAudio, libsndfile and RtMidi
-  runtime packages; Android still gets the engine from `yse_flutter_libs`.
+  runtime packages.
+- **Android through the build hook** (#96). The hook also bundles the
+  engine's Android release: for an arm64-v8a or x86_64 target it reports
+  that ABI's `lib/<abi>/libyse.so`, which Flutter packages into the APK /
+  AAB, so `flutter pub add yse` is the whole Android setup (`minSdk` 26).
+  The library links Oboe, libsndfile and the C++ runtime statically, so
+  nothing else is bundled. The ~58 MB Android asset is downloaded once per
+  project into `.dart_tool/hooks_runner/shared/yse/`. On Android the loader
+  resolves the engine through its code asset id (`package:yse/libyse`) and
+  says which ABIs are covered when the app has none. The hook's
+  `engine_dir` user-define (`hooks: user_defines: yse: engine_dir:` in the
+  app's pubspec) bundles a local release-shaped folder instead, for offline
+  builds, unreleased engines and 32-bit ABIs.
+- **`yse_flutter_libs` is deprecated and not published** (#96). It never
+  reached pub.dev and is no longer needed; 0.3.0 packages nothing, so apps
+  that still list it keep building. `android/engine.properties` and its pin
+  test are gone.
+- **`example/main.dart`** (#99): the smallest complete program, playing a
+  generated tone through the bundled engine with no sound file and no
+  `YSE_DLL_PATH`.
 - **Requires Dart 3.10** (Flutter 3.38), where build hooks are stable; the
   SDK constraint moved from `^3.8.0` to `^3.10.0`. New dependencies:
   `hooks`, `code_assets` and `crypto`.
@@ -482,7 +503,9 @@ new Dart code for every change below (#70).
 - `ffigen.yaml` documents `dart run ffigen --config ffigen.yaml` (ffigen
   20 no longer finds the config on its own) (#55).
 - `yse_flutter_libs` is bumped to 0.2.0: it packages the same pinned
-  libYSE v3.1.0.
+  libYSE v3.1.0. (Both this and the next entry are superseded by #96:
+  the build hook now bundles the Android engine and the plugin is
+  deprecated; see *The engine comes with the package* above.)
 - **`yse_flutter_libs` packages the engine's Android release** (#91)
   instead of compiling libYSE with the NDK per ABI. The plugin's
   `android/engine.properties` names the tag and the sha256 of
@@ -594,7 +617,9 @@ time in 0.2.0:
 - **Host bus tap** (#43): `LiveCoding.bus(prefix)` as a broadcast stream
   of `(address, value)` frames (superseded by `Bus.tap`, #59).
 
-## 0.1.0 — initial Windows release
+## 0.1.0
+
+Initial Windows release.
 
 First public release. Wraps the YSE sound engine
 ([github.com/yvanvds/yse-soundengine](https://github.com/yvanvds/yse-soundengine))

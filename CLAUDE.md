@@ -49,7 +49,7 @@ maintainer-applied.
 
 ## Running locally
 
-Requires Dart SDK ≥ 3.8, `git` and `tar`. The default is the engine's
+Requires Dart SDK ≥ 3.10, `git` and `tar`. The default is the engine's
 prebuilt release for the pinned tag: `dart run tool/fetch_engine.dart`
 downloads it into the gitignored `.engine/<tag>/` (skipped when already
 there) and prints the `YSE_DLL_PATH` to use, `.engine/<tag>/libyse-<tag>-windows-x64/bin`
@@ -63,13 +63,12 @@ needing CMake ≥ 3.20 and:
 - **Windows** — MSYS2 Clang64 (to build `libyse.dll`).
 - **Linux** — GCC or Clang, plus `portaudio19-dev`, `libsndfile1-dev`,
   `librtmidi-dev` (Ubuntu 24.04 is the tested baseline).
-- **Android** — the sibling `yse_flutter_libs` plugin under `packages/`
-  packages the engine's prebuilt android release for the tag in its
-  `android/engine.properties` (kept equal to the pin by
-  `test/flutter_libs_engine_test.dart`; bump tag and sha256 with the
-  pin). `dart run tool/fetch_engine.dart --platform android` pre-fetches
-  it; otherwise Gradle downloads it. Compiling with NDK 27 is opt-in via
-  the Gradle property `yse.buildFromSource=true` (#91).
+- **Android** — the build hook bundles the engine's prebuilt android
+  release (`lib/<abi>/libyse.so`, arm64-v8a / x86_64) for the tag in
+  `lib/src/engine_release.dart`, like the desktop releases (#96). A local
+  or NDK-built engine goes in through the hook's `engine_dir`
+  user-define. The `yse_flutter_libs` plugin under `packages/` is
+  deprecated, packages nothing and is never published.
 
 See [README.md](README.md) for both recipes.
 
@@ -106,7 +105,7 @@ dart run example/hello_sound.dart
 ```
 
 For Windows-only Linux validation without rebooting, see
-`tools/ci-linux/Dockerfile` in the README.
+`tool/ci-linux/Dockerfile` in the README.
 
 **Unreleased engine (opt-in).** To validate an engine change before it
 is tagged, build the separate dev clone and point `YSE_DLL_PATH` at its

@@ -1,9 +1,9 @@
 // The engine pin as it ships in the published package
 // (lib/src/engine_release.dart, #95): the tag and per-asset sha256 digests the
 // native-assets build hook downloads and checks. A pub cache has no engine
-// submodule, so these tests keep the embedded copy equal to the submodule pin,
-// to the yse_flutter_libs plugin's pin and to the digests of the release
-// itself. The last check needs the network and skips cleanly without it.
+// submodule, so these tests keep the embedded copy equal to the submodule pin
+// and to the digests of the release itself. The last check needs the network
+// and skips cleanly without it.
 
 import 'dart:convert';
 import 'dart:io';
@@ -14,10 +14,7 @@ import 'package:yse/src/engine_release.dart';
 
 import '../hook/build.dart';
 import '../tool/engine_pin.dart';
-import '../tool/fetch_engine.dart'
-    show parseAssetDigest, parseProperties, releaseApiUrl;
-
-const _propsPath = 'packages/yse_flutter_libs/android/engine.properties';
+import '../tool/fetch_engine.dart' show parseAssetDigest, releaseApiUrl;
 
 void main() {
   test('the embedded tag is a release tag', () {
@@ -46,16 +43,6 @@ void main() {
           'bump engineTag and the digests in lib/src/engine_release.dart '
           'along with the engine submodule',
     );
-  });
-
-  test('the Android digest equals the yse_flutter_libs pin', () {
-    final props = parseProperties(
-      File(
-        _propsPath.replaceAll('/', Platform.pathSeparator),
-      ).readAsStringSync(),
-    );
-    expect(props['engineTag'], engineTag);
-    expect(props['engineSha256'], ReleasePlatform.android.sha256);
   });
 
   test('the embedded digests equal the release assets on GitHub', () async {
@@ -88,9 +75,33 @@ void main() {
       );
     });
 
-    test('leaves Android to yse_flutter_libs and skips unreleased ones', () {
-      expect(hookPlatform(OS.android, Architecture.arm64), isNull);
-      expect(hookPlatform(OS.android, Architecture.x64), isNull);
+    test('bundles the Android release for its 64-bit ABIs (#96)', () {
+      for (final arch in [
+        Architecture.arm64,
+        Architecture.x64,
+        Architecture.arm,
+        Architecture.ia32,
+      ]) {
+        expect(
+          hookPlatform(OS.android, arch),
+          ReleasePlatform.android,
+          reason: '$arch',
+        );
+      }
+      expect(androidAbi(Architecture.arm64), 'arm64-v8a');
+      expect(androidAbi(Architecture.x64), 'x86_64');
+      expect(androidAbi(Architecture.arm), 'armeabi-v7a');
+      expect(androidAbi(Architecture.ia32), 'x86');
+      expect(androidAbi(Architecture.riscv64), isNull);
+      // 32-bit ABIs get an engine only from an engine_dir.
+      expect(releaseShipsAbi('arm64-v8a'), isTrue);
+      expect(releaseShipsAbi('x86_64'), isTrue);
+      expect(releaseShipsAbi('armeabi-v7a'), isFalse);
+      expect(releaseShipsAbi('x86'), isFalse);
+    });
+
+    test('skips targets without an engine release', () {
+      expect(hookPlatform(OS.android, Architecture.riscv64), isNull);
       expect(hookPlatform(OS.linux, Architecture.arm64), isNull);
       expect(hookPlatform(OS.windows, Architecture.arm64), isNull);
       expect(hookPlatform(OS.macOS, Architecture.arm64), isNull);

@@ -48,7 +48,7 @@ enum ReleasePlatform {
   ),
 
   /// Android — `libyse-<tag>-android.tar.gz`, one `lib/<abi>/libyse.so` per
-  /// ABI the yse_flutter_libs plugin packages (#91).
+  /// ABI; the build hook bundles the target ABI's (#96).
   android(
     'android',
     'tar.gz',

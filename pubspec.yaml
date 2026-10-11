@@ -1,8 +1,23 @@
 name: yse
 description: Dart bindings for the YSE sound engine — 3D audio playback, mixing, DSP, MIDI, and generative music.
 version: 0.2.0
+homepage: https://yvanvds.github.io/dart-yse/
 repository: https://github.com/yvanvds/dart-yse
 issue_tracker: https://github.com/yvanvds/dart-yse/issues
+
+topics:
+  - audio
+  - sound
+  - midi
+  - dsp
+  - ffi
+
+# The platforms the build hook bundles a prebuilt engine for (hook/build.dart,
+# #95 / #96). macOS and iOS have no engine release yet.
+platforms:
+  windows:
+  linux:
+  android:
 
 environment:
   # Build hooks (hook/build.dart, #95) are stable from Dart 3.10 on.

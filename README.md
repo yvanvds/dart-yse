@@ -1,19 +1,70 @@
 # yse
 
 Dart bindings for the [YSE sound engine](https://github.com/yvanvds/yse-soundengine)
-— 3D audio playback, mixing, DSP, MIDI, and generative music.
+— 3D audio playback, mixing, DSP, MIDI, and generative music. Runs on
+**Windows x64, Linux x64 and Android** (arm64-v8a, x86_64); the engine is
+downloaded and bundled by the package's build hook, so there is nothing
+else to install.
+
+## Quick start
+
+```bash
+dart pub add yse        # Dart app
+flutter pub add yse     # Flutter app
+```
+
+```dart
+import 'package:yse/yse.dart';
+
+void main() {
+  final sys = System.instance;
+  sys.init(); // throws YseException when no audio device opens
+
+  final sound = Sound.fromFile('drone.ogg', loop: true);
+  sound.play();
+
+  // Pump the engine for 3 seconds.
+  for (var i = 0; i < 180; i++) {
+    sys.update();
+    sys.sleep(16);
+  }
+
+  sound.dispose();
+  sys.close();
+}
+```
+
+`dart run` it, or run [`example/main.dart`](https://github.com/yvanvds/dart-yse/blob/main/example/main.dart),
+which plays a generated tone and needs no sound file.
+`System.startUpdateTimer()` wraps the update loop in a `Timer.periodic`
+if you prefer event-driven code.
+
+- **Dart ≥ 3.10** (Flutter ≥ 3.38): build hooks are stable from there on.
+- **Android:** set your app's `minSdk` to 26; see [Android](#android).
+- **Linux:** install the runtime libraries the engine links:
+  `sudo apt-get install -y libportaudio2 libsndfile1 librtmidi6`
+  (Ubuntu 24.04 package names).
+- **Windows, one program at a time:** while a program that uses `yse`
+  is running, another `dart run` or `dart test` in the same project
+  fails with `PathAccessException ... .dart_tool\lib\...dll`. The Dart
+  SDK re-copies the bundled DLLs on every start and Windows locks the
+  ones in use. Stop the running program first.
+
+Full documentation, tutorials and the API reference:
+<https://yvanvds.github.io/dart-yse/>.
 
 ## Status
 
-**Pre-release.** v0.x supports **Windows, Linux, and Android**; iOS / macOS are next.
+**Pre-release.** v0.x supports **Windows, Linux, and Android**; iOS / macOS
+have no engine release yet.
 
 **0.2.0 binds libYSE v3.1.0** (0.1.0 bound libYSE 2.4). This is a breaking
 upgrade: `System.init()` now throws when no audio device opens, the
 default session rate is 48 kHz, `DspBuffer` subclasses are real classes,
 patcher IDs are `int?` and the patcher's bus slots moved under
 `patcher.`. The [upgrade guide](https://yvanvds.github.io/dart-yse/intro/upgrading.html)
-lists every change with before / after code, and
-[CHANGELOG.md](CHANGELOG.md) has the full release notes.
+lists every change with before / after code, and the
+[changelog](https://pub.dev/packages/yse/changelog) has the full release notes.
 
 The full C++ API is wrapped except for one upstream-deferred area:
 
@@ -22,15 +73,9 @@ The full C++ API is wrapped except for one upstream-deferred area:
   callback plumbing that lands in a later release. `BufferIO` covers
   the common asset-pack use case in the meantime.
 
-## Install
+## How the engine gets into your app
 
-```bash
-dart pub add yse
-```
-
-For a Flutter app, `flutter pub add yse`. On **Windows x64**, **Linux
-x64** and **Android** (arm64-v8a, x86_64) that is the whole setup. The
-package's native-assets build hook (`hook/build.dart`) downloads the
+The package's native-assets build hook (`hook/build.dart`) downloads the
 prebuilt engine its bindings were generated from (libYSE **v3.1.0**)
 from the [engine's GitHub release](https://github.com/yvanvds/yse-soundengine/releases),
 checks it against the sha256 digest embedded in the package, and
@@ -39,32 +84,170 @@ bundles it into your app. `dart run`, `dart test`, `dart build cli` and
 up; on Windows the hook also bundles the engine's runtime DLLs (libc++,
 PortAudio, RtMidi, libsndfile and its codecs) next to `libyse.dll`.
 
-- **Dart ≥ 3.10** (Flutter ≥ 3.38): build hooks are stable from there on.
 - **Network once:** the first build of a project downloads the engine
   (~9 MB on Windows, ~3 MB on Linux, ~58 MB for Android, whose asset
   carries the libsndfile sources for LGPL compliance) into
   `.dart_tool/`; later builds, offline ones included, reuse it.
   `flutter clean` deletes `.dart_tool/`, so the next build downloads
   again.
-- **Linux runtime libraries:** the Linux engine links the system's
-  PortAudio, libsndfile and RtMidi:
-  `sudo apt-get install -y libportaudio2 libsndfile1 librtmidi6`
-  (Ubuntu 24.04 package names).
-- **Android:** set your app's `minSdk` to 26; see [Android](#android).
-  No second package is needed (the former `yse_flutter_libs` plugin is
-  deprecated). macOS / iOS have no engine release yet.
-- **Windows, one program at a time:** while a program that uses `yse`
-  is running, another `dart run` or `dart test` in the same project
-  fails with `PathAccessException ... .dart_tool\lib\...dll`. The Dart
-  SDK re-copies the bundled DLLs on every start and Windows locks the
-  ones in use. Stop the running program first.
+- No second package is needed on Android (the former
+  `yse_flutter_libs` plugin is deprecated and not published).
 
 To run against another engine build (a source build, an unreleased
 engine), point `YSE_DLL_PATH` at the directory holding `libyse.dll` /
 `libyse.so`; it takes precedence over the bundled copy.
 `System.version` reports the library actually loaded.
 
-The rest of this section is for working on dart-yse itself.
+## Android
+
+```bash
+flutter pub add yse
+```
+
+is all a Flutter Android app needs (#96). The build hook maps the
+target ABI to the engine's prebuilt Android release,
+`libyse-<tag>-android.tar.gz`, downloads it once per project, checks
+its sha256 and reports `lib/<abi>/libyse.so` as the code asset
+`package:yse/libyse`. Flutter packages it into the APK / AAB under
+`lib/<abi>/` and the app's Android build strips its debug symbols
+(about 6 MiB per ABI in a release APK). The library links Oboe,
+libsndfile and the C++ runtime statically and needs only system
+libraries (`libc`, `libm`, `libdl`, `liblog`, `libOpenSLES`), so no
+`libc++_shared.so` or other library is bundled with it. No NDK or CMake
+build of the engine is involved.
+
+The separate `yse_flutter_libs` plugin that used to package the engine
+(#91) is deprecated and will not be published: an app that still lists
+it keeps building (from 0.3.0 it packages nothing), but should drop it.
+See [its README](https://github.com/yvanvds/dart-yse/blob/main/packages/yse_flutter_libs/README.md) for the
+migration.
+
+**Offline builds, unreleased engines, 32-bit ABIs.** The hook's
+`engine_dir` user-define replaces the download with a local folder laid
+out like an unpacked `libyse-<tag>-android` release, i.e. holding
+`lib/<abi>/libyse.so`. Set it in the app's `pubspec.yaml` (a relative
+path resolves against that file):
+
+```yaml
+hooks:
+  user_defines:
+    yse:
+      engine_dir: /path/to/libyse-android
+```
+
+For an offline build, `dart run tool/fetch_engine.dart --platform
+android` in a dart-yse checkout unpacks the pinned release into
+`.engine/<tag>/libyse-<tag>-android/`. For an
+[unreleased engine](#unreleased-engine-opt-in) or `armeabi-v7a` (which
+the release does not ship), build `libyse.so` per ABI from an engine
+checkout with the NDK, as the engine's release workflow does, and copy
+each into `lib/<abi>/`:
+
+```bash
+cmake -B build-android-arm64 -G Ninja \
+  -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
+  -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-26 \
+  -DCMAKE_BUILD_TYPE=Release
+cmake --build build-android-arm64 --target yse   # -> build-android-arm64/bin/libyse.so
+```
+
+With `engine_dir` set, the 64-bit ABIs must be in the folder; a 32-bit
+ABI it lacks just gets no engine, as with the release.
+
+Requirements:
+
+- Flutter ≥ 3.38 (Dart 3.10), which runs build hooks for Android
+- `minSdk` 26 so Oboe negotiates the AAudio backend (older devices fall
+  back to OpenSL ES, which the engine still supports through Oboe but
+  has fewer guarantees on latency). Flutter's app template defaults
+  lower, so set it in your app's `build.gradle`.
+- ABIs: `arm64-v8a`, `x86_64`, the ones the engine's Android release
+  ships. On a 32-bit device without an `engine_dir` build, `System`
+  throws a `YseException` saying the engine is not in the app.
+
+A minimal end-to-end Flutter sample lives at
+[`example/android_sample/`](https://github.com/yvanvds/dart-yse/tree/main/example/android_sample) — see the README
+there for the one-time `flutter create` scaffold and run instructions.
+
+**Permissions.** Oboe playback needs no runtime permission. Add
+`RECORD_AUDIO` to your manifest only if you exercise an input-capture
+code path (none is exposed by `package:yse` today).
+
+**Threading.** The audio callback runs on a thread owned by Oboe /
+AAudio. As with desktop builds, never call into `yse` from a callback
+you didn't install, and keep all `yse.*` calls on the same isolate that
+called `System.init()`. On Flutter, that is typically the UI isolate.
+
+**Render threads.** The engine renders with `physical cores - 1` worker
+threads (at most 8) by default. On low-end devices set `System.instance.renderThreads
+= 0` before `init()` to render on the audio thread alone (the output is
+bit-identical); the Android sample does this.
+
+## What's wrapped
+
+| Subsystem | Coverage | Notes |
+|-----------|----------|-------|
+| `System`     | Device and offline sessions, `requestedSampleRate`, headless speaker layout, device listing without a stream (`refreshDevices`), auto-reconnect with outcome (`reconnectState`, `activeDevice`), render threads, block size, RNG seeding, occlusion callback, MIDI device enumeration, global reverb, underwater FX, update loop, version / CPU load | full |
+| `DomainClock` / `ClipTransport` | Named, rampable beat clocks; beat-timed clips played on the audio thread into synths and MIDI ports | full |
+| `Listener`   | Position, velocity, orientation | full |
+| `Sound`      | File / buffer / multichannel buffer / patcher / synth sources, transport, 3D, occlusion, mixing, DSP-chain attachment, `busName` | full |
+| `Channel`    | Pre-built singletons, user channels, aux sends and return buses, insert DSP, peak metering, virtualisation, reverb attach, `busName` | full |
+| `Reverb`     | Positioned + global, presets, full parameter surface, preset values + morph (`ReverbPresetValues`) | full |
+| `Device`     | Read-only descriptors + owned `DeviceSetup` builder | full |
+| `DspBuffer`  | `DspBuffer` / `DrawableBuffer` / `FileBuffer` / `Wavetable` subclasses, bulk Float32List I/O, drawing, load/save, buffer math, copy/swap, band-limited wavetable generators; `DspMultiBuffer` for multichannel sources | full |
+| `DspObject`  | 11 base effects (lowpass, highpass, bandpass, sweep, basicDelay + lp/hp variants, phaser, ringMod, difference, granulator) with the inherited bypass/impact/LFO surface, chain walking; mix-grade `Compressor`, `ParametricEq`, `Chorus`, `PlateReverb`, `FeedbackDelay`, `MorphingReverb`, `Underwater`; patcher inserts | full |
+| `Patcher`    | Max/MSP-style graph: all 305 objects as `Obj` constants, connect, names and `patcher.<name>.<slot>` bus slots, subpatchers, `messages` stream (the C++ `oscHandler`), GUI value protocol, JSON round-trip, full `PHandle` and registry introspection | full |
+| `Synth`      | Sine / virtual-analog / FM (DX7 banks from file or memory) / SFZ sampler voice pools, per-note 3D positions, `busName` | full minus audio-thread hooks (note-rewrite callback, custom voices) |
+| `Bus`        | Host publish, exact-address subscribe, prefix tap | full |
+| `MidiFile`   | Load / play / pause / stop, synth sink | full |
+| `MidiOut`    | Note / pressure / control / program / `raw3` + `raw` (any length, SysEx) / reset / all-notes-off | full (Windows/Linux) |
+| `MidiIn`     | Raw and parsed message streams, synth sink | full (Windows/Linux) |
+| `Note`/`PNote`/`Scale`/`Motif` | Pitch/volume/length/channel, position, has/nearest/clear, transpose, setFirstPitch | full |
+| `Player`     | Generative sequencer on a `Synth`: pitch / velocity / gap / length ranges, voices, scale (with cross-fade), weighted motifs | full |
+| `LiveCoding` | Submit scripts to the embedded Python interpreter, error stream | full (needs `YSE_ENABLE_PYTHON=ON`) |
+| `Log`        | sendMessage, level, logfile, broadcast `messages` Stream | full |
+| `BufferIO`   | Register `Uint8List` bytes under an ID; load by ID | full |
+
+[`example/main.dart`](https://github.com/yvanvds/dart-yse/blob/main/example/main.dart)
+is the minimal program; 13 more demos under
+[`example/`](https://github.com/yvanvds/dart-yse/tree/main/example) are ports of the C++
+demos shipped with yse-soundengine, plus a few extras (`demo19_bus.dart`,
+`demo20_clocks_clips.dart`, live coding, log + buffer I/O).
+
+## Threading
+
+- All Dart calls must come from the **same isolate** that called
+  `System.init()`. The engine maintains internal queues per-thread.
+- The audio callback runs on a private thread the wrapper never
+  exposes — never call into `yse` from a callback you didn't
+  install.
+- `System.update()` must be called from that isolate every frame
+  (or use `startUpdateTimer`). It drives message delivery,
+  listener-velocity computation, the occlusion callback, bus delivery
+  and the auto-reconnect watchdog.
+- Engine callbacks reach Dart either synchronously inside `update()`
+  (occlusion) or as stream events (`Bus`, `Patcher.messages`,
+  `Log.messages`, `MidiIn`). The docs'
+  [mental model](https://yvanvds.github.io/dart-yse/intro/mental_model.html)
+  page has the per-callback table.
+
+## License
+
+Eclipse Public License 2.0 — matches the upstream YSE license.
+
+## Links
+
+- [API reference site](https://yvanvds.github.io/dart-yse/) — Sphinx
+  docs with tutorials, mental model, and the full Dart API. Built
+  from the dartdoc comments in `lib/`; see [docs/README.md](https://github.com/yvanvds/dart-yse/blob/main/docs/README.md)
+  for the local build recipe.
+- [yse-soundengine](https://github.com/yvanvds/yse-soundengine) — the C++ engine this package wraps.
+- [Issue tracker](https://github.com/yvanvds/dart-yse/issues)
+
+## Working on dart-yse
+
+The rest of this README is for working on dart-yse itself, from a
+clone of <https://github.com/yvanvds/dart-yse>.
 
 ### The engine submodule
 
@@ -277,12 +460,12 @@ and run `dart run tool/fetch_engine.dart`.
 
 ### Linux validation from Windows (optional)
 
-`tools/ci-linux/Dockerfile` builds an image with the engine deps and
+`tool/ci-linux/Dockerfile` builds an image with the engine deps and
 the Dart SDK so you can reproduce the Linux build from a Windows dev
 box without rebooting:
 
 ```powershell
-docker build -t dart-yse-ci -f tools/ci-linux/Dockerfile .
+docker build -t dart-yse-ci -f tool/ci-linux/Dockerfile .
 docker run --rm -v ${PWD}:/workspace dart-yse-ci
 ```
 
@@ -294,172 +477,3 @@ entries left by the other), runs `dart analyze`, and exercises the
 FFI surface via `tool/linux_smoke.dart` (initOffline → renderOffline;
 no audio device required).
 
-### Android
-
-```bash
-flutter pub add yse
-```
-
-is all a Flutter Android app needs (#96). The build hook maps the
-target ABI to the engine's prebuilt Android release,
-`libyse-<tag>-android.tar.gz`, downloads it once per project, checks
-its sha256 and reports `lib/<abi>/libyse.so` as the code asset
-`package:yse/libyse`. Flutter packages it into the APK / AAB under
-`lib/<abi>/` and the app's Android build strips its debug symbols
-(about 6 MiB per ABI in a release APK). The library links Oboe,
-libsndfile and the C++ runtime statically and needs only system
-libraries (`libc`, `libm`, `libdl`, `liblog`, `libOpenSLES`), so no
-`libc++_shared.so` or other library is bundled with it. No NDK or CMake
-build of the engine is involved.
-
-The separate `yse_flutter_libs` plugin that used to package the engine
-(#91) is deprecated and will not be published: an app that still lists
-it keeps building (from 0.3.0 it packages nothing), but should drop it.
-See [its README](packages/yse_flutter_libs/README.md) for the
-migration.
-
-**Offline builds, unreleased engines, 32-bit ABIs.** The hook's
-`engine_dir` user-define replaces the download with a local folder laid
-out like an unpacked `libyse-<tag>-android` release, i.e. holding
-`lib/<abi>/libyse.so`. Set it in the app's `pubspec.yaml` (a relative
-path resolves against that file):
-
-```yaml
-hooks:
-  user_defines:
-    yse:
-      engine_dir: /path/to/libyse-android
-```
-
-For an offline build, `dart run tool/fetch_engine.dart --platform
-android` in a dart-yse checkout unpacks the pinned release into
-`.engine/<tag>/libyse-<tag>-android/`. For an
-[unreleased engine](#unreleased-engine-opt-in) or `armeabi-v7a` (which
-the release does not ship), build `libyse.so` per ABI from an engine
-checkout with the NDK, as the engine's release workflow does, and copy
-each into `lib/<abi>/`:
-
-```bash
-cmake -B build-android-arm64 -G Ninja \
-  -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
-  -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-26 \
-  -DCMAKE_BUILD_TYPE=Release
-cmake --build build-android-arm64 --target yse   # -> build-android-arm64/bin/libyse.so
-```
-
-With `engine_dir` set, the 64-bit ABIs must be in the folder; a 32-bit
-ABI it lacks just gets no engine, as with the release.
-
-Requirements:
-
-- Flutter ≥ 3.38 (Dart 3.10), which runs build hooks for Android
-- `minSdk` 26 so Oboe negotiates the AAudio backend (older devices fall
-  back to OpenSL ES, which the engine still supports through Oboe but
-  has fewer guarantees on latency). Flutter's app template defaults
-  lower, so set it in your app's `build.gradle`.
-- ABIs: `arm64-v8a`, `x86_64`, the ones the engine's Android release
-  ships. On a 32-bit device without an `engine_dir` build, `System`
-  throws a `YseException` saying the engine is not in the app.
-
-A minimal end-to-end Flutter sample lives at
-[`example/android_sample/`](example/android_sample/) — see the README
-there for the one-time `flutter create` scaffold and run instructions.
-
-**Permissions.** Oboe playback needs no runtime permission. Add
-`RECORD_AUDIO` to your manifest only if you exercise an input-capture
-code path (none is exposed by `package:yse` today).
-
-**Threading.** The audio callback runs on a thread owned by Oboe /
-AAudio. As with desktop builds, never call into `yse` from a callback
-you didn't install, and keep all `yse.*` calls on the same isolate that
-called `System.init()`. On Flutter, that is typically the UI isolate.
-
-**Render threads.** The engine renders with `physical cores - 1` worker
-threads (at most 8) by default. On low-end devices set `System.instance.renderThreads
-= 0` before `init()` to render on the audio thread alone (the output is
-bit-identical); the Android sample does this.
-
-## Hello, sound
-
-```dart
-import 'package:yse/yse.dart';
-
-void main() {
-  final sys = System.instance;
-  sys.init(); // throws YseException when no audio device opens
-
-  final sound = Sound.fromFile('drone.ogg', loop: true);
-  sound.play();
-
-  // Pump the engine for 3 seconds.
-  for (var i = 0; i < 180; i++) {
-    sys.update();
-    sys.sleep(16);
-  }
-
-  sound.dispose();
-  sys.close();
-}
-```
-
-`System.startUpdateTimer()` wraps the update loop in a `Timer.periodic`
-if you prefer event-driven code.
-
-## What's wrapped
-
-| Subsystem | Coverage | Notes |
-|-----------|----------|-------|
-| `System`     | Device and offline sessions, `requestedSampleRate`, headless speaker layout, device listing without a stream (`refreshDevices`), auto-reconnect with outcome (`reconnectState`, `activeDevice`), render threads, block size, RNG seeding, occlusion callback, MIDI device enumeration, global reverb, underwater FX, update loop, version / CPU load | full |
-| `DomainClock` / `ClipTransport` | Named, rampable beat clocks; beat-timed clips played on the audio thread into synths and MIDI ports | full |
-| `Listener`   | Position, velocity, orientation | full |
-| `Sound`      | File / buffer / multichannel buffer / patcher / synth sources, transport, 3D, occlusion, mixing, DSP-chain attachment, `busName` | full |
-| `Channel`    | Pre-built singletons, user channels, aux sends and return buses, insert DSP, peak metering, virtualisation, reverb attach, `busName` | full |
-| `Reverb`     | Positioned + global, presets, full parameter surface, preset values + morph (`ReverbPresetValues`) | full |
-| `Device`     | Read-only descriptors + owned `DeviceSetup` builder | full |
-| `DspBuffer`  | `DspBuffer` / `DrawableBuffer` / `FileBuffer` / `Wavetable` subclasses, bulk Float32List I/O, drawing, load/save, buffer math, copy/swap, band-limited wavetable generators; `DspMultiBuffer` for multichannel sources | full |
-| `DspObject`  | 11 base effects (lowpass, highpass, bandpass, sweep, basicDelay + lp/hp variants, phaser, ringMod, difference, granulator) with the inherited bypass/impact/LFO surface, chain walking; mix-grade `Compressor`, `ParametricEq`, `Chorus`, `PlateReverb`, `FeedbackDelay`, `MorphingReverb`, `Underwater`; patcher inserts | full |
-| `Patcher`    | Max/MSP-style graph: all 305 objects as `Obj` constants, connect, names and `patcher.<name>.<slot>` bus slots, subpatchers, `messages` stream (the C++ `oscHandler`), GUI value protocol, JSON round-trip, full `PHandle` and registry introspection | full |
-| `Synth`      | Sine / virtual-analog / FM (DX7 banks from file or memory) / SFZ sampler voice pools, per-note 3D positions, `busName` | full minus audio-thread hooks (note-rewrite callback, custom voices) |
-| `Bus`        | Host publish, exact-address subscribe, prefix tap | full |
-| `MidiFile`   | Load / play / pause / stop, synth sink | full |
-| `MidiOut`    | Note / pressure / control / program / `raw3` + `raw` (any length, SysEx) / reset / all-notes-off | full (Windows/Linux) |
-| `MidiIn`     | Raw and parsed message streams, synth sink | full (Windows/Linux) |
-| `Note`/`PNote`/`Scale`/`Motif` | Pitch/volume/length/channel, position, has/nearest/clear, transpose, setFirstPitch | full |
-| `Player`     | Generative sequencer on a `Synth`: pitch / velocity / gap / length ranges, voices, scale (with cross-fade), weighted motifs | full |
-| `LiveCoding` | Submit scripts to the embedded Python interpreter, error stream | full (needs `YSE_ENABLE_PYTHON=ON`) |
-| `Log`        | sendMessage, level, logfile, broadcast `messages` Stream | full |
-| `BufferIO`   | Register `Uint8List` bytes under an ID; load by ID | full |
-
-13 example demos under [`example/`](example/) — ports of the C++
-demos shipped with yse-soundengine, plus a few extras (`demo19_bus.dart`,
-`demo20_clocks_clips.dart`, live coding, log + buffer I/O).
-
-## Threading
-
-- All Dart calls must come from the **same isolate** that called
-  `System.init()`. The engine maintains internal queues per-thread.
-- The audio callback runs on a private thread the wrapper never
-  exposes — never call into `yse` from a callback you didn't
-  install.
-- `System.update()` must be called from that isolate every frame
-  (or use `startUpdateTimer`). It drives message delivery,
-  listener-velocity computation, the occlusion callback, bus delivery
-  and the auto-reconnect watchdog.
-- Engine callbacks reach Dart either synchronously inside `update()`
-  (occlusion) or as stream events (`Bus`, `Patcher.messages`,
-  `Log.messages`, `MidiIn`). The docs'
-  [mental model](https://yvanvds.github.io/dart-yse/intro/mental_model.html)
-  page has the per-callback table.
-
-## License
-
-Eclipse Public License 2.0 — matches the upstream YSE license.
-
-## Links
-
-- [API reference site](https://yvanvds.github.io/dart-yse/) — Sphinx
-  docs with tutorials, mental model, and the full Dart API. Built
-  from the dartdoc comments in `lib/`; see [docs/README.md](docs/README.md)
-  for the local build recipe.
-- [yse-soundengine](https://github.com/yvanvds/yse-soundengine) — the C++ engine this package wraps.
-- [Issue tracker](https://github.com/yvanvds/dart-yse/issues)

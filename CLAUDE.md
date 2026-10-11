@@ -49,7 +49,7 @@ maintainer-applied.
 
 ## Running locally
 
-Requires Dart SDK ≥ 3.8, `git` and `tar`. The default is the engine's
+Requires Dart SDK ≥ 3.10, `git` and `tar`. The default is the engine's
 prebuilt release for the pinned tag: `dart run tool/fetch_engine.dart`
 downloads it into the gitignored `.engine/<tag>/` (skipped when already
 there) and prints the `YSE_DLL_PATH` to use, `.engine/<tag>/libyse-<tag>-windows-x64/bin`
@@ -105,7 +105,7 @@ dart run example/hello_sound.dart
 ```
 
 For Windows-only Linux validation without rebooting, see
-`tools/ci-linux/Dockerfile` in the README.
+`tool/ci-linux/Dockerfile` in the README.
 
 **Unreleased engine (opt-in).** To validate an engine change before it
 is tagged, build the separate dev clone and point `YSE_DLL_PATH` at its

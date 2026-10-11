@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.2.0 — libYSE 3.1.0
+## 0.2.0
+
+Binds libYSE 3.1.0. First release published to pub.dev.
 
 **Engine bumped to libYSE v3.1.0** (from v2.4.0-3); bindings regenerated
 (#55). v3.1.0 is v3.0.1 plus upstream #1022 (`bandPass` unity gain),
@@ -41,6 +43,9 @@ new Dart code for every change below (#70).
   reached pub.dev and is no longer needed; 0.3.0 packages nothing, so apps
   that still list it keep building. `android/engine.properties` and its pin
   test are gone.
+- **`example/main.dart`** (#99): the smallest complete program, playing a
+  generated tone through the bundled engine with no sound file and no
+  `YSE_DLL_PATH`.
 - **Requires Dart 3.10** (Flutter 3.38), where build hooks are stable; the
   SDK constraint moved from `^3.8.0` to `^3.10.0`. New dependencies:
   `hooks`, `code_assets` and `crypto`.
@@ -612,7 +617,9 @@ time in 0.2.0:
 - **Host bus tap** (#43): `LiveCoding.bus(prefix)` as a broadcast stream
   of `(address, value)` frames (superseded by `Bus.tap`, #59).
 
-## 0.1.0 — initial Windows release
+## 0.1.0
+
+Initial Windows release.
 
 First public release. Wraps the YSE sound engine
 ([github.com/yvanvds/yse-soundengine](https://github.com/yvanvds/yse-soundengine))

@@ -5,7 +5,7 @@
 # upstream yse-soundengine `tools/ci-linux/Dockerfile` and adds the Dart SDK.
 #
 # Usage from PowerShell at the dart-yse repo root:
-#   docker build -t dart-yse-ci -f tools/ci-linux/Dockerfile .
+#   docker build -t dart-yse-ci -f tool/ci-linux/Dockerfile .
 #   docker run --rm -v ${PWD}:/workspace dart-yse-ci
 #
 # The default command builds the engine from the submodule sources into

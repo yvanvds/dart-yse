@@ -37,8 +37,9 @@ import 'dart:io';
 import 'package:code_assets/code_assets.dart';
 import 'package:hooks/hooks.dart';
 import 'package:yse/src/engine_release.dart';
-
-import 'engine_cache.dart';
+// The cache helper lives under lib/src/ because pub.dev accepts only the hook
+// entry points (build.dart, link.dart) in hook/ (#101).
+import 'package:yse/src/hook/engine_cache.dart';
 
 void main(List<String> args) async {
   await build(args, (input, output) async {

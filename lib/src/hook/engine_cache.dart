@@ -5,6 +5,10 @@
 // a hooks runner (test/engine_cache_test.dart). Only dart:io and
 // package:crypto: no git, no `gh`, no GitHub API call at build time — the
 // expected digests are embedded in lib/src/engine_release.dart.
+//
+// It lives under lib/src/ because pub.dev accepts only the hook entry points
+// in hook/ (#101). It is internal to the hook: import it only from
+// hook/build.dart and tests, never from lib/yse.dart or the runtime wrappers.
 
 import 'dart:io';
 

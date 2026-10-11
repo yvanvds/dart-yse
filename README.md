@@ -63,7 +63,56 @@ interpreter behind `LiveCoding`, and `YSE_ENABLE_MIDI_DEVICE` (default
 `ON` on Windows / Linux) builds the RtMidi backend behind `MidiIn` /
 `MidiOut` and the MIDI-device patcher objects.
 
-### Windows
+### Prebuilt engine (default)
+
+The engine publishes `libyse` binaries for every release tag.
+`tool/fetch_engine.dart` reads the tag the submodule pins
+(`git describe --tags --exact-match`), downloads that release's asset
+for your platform from
+`https://github.com/yvanvds/yse-soundengine/releases`, checks it
+against the sha256 digest GitHub reports for it, and unpacks it into
+the gitignored `.engine/<tag>/`. A tag that is already there is not
+downloaded again (`--force` re-fetches). It needs only the Dart SDK,
+`git` and `tar` (built into Windows 10+ and Linux); no `gh`, MSYS2 or
+CMake. It fails if the pin is not a release tag.
+
+```powershell
+# Windows
+git clone --recurse-submodules https://github.com/yvanvds/dart-yse
+cd dart-yse
+dart pub get
+dart run tool/fetch_engine.dart
+$env:YSE_DLL_PATH = "$PWD\.engine\v3.1.0\libyse-v3.1.0-windows-x64\bin"
+dart test
+```
+
+```bash
+# Linux (x86_64). Runtime libraries only, no build toolchain:
+sudo apt-get install -y libportaudio2 libsndfile1 librtmidi6
+
+git clone --recurse-submodules https://github.com/yvanvds/dart-yse
+cd dart-yse
+dart pub get
+dart run tool/fetch_engine.dart
+export YSE_DLL_PATH="$PWD/.engine/v3.1.0/libyse-v3.1.0-linux-x64/lib"
+dart test
+```
+
+The tool prints the exact `YSE_DLL_PATH` for the pinned tag as its last
+line. The Windows `bin/` holds `libyse.dll` and all its runtime DLLs. The
+release builds use the default options: MIDI device I/O on, Python
+(`LiveCoding`) off. The C headers `ffigen` reads still come from the
+submodule.
+
+To run against a different engine, for example one you built yourself,
+point `YSE_DLL_PATH` at that build instead.
+
+### Building the engine from source
+
+Use this for a platform without a prebuilt asset, or to change build
+options such as `-DYSE_ENABLE_PYTHON=ON`.
+
+#### Windows
 
 Requires MSYS2 Clang64 (the same toolchain YSE itself uses) and CMake.
 
@@ -94,7 +143,7 @@ dart run example/hello_sound.dart
 
 (Or copy that directory's contents next to your Dart executable.)
 
-### Linux
+#### Linux
 
 Tested on Ubuntu 24.04. Requires CMake ≥ 3.20, Ninja, GCC or Clang,
 and the system development packages that YSE links against.

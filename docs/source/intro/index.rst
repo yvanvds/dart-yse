@@ -41,8 +41,10 @@ What dart-yse is not
 Supported platforms
 -------------------
 
-- **Windows** (MSYS2 Clang64)
-- **Linux** (Clang or GCC, x64; tested on Ubuntu 24.04)
+- **Windows** (x64; prebuilt engine, or built from source with MSYS2
+  Clang64)
+- **Linux** (x64; prebuilt engine, or built from source with Clang or
+  GCC; tested on Ubuntu 24.04)
 - **Android** (NDK 27+, API 26+, ``arm64-v8a`` and ``x86_64`` via the
   ``yse_flutter_libs`` Flutter plugin)
 

@@ -34,6 +34,9 @@ doc/api/
 # YSE runtime log — written to cwd on engine startup
 YSElog.txt
 
+# Prebuilt libyse releases unpacked by tool/fetch_engine.dart (#88)
+.engine/
+
 # Docker / CI build output (tools/ci-linux/Dockerfile)
 .docker-build/
 

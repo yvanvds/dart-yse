@@ -439,6 +439,15 @@ new Dart code for every change below (#70).
   emits pages for typedefs (`BusFrame`, `OcclusionFn`), exits 1 when a
   re-exported name has no page, and translates dartdoc's fenced code
   blocks and pipe tables into RST so the Sphinx build stays warning-free.
+- **Prebuilt engine for the pinned tag** (#88): new
+  `tool/fetch_engine.dart` reads the release tag the engine submodule
+  pins, downloads that tag's Windows x64 or Linux x64 release asset from
+  the public yse-soundengine release URL (no `gh` needed), checks it
+  against the sha256 digest GitHub reports, and unpacks it into the
+  gitignored `.engine/<tag>/`. Running the tests and examples no longer
+  needs MSYS2 or CMake: point `YSE_DLL_PATH` at the path it prints. It
+  fails when the pin is not a release tag. Building from source stays
+  documented as the alternative and is what CI still does.
 - `ffigen.yaml` documents `dart run ffigen --config ffigen.yaml` (ffigen
   20 no longer finds the config on its own) (#55).
 - `yse_flutter_libs` is bumped to 0.2.0: it builds the same pinned

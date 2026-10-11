@@ -49,16 +49,26 @@ maintainer-applied.
 
 ## Running locally
 
-Requires Dart SDK ≥ 3.8, CMake ≥ 3.20, and one of:
+Requires Dart SDK ≥ 3.8, `git` and `tar`. The default is the engine's
+prebuilt release for the pinned tag: `dart run tool/fetch_engine.dart`
+downloads it into the gitignored `.engine/<tag>/` (skipped when already
+there) and prints the `YSE_DLL_PATH` to use, `.engine/<tag>/libyse-<tag>-windows-x64/bin`
+on Windows and `.engine/<tag>/libyse-<tag>-linux-x64/lib` on Linux.
+Linux also needs the runtime packages `libportaudio2`, `libsndfile1`,
+`librtmidi6`. It fails if the submodule pin is not a release tag.
+
+Building the engine from source is the alternative (and what CI does),
+needing CMake ≥ 3.20 and:
 
 - **Windows** — MSYS2 Clang64 (to build `libyse.dll`).
 - **Linux** — GCC or Clang, plus `portaudio19-dev`, `libsndfile1-dev`,
   `librtmidi-dev` (Ubuntu 24.04 is the tested baseline).
 - **Android** — NDK 27 via Flutter / Gradle, driven by the sibling
   `yse_flutter_libs` plugin under `packages/`. The plugin's Gradle
-  module externalNativeBuild's the engine CMakeLists for each ABI.
+  module externalNativeBuild's the engine CMakeLists for each ABI
+  (#91 tracks using the android release tarball instead).
 
-See [README.md](README.md) for the per-platform build recipe.
+See [README.md](README.md) for both recipes.
 
 `third_party/yse-soundengine` is a normal git submodule pinned to an
 engine release tag. Clone with `--recurse-submodules`, or run
@@ -71,20 +81,22 @@ gitlink, then regenerate the bindings. Engine development happens in a
 separate clone of yse-soundengine, never through the submodule.
 
 ```powershell
-# Windows. After building libyse.dll into the submodule's build/ dir:
-$env:YSE_DLL_PATH = "$PWD\third_party\yse-soundengine\build\bin"
-
+# Windows.
 dart pub get
+dart run tool/fetch_engine.dart
+$env:YSE_DLL_PATH = "$PWD\.engine\v3.1.0\libyse-v3.1.0-windows-x64\bin"
+
 dart analyze
 dart test
 dart run example/hello_sound.dart
 ```
 
 ```bash
-# Linux. After building libyse.so into the submodule's build/ dir:
-export YSE_DLL_PATH="$PWD/third_party/yse-soundengine/build/bin"
-
+# Linux.
 dart pub get
+dart run tool/fetch_engine.dart
+export YSE_DLL_PATH="$PWD/.engine/v3.1.0/libyse-v3.1.0-linux-x64/lib"
+
 dart analyze
 dart test
 dart run example/hello_sound.dart

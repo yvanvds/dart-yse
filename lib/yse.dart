@@ -52,6 +52,7 @@ export 'src/enums.dart'
         LogLevel,
         OutType,
         PCategory,
+        ReconnectState,
         ReverbPreset,
         SweepShape,
         VaWaveform;

@@ -93,6 +93,23 @@
   - The refresh replaces the list; match devices by name and host, not
     by index.
 
+- **Auto-reconnect reopens the session's device and reports the outcome**
+  (#54, upstream yse-soundengine#1027):
+  - `System.setAutoReconnect` now reopens the device of the last
+    successful `openDevice()` (found again by name and host, with its
+    channel count and buffer size) instead of the default output device.
+    A session that never called `openDevice()` still reopens the current
+    default.
+  - New optional `fallbackToDefault` (open the default device when the
+    session's own cannot be reopened; off by default) and `maxAttempts`
+    (stop after that many consecutive failed attempts; 0 = no limit).
+  - New `System.reconnectState` (`ReconnectState`: `none`,
+    `reconnecting`, `restored`, `fellBackToDefault`, `failed`),
+    `System.reconnectCount`, and `System.activeDevice` /
+    `System.activeHost` for the device actually playing.
+  - `System.resume()` reopens the same device and never falls back to
+    another one.
+
 - **API reference site.** New `docs/` tree builds a Sphinx site that
   mirrors the upstream libYSE docs site (sphinx-book-theme, same
   intro / tutorials / API layout) so contributors who already know

@@ -338,6 +338,12 @@ class System {
   /// Resume audio output after [pause] by restarting the device this
   /// session already had.
   ///
+  /// After [openDevice] that is the opened device, looked up again by name
+  /// and host, with the channel count and buffer size it was opened with;
+  /// when it cannot be reopened nothing is opened (a warning is logged) and
+  /// the session never moves to another device. A session that never called
+  /// [openDevice] reopens the current default device.
+  ///
   /// A session brought up with [initOffline] has no device, so this is a
   /// no-op there rather than an open of the platform default; use
   /// [openDevice] to give such a session a device.
@@ -373,15 +379,101 @@ class System {
   /// Configure automatic re-opening of the output stream when the device
   /// stops delivering callbacks (headphones unplugged, device removed).
   ///
-  /// [delayMs] is wall-clock milliseconds: the silence before an attempt,
-  /// and the interval between further attempts while the device stays
-  /// unavailable. Negative values are clamped to 0. A freshly started
+  /// The watchdog runs inside [update]: when the device has delivered no
+  /// audio callback for [delayMs] it closes the stream and opens it again.
+  ///
+  /// **Which device.** The one this session had: after a successful
+  /// [openDevice], that device, looked up again by [Device.name] and
+  /// [Device.hostName] (indices shift when devices are re-enumerated), with
+  /// the output channels and buffer size it was opened with. A session that
+  /// never called [openDevice] (plain [init]) runs on the default output
+  /// device and reopens whatever the default is at that moment. Up to
+  /// libYSE 3.0 every attempt opened the default device, so a session on an
+  /// external interface moved silently onto the built-in output.
+  ///
+  /// **Fallback.** When the session's device cannot be reopened, nothing is
+  /// opened and the watchdog tries again [delayMs] later. With
+  /// [fallbackToDefault] the default output device is opened instead, and
+  /// the speaker layout is narrowed if it has fewer outputs; the session
+  /// does not move back by itself when its own device returns. Off by
+  /// default: an audio application usually wants to know rather than be
+  /// moved to the laptop speakers.
+  ///
+  /// **Timing.** [delayMs] is wall-clock milliseconds: the silence before
+  /// an attempt, and the interval between further attempts while the device
+  /// stays unavailable. Negative values are clamped to 0. A freshly started
   /// stream that has not delivered its first callback yet is not treated as
   /// stalled; it gets a 500 ms start-up grace regardless of [delayMs]. Up
   /// to libYSE 2.4 the value was compared against a count of [update]
   /// ticks and attempts fired on every tick once past it.
-  void setAutoReconnect({required bool on, int delayMs = 1000}) =>
-      _b.system_auto_reconnect(_handle, on ? 1 : 0, delayMs);
+  ///
+  /// **Attempt limit.** A positive [maxAttempts] stops the watchdog after
+  /// that many consecutive failed attempts, so a machine with no audio
+  /// hardware does not retry forever; [reconnectState] then reads
+  /// [ReconnectState.failed]. 0 (the default) or less retries forever.
+  ///
+  /// **Outcome.** [reconnectState] says what the last attempt did,
+  /// [reconnectCount] how many attempts were made, and [activeDevice] /
+  /// [activeHost] which device is actually playing. Every call resets
+  /// [reconnectState] to [ReconnectState.none] and re-arms a watchdog that
+  /// gave up.
+  ///
+  /// On desktop the device is looked up in the backend's enumeration as it
+  /// stands, so a device unplugged and plugged back in may only be found
+  /// after [refreshDevices]. Call it while [reconnectState] reads
+  /// [ReconnectState.reconnecting] (no stream is open then):
+  ///
+  /// ```dart
+  /// sys.setAutoReconnect(on: true, delayMs: 1000, maxAttempts: 30);
+  /// // in the host's update loop:
+  /// if (sys.reconnectState == ReconnectState.reconnecting) {
+  ///   sys.refreshDevices();
+  /// }
+  /// ```
+  ///
+  /// A session with no device ([initOffline]) never gets one from the
+  /// watchdog: each attempt there opens nothing.
+  void setAutoReconnect({
+    required bool on,
+    int delayMs = 1000,
+    bool fallbackToDefault = false,
+    int maxAttempts = 0,
+  }) => _b.system_auto_reconnect_config(
+    _handle,
+    on ? 1 : 0,
+    delayMs,
+    fallbackToDefault ? 1 : 0,
+    maxAttempts,
+  );
+
+  /// What the [setAutoReconnect] watchdog last did.
+  ///
+  /// [ReconnectState.none] until the watchdog acts; it goes back to
+  /// [ReconnectState.none] on [init] / [initOffline], a successful
+  /// [openDevice], and every [setAutoReconnect] call. The state keeps the
+  /// last attempt's outcome, so pair it with [reconnectCount] to notice a
+  /// new attempt.
+  ReconnectState get reconnectState =>
+      ReconnectState.fromNative(_b.system_get_reconnect_state(_handle));
+
+  /// Number of reconnection attempts the watchdog has made this session,
+  /// successful or not. Lets a host notice a reconnect it did not see
+  /// happen. Reset by [init] / [initOffline].
+  int get reconnectCount => _b.system_get_reconnect_count(_handle);
+
+  /// Name of the device whose output stream is open right now, or `""`
+  /// when none is.
+  ///
+  /// Compare with [Device.name] (and [activeHost] with [Device.hostName])
+  /// to see which device the session is actually on — after a
+  /// [ReconnectState.fellBackToDefault], say.
+  String get activeDevice =>
+      fetchString((buf, cap) => _b.system_active_device(_handle, buf, cap));
+
+  /// Host API (WASAPI, ALSA, ...) of the device whose output stream is open
+  /// right now, or `""` when none is. See [activeDevice].
+  String get activeHost =>
+      fetchString((buf, cap) => _b.system_active_host(_handle, buf, cap));
 
   /// libYSE version string (e.g. "3.1.0").
   static String get version {

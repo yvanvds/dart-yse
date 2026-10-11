@@ -414,7 +414,7 @@ class MidiIn implements Finalizable {
   Pointer<YseMidiIn> _handle;
 
   StreamController<MidiInRawMessage>? _rawController;
-  NativeCallable<YseMidiInRawCallbackFunction>? _rawCallable;
+  MidiInRawBridge? _rawBridge;
   StreamController<MidiInParsedMessage>? _parsedController;
   NativeCallable<YseMidiInParsedCallbackFunction>? _parsedCallable;
 
@@ -464,37 +464,30 @@ class MidiIn implements Finalizable {
   /// Broadcast stream of raw MIDI messages. Lazily installs the native
   /// callback on first subscription and uninstalls when the last
   /// subscriber cancels.
+  ///
+  /// Messages still queued when the last subscriber cancels (or the port
+  /// is [dispose]d) are not delivered, but their native buffers are still
+  /// released.
   Stream<MidiInRawMessage> get rawMessages {
     final existing = _rawController;
     if (existing != null) return existing.stream;
     final controller = StreamController<MidiInRawMessage>.broadcast(
       onCancel: () {
         if (_rawController?.hasListener ?? false) return;
+        // Every call made before the clear is queued ahead of the drain
+        // marker. Upstream yvanvds/yse-soundengine#1176: the clear does
+        // not yet wait for a dispatch that already copied the old
+        // callback, so one in-flight message can still race the marker.
         _b.midi_in_set_raw_callback(_handle, nullptr, nullptr);
-        _rawCallable?.close();
-        _rawCallable = null;
+        _rawBridge?.retire();
+        _rawBridge = null;
         _rawController?.close();
         _rawController = null;
       },
     );
-    final freeFn = _b.midi_in_free_message;
-    final callable = NativeCallable<YseMidiInRawCallbackFunction>.listener((
-      double ts,
-      Pointer<UnsignedChar> bytes,
-      int len,
-      Pointer<Void> _,
-    ) {
-      try {
-        // Engine transferred ownership of `bytes`. Copy the contents into a
-        // Dart-owned buffer before releasing the malloc'd allocation.
-        final copy = Uint8List.fromList(bytes.cast<Uint8>().asTypedList(len));
-        controller.add(MidiInRawMessage(ts, copy));
-      } finally {
-        freeFn(bytes);
-      }
-    });
-    _b.midi_in_set_raw_callback(_handle, callable.nativeFunction, nullptr);
-    _rawCallable = callable;
+    final bridge = MidiInRawBridge(controller.add);
+    _b.midi_in_set_raw_callback(_handle, bridge.nativeFunction, nullptr);
+    _rawBridge = bridge;
     _rawController = controller;
     return controller.stream;
   }
@@ -532,20 +525,99 @@ class MidiIn implements Finalizable {
   }
 
   /// Destroy the underlying native port and detach the finalizer.
+  ///
+  /// Also clears both callbacks and closes [rawMessages] and
+  /// [parsedMessages] (listeners get `onDone`).
   void dispose() {
     if (_handle.address == 0) return;
     _finalizer.detach(this);
     _b.midi_in_set_raw_callback(_handle, nullptr, nullptr);
     _b.midi_in_set_parsed_callback(_handle, nullptr, nullptr);
-    _rawCallable?.close();
-    _rawCallable = null;
+    // Destroying the port stops RtMidi's input thread, so after this no
+    // call can still be on its way into either callable.
+    _b.midi_in_destroy(_handle);
+    _handle = nullptr;
+    _rawBridge?.retire();
+    _rawBridge = null;
     _parsedCallable?.close();
     _parsedCallable = null;
     _rawController?.close();
     _rawController = null;
     _parsedController?.close();
     _parsedController = null;
-    _b.midi_in_destroy(_handle);
-    _handle = nullptr;
+  }
+}
+
+/// How many raw MIDI-in buffers [MidiInRawBridge]s have released in this
+/// isolate, delivered or dropped. Internal (not exported): lets the tests
+/// prove no native block leaks.
+int get midiInMessagesFreed => MidiInRawBridge._freed;
+
+/// The `NativeCallable.listener` behind one installation of a [MidiIn]'s
+/// raw callback. Internal to `lib/src/` (not exported); public only so the
+/// tests can drive it without a MIDI device.
+///
+/// The engine hands over a malloc'd copy of each message; the listener
+/// copies the bytes and frees the buffer with `yse_midi_in_free_message`,
+/// exactly once.
+///
+/// Closing a listener drops the calls still queued on its port, which
+/// would leak their buffers. So [retire] does not close it: it detaches
+/// the sink and posts a drain marker (a NULL buffer, which the engine never
+/// sends) through the same port. Port messages arrive in order, so when the
+/// marker arrives every earlier call has been freed, and only then is the
+/// callable closed. Same scheme as the patcher send bridge (#62).
+class MidiInRawBridge {
+  static int _freed = 0;
+
+  void Function(MidiInRawMessage)? _sink;
+  final void Function(Pointer<UnsignedChar>) _free;
+  late final NativeCallable<YseMidiInRawCallbackFunction> _callable;
+
+  /// Deliver every message to [sink] until [retire]. [free] releases each
+  /// buffer and defaults to `yse_midi_in_free_message`; tests that post
+  /// their own buffers pass the matching deallocator.
+  MidiInRawBridge(
+    void Function(MidiInRawMessage) sink, {
+    void Function(Pointer<UnsignedChar>)? free,
+  }) : _sink = sink,
+       _free = free ?? bindings.midi_in_free_message {
+    _callable = NativeCallable<YseMidiInRawCallbackFunction>.listener(_onCall);
+  }
+
+  /// The function pointer to install as the native raw callback.
+  Pointer<NativeFunction<YseMidiInRawCallbackFunction>> get nativeFunction =>
+      _callable.nativeFunction;
+
+  void _onCall(
+    double ts,
+    Pointer<UnsignedChar> bytes,
+    int len,
+    Pointer<Void> _,
+  ) {
+    if (bytes.address == 0) {
+      _callable.close(); // drain marker: nothing is queued behind it
+      return;
+    }
+    final Uint8List copy;
+    try {
+      copy = Uint8List.fromList(bytes.cast<Uint8>().asTypedList(len));
+    } finally {
+      _free(bytes);
+      _freed++;
+    }
+    _sink?.call(MidiInRawMessage(ts, copy));
+  }
+
+  /// Stop delivering and close the callable once its queue has drained.
+  /// Call only after the engine can no longer invoke it.
+  void retire() {
+    _sink = null;
+    _callable.nativeFunction.asFunction<DartYseMidiInRawCallbackFunction>()(
+      0,
+      nullptr,
+      0,
+      nullptr,
+    );
   }
 }

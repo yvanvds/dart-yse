@@ -59,7 +59,7 @@ class Log {
   });
 
   static StreamController<String>? _controller;
-  static NativeCallable<Void Function(Pointer<Char>, Pointer<Void>)>? _callable;
+  static _LogBridge? _bridge;
 
   /// Broadcast stream of log messages from the engine.
   ///
@@ -68,41 +68,91 @@ class Log {
   /// subscription installs the bridge; subsequent subscribers share
   /// the same stream.
   ///
-  /// Cancel the last subscription (or close the engine) to release the
-  /// callback. Callbacks run on whichever thread emitted the log
-  /// message — `NativeCallable.listener` posts them back to this
-  /// isolate via a port, so Dart code only ever sees them serialised
-  /// in the isolate's event queue.
+  /// Cancel the last subscription to release the callback. Callbacks
+  /// run on whichever thread emitted the log message —
+  /// `NativeCallable.listener` posts them back to this isolate via a
+  /// port, so Dart code only ever sees them serialised in the isolate's
+  /// event queue. Messages still queued when the last subscription is
+  /// cancelled are not delivered, but their native strings are still
+  /// released.
   Stream<String> get messages {
     if (_controller != null) return _controller!.stream;
     final controller = StreamController<String>.broadcast(
       onCancel: () {
         if (_controller?.hasListener ?? false) return;
-        // Last listener gone — uninstall the bridge.
+        // Last listener gone — uninstall the bridge. Once
+        // log_set_callback returns no engine thread is still inside the
+        // callback (the engine holds the log sink's mutex across it), so
+        // every call it will ever make is queued ahead of the drain
+        // marker that retire() posts.
         _b.log_set_callback(_handle, nullptr, nullptr);
-        _callable?.close();
-        _callable = null;
+        _bridge?.retire();
+        _bridge = null;
         _controller?.close();
         _controller = null;
       },
     );
-    final freeFn = _b.log_free_message;
-    final callable =
-        NativeCallable<Void Function(Pointer<Char>, Pointer<Void>)>.listener((
-          Pointer<Char> msg,
-          Pointer<Void> _,
-        ) {
-          // The bridge transferred ownership of the malloc'd string.
-          // Decode then release before bubbling it up.
-          try {
-            controller.add(msg.cast<Utf8>().toDartString());
-          } finally {
-            freeFn(msg);
-          }
-        });
-    _b.log_set_callback(_handle, callable.nativeFunction, nullptr);
-    _callable = callable;
+    final bridge = _LogBridge(controller.add);
+    _b.log_set_callback(_handle, bridge.nativeFunction, nullptr);
+    _bridge = bridge;
     _controller = controller;
     return controller.stream;
+  }
+}
+
+/// How many log messages the [Log.messages] bridge has released with
+/// `yse_log_free_message` in this isolate, delivered or dropped.
+/// Internal (not exported): lets the tests prove no native block leaks.
+int get logMessagesFreed => _LogBridge._freed;
+
+/// The `NativeCallable.listener` behind one installation of the log
+/// callback.
+///
+/// The engine hands over a malloc'd copy of each line; the listener
+/// decodes it and frees it with `yse_log_free_message`, exactly once.
+///
+/// Closing a listener drops the calls still queued on its port, which
+/// would leak their strings. So [retire] does not close it: it detaches
+/// the sink and posts a drain marker (a NULL message, which the engine
+/// never sends) through the same port. Port messages arrive in order, so
+/// when the marker arrives every earlier call has been freed, and only
+/// then is the callable closed. Same scheme as the patcher send bridge
+/// (#62).
+class _LogBridge {
+  static int _freed = 0;
+
+  void Function(String)? _sink;
+  late final NativeCallable<YseLogCallbackFunction> _callable;
+
+  _LogBridge(this._sink) {
+    _callable = NativeCallable<YseLogCallbackFunction>.listener(_onCall);
+  }
+
+  Pointer<NativeFunction<YseLogCallbackFunction>> get nativeFunction =>
+      _callable.nativeFunction;
+
+  void _onCall(Pointer<Char> msg, Pointer<Void> _) {
+    if (msg.address == 0) {
+      _callable.close(); // drain marker: nothing is queued behind it
+      return;
+    }
+    final String text;
+    try {
+      text = msg.cast<Utf8>().toDartString();
+    } finally {
+      bindings.log_free_message(msg);
+      _freed++;
+    }
+    _sink?.call(text);
+  }
+
+  /// Stop delivering and close the callable once its queue has drained.
+  /// Call only after the engine can no longer invoke it.
+  void retire() {
+    _sink = null;
+    _callable.nativeFunction.asFunction<DartYseLogCallbackFunction>()(
+      nullptr,
+      nullptr,
+    );
   }
 }

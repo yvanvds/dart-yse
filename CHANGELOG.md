@@ -266,6 +266,22 @@
   mix-grade modules (`Compressor`, `ParametricEq`, ...) were already safe
   because they are typed subclasses.
 
+- **`Log.messages` and `MidiIn.rawMessages` no longer leak queued
+  messages at teardown** (#76). Both used to close their
+  `NativeCallable.listener` straight after clearing the native callback.
+  That dropped the calls still queued on its port, so the engine-malloc'd
+  string or byte buffer of every message emitted just before the last
+  cancel (or `MidiIn.dispose`) was never freed. They now use the
+  drain-marker teardown from `Patcher.messages` (#62): clear the callback,
+  post a NULL marker through the same port, and close the callable only
+  when the marker arrives. Every buffer is freed exactly once, and
+  messages still queued are dropped rather than delivered.
+  `MidiIn.dispose` now destroys the port before it retires the callbacks.
+  The parsed MIDI stream carries no native buffers and is unchanged.
+  Clearing a MIDI-in callback upstream does not yet wait for a dispatch
+  already in progress, which leaves one in-flight message able to race
+  the marker (upstream yse-soundengine#1176).
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

@@ -77,6 +77,20 @@
     channel, so `Channel.master.busName` reads back across wrappers.
     `System.close()` forgets it.
 
+- **Named patchers** (#50, upstream yse-soundengine#896):
+  - New `Patcher.name` (get/set) and a `name:` parameter on `Patcher(...)`.
+    A patcher named `foo` publishes its `.s` slots to `patcher.foo.<slot>`
+    and its `.r` slots hear `patcher.foo.<slot>`; the `patcher.` prefix
+    is new in libYSE 3. Every patcher has a name: `null` / `''` restores
+    the auto-generated `patcher_<N>`. Names are not unique; two patchers
+    with the same name share their slots.
+  - A name longer than `Patcher.maxNameLength` (55) throws `YseException`
+    and keeps the current name. The name is saved by `dumpJson` and
+    applied by `parseJson` unless one was already set.
+  - It is named `name`, not `busName` like `Synth` / `Sound` / `Channel`,
+    because it is the patcher's own engine-side name (read back from the
+    engine, saved with the patch), not only a bus address.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

@@ -115,9 +115,12 @@ class Patcher implements Finalizable {
 
   /// Construct a patcher with [mainOutputs] audio output channels.
   ///
+  /// Pass [name] to name the patcher from the start (see [name] for the
+  /// rules); `null` or `''` keeps the auto-generated `patcher_<N>` name.
+  ///
   /// Throws [YseException] if the engine rejects the configuration (e.g. a
-  /// negative [mainOutputs]).
-  factory Patcher({int mainOutputs = 2}) {
+  /// negative [mainOutputs], or a [name] longer than [maxNameLength]).
+  factory Patcher({int mainOutputs = 2, String? name}) {
     final b = bindings;
     final h = b.patcher_create();
     if (h.address == 0) {
@@ -125,6 +128,9 @@ class Patcher implements Finalizable {
     }
     final p = Patcher._(b, h);
     try {
+      // Before init the engine stashes the name and applies it at init, so
+      // the patcher never registers on the bus under its auto-name.
+      if (name != null && name.isNotEmpty) p.name = name;
       checkStatus(b.patcher_init(h, mainOutputs), b);
     } catch (_) {
       p.dispose();
@@ -135,6 +141,43 @@ class Patcher implements Finalizable {
 
   /// Internal: native handle (used by `Sound.fromPatcher`).
   Pointer<YsePatcher> get handle => _handle;
+
+  // ─── naming ────────────────────────────────────────────────────────────
+
+  /// The longest [name] the engine accepts, in characters.
+  static const int maxNameLength = 55;
+
+  /// The patcher's name, which scopes every bus slot inside it.
+  ///
+  /// Every patcher has one: an unnamed patcher gets an auto-generated
+  /// `patcher_<N>`. A `.s` (`Obj.gSend`) object with slot `x` in a patcher
+  /// named `foo` publishes to `patcher.foo.x`, and a `.r` (`Obj.gReceive`)
+  /// with slot `x` hears a [Bus.publish] to `patcher.foo.x`. Note the
+  /// `patcher.` prefix: host code addressing a patcher slot must add it.
+  ///
+  /// Setting `null` or `''` restores the auto-generated name. Renaming
+  /// re-anchors every slot under the new name. Names are **not** unique:
+  /// two patchers with the same name share their slots and stores.
+  ///
+  /// The name can be set before the engine is initialised; it is applied
+  /// at init. It is saved by [dumpJson] and applied by [parseJson] unless
+  /// a name was already set.
+  ///
+  /// Throws [YseException] (`invalidArgument`) for a name longer than
+  /// [maxNameLength] characters; the current name is kept.
+  String get name =>
+      fetchString((buf, cap) => _b.patcher_get_name(_handle, buf, cap));
+  set name(String? value) {
+    final status = using(
+      (arena) => _b.patcher_set_name(
+        _handle,
+        value == null || value.isEmpty
+            ? nullptr
+            : value.toNativeUtf8(allocator: arena).cast(),
+      ),
+    );
+    checkStatus(status, _b);
+  }
 
   // ─── object management ─────────────────────────────────────────────────
 

@@ -75,6 +75,104 @@ void main() {
     });
   });
 
+  group('Patcher.name (#50)', () {
+    // Matched by name: the public surface does not re-export YseStatus.
+    final invalidArgument = isA<YseException>().having(
+      (e) => e.status?.name,
+      'status',
+      'YSE_ERR_INVALID_ARGUMENT',
+    );
+
+    test('an unnamed patcher gets an auto-generated patcher_<N> name', () {
+      expect(newPatcher().name, matches(RegExp(r'^patcher_\d+$')));
+    });
+
+    test('the factory name: parameter names the patcher', () {
+      final p = Patcher(name: 'lead');
+      addTearDown(p.dispose);
+      expect(p.name, 'lead');
+    });
+
+    test('set and read back; null and empty restore the auto-name', () {
+      final p = newPatcher();
+      p.name = 'pad';
+      expect(p.name, 'pad');
+      p.name = null;
+      expect(p.name, matches(RegExp(r'^patcher_\d+$')));
+      p.name = 'pad';
+      p.name = '';
+      expect(p.name, matches(RegExp(r'^patcher_\d+$')));
+    });
+
+    test('a name over 55 characters is refused and the old name kept', () {
+      final p = newPatcher();
+      p.name = 'keep';
+      expect(() => p.name = 'x' * 56, throwsA(invalidArgument));
+      expect(p.name, 'keep');
+      p.name = 'y' * Patcher.maxNameLength;
+      expect(p.name, 'y' * Patcher.maxNameLength);
+    });
+
+    test('a too-long factory name throws', () {
+      expect(() => Patcher(name: 'x' * 56), throwsA(invalidArgument));
+    });
+
+    test('the name round-trips through dumpJson / parseJson', () {
+      final src = newPatcher();
+      src.name = 'saved';
+      src.createObject(Obj.gInt);
+      final dst = newPatcher();
+      dst.parseJson(src.dumpJson());
+      expect(dst.name, 'saved');
+    });
+
+    Future<void> flush() => Future<void>.delayed(Duration.zero);
+
+    test('a gSend publishes under patcher.<name>.<slot>', () async {
+      final p = Patcher(name: 'lead');
+      addTearDown(p.dispose);
+      final send = p.createObject(Obj.gSend, args: 'cutoff');
+
+      final frames = <BusFrame>[];
+      final sub = Bus.subscribe('patcher.lead.cutoff').listen(frames.add);
+      addTearDown(sub.cancel);
+
+      send.sendFloat(0, 0.25);
+      await flush();
+      expect(frames.map((f) => f.value), [const BusFloat(0.25)]);
+    });
+
+    test('renaming re-anchors the slot under the new name', () async {
+      final p = newPatcher();
+      p.name = 'before';
+      final send = p.createObject(Obj.gSend, args: 'gate');
+
+      final seen = <String>[];
+      final sub = Bus.tap('patcher.').listen((f) => seen.add(f.address));
+      addTearDown(sub.cancel);
+
+      send.sendBang(0);
+      await flush();
+      p.name = 'after';
+      send.sendBang(0);
+      await flush();
+
+      expect(seen, ['patcher.before.gate', 'patcher.after.gate']);
+    });
+
+    test('a Bus.publish to patcher.<name>.<slot> reaches a gReceive', () {
+      final p = newPatcher();
+      p.name = 'synth1';
+      final recv = p.createObject(Obj.gReceive, args: 'note');
+      final store = p.createObject(Obj.gInt);
+      p.connect(recv, outlet: 0, to: store, inlet: 0);
+
+      Bus.publish('patcher.synth1.note', const BusInt(64));
+      sys.update();
+      expect(store.guiValue, '64');
+    });
+  });
+
   group('PHandle ID sentinels', () {
     test('the first object in a patcher has ID 0', () {
       final p = newPatcher();

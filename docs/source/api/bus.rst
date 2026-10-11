@@ -120,6 +120,8 @@ and :py:meth:`Bus.tap` throw :class:`StateError` when called before init.
 
 .. include:: _generated/bus_value.rst
 
+.. include:: _generated/bus_frame.rst
+
 .. include:: _generated/bus_bang.rst
 
 .. include:: _generated/bus_int.rst

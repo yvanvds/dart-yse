@@ -1,5 +1,6 @@
-// Walks every Dart file in lib/src/ that backs a public class re-exported
-// from lib/yse.dart, then emits one reStructuredText page per class into
+// Walks every Dart file in lib/src/ that backs a public declaration (class,
+// enum or typedef) re-exported from lib/yse.dart, then emits one
+// reStructuredText page per declaration into
 // `docs/source/api/_generated/`. The Sphinx site `include::`s those pages
 // from per-subsystem RST files under `docs/source/api/`.
 //
@@ -44,56 +45,86 @@ void main(List<String> args) {
     return;
   }
 
-  // Use the public surface in lib/yse.dart to decide which classes are part
-  // of the documented API. Anything not re-exported there is internal.
+  // Use the public surface in lib/yse.dart to decide which declarations are
+  // part of the documented API. Anything not re-exported there is internal.
   final yseDart = File('${root.path}/lib/yse.dart').readAsStringSync();
-  final exported = _parseReExports(yseDart);
+  final exports = parseReExports(yseDart);
 
-  final emittedClasses = <String>{};
+  final emitted = <String>{};
   for (final entry in libsrc.listSync(recursive: false)) {
     if (entry is! File || !entry.path.endsWith('.dart')) continue;
     if (entry.path.endsWith('.g.dart')) continue;
-    final source = entry.readAsStringSync();
-    final result = parseString(content: source, throwIfDiagnostics: false);
-    final visitor = _ClassVisitor(exported);
-    result.unit.accept(visitor);
-    for (final cls in visitor.classes) {
-      final rst = _renderClassRst(cls);
-      final outPath = '${outDir.path}/${_slug(cls.name)}.rst';
-      File(outPath).writeAsStringSync(rst);
-      emittedClasses.add(cls.name);
+    final pages = collectApiPages(entry.readAsStringSync(), exports.names);
+    for (final MapEntry(key: name, value: rst) in pages.entries) {
+      File('${outDir.path}/${apiPageSlug(name)}.rst').writeAsStringSync(rst);
+      emitted.add(name);
     }
   }
 
-  // Surface the misses so we don't quietly ship a partial site.
-  final missing = exported.difference(emittedClasses);
-  if (missing.isNotEmpty) {
-    stderr.writeln(
-      'WARN: ${missing.length} re-exported name(s) not found in lib/src: '
-      '${missing.join(', ')}',
-    );
+  // Fail loudly rather than quietly ship a partial site (#75).
+  final errors = coverageErrors(exports: exports, emitted: emitted);
+  for (final error in errors) {
+    stderr.writeln('ERROR: $error');
   }
+  if (errors.isNotEmpty) exitCode = 1;
 
-  print('Emitted ${emittedClasses.length} class page(s) into ${outDir.path}');
+  print('Emitted ${emitted.length} API page(s) into ${outDir.path}');
 }
 
-/// Pull the set of class names re-exported from lib/yse.dart. The file uses
+/// The public surface declared by lib/yse.dart.
+typedef ReExports = ({Set<String> names, List<String> withoutShow});
+
+/// Pull the set of names re-exported from lib/yse.dart. The file uses
 /// ``export 'src/foo.dart' show A, B, C;`` — we keep the names from the
-/// ``show`` clause.
-Set<String> _parseReExports(String content) {
+/// ``show`` clause. Exports without a ``show`` clause are listed in
+/// `withoutShow`: the generator can't tell which of their names are public,
+/// so it treats them as an error rather than silently documenting nothing.
+ReExports parseReExports(String content) {
   final names = <String>{};
+  final withoutShow = <String>[];
   final result = parseString(content: content, throwIfDiagnostics: false);
   for (final directive in result.unit.directives) {
     if (directive is! ExportDirective) continue;
-    for (final combinator in directive.combinators) {
-      if (combinator is ShowCombinator) {
-        for (final id in combinator.shownNames) {
-          names.add(id.name);
-        }
+    final shows = directive.combinators.whereType<ShowCombinator>();
+    if (shows.isEmpty) {
+      withoutShow.add(directive.uri.stringValue ?? directive.uri.toString());
+      continue;
+    }
+    for (final combinator in shows) {
+      for (final id in combinator.shownNames) {
+        names.add(id.name);
       }
     }
   }
-  return names;
+  return (names: names, withoutShow: withoutShow);
+}
+
+/// Parses one lib/src Dart file and renders an RST page for every
+/// declaration in it whose name is in [wanted]. Returns name → RST.
+///
+/// Covers classes, enums and typedefs (both `typedef X = T;` and the legacy
+/// function-typedef form).
+Map<String, String> collectApiPages(String source, Set<String> wanted) {
+  final result = parseString(content: source, throwIfDiagnostics: false);
+  final visitor = _ClassVisitor(wanted);
+  result.unit.accept(visitor);
+  return {for (final cls in visitor.classes) cls.name: _renderClassRst(cls)};
+}
+
+/// Everything that should fail the docs build: re-exported names with no
+/// generated page, and exports the generator can't enumerate.
+List<String> coverageErrors({
+  required ReExports exports,
+  required Set<String> emitted,
+}) {
+  final missing = exports.names.difference(emitted).toList()..sort();
+  return [
+    if (missing.isNotEmpty)
+      '${missing.length} re-exported name(s) not found in lib/src: '
+          '${missing.join(', ')}',
+    for (final uri in exports.withoutShow)
+      "export '$uri' has no show clause; list its public names explicitly",
+  ];
 }
 
 class _ClassInfo {
@@ -102,6 +133,9 @@ class _ClassInfo {
   final String? extendsClause;
   final List<String> implementsClause;
   final bool isAbstract;
+
+  /// For a typedef, the full `typedef X = ...;` declaration; null otherwise.
+  final String? typedefSignature;
   final List<_MemberInfo> constructors = [];
   final List<_MemberInfo> staticAccessors = [];
   final List<_MemberInfo> staticMethods = [];
@@ -117,6 +151,7 @@ class _ClassInfo {
     required this.implementsClause,
     required this.isAbstract,
     required this.isEnum,
+    this.typedefSignature,
   });
 }
 
@@ -188,6 +223,44 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
     }
     classes.add(info);
   }
+
+  @override
+  void visitGenericTypeAlias(GenericTypeAlias node) {
+    final name = node.name.lexeme;
+    if (!wanted.contains(name)) return;
+    classes.add(
+      _typedefInfo(
+        name,
+        node.documentationComment,
+        'typedef $name${node.typeParameters ?? ''} = ${node.type};',
+      ),
+    );
+  }
+
+  @override
+  void visitFunctionTypeAlias(FunctionTypeAlias node) {
+    final name = node.name.lexeme;
+    if (!wanted.contains(name)) return;
+    final ret = node.returnType == null ? '' : '${node.returnType} ';
+    classes.add(
+      _typedefInfo(
+        name,
+        node.documentationComment,
+        'typedef $ret$name${node.typeParameters ?? ''}${node.parameters};',
+      ),
+    );
+  }
+
+  _ClassInfo _typedefInfo(String name, Comment? doc, String signature) =>
+      _ClassInfo(
+        name: name,
+        doc: _commentText(doc),
+        extendsClause: null,
+        implementsClause: const [],
+        isAbstract: false,
+        isEnum: false,
+        typedefSignature: signature,
+      );
 
   void _addMember(_ClassInfo info, ClassMember member) {
     if (member is ConstructorDeclaration) {
@@ -372,6 +445,9 @@ String _methodSignature(MethodDeclaration node) {
       '$ret $name$params';
 }
 
+/// The `_generated/<slug>.rst` basename for the page of API name [name].
+String apiPageSlug(String name) => _slug(name);
+
 String _slug(String name) {
   // CamelCase → snake_case for filenames so they sort like a directory
   // listing of the API.
@@ -391,14 +467,20 @@ String _renderClassRst(_ClassInfo info) {
   final buf = StringBuffer();
 
   // Title.
-  final title = info.isEnum ? 'enum ${info.name}' : info.name;
+  final title = info.isEnum
+      ? 'enum ${info.name}'
+      : info.typedefSignature != null
+      ? 'typedef ${info.name}'
+      : info.name;
   buf.writeln(title);
   buf.writeln('=' * title.length);
   buf.writeln();
 
   // Header line: class signature.
   buf.write('.. code-block:: dart\n\n   ');
-  if (info.isEnum) {
+  if (info.typedefSignature != null) {
+    buf.write(info.typedefSignature);
+  } else if (info.isEnum) {
     buf.write('enum ${info.name}');
   } else {
     if (info.isAbstract) buf.write('abstract ');

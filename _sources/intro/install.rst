@@ -2,14 +2,42 @@ Install
 =======
 
 ``dart-yse`` is a pure Dart FFI package that loads the ``libyse`` shared
-library at runtime, from the directory in ``YSE_DLL_PATH`` or, failing
-that, from ``third_party/yse-soundengine/build/bin/`` in the source tree.
-Until the Dart native-assets build hook lands you provide that library
-yourself. The easiest way is the engine's prebuilt release.
+library at runtime. On Windows x64 and Linux x64 the package brings that
+library with it:
 
-Prebuilt engine (Windows x64, Linux x64)
-----------------------------------------
+.. code-block:: sh
 
+   dart pub add yse
+
+The package's native-assets build hook downloads the prebuilt libYSE
+release its bindings were generated from (**v3.1.0**), checks it against
+the sha256 digest embedded in the package and bundles it into your app,
+together with the engine's runtime DLLs on Windows. ``dart run``,
+``dart test``, ``dart build cli`` and ``flutter run`` pick it up with no
+further setup. Requirements and caveats:
+
+- Dart SDK ≥ 3.10 (Flutter ≥ 3.38), where build hooks are stable.
+- The first build of a project needs network access once; the download
+  is cached under ``.dart_tool/`` and later builds work offline.
+- Linux needs the runtime libraries the engine links:
+  ``sudo apt-get install -y libportaudio2 libsndfile1 librtmidi6``.
+- On Windows, a second ``dart run`` / ``dart test`` in the same project
+  fails while a program using ``yse`` is still running there (the SDK
+  re-copies the bundled DLLs, which Windows locks while loaded).
+- Android uses the ``yse_flutter_libs`` plugin (below); macOS and iOS have
+  no engine release yet.
+
+The loader looks for the library in this order: the directory in
+``YSE_DLL_PATH``, the release the build hook bundled, and
+``third_party/yse-soundengine/build/bin/`` in a source tree.
+``YSE_DLL_PATH`` is the way to run against another build, such as one of
+the source builds below.
+
+Prebuilt engine in a checkout (Windows x64, Linux x64)
+------------------------------------------------------
+
+In a clone of dart-yse, ``dart run`` and ``dart test`` use the bundled
+release as well. To name the release explicitly with ``YSE_DLL_PATH``,
 ``tool/fetch_engine.dart`` reads the release tag the engine submodule
 pins, downloads that release's binaries for your platform from the
 yse-soundengine GitHub releases, checks the sha256 digest GitHub reports
@@ -50,7 +78,7 @@ Building from source
 Build the engine yourself for another platform, or to change build
 options. Requirements:
 
-- Dart SDK ≥ 3.8
+- Dart SDK ≥ 3.10
 - CMake ≥ 3.20 + Ninja
 - A C/C++ toolchain per platform (see below)
 
@@ -70,9 +98,8 @@ Windows (MSYS2 Clang64)
 
    dart pub get
 
-Point ``YSE_DLL_PATH`` at the directory containing ``libyse.dll`` (the
-loader walks up from the package root by default — so when running
-from the repository the env var is optional):
+Point ``YSE_DLL_PATH`` at the directory containing ``libyse.dll``; without
+it the loader takes the release the build hook bundles:
 
 .. code-block:: powershell
 
@@ -155,7 +182,7 @@ property ``yse.engineDir`` to an unpacked copy of the asset. Compiling
 the engine with the NDK instead is opt-in (``yse.buildFromSource=true``,
 NDK 27.0.12077973); the plugin's README describes both.
 
-Requirements: Flutter ≥ 3.22, AGP ≥ 8.5, ``minSdk`` 26 (so Oboe can
+Requirements: Flutter ≥ 3.38, AGP ≥ 8.5, ``minSdk`` 26 (so Oboe can
 negotiate AAudio). The ABIs are ``arm64-v8a`` and ``x86_64``, the ones
 the engine's Android release ships.
 

@@ -533,7 +533,7 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prebuilt-engine-windows-x64-linux-x64">Prebuilt engine (Windows x64, Linux x64)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prebuilt-engine-in-a-checkout-windows-x64-linux-x64">Prebuilt engine in a checkout (Windows x64, Linux x64)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-from-source">Building from source</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-msys2-clang64">Windows (MSYS2 Clang64)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linux-ubuntu-24-04">Linux (Ubuntu 24.04)</a></li>
@@ -557,13 +557,39 @@
   <section id="install">
 <h1>Install<a class="headerlink" href="#install" title="Link to this heading">#</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">dart-yse</span></code> is a pure Dart FFI package that loads the <code class="docutils literal notranslate"><span class="pre">libyse</span></code> shared
-library at runtime, from the directory in <code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code> or, failing
-that, from <code class="docutils literal notranslate"><span class="pre">third_party/yse-soundengine/build/bin/</span></code> in the source tree.
-Until the Dart native-assets build hook lands you provide that library
-yourself. The easiest way is the engine’s prebuilt release.</p>
-<section id="prebuilt-engine-windows-x64-linux-x64">
-<h2>Prebuilt engine (Windows x64, Linux x64)<a class="headerlink" href="#prebuilt-engine-windows-x64-linux-x64" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">tool/fetch_engine.dart</span></code> reads the release tag the engine submodule
+library at runtime. On Windows x64 and Linux x64 the package brings that
+library with it:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>dart<span class="w"> </span>pub<span class="w"> </span>add<span class="w"> </span>yse
+</pre></div>
+</div>
+<p>The package’s native-assets build hook downloads the prebuilt libYSE
+release its bindings were generated from (<strong>v3.1.0</strong>), checks it against
+the sha256 digest embedded in the package and bundles it into your app,
+together with the engine’s runtime DLLs on Windows. <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">run</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">build</span> <span class="pre">cli</span></code> and <code class="docutils literal notranslate"><span class="pre">flutter</span> <span class="pre">run</span></code> pick it up with no
+further setup. Requirements and caveats:</p>
+<ul class="simple">
+<li><p>Dart SDK ≥ 3.10 (Flutter ≥ 3.38), where build hooks are stable.</p></li>
+<li><p>The first build of a project needs network access once; the download
+is cached under <code class="docutils literal notranslate"><span class="pre">.dart_tool/</span></code> and later builds work offline.</p></li>
+<li><p>Linux needs the runtime libraries the engine links:
+<code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">-y</span> <span class="pre">libportaudio2</span> <span class="pre">libsndfile1</span> <span class="pre">librtmidi6</span></code>.</p></li>
+<li><p>On Windows, a second <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">run</span></code> / <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">test</span></code> in the same project
+fails while a program using <code class="docutils literal notranslate"><span class="pre">yse</span></code> is still running there (the SDK
+re-copies the bundled DLLs, which Windows locks while loaded).</p></li>
+<li><p>Android uses the <code class="docutils literal notranslate"><span class="pre">yse_flutter_libs</span></code> plugin (below); macOS and iOS have
+no engine release yet.</p></li>
+</ul>
+<p>The loader looks for the library in this order: the directory in
+<code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code>, the release the build hook bundled, and
+<code class="docutils literal notranslate"><span class="pre">third_party/yse-soundengine/build/bin/</span></code> in a source tree.
+<code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code> is the way to run against another build, such as one of
+the source builds below.</p>
+<section id="prebuilt-engine-in-a-checkout-windows-x64-linux-x64">
+<h2>Prebuilt engine in a checkout (Windows x64, Linux x64)<a class="headerlink" href="#prebuilt-engine-in-a-checkout-windows-x64-linux-x64" title="Link to this heading">#</a></h2>
+<p>In a clone of dart-yse, <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">run</span></code> and <code class="docutils literal notranslate"><span class="pre">dart</span> <span class="pre">test</span></code> use the bundled
+release as well. To name the release explicitly with <code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tool/fetch_engine.dart</span></code> reads the release tag the engine submodule
 pins, downloads that release’s binaries for your platform from the
 yse-soundengine GitHub releases, checks the sha256 digest GitHub reports
 for them, and unpacks them into the gitignored <code class="docutils literal notranslate"><span class="pre">.engine/&lt;tag&gt;/</span></code>. It
@@ -599,7 +625,7 @@ The release binaries are built with the default options listed under
 <p>Build the engine yourself for another platform, or to change build
 options. Requirements:</p>
 <ul class="simple">
-<li><p>Dart SDK ≥ 3.8</p></li>
+<li><p>Dart SDK ≥ 3.10</p></li>
 <li><p>CMake ≥ 3.20 + Ninja</p></li>
 <li><p>A C/C++ toolchain per platform (see below)</p></li>
 </ul>
@@ -617,9 +643,8 @@ options. Requirements:</p>
 <span class="n">dart</span> <span class="n">pub</span> <span class="n">get</span>
 </pre></div>
 </div>
-<p>Point <code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code> at the directory containing <code class="docutils literal notranslate"><span class="pre">libyse.dll</span></code> (the
-loader walks up from the package root by default — so when running
-from the repository the env var is optional):</p>
+<p>Point <code class="docutils literal notranslate"><span class="pre">YSE_DLL_PATH</span></code> at the directory containing <code class="docutils literal notranslate"><span class="pre">libyse.dll</span></code>; without
+it the loader takes the release the build hook bundles:</p>
 <div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nv">$env:YSE_DLL_PATH</span> <span class="p">=</span> <span class="s2">"$PWD\third_party\yse-soundengine\build\bin"</span>
 <span class="n">dart</span> <span class="n">run</span> <span class="n">example</span><span class="p">/</span><span class="n">hello_sound</span><span class="p">.</span><span class="n">dart</span>
 </pre></div>
@@ -693,7 +718,7 @@ NDK build of the engine is needed. For offline builds, set the Gradle
 property <code class="docutils literal notranslate"><span class="pre">yse.engineDir</span></code> to an unpacked copy of the asset. Compiling
 the engine with the NDK instead is opt-in (<code class="docutils literal notranslate"><span class="pre">yse.buildFromSource=true</span></code>,
 NDK 27.0.12077973); the plugin’s README describes both.</p>
-<p>Requirements: Flutter ≥ 3.22, AGP ≥ 8.5, <code class="docutils literal notranslate"><span class="pre">minSdk</span></code> 26 (so Oboe can
+<p>Requirements: Flutter ≥ 3.38, AGP ≥ 8.5, <code class="docutils literal notranslate"><span class="pre">minSdk</span></code> 26 (so Oboe can
 negotiate AAudio). The ABIs are <code class="docutils literal notranslate"><span class="pre">arm64-v8a</span></code> and <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, the ones
 the engine’s Android release ships.</p>
 <p>See the project README for the end-to-end Flutter sample under
@@ -765,7 +790,7 @@ simplest:</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prebuilt-engine-windows-x64-linux-x64">Prebuilt engine (Windows x64, Linux x64)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prebuilt-engine-in-a-checkout-windows-x64-linux-x64">Prebuilt engine in a checkout (Windows x64, Linux x64)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-from-source">Building from source</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-msys2-clang64">Windows (MSYS2 Clang64)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linux-ubuntu-24-04">Linux (Ubuntu 24.04)</a></li>

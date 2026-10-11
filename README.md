@@ -32,6 +32,31 @@ native-assets build hook lands you need a manual setup. Build the
 submodule as checked out; `System.version` reports the library actually
 loaded.
 
+### The engine submodule
+
+`third_party/yse-soundengine` is an ordinary git submodule pinned to an
+engine release tag. The C headers `ffigen` reads, the patcher metadata
+the drift tests compare against, and the docs data all come from that
+pinned tree, so a local checkout sees exactly what CI sees.
+
+- **Get it:** clone with `--recurse-submodules` (as below), or run
+  `git submodule update --init` in an existing clone.
+- **Bump it:** check out the new release tag inside the submodule and
+  commit the gitlink:
+
+  ```bash
+  git -C third_party/yse-soundengine fetch --tags
+  git -C third_party/yse-soundengine checkout v3.2.0   # the new tag
+  git add third_party/yse-soundengine
+  git commit -m "chore(infra): bump libYSE to v3.2.0"
+  ```
+
+  Then regenerate the bindings (`dart run ffigen --config ffigen.yaml`)
+  and rerun the drift tests.
+- **Engine development** happens in a separate clone of
+  yse-soundengine, not through the submodule. Keep the submodule on its
+  release tag; `git status` should show it clean.
+
 Two upstream CMake options matter to the wrapper:
 `-DYSE_ENABLE_PYTHON=ON` (default `OFF`, desktop only) embeds the
 interpreter behind `LiveCoding`, and `YSE_ENABLE_MIDI_DEVICE` (default
@@ -120,17 +145,6 @@ the submodule, so neither toolchain trips on stale CMakeCache
 entries left by the other), runs `dart analyze`, and exercises the
 FFI surface via `tool/linux_smoke.dart` (initOffline → renderOffline;
 no audio device required).
-
-If the submodule is a Windows junction to a separate engine-dev
-workspace, bind-mount the junction target into the container at the
-submodule path so the container can see the sources:
-
-```powershell
-docker run --rm `
-  -v "${PWD}:/workspace" `
-  -v "D:/yse-soundengine:/workspace/third_party/yse-soundengine" `
-  dart-yse-ci
-```
 
 ### Android
 

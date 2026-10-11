@@ -5,7 +5,7 @@
 // preset becomes audible in turn on a looping snare.
 //
 // Run:
-//   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo05_reverb.dart
+//   YSE_DLL_PATH=third_party\yse-soundengine\build\bin  dart run example/demo05_reverb.dart
 
 // ignore_for_file: avoid_print
 

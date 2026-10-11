@@ -5,7 +5,7 @@
 // disposal hands its sounds to the parent.
 //
 // Run:
-//   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo04_channels.dart
+//   YSE_DLL_PATH=third_party\yse-soundengine\build\bin  dart run example/demo04_channels.dart
 
 // ignore_for_file: avoid_print
 

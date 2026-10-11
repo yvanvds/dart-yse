@@ -5,7 +5,7 @@
 // rebuilds it from that JSON in a fresh patcher.
 //
 // Run:
-//   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo13_patcher.dart
+//   YSE_DLL_PATH=third_party\yse-soundengine\build\bin  dart run example/demo13_patcher.dart
 
 // ignore_for_file: avoid_print
 

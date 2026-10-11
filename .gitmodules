@@ -1,4 +1,3 @@
 [submodule "third_party/yse-soundengine"]
 	path = third_party/yse-soundengine
 	url = https://github.com/yvanvds/yse-soundengine.git
-	branch = dev

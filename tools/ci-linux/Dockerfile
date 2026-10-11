@@ -8,10 +8,9 @@
 #   docker build -t dart-yse-ci -f tools/ci-linux/Dockerfile .
 #   docker run --rm -v ${PWD}:/workspace dart-yse-ci
 #
-# The default command builds the engine into
-# third_party/yse-soundengine/build-linux/ (separate from the Windows
-# `build/` so the two toolchains never collide), then runs the Dart
-# validation against it.
+# The default command builds the engine from the submodule sources into
+# .docker-build/yse/ (separate from the Windows `build/` so the two
+# toolchains never collide), then runs the Dart validation against it.
 
 FROM ubuntu:24.04
 
@@ -47,9 +46,9 @@ RUN curl -fsSL https://dl-ssl.google.com/linux/linux_signing_key.pub \
 WORKDIR /workspace
 
 # Build the engine into a dart-yse-owned path (.docker-build/) rather than
-# inside the submodule. The submodule may be a Windows junction to a separate
-# engine-dev workspace that already has its own build-linux/ — keeping our
-# artefacts out of there avoids stale-CMakeCache collisions on iterate.
+# inside the submodule. A Windows build may already have a CMakeCache in the
+# submodule's build/ — keeping our artefacts out of there avoids
+# stale-CMakeCache collisions on iterate, and keeps the submodule clean.
 CMD ["bash", "-c", "set -ex && \
     cmake -S third_party/yse-soundengine -B .docker-build/yse -G Ninja \
         -DCMAKE_BUILD_TYPE=Release && \

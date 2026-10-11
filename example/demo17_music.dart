@@ -8,7 +8,7 @@
 // scale and drawing on the motif.
 //
 // Run:
-//   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo17_music.dart
+//   YSE_DLL_PATH=third_party\yse-soundengine\build\bin  dart run example/demo17_music.dart
 
 // ignore_for_file: avoid_print
 

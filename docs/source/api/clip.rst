@@ -12,7 +12,7 @@ A clip and its clock may be disposed in either order: a clip whose clock is
 gone simply stops firing. Stopping or disposing a clip releases every note it
 still has sounding.
 
-Upstream: :yse-cpp:`api/clip.html <YSE::clip>`.
+Upstream: :yse-cpp:`YSE::clip <api/clips.html>`.
 
 .. include:: _generated/clip_transport.rst
 

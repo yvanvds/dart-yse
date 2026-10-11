@@ -4,7 +4,7 @@ MIDI
 Standard MIDI file playback (:class:`MidiFile`), output port
 (:class:`MidiOut`), and input port (:class:`MidiIn`).
 
-Upstream: :yse-cpp:`api/midi.html <YSE::midiOut>`.
+Upstream: :yse-cpp:`YSE::midiOut / midiIn <api/midi.html>`.
 
 .. include:: _generated/midi_file.rst
 

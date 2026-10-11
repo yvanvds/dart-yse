@@ -4,7 +4,7 @@ description: >-
   depend on package:yse. Carries no Dart API of its own — its sole purpose is
   to have Gradle build libyse.so per ABI and ship it inside the APK / AAB so
   package:yse's DynamicLibrary.open('libyse.so') resolves at runtime.
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/yvanvds/dart-yse
 issue_tracker: https://github.com/yvanvds/dart-yse/issues
 

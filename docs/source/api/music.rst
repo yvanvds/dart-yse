@@ -25,7 +25,7 @@ and let one audio block run before disposing the synth: the engine retires
 a destroyed player on its next block and still sends note-offs to the
 synth then.
 
-Upstream: :yse-cpp:`api/music.html <YSE::note>`.
+Upstream: :yse-cpp:`YSE::note <api/music.html>` / :yse-cpp:`YSE::player <api/player.html>`.
 
 .. include:: _generated/note.rst
 

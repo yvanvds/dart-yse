@@ -21,7 +21,7 @@ source become unreachable together, the source is still released only after
 the sound's native destroy has run. Call the source's ``dispose()`` only
 after disposing the sound.
 
-Upstream: :yse-cpp:`api/sounds.html <YSE::sound>`.
+Upstream: :yse-cpp:`YSE::sound <api/sounds.html>`.
 
 Occlusion
 ---------

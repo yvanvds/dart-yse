@@ -148,7 +148,10 @@ this to:
   :py:meth:`PHandle.connectionTargetId`, and
   :py:meth:`PHandle.connectionTargetInlet` return the wiring graph
   outward from each outlet so you can serialise it yourself or check
-  what is connected to what.
+  what is connected to what. Both return ``null`` when there is no such
+  connection, and :py:attr:`PHandle.id` is ``null`` for a handle that
+  refers to no object. IDs start at 0 in every patcher and the smallest free number
+  is reused after a delete, so ``0`` is a real object, never "none".
 - **Send messages directly to a specific inlet** — bypassing the
   named-receiver layer. :py:meth:`PHandle.sendBang`,
   :py:meth:`PHandle.sendInt`, :py:meth:`PHandle.sendFloat`, and
@@ -208,9 +211,27 @@ place:
 
 :py:meth:`Patcher.parseJson` **adds to** the current graph — objects
 already in the patcher are kept, so call :py:meth:`Patcher.clear`
-first to replace the patch. After loading,
-re-send the initial control values so the receives have something to
-forward.
+first to replace the patch. Malformed JSON throws
+:class:`YseException`, and a load that fails part-way removes the
+objects it had already created, so the patcher is left as it was. After
+loading, re-send the initial control values so the receives have
+something to forward.
+
+A few things about the file itself:
+
+- **Object IDs are per patcher.** ``dumpJson`` numbers the objects from
+  0 in ID order, so two identical patches save identically. A loaded
+  patch is renumbered on its next save; if you keep object IDs outside
+  the file, look them up again after loading.
+- **The name is saved.** A name set with :py:attr:`Patcher.name` (or
+  ``Patcher(name: ...)``) is written as a top-level ``"name"`` key and
+  applied by ``parseJson`` to a patcher that still has its auto-name; a
+  name you already set wins. The name is what puts the patcher's
+  ``.s`` / ``.r`` slots on the bus as ``patcher.<name>.<slot>`` (see
+  :doc:`/api/bus`).
+- **GUI properties ride along.** Whatever an editor stored with
+  :py:meth:`PHandle.setGuiProperty` is saved under each object's
+  ``"gui"`` key.
 
 The round trip — patch built once in code, saved to a string,
 rebuilt from that string with no code-side knowledge of its internal

@@ -15,7 +15,21 @@ file (``Dx7Bank.load``) or from bytes already in memory such as a bundled
 asset (``Dx7Bank.fromBytes``); ``indexOf`` finds a patch by name. The sampler voice renders an :class:`SfzInstrument`. Per-note 3D
 positioning — "the swarm" — is configured with a :class:`PositionHandler`.
 
-Upstream: :yse-cpp:`api/synth.html <YSE::synth>`.
+Two engine issues in libYSE v3.1.0 shape how a synth is set up and torn
+down (see :doc:`/intro/upgrading` for the full list):
+
+- Add every voice group right after ``Synth()``. The engine's setup job
+  can build a new synth before its voices arrive and leave it at 0 voices
+  with no error (upstream `#1177
+  <https://github.com/yvanvds/yse-soundengine/issues/1177>`_); voice groups
+  added after the pool is built throw :class:`StateError`.
+- Attach a synth with VA or FM voices to a sound before disposing it.
+  Disposing one that was never attached crashes the next synth that is
+  attached to a sound (upstream `#1175
+  <https://github.com/yvanvds/yse-soundengine/issues/1175>`_). Sine-only and
+  voice-less synths are not affected.
+
+Upstream: :yse-cpp:`YSE::synth <api/synth.html>`.
 
 .. include:: _generated/synth.rst
 

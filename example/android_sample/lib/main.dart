@@ -59,6 +59,9 @@ class _YsePlaybackPageState extends State<YsePlaybackPage> {
   Future<void> _start() async {
     try {
       _engineVersion = System.version;
+      // Render the mix on the audio thread alone: render worker threads
+      // rarely pay off on phones and cost power. Set before init().
+      _sys.renderThreads = 0;
       _sys.init();
 
       final assetBytes = await rootBundle.load('assets/drone.ogg');

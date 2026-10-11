@@ -67,8 +67,9 @@ docs/
     │   ├── patcher_objects_index.rst.j2     # Object reference index page
     │   └── patcher_objects_category.rst.j2  # One page per category
     ├── _static/
-    ├── intro/            # What is dart-yse? — install, mental_model, hello_sound
-    ├── tutorials/        # Phase-by-phase walk-throughs (patcher fully written up)
+    ├── intro/            # What is dart-yse? — install, mental_model, hello_sound,
+    │                     #   sessions_and_devices, upgrading (0.1.0 → 0.2.0)
+    ├── tutorials/        # Phase-by-phase walk-throughs (patcher and clocks/clips written up)
     └── api/              # Per-subsystem RST pages
         ├── index.rst
         ├── _generated/   # Class pages emitted by tool/emit_api_rst.dart (gitignored)
@@ -136,6 +137,10 @@ branch via `peaceiris/actions-gh-pages`. The published site is at
 ## Cross-linking to upstream libYSE
 
 The `:yse-cpp:` Sphinx role (defined via `sphinx.ext.extlinks` in
-`source/conf.py`) resolves to the upstream libYSE docs site. When
+`source/conf.py`) resolves to the upstream libYSE docs site. Write it
+as ``:yse-cpp:`Link text <api/core.html#anchor>` `` — the part in angle
+brackets is the page path on the upstream site, not the C++ name. When
 the upstream URL moves, edit the `extlinks` dictionary in `conf.py`
-in one place and every wrapper page picks up the new target.
+in one place and every wrapper page picks up the new target. Sphinx
+does not check these targets; the page list is the
+`documentation/source/` tree of the pinned engine tag.

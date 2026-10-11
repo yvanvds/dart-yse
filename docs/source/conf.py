@@ -90,7 +90,8 @@ html_theme_options = {
 
 # Cross-link to the upstream libYSE docs site so wrapper pages can point at
 # the underlying C++ class they wrap. Update the URL when the upstream site
-# moves; the role ``:cpp-doc:`YSE::patcher``` then resolves to a stable link.
+# moves. Write ``:yse-cpp:`Title <path/page.html#anchor>``` — the part in
+# angle brackets is the path on the upstream site, the rest is the link text.
 # Sphinx's ``extlinks`` is part of the standard distribution.
 extensions.append("sphinx.ext.extlinks")
 extlinks = {

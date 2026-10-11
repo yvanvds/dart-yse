@@ -39,18 +39,19 @@ import 'exception.dart';
 ///   build embeds `$ORIGIN` in the `.so`'s RPATH, so sibling shared libraries
 ///   are found automatically.
 ///
-/// * **Android** — calls `DynamicLibrary.open('libyse.so')` and relies on
-///   the Android linker to resolve the per-ABI copy out of the APK's
-///   `lib/<abi>/` directory. The `.so` is bundled into the host APK by
-///   the sibling `yse_flutter_libs` plugin (see the Android section of
-///   the package README). All transitive engine deps (Oboe, libsndfile)
-///   are statically linked into `libyse.so`, so no other shared libraries
-///   need to be loadable.
+/// * **Android** — loads the engine the build hook bundled (#96): Flutter
+///   packages the hook's `libyse.so` for the target ABI (arm64-v8a or x86_64)
+///   into the APK / AAB under `lib/<abi>/`. The loader resolves it through
+///   the code asset id [libyseAssetId] and then opens it by its soname. All
+///   transitive engine deps (Oboe, libsndfile, the C++ runtime) are
+///   statically linked into `libyse.so`, so no other shared libraries need
+///   to be loadable. `YSE_DLL_PATH` does not apply; the hook's `engine_dir`
+///   user-define bundles a local engine instead.
 YseBindings get bindings => _bindings ??= _load();
 YseBindings? _bindings;
 
 /// The directory the engine library was loaded from, or null before the
-/// first [bindings] access and on Android (where the system linker picks the
+/// first [bindings] access and on Android (where the system linker loads the
 /// APK's copy). Internal: the test suite uses it to tell whether it runs
 /// against the pinned engine release (#89).
 String? get loadedLibraryDirectory => _loadedDirectory;
@@ -65,9 +66,7 @@ bool _fromBundledAsset = false;
 String get _libName => Platform.isWindows ? 'libyse.dll' : 'libyse.so';
 
 YseBindings _load() {
-  if (Platform.isAndroid) {
-    return YseBindings(DynamicLibrary.open('libyse.so'));
-  }
+  if (Platform.isAndroid) return _loadAndroid();
 
   if (!Platform.isWindows && !Platform.isLinux) {
     throw YseException(
@@ -109,6 +108,29 @@ YseBindings _load() {
         '`dart build` or `flutter run`; elsewhere set YSE_DLL_PATH to a '
         'directory containing $_libName.',
   );
+}
+
+/// Android: the engine the build hook bundled into the APK / AAB
+/// (`lib/<abi>/libyse.so`), loaded through its code asset id.
+YseBindings _loadAndroid() {
+  try {
+    // Loads the asset from wherever Flutter packaged it. The library is then
+    // reopened by its soname rather than by the path dladdr reports: with
+    // uncompressed native libraries that path points into the APK
+    // (`base.apk!/lib/<abi>/libyse.so`).
+    _bundledYseVersion();
+    final native = DynamicLibrary.open('libyse.so');
+    _fromBundledAsset = true;
+    return YseBindings(native);
+  } on ArgumentError catch (e) {
+    final reason = '${e.message}'.replaceAll(RegExp(r'\s+'), ' ').trim();
+    throw YseException(
+      'The libYSE engine is not in this app ($reason). The package:yse build '
+      'hook bundles libYSE $engineTag for the arm64-v8a and x86_64 ABIs when '
+      'the app is built with `flutter build` / `flutter run` (Flutter 3.38 or '
+      'later); 32-bit ABIs (armeabi-v7a, x86) have no engine release.',
+    );
+  }
 }
 
 /// Opens `libyse` from [dir], an absolute directory; [missingHint] says what

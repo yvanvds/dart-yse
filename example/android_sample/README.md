@@ -1,9 +1,9 @@
 # yse Android sample
 
 Minimal Flutter app that loads `drone.ogg` through `package:yse` and plays
-it on loop. Demonstrates that the engine, `yse_flutter_libs` `.so`
-bundling, and the FFI load path all work together end-to-end on an Android
-device or emulator.
+it on loop. Demonstrates that the engine, the `.so` bundling by the
+`yse` build hook, and the FFI load path all work together end-to-end on an
+Android device or emulator. The app depends on `yse` alone.
 
 ## One-time scaffold
 
@@ -22,8 +22,8 @@ It also adds a `.gitignore`, `analysis_options.yaml`, `test/`, `.idea/`
 and `yse_android_sample.iml`, which this sample does not use; delete
 them.
 
-Raise the app's `minSdk` to 26, which `yse_flutter_libs` requires (the
-template uses Flutter's lower default). In
+Raise the app's `minSdk` to 26, which the engine needs for Oboe's AAudio
+backend (the template uses Flutter's lower default). In
 `android/app/build.gradle.kts`:
 
 ```kotlin
@@ -49,25 +49,28 @@ flutter pub get
 flutter run
 ```
 
-`yse_flutter_libs` packages the engine release named in
-`packages/yse_flutter_libs/android/engine.properties` (the submodule's
-pinned tag) for `arm64-v8a` and `x86_64`. It uses
-`.engine/<tag>/libyse-<tag>-android/` from
-`dart run tool/fetch_engine.dart --platform android` when that exists,
-and otherwise downloads the release asset (~56 MiB) once into the Gradle
-user home. The app shows the loaded `System.version`, which should be
-the pinned tag without its `v`.
+Flutter 3.38 or later runs `package:yse`'s build hook (`hook/build.dart`),
+which downloads the engine release named in `lib/src/engine_release.dart`
+(the submodule's pinned tag; ~56 MiB, once per project into
+`.dart_tool/hooks_runner/shared/yse/`), checks its sha256 and hands Flutter
+`lib/<abi>/libyse.so` for `arm64-v8a` and `x86_64`. The app shows the
+loaded `System.version`, which should be the pinned tag without its `v`.
 
-To run the sample against an unreleased engine instead, compile it from
-source by adding to `android/gradle.properties`:
+To run the sample against an unreleased engine or offline, point the
+hook's `engine_dir` user-define at a folder laid out like an unpacked
+`libyse-<tag>-android` release (see "Android" in the dart-yse README for
+building one from engine sources), in this app's `pubspec.yaml`:
 
-```properties
-yse.buildFromSource=true
-yse.engineSourceDir=/path/to/yse-soundengine
+```yaml
+hooks:
+  user_defines:
+    yse:
+      engine_dir: /path/to/libyse-android   # holds lib/<abi>/libyse.so
 ```
 
-That needs NDK 27.0.12077973, and the first build is slow (~5–10 min per
-ABI — fetches Oboe and libsndfile sources, compiles the engine cold).
+`dart run tool/fetch_engine.dart --platform android` in dart-yse unpacks
+the pinned release into `.engine/<tag>/libyse-<tag>-android/`, which also
+works as an `engine_dir`.
 
 ## Threading
 
@@ -84,17 +87,12 @@ either way.
 
 ## Troubleshooting
 
-- **`libyse.so not found`** — confirm `yse_flutter_libs` is in
-  `pubspec.yaml` *and* `flutter clean` has been run since adding it.
-  Gradle caches the merged `lib/<abi>/` set per build configuration.
-- **`yse_flutter_libs: could not download ...`** — the first build needs
-  github.com. Offline, run `dart run tool/fetch_engine.dart --platform
-  android` while you still have a connection, or set `yse.engineDir` to
-  an unpacked `libyse-<tag>-android` folder.
-- **`CMake error: Could not find a configuration file for package "..."`**
-  (source builds only) — the NDK version in
-  `packages/yse_flutter_libs/android/build.gradle` (`27.0.12077973`) must
-  be installed via the Android SDK Manager.
+- **`The libYSE engine is not in this app`** — the build hook bundled
+  nothing for this ABI. The release covers `arm64-v8a` and `x86_64` only;
+  a 32-bit device (`armeabi-v7a`) needs an `engine_dir` with that ABI.
+  Also check that Flutter is 3.38 or later.
+- **`package:yse build hook: could not download ...`** — the first build
+  needs github.com. Offline, set `engine_dir` as above.
 - **Engine silent on emulator** — the `x86_64` Android emulator routes
   audio through the host. Confirm host audio works first; some emulator
   graphics backends mute audio when the AVD window is unfocused.

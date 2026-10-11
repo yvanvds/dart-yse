@@ -20,10 +20,10 @@
 // archives only carry the C++ headers (upstream yvanvds/yse-soundengine#1184).
 //
 // `--platform android` fetches the Android asset instead (#91): one
-// `lib/<abi>/libyse.so` per ABI the yse_flutter_libs plugin packages. The
-// plugin's Gradle build uses `.engine/<tag>/libyse-<tag>-android/` when it is
-// there and otherwise downloads the same asset itself, so this is only needed
-// to prepare an offline build.
+// `lib/<abi>/libyse.so` per ABI. The package's build hook downloads the same
+// asset itself for Flutter Android builds (#96), so this is only needed to
+// prepare an offline build: point the hook's `engine_dir` user-define at
+// `.engine/<tag>/libyse-<tag>-android/`.
 //
 // Usage (from the package root):
 //   dart run tool/fetch_engine.dart           # fetch if missing, print path
@@ -120,22 +120,6 @@ bool isInstalled(String root, String tag, ReleasePlatform platform) {
   );
 }
 
-/// Reads `key=value` lines of a Java properties file such as the
-/// yse_flutter_libs plugin's `android/engine.properties`. Blank lines and
-/// `#` / `!` comments are skipped; keys and values are trimmed. Enough for
-/// the plain `key=value` lines that file uses, not the full format.
-Map<String, String> parseProperties(String text) {
-  final out = <String, String>{};
-  for (final raw in const LineSplitter().convert(text)) {
-    final line = raw.trim();
-    if (line.isEmpty || line.startsWith('#') || line.startsWith('!')) continue;
-    final eq = line.indexOf('=');
-    if (eq <= 0) continue;
-    out[line.substring(0, eq).trim()] = line.substring(eq + 1).trim();
-  }
-  return out;
-}
-
 /// Reads the sha256 hex digest of [asset] from a GitHub release API [json]
 /// body, or null when the release does not list one.
 String? parseAssetDigest(String json, String asset) {
@@ -210,11 +194,13 @@ Future<void> _run(FetchOptions options) async {
 
   print('');
   if (platform == ReleasePlatform.android) {
-    print('The yse_flutter_libs Gradle build packages these per-ABI libraries');
-    print('when the engine tag in packages/yse_flutter_libs/android/');
-    print('engine.properties is $tag. Elsewhere, point it at them with the');
+    print('For an offline Flutter Android build, point the package:yse build');
+    print("hook at them in the app's pubspec.yaml:");
+    print('  hooks:');
+    print('    user_defines:');
+    print('      yse:');
     print(
-      'Gradle property yse.engineDir=${tagDir(root, tag)}'
+      '        engine_dir: ${tagDir(root, tag)}'
       '${Platform.pathSeparator}${archiveTopDir(tag, platform)}',
     );
     print(target);

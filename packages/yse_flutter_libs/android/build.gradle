@@ -1,47 +1,19 @@
-// Build configuration for yse_flutter_libs.
+// Build configuration for yse_flutter_libs — deprecated (#96).
 //
-// The plugin carries no Dart, Kotlin or Java code of its own (it is declared
-// as an `ffiPlugin` in pubspec.yaml, so Flutter needs no plugin class and
-// this module applies no Kotlin Gradle Plugin, #93). Its sole job is to put
-// libyse.so for each Android ABI into the host app's APK / AAB. At runtime,
-// package:yse loads it with DynamicLibrary.open('libyse.so') and Android's
-// linker resolves the per-ABI copy out of lib/<abi>/.
+// package:yse's native-assets build hook bundles libyse.so for the target
+// ABI into the APK / AAB itself, so this plugin no longer packages anything.
+// Up to 0.2.0 it added the engine's prebuilt Android release as jniLibs
+// (#91); keeping that would put a second lib/<abi>/libyse.so next to the
+// hook's and fail the app's native-library merge. What remains is an empty
+// Android library module, so an app that still lists yse_flutter_libs keeps
+// building. Remove the dependency: `yse` alone is enough.
 //
-// Where libyse.so comes from (#91):
-//
-// * Default: the engine's prebuilt Android release. engine.properties names
-//   the libYSE tag and the sha256 of its `libyse-<tag>-android.tar.gz`
-//   asset, which holds lib/arm64-v8a/libyse.so and lib/x86_64/libyse.so
-//   (Oboe and libsndfile linked in statically). The libraries are packaged
-//   as jniLibs from the first of:
-//     1. the Gradle property `yse.engineDir` — an unpacked
-//        `libyse-<tag>-android` folder (absolute, or relative to the app's
-//        android/ folder), for offline builds;
-//     2. `<dart-yse checkout>/.engine/<tag>/libyse-<tag>-android`, which
-//        `dart run tool/fetch_engine.dart --platform android` fills;
-//     3. a download of the release asset into
-//        `<gradle user home>/caches/yse-engine/<tag>/`, checked against the
-//        sha256 in engine.properties. This is how a pub.dev / git
-//        dependency gets the binaries: the published plugin carries no
-//        engine sources and no .so files.
-//   No NDK or CMake is needed for this.
-//
-// * Opt-in: `yse.buildFromSource=true` compiles the engine's CMakeLists with
-//   the NDK per ABI, as the plugin did before #91. Use it to test an engine
-//   that has no release yet (see the dart-yse README, "Unreleased engine").
-//   `yse.engineSourceDir` picks the engine checkout (default: the dart-yse
-//   submodule, three levels up from this file) and `yse.abis` the ABIs
-//   (comma-separated; default arm64-v8a,x86_64). Needs NDK 27.0.12077973.
-//
-// Set the properties in the app's android/gradle.properties, e.g.
-//   yse.buildFromSource=true
-//   yse.engineSourceDir=/path/to/yse-soundengine
-
-import java.security.MessageDigest
-import javax.inject.Inject
+// The plugin carries no Dart, Kotlin or Java code (it is declared as an
+// `ffiPlugin` in pubspec.yaml, so Flutter needs no plugin class and this
+// module applies no Kotlin Gradle Plugin, #93).
 
 group = 'net.attrx.yse_flutter_libs'
-version = '0.2.0'
+version = '0.3.0'
 
 buildscript {
     repositories {
@@ -66,233 +38,20 @@ allprojects {
 
 apply plugin: 'com.android.library'
 
-// --- Engine selection -------------------------------------------------------
-
-def engineProps = new Properties()
-file('engine.properties').withInputStream { engineProps.load(it) }
-def engineTag = engineProps.getProperty('engineTag')
-def engineSha256 = engineProps.getProperty('engineSha256')?.toLowerCase()
-def engineTop = "libyse-${engineTag}-android"
-// The ABIs the engine's Android release ships.
-def engineAbis = ['arm64-v8a', 'x86_64']
-
-def yseProp = { String name ->
-    def v = project.findProperty(name)?.toString()?.trim()
-    v ? v : null
-}
-def buildFromSource = (yseProp('yse.buildFromSource') ?: 'false').toBoolean()
-
-// ABIs to package: the release's, or for a source build those in yse.abis.
-def sourceAbis = engineAbis
-if (buildFromSource && yseProp('yse.abis')) {
-    sourceAbis = yseProp('yse.abis').split(',').collect { it.trim() }.findAll { it }
-}
-
-File engineDir = null
-boolean engineDownload = false
-String engineHint = null
-File engineSourceDir = null
-
-if (buildFromSource) {
-    def src = yseProp('yse.engineSourceDir')
-    engineSourceDir = src ? rootProject.file(src) : file('../../../third_party/yse-soundengine')
-    if (!new File(engineSourceDir, 'CMakeLists.txt').isFile()) {
-        throw new GradleException(
-            "yse_flutter_libs: yse.buildFromSource=true but ${engineSourceDir} " +
-            "has no CMakeLists.txt. Set yse.engineSourceDir to a yse-soundengine " +
-            "checkout, or drop yse.buildFromSource to use the ${engineTag} release.")
-    }
-    logger.lifecycle("yse_flutter_libs: building libyse from source in ${engineSourceDir}")
-} else {
-    def explicit = yseProp('yse.engineDir')
-    def repoLocal = file("../../../.engine/${engineTag}/${engineTop}")
-    if (explicit) {
-        engineDir = rootProject.file(explicit)
-        engineHint = "yse.engineDir must be an unpacked ${engineTop} folder " +
-            "(from the ${engineTop}.tar.gz release asset, or " +
-            "`dart run tool/fetch_engine.dart --platform android` in dart-yse)."
-    } else if (repoLocal.isDirectory()) {
-        engineDir = repoLocal
-        engineHint = "Re-fetch it: `dart run tool/fetch_engine.dart --platform android --force`."
-    } else {
-        engineDir = new File(gradle.gradleUserHomeDir, "caches/yse-engine/${engineTag}/${engineTop}")
-        engineDownload = true
-        engineHint = "Delete ${engineDir} to download it again."
-    }
-}
-
-/// Makes sure lib/<abi>/libyse.so exists in the engine folder, downloading
-/// and unpacking the release asset first when that folder is the cache.
-abstract class YseEngineLibsTask extends DefaultTask {
-    @Inject abstract FileSystemOperations getFs()
-    @Inject abstract ArchiveOperations getArchives()
-
-    @Internal abstract Property<String> getTag()
-    @Internal abstract Property<String> getSha256()
-    @Internal abstract Property<String> getTop()
-    @Internal abstract Property<File> getEngineDir()
-    @Internal abstract Property<Boolean> getDownload()
-    @Internal abstract ListProperty<String> getAbis()
-    @Internal abstract Property<String> getHint()
-
-    private List<String> missing(File dir) {
-        abis.get().findAll { !new File(dir, "lib/${it}/libyse.so").isFile() }
-    }
-
-    @TaskAction
-    void run() {
-        def dir = engineDir.get()
-        if (download.get() && !missing(dir).isEmpty()) {
-            fetch(dir)
-        }
-        def gone = missing(dir)
-        if (!gone.isEmpty()) {
-            throw new GradleException(
-                "yse_flutter_libs: no libyse.so for ${gone.join(', ')} in ${new File(dir, 'lib')}. " +
-                hint.get())
-        }
-        logger.lifecycle("yse_flutter_libs: packaging libyse ${tag.get()} from ${dir}")
-    }
-
-    private void fetch(File dir) {
-        def asset = "${top.get()}.tar.gz"
-        def url = "https://github.com/yvanvds/yse-soundengine/releases/download/${tag.get()}/${asset}"
-        def parent = dir.parentFile
-        parent.mkdirs()
-        def archive = new File(parent, "${asset}.part")
-        def staging = new File(parent, ".staging-${top.get()}")
-        def offline = "For an offline build, unpack ${asset} yourself and set the " +
-            "Gradle property yse.engineDir to the ${top.get()} folder."
-        logger.lifecycle("yse_flutter_libs: downloading ${url}")
-        try {
-            def conn = (HttpURLConnection) URI.create(url).toURL().openConnection()
-            conn.instanceFollowRedirects = true
-            conn.connectTimeout = 30000
-            conn.readTimeout = 120000
-            conn.setRequestProperty('User-Agent', 'yse_flutter_libs-gradle')
-            def code = conn.responseCode
-            if (code != HttpURLConnection.HTTP_OK) {
-                throw new GradleException(
-                    "yse_flutter_libs: HTTP ${code} downloading ${url}. ${offline}")
-            }
-            def md = MessageDigest.getInstance('SHA-256')
-            conn.inputStream.withStream { input ->
-                archive.withOutputStream { out ->
-                    byte[] buf = new byte[1 << 16]
-                    int n
-                    while ((n = input.read(buf)) > 0) {
-                        md.update(buf, 0, n)
-                        out.write(buf, 0, n)
-                    }
-                }
-            }
-            def actual = md.digest().encodeHex().toString()
-            if (actual != sha256.get()) {
-                throw new GradleException(
-                    "yse_flutter_libs: sha256 mismatch for ${asset}: expected " +
-                    "${sha256.get()} (engine.properties), got ${actual}.")
-            }
-            logger.lifecycle("yse_flutter_libs: sha256 OK, unpacking into ${dir}")
-
-            def t = top.get()
-            fs.delete { delete staging }
-            fs.copy {
-                from(archives.tarTree(archives.gzip(archive))) {
-                    include "${t}/lib/**", "${t}/LICENSE.md", "${t}/NOTICE", "${t}/licenses/**"
-                }
-                into staging
-            }
-            // Move the complete tree in only after a successful unpack, so an
-            // interrupted build never leaves a half-filled folder behind.
-            fs.delete { delete dir }
-            if (!new File(staging, t).renameTo(dir) && !missing(dir).isEmpty()) {
-                throw new GradleException("yse_flutter_libs: could not move the unpacked engine into ${dir}")
-            }
-        } catch (IOException e) {
-            throw new GradleException(
-                "yse_flutter_libs: could not download ${url}: ${e.message}. ${offline}", e)
-        } finally {
-            archive.delete()
-            fs.delete { delete staging }
-        }
-    }
-}
-
-if (!buildFromSource) {
-    def engineLibs = tasks.register('yseEngineLibs', YseEngineLibsTask) { t ->
-        t.tag.set(engineTag)
-        t.sha256.set(engineSha256)
-        t.top.set(engineTop)
-        t.engineDir.set(engineDir)
-        t.download.set(engineDownload)
-        t.abis.set(engineAbis)
-        t.hint.set(engineHint)
-    }
-    // Every variant's pre<Variant>Build depends on preBuild, so the
-    // libraries are in place before AGP merges the jniLibs folders.
-    tasks.matching { it.name == 'preBuild' }.configureEach { dependsOn engineLibs }
-}
-
-// --- Android library --------------------------------------------------------
-
 android {
     namespace = 'net.attrx.yse_flutter_libs'
     compileSdk = 34
-    if (buildFromSource) {
-        ndkVersion = '27.0.12077973'
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    if (!buildFromSource) {
-        sourceSets {
-            main.jniLibs.srcDirs = [new File(engineDir, 'lib')]
-        }
-    }
-
-    defaultConfig {
-        // Engine uses Oboe with AAudio (API 26+) as the preferred backend.
-        // Going below 26 would force the OpenSL ES fallback path everywhere.
-        minSdk = 26
-
-        ndk {
-            // 64-bit ABIs only: arm64-v8a covers modern phones, x86_64 the
-            // emulator on Intel/AMD dev hosts. These are the ABIs the
-            // engine's Android release ships. A source build can pick
-            // others with yse.abis (comma-separated, e.g. adding
-            // armeabi-v7a).
-            abiFilters(*sourceAbis)
-        }
-
-        if (buildFromSource) {
-            externalNativeBuild {
-                cmake {
-                    // Build only the YSE shared library — skip demos, tests,
-                    // the benchmarks subdir, and any other targets the
-                    // upstream CMakeLists declares for desktop.
-                    targets 'yse'
-                    arguments '-DYSE_BUILD_TESTS=OFF',
-                              '-DYSE_BUILD_BENCHMARKS=OFF',
-                              '-DCMAKE_BUILD_TYPE=Release'
-                    cppFlags '-std=c++20'
-                }
-            }
-        }
-    }
-
-    if (buildFromSource) {
-        externalNativeBuild {
-            cmake {
-                path = new File(engineSourceDir, 'CMakeLists.txt')
-                version = '3.22.1'
-            }
-        }
-    }
+    // No minSdk: up to 0.2.0 the plugin's minSdk 26 failed the manifest
+    // merge of any app below it. The engine itself still wants API 26
+    // (Oboe's AAudio backend); the app sets that.
 }
 
 dependencies {
-    // No runtime deps — the plugin only ships the native library.
+    // None: the plugin ships nothing.
 }

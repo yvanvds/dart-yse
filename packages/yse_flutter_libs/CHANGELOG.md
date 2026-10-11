@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.3.0 (deprecated, not published)
+
+- **Deprecated; packages nothing** (#96). `package:yse`'s native-assets
+  build hook bundles `libyse.so` for the target ABI into Flutter Android
+  apps itself, so this plugin no longer adds `jniLibs`, downloads the
+  engine release or builds it from source: a second
+  `lib/<abi>/libyse.so` would fail the app's native-library merge.
+  `android/build.gradle` is now an empty Android library module and
+  `android/engine.properties` is gone, so apps that list the plugin keep
+  building. It no longer declares `minSdk` 26, so it no longer fails the
+  manifest merge of an app below that; set the app's `minSdk` to 26
+  yourself. Remove the plugin and depend on `yse` alone.
+- The Gradle properties `yse.engineDir`, `yse.buildFromSource`,
+  `yse.engineSourceDir` and `yse.abis` are replaced by the `yse` build
+  hook's `engine_dir` user-define (see the README).
+- **Not published to pub.dev** (`publish_to: none`): the package was never
+  released there and pub.dev names are permanent.
+
 ## 0.2.0
 
 - Builds **libYSE v3.1.0** (the engine submodule's pinned tag; was 2.x),

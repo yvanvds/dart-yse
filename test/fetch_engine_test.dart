@@ -136,15 +136,6 @@ void main() {
     });
   });
 
-  group('parseProperties', () {
-    test('reads key=value lines and skips comments and blanks', () {
-      expect(parseProperties('# c\n! c\n\n a = 1 \nb=x=y\r\nnot a pair\n'), {
-        'a': '1',
-        'b': 'x=y',
-      });
-    });
-  });
-
   test('android asset is named like the v3.1.0 release', () {
     expect(
       assetName('v3.1.0', ReleasePlatform.android),

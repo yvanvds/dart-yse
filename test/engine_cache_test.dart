@@ -185,4 +185,86 @@ void main() {
       ],
     );
   });
+
+  test('on Android only the target ABI\'s engine library is bundled', () {
+    expect(
+      releaseLibraries(
+        'lib',
+        ReleasePlatform.android,
+        abi: 'x86_64',
+      ).map((f) => f.path),
+      [
+        _p(['lib', 'x86_64', 'libyse.so']),
+      ],
+    );
+    expect(
+      () => releaseLibraries('lib', ReleasePlatform.android),
+      throwsArgumentError,
+    );
+  });
+
+  group('engine_dir', () {
+    String androidEngine(List<String> abis) {
+      final dir = _p([tmp.path, 'local-android']);
+      for (final abi in abis) {
+        Directory(_p([dir, 'lib', abi])).createSync(recursive: true);
+        File(_p([dir, 'lib', abi, 'libyse.so'])).writeAsStringSync('');
+      }
+      return dir;
+    }
+
+    test('bundles the ABI\'s library from a release-shaped folder', () {
+      final dir = androidEngine(['arm64-v8a', 'armeabi-v7a']);
+      expect(
+        localLibraries(
+          dir,
+          ReleasePlatform.android,
+          abi: 'armeabi-v7a',
+        ).map((f) => f.path),
+        [
+          _p([dir, 'lib', 'armeabi-v7a', 'libyse.so']),
+        ],
+      );
+    });
+
+    test('a missing required library is an error', () {
+      final dir = androidEngine(['arm64-v8a']);
+      expect(
+        () => localLibraries(dir, ReleasePlatform.android, abi: 'x86_64'),
+        throwsA(
+          isA<EngineFetchError>().having(
+            (e) => e.message,
+            'message',
+            contains(_p(['x86_64', 'libyse.so'])),
+          ),
+        ),
+      );
+    });
+
+    test('a missing optional library bundles nothing', () {
+      final dir = androidEngine(['arm64-v8a']);
+      expect(
+        localLibraries(
+          dir,
+          ReleasePlatform.android,
+          abi: 'x86',
+          optional: true,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('a folder without the release layout is an error', () {
+      expect(
+        () => localLibraries(tmp.path, ReleasePlatform.windowsX64),
+        throwsA(
+          isA<EngineFetchError>().having(
+            (e) => e.message,
+            'message',
+            contains('no bin'),
+          ),
+        ),
+      );
+    });
+  });
 }

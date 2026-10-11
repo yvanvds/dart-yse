@@ -18,6 +18,7 @@ import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
 import '../tool/gen_patcher_snapshot.dart';
+import 'support/dart_script.dart';
 import 'support/engine_pin.dart';
 
 const _snapshotPath = 'docs/source/_data/patcher_objects.json';
@@ -136,11 +137,10 @@ void main() {
     });
 
     test('tool --check agrees', () async {
-      final r = await Process.run(Platform.resolvedExecutable, [
-        'run',
+      final r = await runDartScript(
         'tool/gen_patcher_snapshot.dart',
-        '--check',
-      ]);
+        args: ['--check'],
+      );
       expect(r.exitCode, 0, reason: '${r.stdout}\n${r.stderr}');
     }, timeout: const Timeout(Duration(minutes: 3)));
   });

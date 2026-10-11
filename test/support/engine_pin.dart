@@ -4,15 +4,18 @@
 // Testing against an unreleased engine is opt-in: point YSE_DLL_PATH at a dev
 // build. It is legitimate, but its results can differ from CI's, so every
 // engine-touching suite calls [noticeUnpinnedEngine] from a top-level
-// `setUpAll`. With the pinned release (the fetched `.engine/<tag>/` tree or
-// the submodule's source build) it prints nothing. Otherwise it prints a
-// banner in each suite, next to whatever that suite reports. It never fails a
-// test: CI always runs the pin, and a dev engine is a valid local setup.
+// `setUpAll`. With the pinned release (the build hook's bundled copy, the
+// fetched `.engine/<tag>/` tree or the submodule's source build) it prints
+// nothing. Otherwise it prints a banner in each suite, next to whatever that
+// suite reports. It never fails a test: CI always runs the pin, and a dev
+// engine is a valid local setup.
 // ignore_for_file: avoid_print
 
 import 'dart:io';
 
-import 'package:yse/src/library.dart' show loadedLibraryDirectory;
+import 'package:yse/src/engine_release.dart' show engineTag;
+import 'package:yse/src/library.dart'
+    show loadedFromBundledAsset, loadedLibraryDirectory;
 import 'package:yse/yse.dart';
 
 import '../../tool/engine_pin.dart';
@@ -47,6 +50,7 @@ Future<void> noticeUnpinnedEngine() async {
     root: root,
     tag: tag,
     pinProblem: problem,
+    bundledTag: loadedFromBundledAsset ? engineTag : null,
     caseSensitive: !Platform.isWindows,
   );
   if (notice != null) print(notice);

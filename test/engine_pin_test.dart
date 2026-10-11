@@ -137,12 +137,14 @@ void main() {
       String libDir = fetched,
       String? tag = 'v3.1.0',
       String? problem,
+      String? bundledTag,
     }) => unpinnedEngineNotice(
       version: version,
       libDir: libDir,
       root: root,
       tag: tag,
       pinProblem: problem,
+      bundledTag: bundledTag,
       caseSensitive: false,
     );
 
@@ -191,6 +193,43 @@ void main() {
       )!;
       expect(n, contains('pinned tag : (unknown)'));
       expect(n, contains('not checked out at a release tag'));
+    });
+
+    group('the build hook\'s bundled release (#95)', () {
+      // Wherever the SDK put it: .dart_tool/lib for dart run / dart test,
+      // next to the executable in a Flutter or dart build bundle.
+      const bundled = r'C:\app\.dart_tool\lib';
+
+      test('is silent when it is the pin, or the pin is unreadable', () {
+        expect(notice(libDir: bundled, bundledTag: 'v3.1.0'), isNull);
+        expect(
+          notice(libDir: bundled, bundledTag: 'v3.1.0', tag: null),
+          isNull,
+        );
+      });
+
+      test('flags a bundled release that is not the pin', () {
+        final n = notice(libDir: bundled, bundledTag: 'v3.0.0')!;
+        expect(n, contains('the build hook bundles (v3.0.0), not the pin'));
+        expect(n, isNot(contains('outside the pinned locations')));
+      });
+
+      test('flags a bundled engine reporting another version', () {
+        final n = notice(
+          version: '3.2.0',
+          libDir: bundled,
+          bundledTag: 'v3.1.0',
+        )!;
+        expect(n, contains('reports version "3.2.0"'));
+      });
+
+      test('the same directory without the bundled flag is not pinned', () {
+        expect(notice(libDir: bundled), contains('outside the pinned'));
+      });
+    });
+
+    test('points at unsetting YSE_DLL_PATH for the pinned release', () {
+      expect(notice(libDir: devClone), contains('unset YSE_DLL_PATH'));
     });
 
     test('every line is marked so the banner stands out', () {

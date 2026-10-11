@@ -272,6 +272,16 @@ List<String> _wrap(String text, int width) {
   return lines;
 }
 
+/// The `dart` CLI of the running SDK. The tests run this tool on the
+/// standalone VM (`dartvm`, see test/support/dart_script.dart), which has no
+/// `format` command, so a `dartvm` is swapped for the `dart` next to it.
+String _dartExecutable() {
+  final exe = File(Platform.resolvedExecutable);
+  if (!exe.uri.pathSegments.last.startsWith('dartvm')) return exe.path;
+  final name = Platform.isWindows ? 'dart.exe' : 'dart';
+  return '${exe.parent.path}${Platform.pathSeparator}$name';
+}
+
 Future<String> _dartFormat(String source) async {
   // Format inside the package so `dart format` uses the package's language
   // version (and so its style) rather than the SDK default.
@@ -280,10 +290,7 @@ Future<String> _dartFormat(String source) async {
   try {
     final f = File('${tmp.path}/patcher_objects.dart');
     await f.writeAsString(source);
-    final r = await Process.run(Platform.resolvedExecutable, [
-      'format',
-      f.path,
-    ]);
+    final r = await Process.run(_dartExecutable(), ['format', f.path]);
     if (r.exitCode != 0) {
       throw StateError('dart format failed: ${r.stderr}');
     }

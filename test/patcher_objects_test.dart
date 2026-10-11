@@ -9,11 +9,11 @@
 library;
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/dart_script.dart';
 import 'support/engine_pin.dart';
 
 void main() {
@@ -69,11 +69,10 @@ void main() {
     });
 
     test('lib/src/patcher_objects.dart matches the bound registry', () async {
-      final r = await Process.run(Platform.resolvedExecutable, [
-        'run',
+      final r = await runDartScript(
         'tool/gen_obj_constants.dart',
-        '--check',
-      ]);
+        args: ['--check'],
+      );
       expect(r.exitCode, 0, reason: '${r.stdout}\n${r.stderr}');
     }, timeout: const Timeout(Duration(minutes: 3)));
   });

@@ -151,23 +151,32 @@ bool isPinnedLocation({
 /// so a dev build made right after a tag still reports that tag's version and
 /// only its location gives it away.
 ///
+/// [bundledTag] is the release the package's build hook bundles (#95) when
+/// the library is that bundled copy, and null otherwise. The bundled copy is
+/// a pinned location when its tag is the pin (or the pin cannot be read):
+/// the hook only ever bundles the embedded release, checked by sha256.
+///
 /// An unreadable pin is tolerated without a notice when the library is the
-/// submodule's own source build — that is how CI runs (its shallow submodule
-/// checkout carries no tags), and that build is the pin by construction.
+/// submodule's own source build or the bundled release — that is how CI runs
+/// (its shallow submodule checkout carries no tags), and both are the pin by
+/// construction.
 String? unpinnedEngineNotice({
   required String version,
   required String libDir,
   required String root,
   required String? tag,
   String? pinProblem,
+  String? bundledTag,
   required bool caseSensitive,
 }) {
-  final pinnedPlace = isPinnedLocation(
-    libDir: libDir,
-    root: root,
-    tag: tag,
-    caseSensitive: caseSensitive,
-  );
+  final pinnedPlace = bundledTag != null
+      ? tag == null || bundledTag == tag
+      : isPinnedLocation(
+          libDir: libDir,
+          root: root,
+          tag: tag,
+          caseSensitive: caseSensitive,
+        );
   final reasons = <String>[];
   if (tag == null) {
     if (pinnedPlace) return null;
@@ -181,8 +190,13 @@ String? unpinnedEngineNotice({
   }
   if (!pinnedPlace) {
     reasons.add(
-      'it was loaded from outside the pinned locations '
-      '($engineCacheDir/${tag ?? '<tag>'}/ and $submodulePath/build/bin)',
+      bundledTag != null
+          ? 'it is the release the build hook bundles ($bundledTag), not the '
+                'pin'
+          : 'it was loaded from outside the pinned locations '
+                '(the build hook\'s bundled release, '
+                '$engineCacheDir/${tag ?? '<tag>'}/ and '
+                '$submodulePath/build/bin)',
     );
   }
   if (reasons.isEmpty) return null;
@@ -199,7 +213,8 @@ String? unpinnedEngineNotice({
     '!!',
     '!!  Results can differ from CI, which always uses the pin; snapshot and',
     '!!  drift tests may fail for that reason alone. Bindings regenerated',
-    '!!  against this engine must not be committed. For the pinned release:',
+    '!!  against this engine must not be committed. For the pinned release,',
+    '!!  unset YSE_DLL_PATH (the build hook bundles it), or:',
     '!!    dart run tool/fetch_engine.dart   (and set YSE_DLL_PATH to it)',
     rule,
   ].join('\n');

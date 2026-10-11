@@ -37,6 +37,39 @@ enum ChannelType {
   const ChannelType(this.native);
 }
 
+/// What the [System.setAutoReconnect] watchdog last did, read from
+/// [System.reconnectState].
+///
+/// Values match `YSE::RECONNECT_STATE` (see `YseEngine/headers/enums.hpp`).
+enum ReconnectState {
+  /// No attempt since the session started, the last successful
+  /// [System.openDevice], or the last [System.setAutoReconnect] call.
+  none(raw.YseReconnectState.YSE_RS_NONE),
+
+  /// The last attempt opened nothing; the watchdog tries again after the
+  /// delay. No stream is open, so [System.refreshDevices] can be called to
+  /// pick up a device that was plugged back in.
+  reconnecting(raw.YseReconnectState.YSE_RS_RECONNECTING),
+
+  /// The last attempt reopened the device the session had.
+  restored(raw.YseReconnectState.YSE_RS_RESTORED),
+
+  /// The session's device could not be reopened, so the default output
+  /// device was opened instead (only with `fallbackToDefault`).
+  fellBackToDefault(raw.YseReconnectState.YSE_RS_FELL_BACK_TO_DEFAULT),
+
+  /// The attempt limit was reached and the watchdog stopped trying.
+  failed(raw.YseReconnectState.YSE_RS_FAILED);
+
+  /// The raw FFI enum value used by the C ABI.
+  final raw.YseReconnectState native;
+  const ReconnectState(this.native);
+
+  /// Maps a raw C-side [raw.YseReconnectState] to its Dart enum.
+  static ReconnectState fromNative(raw.YseReconnectState native) =>
+      values.firstWhere((e) => e.native == native);
+}
+
 /// Low-frequency-oscillator shape used by [DspObject.lfoType].
 ///
 /// Values match `YSE::DSP::LFO_TYPE`.

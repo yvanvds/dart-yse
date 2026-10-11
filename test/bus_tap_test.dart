@@ -4,7 +4,7 @@
 //
 //   * `BusValue` — pure-Dart value types (tagged union + record frame). These
 //     need no engine and run anywhere.
-//   * `LiveCoding.bus` — engine-touching delivery, prefix filtering, and the
+//   * `Bus.tap` — engine-touching delivery, prefix filtering, and the
 //     install/teardown lifecycle. These touch the real engine through
 //     `libyse.dll` / `libyse.so`, so the library must be resolvable — set
 //     `YSE_DLL_PATH` to the directory holding it (see README / CLAUDE.md):
@@ -94,7 +94,7 @@ void main() {
     });
   });
 
-  group('LiveCoding.bus (engine)', () {
+  group('Bus.tap (engine)', () {
     late System sys;
 
     setUpAll(() {
@@ -133,7 +133,7 @@ void main() {
       final (patcher, send) = makeSender('ping');
       final frames = <BusFrame>[];
       // Empty prefix matches every address.
-      final sub = LiveCoding.bus('').listen(frames.add);
+      final sub = Bus.tap('').listen(frames.add);
       await Future<void>.delayed(Duration.zero);
 
       send.sendInt(0, 42);
@@ -155,7 +155,7 @@ void main() {
     test('reconstructs float, string, and bang kinds from gSend', () async {
       final (patcher, send) = makeSender('multi');
       final frames = <BusFrame>[];
-      final sub = LiveCoding.bus('').listen(frames.add);
+      final sub = Bus.tap('').listen(frames.add);
       await Future<void>.delayed(Duration.zero);
 
       send.sendFloat(0, 1.5);
@@ -182,8 +182,8 @@ void main() {
       // prefix matches; the other never can.
       final matched = <BusFrame>[];
       final missed = <BusFrame>[];
-      final subM = LiveCoding.bus('patcher.').listen(matched.add);
-      final subX = LiveCoding.bus('phi.ctl.').listen(missed.add);
+      final subM = Bus.tap('patcher.').listen(matched.add);
+      final subX = Bus.tap('phi.ctl.').listen(missed.add);
       await Future<void>.delayed(Duration.zero);
 
       send.sendInt(0, 7);
@@ -205,7 +205,7 @@ void main() {
     test(
       'shares one bridge across listeners and reinstalls after teardown',
       () async {
-        final stream = LiveCoding.bus('patcher.');
+        final stream = Bus.tap('patcher.');
         expect(stream.isBroadcast, isTrue);
 
         final (patcher, send) = makeSender('life');
@@ -229,7 +229,7 @@ void main() {
         // Re-subscribing reinstalls a working tap: delivery here proves
         // teardown left the façade reusable rather than closed/leaked.
         final c = <BusFrame>[];
-        final subC = LiveCoding.bus('patcher.').listen(c.add);
+        final subC = Bus.tap('patcher.').listen(c.add);
         await Future<void>.delayed(Duration.zero);
 
         send.sendInt(0, 2);

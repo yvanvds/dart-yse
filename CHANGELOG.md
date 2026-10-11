@@ -25,6 +25,91 @@
   - Engine behaviour changes picked up: `bandPass` has unity gain at its
     centre frequency (upstream #1022).
 
+- **libYSE 3 session and device semantics** (#56, closes #52 and #53):
+  - New `System.requestedSampleRate` (get/set before `init` /
+    `initOffline`; survives `close`, 0 clears it). An offline session runs
+    exactly at the requested rate. The default session rate is now 48 kHz
+    (was 44.1 kHz), so offline renders that assumed 44.1 kHz change length.
+  - New `System.setChannelConfiguration(layout, outputs)` sets the speaker
+    layout of a session with no device (offline, headless CI).
+  - New `DeviceSetup.outputChannels`.
+  - `System.init()` now throws `YseException` when no device opens and
+    leaves the engine closed; fall back to `initOffline()`.
+  - `System.openDevice()` now throws when the engine opened nothing (no
+    output device, a stale device, a stream error, an offline session
+    without a backend) instead of returning normally (#52).
+  - `DeviceSetup.sampleRate` cannot change a running session's rate; use
+    `requestedSampleRate` before init (#53).
+  - `DspObject.granulator`'s default `poolSize` is 5 s at 48 kHz
+    (`48000 * 5`, was `44100 * 5`).
+  - Dartdoc corrected for `setAutoReconnect` (`delayMs` is wall-clock
+    milliseconds), `resume` (no-op on an offline session),
+    `missedCallbacks`, `devices`, `Device.defaultBufferSize`, the MIDI
+    device-name getters and `underwaterDepth` (world units below the
+    surface, not 0..1).
+
+- **Render threads, block size and RNG seeding** (#57):
+  - New `System.renderThreads` (get/set; `-1` auto, `0` audio thread only,
+    `n` workers; set before init, survives `close`) and
+    `System.activeRenderThreads`.
+  - New static `System.blockSize` (128): `renderOffline(blocks)` renders
+    `blocks * blockSize` frames.
+  - New static `System.randomSeed(seed)` / `System.randomize()` seed the
+    engine's generator (`.random`, granulator jitter, LFO random shapes).
+    The engine is reproducible by default.
+
+- **`Bus`: host publish and exact-address subscribe** (#59):
+  - New `Bus` class: `Bus.publish(address, value)`, `Bus.subscribe(address)`
+    (exact match) and `Bus.tap(prefix)`. `BusValue` / `BusFrame` move to it.
+  - `LiveCoding.bus` is deprecated; it forwards to `Bus.tap`.
+  - `System.close()` now releases every bus subscription and tap and
+    closes their streams. Before, a tap stream went silent but stayed
+    cached, so re-tapping the same prefix after a re-init never fired.
+  - New `Synth.busName`, so a synth answers on `synth.<name>.*`.
+
+- **Named sounds and channels on the bus** (#60):
+  - New `Sound.busName`: a named sound answers on `sound.<name>.volume`,
+    `.speed` and `.position`.
+  - New `Channel.busName`: a named channel answers on
+    `channel.<name>.volume`. It is separate from `Channel.name`, the log
+    name given to `Channel.create`. `busName` is the name used for bus
+    addressing on all three kinds. The value is remembered per native
+    channel, so `Channel.master.busName` reads back across wrappers.
+    `System.close()` forgets it.
+
+- **List audio devices without opening one** (#51, upstream
+  yse-soundengine#1026):
+  - New `System.refreshDevices()` fills `System.devices` (and
+    `defaultDevice` / `defaultHost`) without opening a stream. It works
+    before `init`, on an `initOffline()` session and on a running device
+    session, and returns `false` with an empty list when the audio
+    backend cannot start.
+  - It also starts the backend, so `openDevice()` now works on an
+    `initOffline()` session in a process that never called `init()`.
+  - Hot-plug: with no stream open the backend restarts and picks up
+    devices plugged in or removed since. With a stream open the list is
+    re-read from the existing enumeration, so a new device appears only
+    after the device is closed and the list is refreshed again.
+  - The refresh replaces the list; match devices by name and host, not
+    by index.
+
+- **Auto-reconnect reopens the session's device and reports the outcome**
+  (#54, upstream yse-soundengine#1027):
+  - `System.setAutoReconnect` now reopens the device of the last
+    successful `openDevice()` (found again by name and host, with its
+    channel count and buffer size) instead of the default output device.
+    A session that never called `openDevice()` still reopens the current
+    default.
+  - New optional `fallbackToDefault` (open the default device when the
+    session's own cannot be reopened; off by default) and `maxAttempts`
+    (stop after that many consecutive failed attempts; 0 = no limit).
+  - New `System.reconnectState` (`ReconnectState`: `none`,
+    `reconnecting`, `restored`, `fellBackToDefault`, `failed`),
+    `System.reconnectCount`, and `System.activeDevice` /
+    `System.activeHost` for the device actually playing.
+  - `System.resume()` reopens the same device and never falls back to
+    another one.
+
 - **API reference site.** New `docs/` tree builds a Sphinx site that
   mirrors the upstream libYSE docs site (sphinx-book-theme, same
   intro / tutorials / API layout) so contributors who already know

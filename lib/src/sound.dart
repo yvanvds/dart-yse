@@ -11,6 +11,7 @@ import 'library.dart';
 import 'patcher.dart';
 import 'pos.dart';
 import 'synth.dart';
+import 'system.dart' show System;
 
 /// A playable instance of an audio source.
 ///
@@ -248,8 +249,12 @@ class Sound implements Finalizable {
   bool get pan2D => _b.sound_get_pan2d(_handle) != 0;
   set pan2D(bool value) => _b.sound_set_pan2d(_handle, value ? 1 : 0);
 
-  /// Whether occlusion is active for this sound. Requires a
-  /// callback installed via the engine's occlusion hook.
+  /// Whether occlusion is active for this sound.
+  ///
+  /// An occlusion-enabled sound is ducked by the value the
+  /// [System.occlusion] callback returns for it on every
+  /// [System.update] (`gain *= 1 - occlusion`). With no callback installed
+  /// the sound keeps the last value it received (0 initially).
   bool get occlusion => _b.sound_get_occlusion(_handle) != 0;
   set occlusion(bool value) => _b.sound_set_occlusion(_handle, value ? 1 : 0);
 
@@ -275,6 +280,41 @@ class Sound implements Finalizable {
   /// for as long as the sound is live; [dsp] must outlive this sound and
   /// the engine's slow-pool delete tick that follows its destruction.
   set dsp(DspObject? dsp) => _b.sound_set_dsp(_handle, dsp?.handle ?? nullptr);
+
+  String? _busName;
+
+  /// The name this sound answers to on the global bus, or `null` when it is
+  /// anonymous (the default).
+  ///
+  /// Once named `foo`, the engine subscribes the sound to:
+  ///
+  /// * `sound.foo.volume` — a `BusFloat` (or `BusInt`), as [volume];
+  /// * `sound.foo.speed` — a `BusFloat` (or `BusInt`), as [speed];
+  /// * `sound.foo.position` — a `BusList` of three floats `[x, y, z]`, as
+  ///   [position].
+  ///
+  /// so a `Bus.publish` (or a script's `yse.send`, or a patcher `.s`) drives
+  /// it with no host round-trip. Values that arrive before the sound's load
+  /// has succeeded are dropped.
+  ///
+  /// Setting `null` or `''` clears the name and its subscriptions; renaming
+  /// re-subscribes. Names are unique per sound — a duplicate is rejected and
+  /// logged by the engine, with no error here (this getter still reports the
+  /// requested name). Only effective while the engine is between init and
+  /// close. There is no native getter: this returns the last value set
+  /// through this wrapper, matching `Synth.busName`.
+  String? get busName => _busName;
+  set busName(String? name) {
+    using((arena) {
+      _b.sound_set_name(
+        _handle,
+        name == null || name.isEmpty
+            ? nullptr
+            : name.toNativeUtf8(allocator: arena).cast(),
+      );
+    });
+    _busName = name == null || name.isEmpty ? null : name;
+  }
 
   /// Destroy the underlying native sound and detach the finalizer.
   ///

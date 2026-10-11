@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'bindings/yse_bindings.g.dart';
 import 'ffi_helpers.dart';
 import 'library.dart';
+import 'system.dart';
 
 /// Read-only descriptor of an audio device on the host system.
 ///
@@ -10,6 +11,10 @@ import 'library.dart';
 /// by [System.devices]. Inspect [name], [hostName], the channel-name
 /// lists, supported sample rates, and buffer sizes; then build a
 /// [DeviceSetup] from one and pass it to [System.openDevice].
+///
+/// The getters are bound-checked by the engine: the indexed lists stop at
+/// the counts the device reports, and the scalar getters always return a
+/// defined value (0 for an unreported size or latency, -1 for [id]).
 class Device {
   final YseBindings _b;
   final Pointer<YseDevice> _handle;
@@ -75,7 +80,13 @@ class Device {
     );
   }
 
-  /// Default buffer size for this device.
+  /// Default buffer size for this device, in frames.
+  ///
+  /// 0 means "the host does not advertise one", not "zero frames"; passed
+  /// on to [DeviceSetup.bufferSize] it asks the backend to choose. The
+  /// PortAudio enumerator (desktop) reports 0 for every device, so read the
+  /// negotiated size back from [System.activeBufferSize] once the device is
+  /// open.
   int get defaultBufferSize => _b.device_default_buffer_size(_handle);
 
   /// Reported output latency in samples.
@@ -86,6 +97,9 @@ class Device {
 
   /// Host-assigned device ID, or `-1` when this descriptor refers to no
   /// device.
+  ///
+  /// Every device in [System.devices] carries a real, non-negative index.
+  /// [System.openDevice] refuses a setup whose output device reads -1.
   int get id => _b.device_get_id(_handle);
 
   @override
@@ -97,8 +111,9 @@ class Device {
 /// Configuration passed to [System.openDevice].
 ///
 /// Build one by selecting an output [Device], optionally an input [Device],
-/// and (also optionally) explicit sample-rate / buffer-size overrides. The
-/// engine falls back to the device's defaults for fields you don't set.
+/// and (also optionally) a buffer size. The engine falls back to the
+/// device's defaults for fields you don't set. A setup with no output
+/// device is refused by [System.openDevice].
 class DeviceSetup implements Finalizable {
   static final _finalizer = NativeFinalizer(
     bindings.addresses.device_setup_destroy.cast(),
@@ -132,12 +147,25 @@ class DeviceSetup implements Finalizable {
   /// Select the output device.
   set output(Device value) => _b.device_setup_set_output(_handle, value.handle);
 
-  /// Override the device's default sample rate.
+  /// Sample rate in Hz to open the device at; 0 (the default) means no
+  /// request.
+  ///
+  /// This does **not** change a running session's rate. The session rate is
+  /// fixed from [System.init] / [System.initOffline] until [System.close]:
+  /// when this value differs from [System.sessionSampleRate],
+  /// [System.openDevice] logs a warning and opens the stream at the session
+  /// rate anyway (and throws if the device refuses that rate). To run at a
+  /// given rate, set [System.requestedSampleRate] before init instead.
   set sampleRate(double value) =>
       _b.device_setup_set_sample_rate(_handle, value);
 
-  /// Override the device's default buffer size.
+  /// Device buffer size in frames per callback. 0 lets the backend choose.
   set bufferSize(int value) => _b.device_setup_set_buffer_size(_handle, value);
+
+  /// Output channel count of the device selected with [output] — the count
+  /// [System.openDevice] opens the stream with. 0 before an output device
+  /// is set.
+  int get outputChannels => _b.device_setup_get_output_channels(_handle);
 
   /// Destroy the underlying native setup and detach the finalizer.
   void dispose() {

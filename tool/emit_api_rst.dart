@@ -275,7 +275,73 @@ String? _commentText(Comment? comment) {
     lines.removeLast();
   }
   if (lines.isEmpty) return null;
-  return lines.join('\n');
+  return _markdownToRst(lines).join('\n');
+}
+
+/// Rewrites the two block-level Markdown constructs dartdoc comments use
+/// that docutils would misparse: fenced code blocks (```` ```dart ````)
+/// become `.. code-block::` directives, and pipe tables become
+/// `.. list-table::` directives. Everything else passes through verbatim.
+List<String> _markdownToRst(List<String> lines) {
+  final out = <String>[];
+  void blankBefore() {
+    if (out.isNotEmpty && out.last.trim().isNotEmpty) out.add('');
+  }
+
+  final fence = RegExp(r'^\s*```\s*(\w*)\s*$');
+  var i = 0;
+  while (i < lines.length) {
+    final open = fence.firstMatch(lines[i]);
+    if (open != null) {
+      final lang = open.group(1)!.isEmpty ? 'dart' : open.group(1)!;
+      blankBefore();
+      out
+        ..add('.. code-block:: $lang')
+        ..add('');
+      i++;
+      while (i < lines.length && !RegExp(r'^\s*```\s*$').hasMatch(lines[i])) {
+        out.add(lines[i].trim().isEmpty ? '' : '   ${lines[i]}');
+        i++;
+      }
+      i++; // closing fence
+      out.add('');
+      continue;
+    }
+    if (lines[i].trimLeft().startsWith('|')) {
+      final rows = <List<String>>[];
+      while (i < lines.length && lines[i].trimLeft().startsWith('|')) {
+        final row = lines[i].trim();
+        final cells = row
+            .substring(1, row.endsWith('|') ? row.length - 1 : row.length)
+            .split('|')
+            .map((c) => c.trim())
+            .toList();
+        // Skip the header separator row (|---|:--:|).
+        if (!cells.every((c) => RegExp(r'^:?-+:?$').hasMatch(c))) {
+          rows.add(cells);
+        }
+        i++;
+      }
+      blankBefore();
+      out
+        ..add('.. list-table::')
+        ..add('   :header-rows: 1')
+        ..add('');
+      for (final row in rows) {
+        for (var c = 0; c < row.length; c++) {
+          out.add('${c == 0 ? '   * - ' : '     - '}${row[c]}');
+        }
+      }
+      out.add('');
+      continue;
+    }
+    out.add(lines[i]);
+    i++;
+  }
+  while (out.isNotEmpty && out.last.trim().isEmpty) {
+    out.removeLast();
+  }
+  return out;
 }
 
 String _constructorSignature(String className, ConstructorDeclaration node) {

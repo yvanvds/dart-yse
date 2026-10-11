@@ -49,16 +49,29 @@ maintainer-applied.
 
 ## Running locally
 
-Requires Dart SDK ≥ 3.8, CMake ≥ 3.20, and one of:
+Requires Dart SDK ≥ 3.8, `git` and `tar`. The default is the engine's
+prebuilt release for the pinned tag: `dart run tool/fetch_engine.dart`
+downloads it into the gitignored `.engine/<tag>/` (skipped when already
+there) and prints the `YSE_DLL_PATH` to use, `.engine/<tag>/libyse-<tag>-windows-x64/bin`
+on Windows and `.engine/<tag>/libyse-<tag>-linux-x64/lib` on Linux.
+Linux also needs the runtime packages `libportaudio2`, `libsndfile1`,
+`librtmidi6`. It fails if the submodule pin is not a release tag.
+
+Building the engine from source is the alternative (and what CI does),
+needing CMake ≥ 3.20 and:
 
 - **Windows** — MSYS2 Clang64 (to build `libyse.dll`).
 - **Linux** — GCC or Clang, plus `portaudio19-dev`, `libsndfile1-dev`,
   `librtmidi-dev` (Ubuntu 24.04 is the tested baseline).
-- **Android** — NDK 27 via Flutter / Gradle, driven by the sibling
-  `yse_flutter_libs` plugin under `packages/`. The plugin's Gradle
-  module externalNativeBuild's the engine CMakeLists for each ABI.
+- **Android** — the sibling `yse_flutter_libs` plugin under `packages/`
+  packages the engine's prebuilt android release for the tag in its
+  `android/engine.properties` (kept equal to the pin by
+  `test/flutter_libs_engine_test.dart`; bump tag and sha256 with the
+  pin). `dart run tool/fetch_engine.dart --platform android` pre-fetches
+  it; otherwise Gradle downloads it. Compiling with NDK 27 is opt-in via
+  the Gradle property `yse.buildFromSource=true` (#91).
 
-See [README.md](README.md) for the per-platform build recipe.
+See [README.md](README.md) for both recipes.
 
 `third_party/yse-soundengine` is a normal git submodule pinned to an
 engine release tag. Clone with `--recurse-submodules`, or run
@@ -71,20 +84,22 @@ gitlink, then regenerate the bindings. Engine development happens in a
 separate clone of yse-soundengine, never through the submodule.
 
 ```powershell
-# Windows. After building libyse.dll into the submodule's build/ dir:
-$env:YSE_DLL_PATH = "$PWD\third_party\yse-soundengine\build\bin"
-
+# Windows.
 dart pub get
+dart run tool/fetch_engine.dart
+$env:YSE_DLL_PATH = "$PWD\.engine\v3.1.0\libyse-v3.1.0-windows-x64\bin"
+
 dart analyze
 dart test
 dart run example/hello_sound.dart
 ```
 
 ```bash
-# Linux. After building libyse.so into the submodule's build/ dir:
-export YSE_DLL_PATH="$PWD/third_party/yse-soundengine/build/bin"
-
+# Linux.
 dart pub get
+dart run tool/fetch_engine.dart
+export YSE_DLL_PATH="$PWD/.engine/v3.1.0/libyse-v3.1.0-linux-x64/lib"
+
 dart analyze
 dart test
 dart run example/hello_sound.dart
@@ -93,12 +108,28 @@ dart run example/hello_sound.dart
 For Windows-only Linux validation without rebooting, see
 `tools/ci-linux/Dockerfile` in the README.
 
+**Unreleased engine (opt-in).** To validate an engine change before it
+is tagged, build the separate dev clone and point `YSE_DLL_PATH` at its
+output (e.g. `D:\yse-soundengine\build\bin`). Only do this when asked;
+the default flow never reads or builds the dev clone. Every engine test
+suite then prints an `UNRELEASED ENGINE` banner (from
+`test/support/engine_pin.dart`) when `System.version` differs from the
+pinned tag or the library is loaded from outside `.engine/<tag>/` and the
+submodule's `build/bin`. It never fails a test; drift-test failures under
+that banner are expected and must not be "fixed" against the dev engine.
+Report which engine a result came from. Bindings regenerated against
+unreleased headers are for local experiments only — committed bindings
+come from the pinned tag. Once the engine change is released: bump the
+pin to the new tag, regenerate the bindings, `dart run
+tool/fetch_engine.dart`.
+
 ## Boundaries
 
 - **Don't** push to `main` without confirmation.
 - **Don't** skip hooks (`--no-verify`) or bypass signing.
 - **Don't** hand-edit `lib/src/bindings/yse_bindings.g.dart` — regenerate
-  via ffigen.
+  via ffigen, from the pinned tag's headers only (never commit bindings
+  generated against an unreleased engine).
 - **Don't** point the submodule at an untagged engine commit or develop
   the engine inside it; bump the gitlink only to a release tag.
 - **Don't** import `lib/src/bindings/` outside `lib/src/`. Consumers of

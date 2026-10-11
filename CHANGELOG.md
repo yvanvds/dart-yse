@@ -439,10 +439,51 @@ new Dart code for every change below (#70).
   emits pages for typedefs (`BusFrame`, `OcclusionFn`), exits 1 when a
   re-exported name has no page, and translates dartdoc's fenced code
   blocks and pipe tables into RST so the Sphinx build stays warning-free.
+- **Prebuilt engine for the pinned tag** (#88): new
+  `tool/fetch_engine.dart` reads the release tag the engine submodule
+  pins, downloads that tag's Windows x64 or Linux x64 release asset from
+  the public yse-soundengine release URL (no `gh` needed), checks it
+  against the sha256 digest GitHub reports, and unpacks it into the
+  gitignored `.engine/<tag>/`. Running the tests and examples no longer
+  needs MSYS2 or CMake: point `YSE_DLL_PATH` at the path it prints. It
+  fails when the pin is not a release tag. Building from source stays
+  documented as the alternative and is what CI still does.
+- **Unreleased-engine mode, made visible** (#89): testing against an
+  engine that has no release yet is opt-in, by pointing `YSE_DLL_PATH` at
+  a build of a separate yse-soundengine clone (README, *Unreleased engine
+  (opt-in)*). Every engine test suite now prints an `UNRELEASED ENGINE`
+  banner when `System.version` differs from the pinned tag (`3.1.0` vs
+  `v3.1.0`) or the library is loaded from outside `.engine/<tag>/` and
+  the submodule's `build/bin`; it never fails a test. Committed bindings
+  must come from the pinned tag. The pin helpers moved from
+  `tool/fetch_engine.dart` to the shared `tool/engine_pin.dart`. The
+  loader still does not search `.engine/` on its own.
 - `ffigen.yaml` documents `dart run ffigen --config ffigen.yaml` (ffigen
   20 no longer finds the config on its own) (#55).
-- `yse_flutter_libs` is bumped to 0.2.0: it builds the same pinned
+- `yse_flutter_libs` is bumped to 0.2.0: it packages the same pinned
   libYSE v3.1.0.
+- **`yse_flutter_libs` packages the engine's Android release** (#91)
+  instead of compiling libYSE with the NDK per ABI. The plugin's
+  `android/engine.properties` names the tag and the sha256 of
+  `libyse-<tag>-android.tar.gz`; Gradle downloads it once into the Gradle
+  user home, checks the digest and adds `arm64-v8a` / `x86_64` as
+  `jniLibs`, so consumers (including pub.dev and git dependencies) need
+  neither the NDK nor the engine sources. `tool/fetch_engine.dart
+  --platform android` unpacks the same asset into `.engine/<tag>/`,
+  which the plugin uses in a checkout; the Gradle property
+  `yse.engineDir` covers offline builds, and `yse.buildFromSource=true`
+  keeps the NDK source build as an opt-in for unreleased engines.
+  `test/flutter_libs_engine_test.dart` fails when `engine.properties`
+  drifts from the submodule pin.
+- **A relative `YSE_DLL_PATH` loads on Windows** (#92). The loader now
+  resolves `YSE_DLL_PATH` against the working directory before loading.
+  Before, a relative path failed with error 126: `SetDllDirectoryW` takes
+  the working directory out of the DLL search order, and `LoadLibrary`
+  looks a relative path up along that order, so `libyse.dll` itself was
+  not found. A failed load now throws a `YseException` that names the
+  resolved path and the likely cause (a missing dependency library).
+  `test/library_load_test.dart` loads the engine through a relative path
+  in a fresh process.
 
 ### Known upstream issues
 

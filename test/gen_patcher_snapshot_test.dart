@@ -18,6 +18,7 @@ import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
 import '../tool/gen_patcher_snapshot.dart';
+import 'support/engine_pin.dart';
 
 const _snapshotPath = 'docs/source/_data/patcher_objects.json';
 
@@ -25,6 +26,8 @@ Map<String, dynamic> _snapshot() =>
     jsonDecode(File(_snapshotPath).readAsStringSync()) as Map<String, dynamic>;
 
 void main() {
+  setUpAll(noticeUnpinnedEngine);
+
   group('renderPatcherSnapshot', () {
     test('sorts every map key, keeps list order, ends with a newline', () {
       final out = renderPatcherSnapshot({

@@ -11,9 +11,12 @@ library;
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/engine_pin.dart';
 import 'support/sound_ready.dart';
 
 void main() {
+  setUpAll(noticeUnpinnedEngine);
+
   late System sys;
 
   setUpAll(() {

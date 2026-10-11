@@ -51,8 +51,11 @@ pinned tree, so a local checkout sees exactly what CI sees.
   git commit -m "chore(infra): bump libYSE to v3.2.0"
   ```
 
-  Then regenerate the bindings (`dart run ffigen --config ffigen.yaml`)
-  and rerun the drift tests.
+  Then regenerate the bindings (`dart run ffigen --config ffigen.yaml`),
+  fetch the new release (`dart run tool/fetch_engine.dart`) and rerun the
+  drift tests. Committed bindings always come from the pinned tag's
+  headers; never commit bindings generated against an unreleased engine
+  (see [Unreleased engine](#unreleased-engine-opt-in)).
 - **Engine development** happens in a separate clone of
   yse-soundengine, not through the submodule. Keep the submodule on its
   release tag; `git status` should show it clean.
@@ -63,7 +66,62 @@ interpreter behind `LiveCoding`, and `YSE_ENABLE_MIDI_DEVICE` (default
 `ON` on Windows / Linux) builds the RtMidi backend behind `MidiIn` /
 `MidiOut` and the MIDI-device patcher objects.
 
-### Windows
+### Prebuilt engine (default)
+
+The engine publishes `libyse` binaries for every release tag.
+`tool/fetch_engine.dart` reads the tag the submodule pins
+(`git describe --tags --exact-match`), downloads that release's asset
+for your platform from
+`https://github.com/yvanvds/yse-soundengine/releases`, checks it
+against the sha256 digest GitHub reports for it, and unpacks it into
+the gitignored `.engine/<tag>/`. A tag that is already there is not
+downloaded again (`--force` re-fetches). It needs only the Dart SDK,
+`git` and `tar` (built into Windows 10+ and Linux); no `gh`, MSYS2 or
+CMake. It fails if the pin is not a release tag.
+
+```powershell
+# Windows
+git clone --recurse-submodules https://github.com/yvanvds/dart-yse
+cd dart-yse
+dart pub get
+dart run tool/fetch_engine.dart
+$env:YSE_DLL_PATH = "$PWD\.engine\v3.1.0\libyse-v3.1.0-windows-x64\bin"
+dart test
+```
+
+```bash
+# Linux (x86_64). Runtime libraries only, no build toolchain:
+sudo apt-get install -y libportaudio2 libsndfile1 librtmidi6
+
+git clone --recurse-submodules https://github.com/yvanvds/dart-yse
+cd dart-yse
+dart pub get
+dart run tool/fetch_engine.dart
+export YSE_DLL_PATH="$PWD/.engine/v3.1.0/libyse-v3.1.0-linux-x64/lib"
+dart test
+```
+
+The tool prints the exact `YSE_DLL_PATH` for the pinned tag as its last
+line. The Windows `bin/` holds `libyse.dll` and all its runtime DLLs. The
+release builds use the default options: MIDI device I/O on, Python
+(`LiveCoding`) off. The C headers `ffigen` reads still come from the
+submodule.
+
+`--platform android` fetches the Android asset instead (one
+`lib/<abi>/libyse.so` per ABI) for the `yse_flutter_libs` plugin; see
+[Android](#android).
+
+The loader does not look in `.engine/` by itself: that folder exists only
+in a dart-yse checkout, never in a published package, so you always say
+which engine you run by setting `YSE_DLL_PATH`. To try an engine that has
+no release yet, see [Unreleased engine](#unreleased-engine-opt-in).
+
+### Building the engine from source
+
+Use this for a platform without a prebuilt asset, or to change build
+options such as `-DYSE_ENABLE_PYTHON=ON`.
+
+#### Windows
 
 Requires MSYS2 Clang64 (the same toolchain YSE itself uses) and CMake.
 
@@ -94,7 +152,7 @@ dart run example/hello_sound.dart
 
 (Or copy that directory's contents next to your Dart executable.)
 
-### Linux
+#### Linux
 
 Tested on Ubuntu 24.04. Requires CMake ≥ 3.20, Ninja, GCC or Clang,
 and the system development packages that YSE links against.
@@ -127,6 +185,48 @@ The upstream CMake build embeds `$ORIGIN` in the `.so`'s RPATH, so
 sibling shared libraries are discovered automatically — no
 `LD_LIBRARY_PATH` setup needed.
 
+### Unreleased engine (opt-in)
+
+dart-yse is also where engine changes get tried before they are tagged.
+To do that, build your own clone of yse-soundengine (not the submodule,
+which stays on its release tag) and point `YSE_DLL_PATH` at its output:
+
+```powershell
+# Windows, with the dev clone built at D:\yse-soundengine\build
+$env:YSE_DLL_PATH = "D:\yse-soundengine\build\bin"
+dart test
+```
+
+```bash
+# Linux
+export YSE_DLL_PATH="$HOME/src/yse-soundengine/build/bin"
+dart test
+```
+
+This mode is only ever entered on purpose; nothing in the default flow
+reads or builds a dev clone. While it is active, every engine test suite
+prints an `UNRELEASED ENGINE` banner in its setup output, naming the
+pinned tag and the library actually loaded. The banner appears when
+`System.version` differs from the pinned tag (`3.1.0` for `v3.1.0`) or
+when the library comes from anywhere other than `.engine/<tag>/` or
+the submodule's own `build/bin` (libYSE's version string only changes
+at release time, so a dev build just after a tag still reports that
+tag). It never fails a test. Expect snapshot and drift tests to fail
+when the dev engine has changed what they check; CI always runs the pin.
+
+On Android the same mode is the `yse_flutter_libs` Gradle properties
+`yse.buildFromSource=true` and `yse.engineSourceDir=<dev clone>` in the
+sample or app's `android/gradle.properties` (see [Android](#android)).
+Leave them out of anything you commit.
+
+To try new C API functions you can regenerate the bindings against the
+dev clone's headers (point the `headers.entry-points` path in
+`ffigen.yaml` at the clone's `yse_all.h`), but only locally: committed
+bindings, and `ffigen.yaml` itself, must stay on the pinned tag's
+headers in the submodule. When the
+engine change is released, bump the pin to the new tag, regenerate,
+and run `dart run tool/fetch_engine.dart`.
+
 ### Linux validation from Windows (optional)
 
 `tools/ci-linux/Dockerfile` builds an image with the engine deps and
@@ -150,9 +250,8 @@ no audio device required).
 
 Android consumers add a second package — the sibling Flutter plugin
 [`yse_flutter_libs`](packages/yse_flutter_libs/) — which is responsible
-for cross-compiling `libyse.so` with the NDK and bundling it into the
-APK / AAB. `package:yse` itself stays pure Dart and works unchanged on
-CLI / server hosts.
+for bundling `libyse.so` into the APK / AAB. `package:yse` itself stays
+pure Dart and works unchanged on CLI / server hosts.
 
 ```yaml
 dependencies:
@@ -160,27 +259,42 @@ dependencies:
   yse_flutter_libs: ^0.2.0
 ```
 
-Keep the two at the same minor version: `yse_flutter_libs` builds the
-engine from this repository's submodule, and `yse` 0.2.0 needs the
-libYSE 3.1 C ABI it ships.
+Keep the two at the same minor version: `yse_flutter_libs` 0.2.x
+packages libYSE v3.1.0, and `yse` 0.2.0 needs the libYSE 3.1 C ABI it
+ships.
+
+The plugin packages the engine's prebuilt Android release (#91). Its
+`android/engine.properties` names the libYSE tag (kept equal to the
+submodule pin by `test/flutter_libs_engine_test.dart`) and the sha256 of
+`libyse-<tag>-android.tar.gz`. On the first build Gradle downloads that
+asset into `<gradle user home>/caches/yse-engine/<tag>/`, checks the
+digest and adds the per-ABI libraries as `jniLibs`. No NDK or CMake
+build of the engine is involved, and a pub.dev or git dependency on the
+plugin works the same way, since it never needs the engine sources.
+Inside a dart-yse checkout, `dart run tool/fetch_engine.dart --platform
+android` unpacks the asset into `.engine/<tag>/libyse-<tag>-android/`,
+which the plugin uses instead of downloading; elsewhere the Gradle
+property `yse.engineDir` points it at an unpacked asset for offline
+builds.
+
+`yse.buildFromSource=true` (in the app's `android/gradle.properties`)
+switches back to compiling the engine with the NDK per ABI — from the
+submodule, or from another clone via `yse.engineSourceDir`. Use it with
+an [unreleased engine](#unreleased-engine-opt-in) or for `armeabi-v7a`
+(`yse.abis`), which the release does not ship. It needs Android NDK
+27.0.12077973, and the first build compiles the engine cold (5–10
+minutes per ABI). The plugin's README has the details.
 
 Requirements:
 
 - Flutter ≥ 3.22
-- Android NDK **27.0.12077973** (matches the engine's CMake config) —
-  install via the Android SDK Manager.
 - Android Gradle Plugin ≥ 8.5
 - `minSdk` 26 so Oboe negotiates the AAudio backend (older devices fall
   back to OpenSL ES, which the engine still supports through Oboe but
-  has fewer guarantees on latency).
-- Default ABIs: `arm64-v8a`, `x86_64`. Add `armeabi-v7a` via
-  `ndk.abiFilters` in your app's `build.gradle` if you target older
-  32-bit devices (the engine builds for it but is not routinely tested
-  there).
-
-The first Gradle build pulls Oboe and libsndfile sources via
-FetchContent and compiles the engine cold — expect 5–10 minutes per
-ABI. Subsequent incremental builds are fast.
+  has fewer guarantees on latency). Flutter's app template defaults
+  lower, so set it in your app's `build.gradle`.
+- ABIs: `arm64-v8a`, `x86_64`, the ones the engine's Android release
+  ships.
 
 A minimal end-to-end Flutter sample lives at
 [`example/android_sample/`](example/android_sample/) — see the README

@@ -23,9 +23,12 @@ import 'dart:io';
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/engine_pin.dart';
 import 'support/sound_ready.dart';
 
 void main() {
+  setUpAll(noticeUnpinnedEngine);
+
   final sys = System.instance;
 
   void offlineSession() {

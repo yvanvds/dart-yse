@@ -20,7 +20,11 @@ import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/engine_pin.dart';
+
 void main() {
+  setUpAll(noticeUnpinnedEngine);
+
   late System sys;
 
   setUpAll(() {

@@ -12,9 +12,10 @@ import 'exception.dart';
 /// Resolution differs by platform:
 ///
 /// * **Windows / Linux** — locates the engine library on disk in this order:
-///   1. `YSE_DLL_PATH` env var — absolute path to a directory containing
+///   1. `YSE_DLL_PATH` env var — path to a directory containing
 ///      `libyse.dll` (Windows) or `libyse.so` (Linux) and its runtime
-///      dependencies.
+///      dependencies. A relative path is resolved against the current
+///      working directory before anything is loaded (#92).
 ///   2. `third_party/yse-soundengine/build/bin/` under the `yse` package's
 ///      own root, located via the consumer's
 ///      `.dart_tool/package_config.json`. Works for path, git, and
@@ -22,6 +23,11 @@ import 'exception.dart';
 ///   3. The same relative path under the current working directory — last
 ///      resort when no package config is available (e.g. running a loose
 ///      script).
+///
+///   The prebuilt release `tool/fetch_engine.dart` unpacks into the repo's
+///   `.engine/<tag>/` is deliberately *not* searched: that folder only exists
+///   in a dart-yse checkout, never in a published package, and requiring an
+///   explicit `YSE_DLL_PATH` keeps the choice of engine build visible (#89).
 ///
 ///   On Windows the resolved directory is also passed to `SetDllDirectoryW`
 ///   so that `libyse.dll`'s own dependency DLLs (libstdc++, libsndfile,
@@ -39,6 +45,13 @@ import 'exception.dart';
 ///   need to be loadable.
 YseBindings get bindings => _bindings ??= _load();
 YseBindings? _bindings;
+
+/// The directory the engine library was loaded from, or null before the
+/// first [bindings] access and on Android (where the system linker picks the
+/// APK's copy). Internal: the test suite uses it to tell whether it runs
+/// against the pinned engine release (#89).
+String? get loadedLibraryDirectory => _loadedDirectory;
+String? _loadedDirectory;
 
 YseBindings _load() {
   if (Platform.isAndroid) {
@@ -64,15 +77,39 @@ YseBindings _load() {
   }
 
   if (Platform.isWindows) _setDllDirectory(dir);
-  return YseBindings(DynamicLibrary.open(libPath));
+  final DynamicLibrary native;
+  try {
+    native = DynamicLibrary.open(libPath);
+  } on ArgumentError catch (e) {
+    final hint = Platform.isWindows
+        ? 'Error code 126 here usually means a DLL libyse.dll depends on '
+              '(libc++, libsndfile, libportaudio, ...) is missing: they ship '
+              'next to it in the release bin/ folder and must stay in the '
+              'same directory.'
+        : 'This usually means a shared library libyse.so depends on is '
+              'missing; run `ldd $libPath` to see which.';
+    final reason = '${e.message}'.replaceAll(RegExp(r'\s+'), ' ').trim();
+    throw YseException('Failed to load $libName from $libPath: $reason $hint');
+  }
+  _loadedDirectory = dir;
+  return YseBindings(native);
 }
 
+/// The directory to load from, always absolute.
+///
+/// A relative YSE_DLL_PATH is resolved against the current working directory
+/// here (#92): on Windows, `SetDllDirectoryW` takes the working directory out
+/// of the DLL search order, and `LoadLibrary` looks a relative path up along
+/// that search order rather than from the working directory, so a relative
+/// path made even `libyse.dll` itself unfindable (error 126).
 String _resolveLibDirectory() {
   final envPath = Platform.environment['YSE_DLL_PATH'];
-  if (envPath != null && envPath.isNotEmpty) return envPath;
+  if (envPath != null && envPath.isNotEmpty) {
+    return Directory(envPath).absolute.path;
+  }
 
   final pkgRoot = _resolveYsePackageRoot();
-  final base = pkgRoot ?? Directory.current.path;
+  final base = pkgRoot ?? Directory.current.absolute.path;
   return [
     base,
     'third_party',

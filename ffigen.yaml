@@ -3,6 +3,11 @@
 # lib/src/*.dart consume these. Regenerate with:
 #   dart run ffigen --config ffigen.yaml
 # (ffigen >= 20 no longer finds this file on its own.)
+#
+# Committed bindings must come from the pinned engine tag: the entry point
+# below reads the submodule, which stays on its release tag. To experiment
+# with an unreleased engine, point the entry point at a dev clone's
+# yse_all.h locally, but never commit that config or its output (#89).
 name: YseBindings
 description: Low-level FFI bindings for libyse_c.dll (do not use directly).
 

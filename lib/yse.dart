@@ -24,6 +24,8 @@
 library;
 
 export 'src/buffer_io.dart' show BufferIO;
+export 'src/bus.dart'
+    show Bus, BusBang, BusFloat, BusFrame, BusInt, BusList, BusString, BusValue;
 export 'src/channel.dart' show Channel;
 export 'src/clip.dart' show ClipEvent, ClipTransport;
 export 'src/device.dart' show Device, DeviceSetup;
@@ -55,16 +57,7 @@ export 'src/enums.dart'
         VaWaveform;
 export 'src/exception.dart' show YseException;
 export 'src/listener.dart' show Listener;
-export 'src/live_coding.dart'
-    show
-        BusBang,
-        BusFloat,
-        BusFrame,
-        BusInt,
-        BusList,
-        BusString,
-        BusValue,
-        LiveCoding;
+export 'src/live_coding.dart' show LiveCoding;
 export 'src/log.dart' show Log;
 export 'src/midi.dart'
     show MidiFile, MidiIn, MidiInParsedMessage, MidiInRawMessage, MidiOut;

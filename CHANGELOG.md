@@ -58,6 +58,15 @@
     engine's generator (`.random`, granulator jitter, LFO random shapes).
     The engine is reproducible by default.
 
+- **`Bus`: host publish and exact-address subscribe** (#59):
+  - New `Bus` class: `Bus.publish(address, value)`, `Bus.subscribe(address)`
+    (exact match) and `Bus.tap(prefix)`. `BusValue` / `BusFrame` move to it.
+  - `LiveCoding.bus` is deprecated; it forwards to `Bus.tap`.
+  - `System.close()` now releases every bus subscription and tap and
+    closes their streams. Before, a tap stream went silent but stayed
+    cached, so re-tapping the same prefix after a re-init never fired.
+  - New `Synth.busName`, so a synth answers on `synth.<name>.*`.
+
 - **API reference site.** New `docs/` tree builds a Sphinx site that
   mirrors the upstream libYSE docs site (sphinx-book-theme, same
   intro / tutorials / API layout) so contributors who already know

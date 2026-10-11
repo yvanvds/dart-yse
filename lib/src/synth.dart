@@ -338,6 +338,35 @@ class Synth implements Finalizable {
   /// `ClipTransport.connectSynth`). Not part of the public API surface.
   Pointer<YseSynth> get handle => _handle;
 
+  String? _busName;
+
+  /// The name this synth answers to on the global bus, or `null` when it is
+  /// anonymous (the default).
+  ///
+  /// Once named `foo`, the engine subscribes the synth to `synth.foo.note`,
+  /// `.off`, `.cc`, `.bend`, `.aftertouch` and `.alloff`, so a `Bus.publish`
+  /// (or a script's `yse.send`, or a patcher `.s`) drives it with no host
+  /// round-trip. `synth.foo.note` takes a `BusList` of
+  /// `[channel, note, velocity]`; see the bus page for the other payloads.
+  ///
+  /// Setting `null` or `''` clears the name and its subscriptions; renaming
+  /// re-subscribes. Names are unique per synth — a duplicate is rejected and
+  /// logged by the engine, with no error here. Only effective while the
+  /// engine is between init and close. There is no native getter: this
+  /// returns the last value set through this wrapper.
+  String? get busName => _busName;
+  set busName(String? name) {
+    using((arena) {
+      _b.synth_set_name(
+        _handle,
+        name == null || name.isEmpty
+            ? nullptr
+            : name.toNativeUtf8(allocator: arena).cast(),
+      );
+    });
+    _busName = name == null || name.isEmpty ? null : name;
+  }
+
   // ─── voice groups ─────────────────────────────────────────────────────────
 
   /// Add a group of [count] built-in sine voices (a sine oscillator shaped by

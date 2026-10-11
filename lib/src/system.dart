@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 
 import 'bindings/yse_bindings.g.dart';
+import 'bus.dart' show closeBusBridges;
 import 'channel.dart';
 import 'device.dart';
 import 'enums.dart';
@@ -227,10 +228,13 @@ class System {
 
   /// Shut down the engine and release the audio device.
   ///
-  /// Also removes the [occlusion] callback.
+  /// Also removes the [occlusion] callback, and releases every `Bus`
+  /// subscription and tap, closing their streams (re-subscribe after the
+  /// next init).
   void close() {
     stopUpdateTimer();
     occlusion = null;
+    closeBusBridges();
     _b.system_close(_handle);
   }
 

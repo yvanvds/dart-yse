@@ -30,7 +30,7 @@ export 'src/channel.dart' show Channel;
 export 'src/clip.dart' show ClipEvent, ClipTransport;
 export 'src/device.dart' show Device, DeviceSetup;
 export 'src/dsp_buffer.dart'
-    show DspBuffer, DrawableBuffer, FileBuffer, Wavetable;
+    show DspBuffer, DrawableBuffer, DspMultiBuffer, FileBuffer, Wavetable;
 export 'src/dsp_object.dart'
     show
         Chorus,

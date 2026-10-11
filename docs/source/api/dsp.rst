@@ -10,6 +10,18 @@ constructors and subclass-specific accessors).
 
 Upstream: :yse-cpp:`api/dsp.html <YSE::DSP>`.
 
+Every buffer supports sample-wise math against another buffer
+(:py:meth:`DspBuffer.addBuffer`, ``subBuffer``, ``mulBuffer``,
+``divBuffer``, over the shorter of the two lengths), span copies
+(:py:meth:`DspBuffer.copyFrom`, which throws on an out-of-range span) and
+:py:meth:`DspBuffer.swap` between buffers of equal length. A
+:class:`FileBuffer` also reports the native rate of the file it loaded
+(:py:attr:`FileBuffer.fileSampleRate`), which stays valid across a re-init
+at another session rate.
+
+:class:`DspMultiBuffer` bundles a copy of several buffers as the channels
+of one stereo or surround source for :py:meth:`Sound.fromMultiBuffer`.
+
 .. include:: _generated/dsp_buffer.rst
 
 .. include:: _generated/drawable_buffer.rst
@@ -17,6 +29,8 @@ Upstream: :yse-cpp:`api/dsp.html <YSE::DSP>`.
 .. include:: _generated/file_buffer.rst
 
 .. include:: _generated/wavetable.rst
+
+.. include:: _generated/dsp_multi_buffer.rst
 
 .. include:: _generated/dsp_object.rst
 

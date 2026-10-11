@@ -166,6 +166,29 @@
   `test/gen_patcher_snapshot_test.dart` fails when it drifts. The page
   moved from `api/patcher_objects.html` to `api/patcher_objects/`.
 
+- **Buffer math, copy / swap, file rate and multichannel buffers** (#65,
+  upstream yse-soundengine#909):
+  - New `DspBuffer.addBuffer` / `subBuffer` / `mulBuffer` / `divBuffer`:
+    sample-wise math against another buffer over the shorter length;
+    dividing by a zero sample gives 0.
+  - New `DspBuffer.copyFrom(src, srcPos:, dstPos:, count:)`. An
+    out-of-range span throws `YseException` (the engine would skip it
+    silently); a negative argument throws `RangeError`; overlapping ranges
+    within one buffer throw `ArgumentError`.
+  - New `DspBuffer.swap(other)` exchanges samples between buffers of equal
+    length (`YseException` otherwise); each keeps its class and rate.
+  - New `FileBuffer.fileSampleRate`: the native rate of the last loaded
+    file, 0 before a load, unchanged by a re-init at another rate. It is
+    `FileBuffer`-only, since the C entry point trusts the subclass.
+  - New `DspMultiBuffer(List<DspBuffer>)` (copies its channels; finalized
+    natively) with `channelCount`, and `Sound.fromMultiBuffer` to play it
+    as a stereo / surround source.
+  - `Sound.fromBuffer` and `Sound.fromMultiBuffer` now hold a reference to
+    their source, so garbage collection no longer frees a buffer under a
+    live sound. `FileBuffer.saveFile` dartdoc states the format (mono
+    32-bit float WAV at the file's rate) and that it fails while a custom
+    `BufferIO` is active.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

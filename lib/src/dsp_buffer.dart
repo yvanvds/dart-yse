@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 
 import 'bindings/yse_bindings.g.dart';
+import 'buffer_io.dart' show BufferIO;
 import 'exception.dart';
 import 'library.dart';
 
@@ -103,6 +104,81 @@ class DspBuffer implements Finalizable {
   /// Multiply every sample by [value].
   void mulScalar(double value) => _b.dsp_buffer_mul_scalar(_handle, value);
 
+  // ─── buffer math ─────────────────────────────────────────────────────────
+
+  /// Add [other] sample by sample: `this[i] += other[i]`.
+  ///
+  /// Works over the first `min(length, other.length)` samples; samples past
+  /// the shorter length are left untouched. [other] may be this buffer.
+  void addBuffer(DspBuffer other) =>
+      _b.dsp_buffer_add_buffer(_handle, other._handle);
+
+  /// Subtract [other] sample by sample: `this[i] -= other[i]`.
+  ///
+  /// Same span rules as [addBuffer].
+  void subBuffer(DspBuffer other) =>
+      _b.dsp_buffer_sub_buffer(_handle, other._handle);
+
+  /// Multiply by [other] sample by sample: `this[i] *= other[i]`.
+  ///
+  /// Same span rules as [addBuffer].
+  void mulBuffer(DspBuffer other) =>
+      _b.dsp_buffer_mul_buffer(_handle, other._handle);
+
+  /// Divide by [other] sample by sample: `this[i] /= other[i]`.
+  ///
+  /// Same span rules as [addBuffer]. Dividing by a zero sample gives 0,
+  /// not infinity.
+  void divBuffer(DspBuffer other) =>
+      _b.dsp_buffer_div_buffer(_handle, other._handle);
+
+  /// Copy [count] samples from `src[srcPos ...]` into `this[dstPos ...]`.
+  ///
+  /// Both ranges must lie inside their buffer's [length]. A range that runs
+  /// past the end copies nothing and throws [YseException]; a negative
+  /// argument throws [RangeError]. [src] may be this buffer only when the
+  /// two ranges do not overlap ([ArgumentError] otherwise). The overflow
+  /// tail (see [DspBuffer.plain]) is refreshed after the copy, so copying
+  /// into the head of a [Wavetable] keeps its wrap-around samples in sync.
+  void copyFrom(
+    DspBuffer src, {
+    int srcPos = 0,
+    int dstPos = 0,
+    required int count,
+  }) {
+    _checkUnsigned(srcPos, 'srcPos');
+    _checkUnsigned(dstPos, 'dstPos');
+    _checkUnsigned(count, 'count');
+    if (src._handle == _handle &&
+        count > 0 &&
+        srcPos < dstPos + count &&
+        dstPos < srcPos + count) {
+      throw ArgumentError(
+        'copyFrom within one buffer needs non-overlapping ranges '
+        '(srcPos $srcPos, dstPos $dstPos, count $count)',
+      );
+    }
+    checkStatus(
+      _b.dsp_buffer_copy_from(_handle, src._handle, srcPos, dstPos, count),
+      _b,
+    );
+  }
+
+  /// Exchange the samples of this buffer and [other].
+  ///
+  /// Both buffers must have the same [length]; otherwise nothing moves and
+  /// [YseException] is thrown. Only the sample values move: each buffer
+  /// keeps its own storage, Dart class and [sampleRateAdjustment].
+  /// Swapping a buffer with itself does nothing.
+  void swap(DspBuffer other) {
+    checkStatus(_b.dsp_buffer_swap(_handle, other._handle), _b);
+  }
+
+  static void _checkUnsigned(int value, String name) {
+    // The C API takes `unsigned int`; reject what would wrap or truncate.
+    RangeError.checkValueInInterval(value, 0, 0xFFFFFFFF, name);
+  }
+
   // ─── bulk I/O ────────────────────────────────────────────────────────────
 
   /// Copy [count] samples starting at [offset] into a new [Float32List].
@@ -198,13 +274,33 @@ class FileBuffer extends DrawableBuffer {
     });
   }
 
-  /// Save the contents to a mono WAV file.
+  /// Save the contents to a mono 32-bit float WAV file.
+  ///
+  /// [filename] is used verbatim (no extension is appended). The file is
+  /// written at [fileSampleRate] when this buffer was loaded from a file,
+  /// or at the engine sample rate otherwise.
+  ///
+  /// Throws [YseException] when the file cannot be created, the buffer is
+  /// empty, or a custom [BufferIO] backend is active: that backend is
+  /// read-only, so saving refuses rather than bypass it. File I/O — don't
+  /// call it from a time-critical path.
   void saveFile(String filename) {
     using((arena) {
       final cstr = filename.toNativeUtf8(allocator: arena);
       checkStatus(_b.dsp_buffer_save_file(_handle, cstr.cast()), _b);
     });
   }
+
+  /// Native sample rate, in Hz, of the file this buffer was last loaded
+  /// from with [loadFile]; 0 before a successful load.
+  ///
+  /// Unlike [sampleRateAdjustment] (a ratio against the engine rate in
+  /// effect at load time), this does not change when the engine is
+  /// re-initialised at another rate. To re-derive the playback speed
+  /// against the live session, use
+  /// `fileSampleRate / System.instance.sessionSampleRate` and assign it to
+  /// [sampleRateAdjustment].
+  double get fileSampleRate => _b.dsp_buffer_get_file_sample_rate(_handle);
 }
 
 /// Pre-computed single-cycle wavetable. Populate it with [createSaw] /
@@ -235,5 +331,72 @@ class Wavetable extends FileBuffer {
       _b.dsp_wavetable_create_triangle(_handle, harmonics, length),
       _b,
     );
+  }
+}
+
+/// A multichannel source buffer: one sample buffer per channel, for
+/// playing stereo or surround audio held in memory through
+/// [Sound.fromMultiBuffer].
+///
+/// Mirrors the engine's `MULTICHANNELBUFFER`. The constructor **copies**
+/// each channel's samples and [DspBuffer.sampleRateAdjustment], whatever
+/// its subclass, so the source buffers can be changed or disposed
+/// afterwards without affecting this one. `channels[0]` is the first
+/// output channel. Channels may differ in length; a sound plays the length
+/// of the shortest.
+///
+/// **Lifetime:** the engine reads this storage for as long as a sound
+/// plays it. A [Sound] built from it holds a Dart reference, so garbage
+/// collection never frees it under a live sound; don't call [dispose]
+/// before disposing every sound made from it.
+class DspMultiBuffer implements Finalizable {
+  static final _finalizer = NativeFinalizer(
+    bindings.addresses.dsp_multi_buffer_destroy.cast(),
+  );
+
+  final YseBindings _b;
+  Pointer<YseDspMultiBuffer> _handle;
+
+  DspMultiBuffer._(this._b, this._handle) {
+    _finalizer.attach(this, _handle.cast(), detach: this);
+  }
+
+  /// Build a multichannel buffer from a copy of [channels], in order.
+  ///
+  /// Throws [ArgumentError] when [channels] is empty and [YseException]
+  /// when the engine refuses (for example a disposed channel buffer).
+  factory DspMultiBuffer(List<DspBuffer> channels) {
+    if (channels.isEmpty) {
+      throw ArgumentError.value(channels, 'channels', 'must not be empty');
+    }
+    final b = bindings;
+    final handle = using((arena) {
+      final ptrs = arena<Pointer<YseDspBuffer>>(channels.length);
+      for (var i = 0; i < channels.length; i++) {
+        ptrs[i] = channels[i]._handle;
+      }
+      return b.dsp_multi_buffer_create(ptrs, channels.length);
+    });
+    if (handle.address == 0) {
+      checkStatus(YseStatus.YSE_ERR_INVALID_ARGUMENT, b);
+    }
+    return DspMultiBuffer._(b, handle);
+  }
+
+  /// Internal: native handle (used by `Sound.fromMultiBuffer`).
+  Pointer<YseDspMultiBuffer> get handle => _handle;
+
+  /// Number of channels; 0 after [dispose].
+  int get channelCount => _b.dsp_multi_buffer_get_channel_count(_handle);
+
+  /// Destroy the underlying native buffer and detach the finalizer.
+  ///
+  /// Idempotent. Only call it once every sound made from this buffer has
+  /// been disposed.
+  void dispose() {
+    if (_handle.address == 0) return;
+    _finalizer.detach(this);
+    _b.dsp_multi_buffer_destroy(_handle);
+    _handle = nullptr;
   }
 }

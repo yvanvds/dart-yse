@@ -255,6 +255,99 @@ void main() {
     );
   });
 
+  group('Underwater insert (issue #66)', () {
+    test('depth round-trips and clamps negatives to 0', () {
+      final uw = Underwater();
+      addTearDown(uw.dispose);
+      expect(uw.depth, closeTo(0.0, 1e-6));
+      uw.depth = 3.5;
+      expect(uw.depth, closeTo(3.5, 1e-6));
+      uw.depth = -2.0;
+      expect(uw.depth, closeTo(0.0, 1e-6));
+    });
+
+    test('rejects the base-class frequency accessor', () {
+      final uw = Underwater();
+      addTearDown(uw.dispose);
+      expect(() => uw.frequency, throwsA(isA<YseException>()));
+    });
+
+    test('attaches to a channel at full depth and renders', () {
+      final ch = Channel.create('underwater-fx', parent: Channel.master);
+      addTearDown(ch.dispose);
+      final uw = Underwater()..depth = 6.0;
+      addTearDown(uw.dispose);
+      ch.dsp = uw;
+      sys.renderOffline(128);
+      ch.dsp = null;
+    });
+  });
+
+  group('DspObject.next chain walking (issue #66)', () {
+    test('next is the identical linked wrapper, subclass intact', () {
+      final a = DspObject.lowpass();
+      addTearDown(a.dispose);
+      final b = Compressor();
+      addTearDown(b.dispose);
+
+      expect(a.next, isNull);
+      a.link(b);
+      expect(a.next, same(b));
+      expect(a.next, isA<Compressor>());
+      expect(b.next, isNull);
+
+      a.unlink();
+      expect(a.next, isNull);
+    });
+
+    test('next follows the engine: link inserts, dispose splices out', () {
+      final head = DspObject.lowpass();
+      addTearDown(head.dispose);
+      final tail = Chorus();
+      addTearDown(tail.dispose);
+      final mid = Underwater();
+
+      head.link(tail);
+      // link inserts between head and its old successor.
+      head.link(mid);
+      expect(head.next, same(mid));
+      expect(mid.next, same(tail));
+
+      final walked = <DspObject>[];
+      for (DspObject? fx = head; fx != null; fx = fx.next) {
+        walked.add(fx);
+      }
+      expect(walked, [same(head), same(mid), same(tail)]);
+
+      // Destroying a chained object splices it out natively.
+      mid.dispose();
+      expect(head.next, same(tail));
+      head.unlink();
+    });
+  });
+
+  group('Reverb.applyValues (issue #66)', () {
+    test('applies a preset table entry like Reverb.preset', () {
+      final viaPreset = Reverb()..preset = ReverbPreset.stoneroom;
+      addTearDown(viaPreset.dispose);
+      final viaValues = Reverb()
+        ..applyValues(ReverbPresetValues.fromPreset(ReverbPreset.stoneroom));
+      addTearDown(viaValues.dispose);
+
+      expect(viaValues.roomSize, viaPreset.roomSize);
+      expect(viaValues.damping, viaPreset.damping);
+      expect(viaValues.dry, viaPreset.dry);
+      expect(viaValues.wet, viaPreset.wet);
+      expect(viaValues.modulationFrequency, viaPreset.modulationFrequency);
+      expect(viaValues.modulationWidth, viaPreset.modulationWidth);
+      for (var i = 0; i < 4; i++) {
+        expect(viaValues.getReflectionTime(i), viaPreset.getReflectionTime(i));
+        expect(viaValues.getReflectionGain(i), viaPreset.getReflectionGain(i));
+      }
+      expect(viaValues.getReflectionTime(3), 150);
+    });
+  });
+
   group('Granulator getters (issue #25)', () {
     test('grainLength and grainTranspose round-trip', () {
       final gran = DspObject.granulator();

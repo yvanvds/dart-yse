@@ -32,15 +32,26 @@ of one stereo or surround source for :py:meth:`Sound.fromMultiBuffer`.
 
 .. include:: _generated/dsp_multi_buffer.rst
 
+Effects chain with :py:meth:`DspObject.link`, which inserts the new object
+*between* the head and its old successor. :py:attr:`DspObject.next` walks a
+chain: it reads the successor from the engine and hands back the very Dart
+object that was linked in (subclass intact), never a new wrapper.
+
 .. include:: _generated/dsp_object.rst
 
 Mix-grade modules
 -----------------
 
-Channel-strip effects added in engine v2.3.0. Each is a :class:`DspObject`
-subclass — construct it, then attach it to a channel insert (``Channel.dsp``)
-or a sound (:meth:`Sound.setDsp`) exactly like the base modules. The inherited
-:attr:`DspObject.impact` sets the wet/dry balance.
+Channel-strip effects. Each is a :class:`DspObject` subclass — construct it,
+then attach it to a channel insert (``Channel.dsp``) or a sound
+(:meth:`Sound.setDsp`) exactly like the base modules. The inherited
+:attr:`DspObject.impact` sets the wet/dry balance, except on
+:class:`MorphingReverb` and :class:`Underwater`, whose balance is inherent in
+their own control (the morphed presets' dry/wet, and the depth).
+
+:class:`Underwater` is the engine's underwater treatment as an ordinary
+insert you can place anywhere in a chain; it is independent of the engine's
+own instance driven by ``System.underwaterFx`` / ``System.underwaterDepth``.
 
 .. include:: _generated/compressor.rst
 
@@ -53,3 +64,5 @@ or a sound (:meth:`Sound.setDsp`) exactly like the base modules. The inherited
 .. include:: _generated/feedback_delay.rst
 
 .. include:: _generated/morphing_reverb.rst
+
+.. include:: _generated/underwater.rst

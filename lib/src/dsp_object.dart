@@ -36,8 +36,22 @@ class DspObject implements Finalizable {
   Pointer<YseDspObject> _handle;
   final _DspKind _kind;
 
+  /// Native address → live wrapper, so [next] can hand back the *existing*
+  /// Dart object for a linked handle instead of minting a second owning
+  /// wrapper (which would double-free through the finalizer). Weak, so the
+  /// registry never keeps an effect alive on its own.
+  static final _live = <int, WeakReference<DspObject>>{};
+
+  /// Drops a collected wrapper's registry entry — unless its address has
+  /// since been reused by a newer object.
+  static final _registryCleaner = Finalizer<int>((address) {
+    if (_live[address]?.target == null) _live.remove(address);
+  });
+
   DspObject._(this._b, this._handle, this._kind) {
     _finalizer.attach(this, _handle.cast(), detach: this);
+    _live[_handle.address] = WeakReference(this);
+    _registryCleaner.attach(this, _handle.address, detach: this);
   }
 
   static DspObject _wrap(Pointer<YseDspObject> handle, _DspKind kind) {
@@ -158,6 +172,34 @@ class DspObject implements Finalizable {
   /// Convenience for `link(null)` — see [link].
   void unlink() => _b.dsp_object_link(_handle, nullptr);
 
+  /// The object linked after this one in its processing chain, or `null` at
+  /// the end of the chain — so a chain can be walked:
+  ///
+  /// ```dart
+  /// for (DspObject? fx = head; fx != null; fx = fx.next) { ... }
+  /// ```
+  ///
+  /// The result is the *same* Dart object that was passed to [link]
+  /// (`identical(a.next, b)` after `a.link(b)`), with its subclass intact —
+  /// never a new wrapper. It is read from the engine, so it reflects the
+  /// engine's own relinking: [link] inserts *between* this object and its
+  /// old successor, and disposing a chained object splices it out.
+  ///
+  /// Throws [StateError] if the engine reports a successor that no live
+  /// [DspObject] wraps (only possible if that successor's wrapper is being
+  /// garbage-collected concurrently — keep chained effects reachable).
+  DspObject? get next {
+    final p = _b.dsp_object_get_next(_handle);
+    if (p.address == 0) return null;
+    final wrapper = _live[p.address]?.target;
+    if (wrapper == null || wrapper._handle.address != p.address) {
+      throw StateError(
+        'yse_dsp_object_get_next returned a handle with no live DspObject',
+      );
+    }
+    return wrapper;
+  }
+
   // ─── filter modules ────────────────────────────────────────────────────
 
   /// Cutoff (lowpass/highpass) or centre (bandpass/sweep) frequency in Hz.
@@ -191,6 +233,7 @@ class DspObject implements Finalizable {
       case _DspKind.plateReverb:
       case _DspKind.feedbackDelay:
       case _DspKind.morphingReverb:
+      case _DspKind.underwater:
       case _DspKind.patcherInsert:
         throw YseException('frequency getter not supported for $_kind');
     }
@@ -231,6 +274,7 @@ class DspObject implements Finalizable {
       case _DspKind.plateReverb:
       case _DspKind.feedbackDelay:
       case _DspKind.morphingReverb:
+      case _DspKind.underwater:
       case _DspKind.patcherInsert:
         throw YseException('frequency setter not supported for $_kind');
     }
@@ -317,6 +361,10 @@ class DspObject implements Finalizable {
   void dispose() {
     if (_handle.address == 0) return;
     _finalizer.detach(this);
+    _registryCleaner.detach(this);
+    if (identical(_live[_handle.address]?.target, this)) {
+      _live.remove(_handle.address);
+    }
     _b.dsp_object_destroy(_handle);
     _handle = nullptr;
   }
@@ -575,6 +623,33 @@ class MorphingReverb extends DspObject {
   set morph(double value) => _b.dsp_morphing_reverb_set_morph(_handle, value);
 }
 
+/// The engine's underwater treatment as an ordinary chainable insert — a
+/// mix-grade [DspObject] that mixes every channel toward a position-neutral,
+/// low-passed average as [depth] grows.
+///
+/// [depth] is the distance below the water surface in world units: `<= 1`
+/// is transparent, `1..5` crossfades, `>= 5` is fully neutral, and negative
+/// values clamp to 0. Writes are allocation- and wait-free.
+///
+/// The wet/dry balance is inherent in [depth], so the inherited [impact] is
+/// **not** applied by this module. It is independent of the engine's own
+/// instance driven by [System.underwaterFx] / [System.underwaterDepth]:
+/// use this one to put the treatment anywhere in your own insert chain.
+/// Attach with `Channel.dsp` or [Sound.setDsp].
+class Underwater extends DspObject {
+  Underwater._(Pointer<YseDspObject> handle)
+    : super._(bindings, handle, _DspKind.underwater);
+
+  /// Construct an underwater insert at depth 0 (transparent).
+  factory Underwater() => Underwater._(
+    _created(bindings.dsp_underwater_create(), 'yse_dsp_underwater_create'),
+  );
+
+  /// Distance below the water surface, in world units (negative clamps to 0).
+  double get depth => _b.dsp_underwater_get_depth(_handle);
+  set depth(double value) => _b.dsp_underwater_set_depth(_handle, value);
+}
+
 Pointer<YseDspObject> _created(Pointer<YseDspObject> handle, String fn) {
   if (handle.address == 0) throw YseException('$fn returned null');
   return handle;
@@ -598,5 +673,6 @@ enum _DspKind {
   plateReverb,
   feedbackDelay,
   morphingReverb,
+  underwater,
   patcherInsert,
 }

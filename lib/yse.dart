@@ -39,7 +39,8 @@ export 'src/dsp_object.dart'
         FeedbackDelay,
         MorphingReverb,
         ParametricEq,
-        PlateReverb;
+        PlateReverb,
+        Underwater;
 export 'src/enums.dart'
     show
         ChannelType,

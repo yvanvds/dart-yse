@@ -189,6 +189,25 @@
     32-bit float WAV at the file's rate) and that it fails while a custom
     `BufferIO` is active.
 
+- **Underwater insert, chain walking, reverb preset values + morph** (#66,
+  upstream yse-soundengine#909):
+  - New `Underwater` `DspObject` subclass with a `depth` get/set (world
+    units below the surface: `<= 1` transparent, `1..5` crossfades, `>= 5`
+    fully neutral, negative clamps to 0). The inherited `impact` is not
+    applied. Independent of `System.underwaterFx` / `underwaterDepth`.
+  - New `DspObject.next`: the object linked after this one, or `null`. It
+    returns the *existing* Dart wrapper (via a weak native-address
+    registry), so `identical(a.next, b)` after `a.link(b)` and no second
+    owning wrapper is ever created. It reads the engine, so it follows
+    `link`'s insert-between semantics and a disposed object being spliced
+    out.
+  - New `ReverbPresetValues.fromPreset(preset)` (the exact values
+    `Reverb.preset` applies) and `ReverbPresetValues.lerp(a, b, t)` (the
+    engine's morph core, `t` clamped to `[0, 1]`, exact at both ends).
+    Neither needs an engine session.
+  - New `Reverb.applyValues(values)` applies a full parameter set to a
+    zone, exactly as `Reverb.preset` does for a named one.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

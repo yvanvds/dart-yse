@@ -166,6 +166,16 @@
   `test/gen_patcher_snapshot_test.dart` fails when it drifts. The page
   moved from `api/patcher_objects.html` to `api/patcher_objects/`.
 
+- **Patcher object reference shows the long-form notes** (#78). Under
+  each object's summary the reference now renders libYSE's longer notes
+  (message formats, edge cases, examples) for the 251 objects that have
+  them. `tool/port_patcher_notes.dart` copies them from the engine
+  submodule into `docs/source/_data/patcher_notes/`, turning links into
+  the upstream patcher guide into links to the libYSE site and C++ API
+  names (`YSE::Randomize()`, `CreateObject`, ...) into their Dart
+  equivalents; `test/port_patcher_notes_test.dart` fails when the copy
+  drifts.
+
 - **Buffer math, copy / swap, file rate and multichannel buffers** (#65,
   upstream yse-soundengine#909):
   - New `DspBuffer.addBuffer` / `subBuffer` / `mulBuffer` / `divBuffer`:

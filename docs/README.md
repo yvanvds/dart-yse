@@ -17,8 +17,11 @@ Build pipeline:
    via the Jinja templates `patcher_objects_index.rst.j2` and
    `patcher_objects_category.rst.j2` in `source/_templates/` (ported
    from upstream libYSE). The JSON snapshot is generated from the bound
-   engine's registry by `tool/gen_patcher_snapshot.dart` and committed,
-   so the docs build needs no engine.
+   engine's registry by `tool/gen_patcher_snapshot.dart`, and each
+   object's long-form notes (`source/_data/patcher_notes/<slug>.rst`)
+   are ported from the engine submodule by `tool/port_patcher_notes.dart`.
+   Both are committed, so the docs build needs neither the engine nor
+   the submodule.
 3. Sphinx + the `sphinx-book-theme` render the static site into
    `build/html/`.
 
@@ -58,7 +61,8 @@ docs/
     ├── conf.py           # Sphinx config + patcher object reference render hook
     ├── index.rst         # Top-level TOC
     ├── _data/
-    │   └── patcher_objects.json   # Registry snapshot — patcher type metadata
+    │   ├── patcher_objects.json   # Registry snapshot — patcher type metadata
+    │   └── patcher_notes/         # Long-form object notes, ported from libYSE
     ├── _templates/
     │   ├── patcher_objects_index.rst.j2     # Object reference index page
     │   └── patcher_objects_category.rst.j2  # One page per category
@@ -87,14 +91,40 @@ diff cleanly. After an engine update:
    `dart run tool/gen_patcher_snapshot.dart` to rewrite the snapshot
    (and `dart run tool/gen_obj_constants.dart` for the `Obj`
    constants the reference pages show).
-3. Rebuild (`make html`). The Sphinx hook re-renders
-   `source/api/patcher_objects/` from the new snapshot.
+3. Run `dart run tool/port_patcher_notes.dart` to re-port the long-form
+   notes from `third_party/yse-soundengine/documentation/source/_data/patcher_notes/`.
+4. Rebuild (`make html`). The Sphinx hook re-renders
+   `source/api/patcher_objects/` from the new snapshot and notes.
 
 `test/gen_patcher_snapshot_test.dart` fails when the committed snapshot
 no longer matches the bound registry (object count, type names, or any
 byte of the content), and when `_PATCHER_CATEGORIES` in `conf.py` misses
 a `PCategory`. The docs build itself warns (failing `-W`) on an object
 whose category `conf.py` does not know, or that has no `Obj` constant.
+
+### Long-form notes
+
+The notes are written for the upstream docs tree, so
+`tool/port_patcher_notes.dart` rewrites them on the way in, and fails
+rather than guess:
+
+- A `:doc:` link to an object category page points at our own page
+  under `api/patcher_objects/`.
+- Every other `:doc:` and every `:ref:` (the patcher guide: messages,
+  time, data, files, ...) becomes a `:yse-cpp:` link into the published
+  libYSE site, titled with the target's section title and anchored at a
+  `:ref:` label. Titles and labels are read from the upstream source, so
+  a removed target fails the port. Any other role fails it too.
+- C++ host-API names (`YSE::Randomize()`, `CreateObject`, `ParseJSON`,
+  ...) become their Dart equivalents via the `cppToDart` table; a name
+  the table does not cover, or an entry no note uses any more, fails the
+  port. The notes' code blocks are patch notation, not C++, and are kept.
+
+`test/port_patcher_notes_test.dart` fails when the committed copy drifts
+from a fresh port of the submodule's notes. The docs build warns (failing
+`-W`) on notes for an unknown object, duplicate notes, notes filed under
+another category's file, a file not named after a category slug, or the
+word "Max" in a note (upstream's rules, ported with its loader).
 
 ## Hosting
 

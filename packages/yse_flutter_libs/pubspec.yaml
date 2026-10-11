@@ -23,5 +23,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: net.attrx.yse_flutter_libs
-        pluginClass: YseFlutterLibsPlugin
+        # An FFI plugin: no Android plugin class, no Kotlin or Java. Flutter
+        # still includes android/build.gradle in the host app's build, which
+        # is all that is needed to package libyse.so as jniLibs.
+        ffiPlugin: true

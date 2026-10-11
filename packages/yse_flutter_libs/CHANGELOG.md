@@ -21,6 +21,15 @@
   benchmarks off), from the dart-yse submodule or `yse.engineSourceDir`,
   for the ABIs in `yse.abis`. Use it to test an unreleased engine or to
   build `armeabi-v7a`, which the release does not ship.
+- **No longer applies the Kotlin Gradle Plugin** (#93). The plugin is
+  now declared as an `ffiPlugin`, so the empty `YseFlutterLibsPlugin`
+  Kotlin class, `kotlin-android` and the KGP classpath entry are gone.
+  This clears Flutter's "plugins that apply Kotlin Gradle Plugin"
+  warning (future Flutter versions fail that build) and works with
+  built-in Kotlin on AGP 9. `android/build.gradle` also uses
+  `prop = value` assignments throughout, ahead of Gradle 10 removing
+  the Groovy space-assignment syntax. The minimum Flutter version
+  (3.22) is unchanged.
 - `minSdk` 26 and the default ABIs `arm64-v8a` and `x86_64` are unchanged.
   Python live coding is not available on Android (`YSE_ENABLE_PYTHON` is
   desktop only), and neither is MIDI device I/O.

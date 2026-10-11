@@ -1,6 +1,8 @@
 // Build configuration for yse_flutter_libs.
 //
-// The plugin carries no Dart/Kotlin logic of its own. Its sole job is to put
+// The plugin carries no Dart, Kotlin or Java code of its own (it is declared
+// as an `ffiPlugin` in pubspec.yaml, so Flutter needs no plugin class and
+// this module applies no Kotlin Gradle Plugin, #93). Its sole job is to put
 // libyse.so for each Android ABI into the host app's APK / AAB. At runtime,
 // package:yse loads it with DynamicLibrary.open('libyse.so') and Android's
 // linker resolves the per-ABI copy out of lib/<abi>/.
@@ -38,8 +40,8 @@
 import java.security.MessageDigest
 import javax.inject.Inject
 
-group 'net.attrx.yse_flutter_libs'
-version '0.2.0'
+group = 'net.attrx.yse_flutter_libs'
+version = '0.2.0'
 
 buildscript {
     repositories {
@@ -48,8 +50,10 @@ buildscript {
     }
 
     dependencies {
+        // Only used when this module is opened on its own. Inside a Flutter
+        // app the host's Android Gradle Plugin (AGP 8 or 9) is already on the
+        // classpath and takes precedence, so this pin sets no minimum.
         classpath 'com.android.tools.build:gradle:8.5.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22"
     }
 }
 
@@ -61,7 +65,6 @@ allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 // --- Engine selection -------------------------------------------------------
 
@@ -233,24 +236,19 @@ if (!buildFromSource) {
 // --- Android library --------------------------------------------------------
 
 android {
-    namespace 'net.attrx.yse_flutter_libs'
-    compileSdk 34
+    namespace = 'net.attrx.yse_flutter_libs'
+    compileSdk = 34
     if (buildFromSource) {
-        ndkVersion '27.0.12077973'
+        ndkVersion = '27.0.12077973'
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        if (!buildFromSource) {
+    if (!buildFromSource) {
+        sourceSets {
             main.jniLibs.srcDirs = [new File(engineDir, 'lib')]
         }
     }
@@ -258,7 +256,7 @@ android {
     defaultConfig {
         // Engine uses Oboe with AAudio (API 26+) as the preferred backend.
         // Going below 26 would force the OpenSL ES fallback path everywhere.
-        minSdk 26
+        minSdk = 26
 
         ndk {
             // 64-bit ABIs only: arm64-v8a covers modern phones, x86_64 the
@@ -288,8 +286,8 @@ android {
     if (buildFromSource) {
         externalNativeBuild {
             cmake {
-                path new File(engineSourceDir, 'CMakeLists.txt')
-                version '3.22.1'
+                path = new File(engineSourceDir, 'CMakeLists.txt')
+                version = '3.22.1'
             }
         }
     }

@@ -31,6 +31,7 @@ import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/engine_pin.dart';
 import 'support/synth_ready.dart';
 
 /// Write a tiny valid 16-bit mono PCM WAV so libsndfile has a real sample to
@@ -107,6 +108,8 @@ bool renderUntil(System sys, bool Function() done, {int maxBlocks = 4000}) {
 }
 
 void main() {
+  setUpAll(noticeUnpinnedEngine);
+
   // ── Pure-Dart unit coverage (no engine required) ───────────────────────────
 
   group('VaWaveform (unit)', () {

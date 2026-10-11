@@ -26,7 +26,11 @@ library;
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/engine_pin.dart';
+
 void main() {
+  setUpAll(noticeUnpinnedEngine);
+
   final sys = System.instance;
 
   /// Snapshot of the list as (name, host, id) triples.

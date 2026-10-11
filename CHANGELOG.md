@@ -448,6 +448,16 @@ new Dart code for every change below (#70).
   needs MSYS2 or CMake: point `YSE_DLL_PATH` at the path it prints. It
   fails when the pin is not a release tag. Building from source stays
   documented as the alternative and is what CI still does.
+- **Unreleased-engine mode, made visible** (#89): testing against an
+  engine that has no release yet is opt-in, by pointing `YSE_DLL_PATH` at
+  a build of a separate yse-soundengine clone (README, *Unreleased engine
+  (opt-in)*). Every engine test suite now prints an `UNRELEASED ENGINE`
+  banner when `System.version` differs from the pinned tag (`3.1.0` vs
+  `v3.1.0`) or the library is loaded from outside `.engine/<tag>/` and
+  the submodule's `build/bin`; it never fails a test. Committed bindings
+  must come from the pinned tag. The pin helpers moved from
+  `tool/fetch_engine.dart` to the shared `tool/engine_pin.dart`. The
+  loader still does not search `.engine/` on its own.
 - `ffigen.yaml` documents `dart run ffigen --config ffigen.yaml` (ffigen
   20 no longer finds the config on its own) (#55).
 - `yse_flutter_libs` is bumped to 0.2.0: it builds the same pinned

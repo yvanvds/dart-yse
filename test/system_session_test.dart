@@ -25,7 +25,11 @@ library;
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/engine_pin.dart';
+
 void main() {
+  setUpAll(noticeUnpinnedEngine);
+
   final sys = System.instance;
 
   /// Bring up an offline session and close it (and clear any rate request,

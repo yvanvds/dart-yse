@@ -105,12 +105,28 @@ dart run example/hello_sound.dart
 For Windows-only Linux validation without rebooting, see
 `tools/ci-linux/Dockerfile` in the README.
 
+**Unreleased engine (opt-in).** To validate an engine change before it
+is tagged, build the separate dev clone and point `YSE_DLL_PATH` at its
+output (e.g. `D:\yse-soundengine\build\bin`). Only do this when asked;
+the default flow never reads or builds the dev clone. Every engine test
+suite then prints an `UNRELEASED ENGINE` banner (from
+`test/support/engine_pin.dart`) when `System.version` differs from the
+pinned tag or the library is loaded from outside `.engine/<tag>/` and the
+submodule's `build/bin`. It never fails a test; drift-test failures under
+that banner are expected and must not be "fixed" against the dev engine.
+Report which engine a result came from. Bindings regenerated against
+unreleased headers are for local experiments only — committed bindings
+come from the pinned tag. Once the engine change is released: bump the
+pin to the new tag, regenerate the bindings, `dart run
+tool/fetch_engine.dart`.
+
 ## Boundaries
 
 - **Don't** push to `main` without confirmation.
 - **Don't** skip hooks (`--no-verify`) or bypass signing.
 - **Don't** hand-edit `lib/src/bindings/yse_bindings.g.dart` — regenerate
-  via ffigen.
+  via ffigen, from the pinned tag's headers only (never commit bindings
+  generated against an unreleased engine).
 - **Don't** point the submodule at an untagged engine commit or develop
   the engine inside it; bump the gitlink only to a release tag.
 - **Don't** import `lib/src/bindings/` outside `lib/src/`. Consumers of

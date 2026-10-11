@@ -116,6 +116,13 @@ or build the submodule's tag rather than another engine version. In a
 clone made without ``--recurse-submodules``, run
 ``git submodule update --init`` first.
 
+To try an engine change that has no release yet, point ``YSE_DLL_PATH``
+at a build of your own yse-soundengine clone (not the submodule, which
+stays on its tag). This is an opt-in mode for wrapper development: the
+test suite then prints an ``UNRELEASED ENGINE`` banner in every engine
+suite, and the bindings committed to the repository still come from the
+pinned tag. See *Unreleased engine (opt-in)* in the project README.
+
 Two upstream CMake options change what the wrapper can do:
 
 - ``-DYSE_ENABLE_PYTHON=ON`` (default ``OFF``, desktop only) embeds the

@@ -1,7 +1,8 @@
 // Downloads the prebuilt libyse for the engine tag the submodule pins (#88),
 // so running the tests and examples needs no MSYS2 / CMake build.
 //
-// The pinned tag comes from the submodule gitlink:
+// The pinned tag comes from the submodule gitlink (tool/engine_pin.dart,
+// shared with the test suite's unreleased-engine notice, #89):
 //   git -C third_party/yse-soundengine describe --tags --exact-match
 // The tool fails when the pin is not a tagged release (the engine only
 // publishes binaries for tags). The host platform's asset is downloaded from
@@ -32,22 +33,10 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 
+import 'engine_pin.dart';
+
 /// GitHub `owner/repo` the engine releases are published under.
 const engineRepo = 'yvanvds/yse-soundengine';
-
-/// Submodule path of the engine, relative to the package root.
-const submodulePath = 'third_party/yse-soundengine';
-
-/// Gitignored folder the releases are unpacked into, relative to the root.
-const engineCacheDir = '.engine';
-
-/// A release tag the engine publishes binaries for: `v<major>.<minor>.<patch>`
-/// with an optional pre-release / build suffix (`v3.1.0`, `v2.4.0-3`), but not
-/// a `git describe` distance suffix (`v3.1.0-5-gda8ce99`), which names an
-/// untagged commit.
-final _tagPattern = RegExp(
-  r'^v\d+\.\d+\.\d+(?:[-+.][0-9A-Za-z.+-]+)?$(?<!-\d+-g[0-9a-f]{7,40})',
-);
 
 /// Host platforms the engine publishes desktop binaries for.
 enum HostPlatform {
@@ -77,19 +66,6 @@ enum HostPlatform {
     Abi.linuxX64 => linuxX64,
     _ => null,
   };
-}
-
-/// Returns the release tag in `git describe --tags --exact-match` [output].
-///
-/// Throws [FormatException] when the output is empty or not a release tag.
-String parseReleaseTag(String output) {
-  final tag = output.trim();
-  if (!_tagPattern.hasMatch(tag)) {
-    throw FormatException(
-      'the engine pin is not a release tag (got "$tag"); expected vX.Y.Z',
-    );
-  }
-  return tag;
 }
 
 /// Name of the top folder inside the archive, e.g. `libyse-v3.1.0-windows-x64`.
@@ -203,33 +179,18 @@ Future<void> _run({required bool force}) async {
 }
 
 Future<String> _pinnedTag(String root) async {
-  final sub = _join([root, ...submodulePath.split('/')]);
-  final ProcessResult r;
   try {
-    r = await Process.run('git', [
-      '-C',
-      sub,
-      'describe',
-      '--tags',
-      '--exact-match',
-    ]);
-  } on ProcessException catch (e) {
-    throw FetchError('could not run git: ${e.message}');
-  }
-  if (r.exitCode != 0) {
+    return await readPinnedTag(root);
+  } on PinError catch (e) {
+    final git = e.gitOutput;
+    if (git == null) throw FetchError(e.message);
     throw FetchError(
-      'the engine submodule ($submodulePath) is not checked out at a release '
-      'tag, so there are no prebuilt binaries for it.\n'
-      '  git: ${(r.stderr as String).trim()}\n'
+      '${e.message}, so there are no prebuilt binaries for it.\n'
+      '  git: $git\n'
       'Run `git submodule update --init` for the pinned release (in a '
       'shallow clone, also `git -C $submodulePath fetch --tags`), or build '
       'the engine from source (see README.md).',
     );
-  }
-  try {
-    return parseReleaseTag(r.stdout as String);
-  } on FormatException catch (e) {
-    throw FetchError(e.message);
   }
 }
 

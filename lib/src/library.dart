@@ -23,6 +23,11 @@ import 'exception.dart';
 ///      resort when no package config is available (e.g. running a loose
 ///      script).
 ///
+///   The prebuilt release `tool/fetch_engine.dart` unpacks into the repo's
+///   `.engine/<tag>/` is deliberately *not* searched: that folder only exists
+///   in a dart-yse checkout, never in a published package, and requiring an
+///   explicit `YSE_DLL_PATH` keeps the choice of engine build visible (#89).
+///
 ///   On Windows the resolved directory is also passed to `SetDllDirectoryW`
 ///   so that `libyse.dll`'s own dependency DLLs (libstdc++, libsndfile,
 ///   libportaudio, etc.) sitting alongside it are discoverable by the
@@ -39,6 +44,13 @@ import 'exception.dart';
 ///   need to be loadable.
 YseBindings get bindings => _bindings ??= _load();
 YseBindings? _bindings;
+
+/// The directory the engine library was loaded from, or null before the
+/// first [bindings] access and on Android (where the system linker picks the
+/// APK's copy). Internal: the test suite uses it to tell whether it runs
+/// against the pinned engine release (#89).
+String? get loadedLibraryDirectory => _loadedDirectory;
+String? _loadedDirectory;
 
 YseBindings _load() {
   if (Platform.isAndroid) {
@@ -64,7 +76,9 @@ YseBindings _load() {
   }
 
   if (Platform.isWindows) _setDllDirectory(dir);
-  return YseBindings(DynamicLibrary.open(libPath));
+  final lib = YseBindings(DynamicLibrary.open(libPath));
+  _loadedDirectory = dir;
+  return lib;
 }
 
 String _resolveLibDirectory() {

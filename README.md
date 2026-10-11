@@ -51,8 +51,11 @@ pinned tree, so a local checkout sees exactly what CI sees.
   git commit -m "chore(infra): bump libYSE to v3.2.0"
   ```
 
-  Then regenerate the bindings (`dart run ffigen --config ffigen.yaml`)
-  and rerun the drift tests.
+  Then regenerate the bindings (`dart run ffigen --config ffigen.yaml`),
+  fetch the new release (`dart run tool/fetch_engine.dart`) and rerun the
+  drift tests. Committed bindings always come from the pinned tag's
+  headers; never commit bindings generated against an unreleased engine
+  (see [Unreleased engine](#unreleased-engine-opt-in)).
 - **Engine development** happens in a separate clone of
   yse-soundengine, not through the submodule. Keep the submodule on its
   release tag; `git status` should show it clean.
@@ -104,8 +107,10 @@ release builds use the default options: MIDI device I/O on, Python
 (`LiveCoding`) off. The C headers `ffigen` reads still come from the
 submodule.
 
-To run against a different engine, for example one you built yourself,
-point `YSE_DLL_PATH` at that build instead.
+The loader does not look in `.engine/` by itself: that folder exists only
+in a dart-yse checkout, never in a published package, so you always say
+which engine you run by setting `YSE_DLL_PATH`. To try an engine that has
+no release yet, see [Unreleased engine](#unreleased-engine-opt-in).
 
 ### Building the engine from source
 
@@ -175,6 +180,43 @@ dart run example/hello_sound.dart
 The upstream CMake build embeds `$ORIGIN` in the `.so`'s RPATH, so
 sibling shared libraries are discovered automatically — no
 `LD_LIBRARY_PATH` setup needed.
+
+### Unreleased engine (opt-in)
+
+dart-yse is also where engine changes get tried before they are tagged.
+To do that, build your own clone of yse-soundengine (not the submodule,
+which stays on its release tag) and point `YSE_DLL_PATH` at its output:
+
+```powershell
+# Windows, with the dev clone built at D:\yse-soundengine\build
+$env:YSE_DLL_PATH = "D:\yse-soundengine\build\bin"
+dart test
+```
+
+```bash
+# Linux
+export YSE_DLL_PATH="$HOME/src/yse-soundengine/build/bin"
+dart test
+```
+
+This mode is only ever entered on purpose; nothing in the default flow
+reads or builds a dev clone. While it is active, every engine test suite
+prints an `UNRELEASED ENGINE` banner in its setup output, naming the
+pinned tag and the library actually loaded. The banner appears when
+`System.version` differs from the pinned tag (`3.1.0` for `v3.1.0`) or
+when the library comes from anywhere other than `.engine/<tag>/` or
+the submodule's own `build/bin` (libYSE's version string only changes
+at release time, so a dev build just after a tag still reports that
+tag). It never fails a test. Expect snapshot and drift tests to fail
+when the dev engine has changed what they check; CI always runs the pin.
+
+To try new C API functions you can regenerate the bindings against the
+dev clone's headers (point the `headers.entry-points` path in
+`ffigen.yaml` at the clone's `yse_all.h`), but only locally: committed
+bindings, and `ffigen.yaml` itself, must stay on the pinned tag's
+headers in the submodule. When the
+engine change is released, bump the pin to the new tag, regenerate,
+and run `dart run tool/fetch_engine.dart`.
 
 ### Linux validation from Windows (optional)
 

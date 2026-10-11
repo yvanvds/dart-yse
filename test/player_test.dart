@@ -16,10 +16,13 @@ library;
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/engine_pin.dart';
 import 'support/sound_ready.dart';
 import 'support/synth_ready.dart';
 
 void main() {
+  setUpAll(noticeUnpinnedEngine);
+
   final sys = System.instance;
 
   setUpAll(sys.initOffline);

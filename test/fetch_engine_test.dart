@@ -1,6 +1,7 @@
 // Pure-Dart tests for the release fetcher (tool/fetch_engine.dart, #88).
-// No engine and no network: these cover tag parsing, asset naming per
-// platform, the `.engine/<tag>/` layout and the digest lookup.
+// No engine and no network: these cover asset naming per platform, the
+// `.engine/<tag>/` layout and the digest lookup. Tag parsing moved with the
+// pin helpers to tool/engine_pin.dart (test/engine_pin_test.dart).
 
 import 'dart:ffi' show Abi;
 import 'dart:io';
@@ -12,29 +13,6 @@ import '../tool/fetch_engine.dart';
 String _p(List<String> parts) => parts.join(Platform.pathSeparator);
 
 void main() {
-  group('parseReleaseTag', () {
-    test('accepts release tags', () {
-      expect(parseReleaseTag('v3.1.0\n'), 'v3.1.0');
-      expect(parseReleaseTag('  v10.20.30  '), 'v10.20.30');
-      expect(parseReleaseTag('v2.4.0-3'), 'v2.4.0-3');
-      expect(parseReleaseTag('v3.2.0-rc.1'), 'v3.2.0-rc.1');
-    });
-
-    test('rejects output that is not a release tag', () {
-      for (final bad in [
-        '',
-        '\n',
-        '3.1.0',
-        'v3.1',
-        'dev',
-        'v3.1.0-5-gda8ce99', // `git describe` without --exact-match
-        'v3.1.0\nv3.1.1', // two tags on the commit
-      ]) {
-        expect(() => parseReleaseTag(bad), throwsFormatException, reason: bad);
-      }
-    });
-  });
-
   group('asset naming', () {
     test('matches the v3.1.0 release assets', () {
       expect(

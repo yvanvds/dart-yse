@@ -32,7 +32,11 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/engine_pin.dart';
+
 void main() {
+  setUpAll(noticeUnpinnedEngine);
+
   group('BusValue', () {
     test('leaves carry their payload and reconstruct value equality', () {
       expect(const BusInt(42).value, 42);

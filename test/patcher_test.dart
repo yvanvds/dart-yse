@@ -210,6 +210,179 @@ void main() {
     });
   });
 
+  group('subpatchers (#61)', () {
+    /// `[patcher: ~inlet 0 -> ~* 0.5 -> ~outlet 0]`, built inside [p].
+    ({PHandle sub, PHandle inlet, PHandle gain, PHandle outlet}) halfGain(
+      Patcher p,
+    ) {
+      final sub = p.createObject(Obj.patcher);
+      final inlet = p.createObject(Obj.dInlet, args: '0');
+      final gain = p.createObject(Obj.dMultiply, args: '0.5');
+      final outlet = p.createObject(Obj.dOutlet, args: '0');
+      for (final h in [inlet, gain, outlet]) {
+        p.setContainer(h, sub);
+      }
+      p.connect(inlet, outlet: 0, to: gain, inlet: 0);
+      p.connect(gain, outlet: 0, to: outlet, inlet: 0);
+      return (sub: sub, inlet: inlet, gain: gain, outlet: outlet);
+    }
+
+    /// Master post-fader peak over a few update + render cycles.
+    double renderPeak() {
+      var peak = 0.0;
+      for (var i = 0; i < 20; i++) {
+        sys.update();
+        sys.renderOffline(4);
+        final level = Channel.master.peakLinearPost();
+        if (level > peak) peak = level;
+      }
+      return peak;
+    }
+
+    test('~sine -> [~inlet -> ~* 0.5 -> ~outlet] -> ~dac is audible', () {
+      final p = newPatcher();
+      final sine = p.createObject(Obj.dSine, args: '440');
+      final sub = halfGain(p).sub;
+      final dac = p.createObject(Obj.dDac);
+      // Wired by the subpatcher's pin numbers only.
+      p.connect(sine, outlet: 0, to: sub, inlet: 0);
+      p.connect(sub, outlet: 0, to: dac, inlet: 0);
+      p.connect(sub, outlet: 0, to: dac, inlet: 1);
+
+      final sound = Sound.fromPatcher(p)
+        ..position = const Pos(0, 0, 1)
+        ..play();
+      addTearDown(sound.dispose);
+
+      expect(renderPeak(), greaterThan(0.01), reason: 'signal crosses');
+
+      // Disconnecting by pin number resolves to the same boundary edge.
+      p.disconnect(sine, outlet: 0, to: sub, inlet: 0);
+      renderPeak(); // let the release settle
+      expect(renderPeak(), lessThan(1e-4), reason: 'silent once cut');
+    });
+
+    test('connect to a subpatcher pin lands on its boundary object', () {
+      final p = newPatcher();
+      final parts = halfGain(p);
+      final src = p.createObject(Obj.dSine);
+      final dst = p.createObject(Obj.dDac);
+      p.connect(src, outlet: 0, to: parts.sub, inlet: 0);
+      p.connect(parts.sub, outlet: 0, to: dst, inlet: 0);
+
+      expect(src.connectionTargetId(0, 0), parts.inlet.id);
+      expect(parts.outlet.connectionTargetId(0, 0), dst.id);
+    });
+
+    test('message and signal boundaries share one index space', () {
+      final p = newPatcher();
+      final sub = p.createObject(Obj.patcher);
+      p.setContainer(p.createObject(Obj.gInlet, args: '0'), sub);
+      p.setContainer(p.createObject(Obj.dInlet, args: '1'), sub);
+      p.setContainer(p.createObject(Obj.gOutlet, args: '2'), sub);
+
+      expect(sub.subpatcherInlets, 2);
+      expect(sub.subpatcherOutlets, 3, reason: 'one past the highest index');
+      expect(sub.inputs, 0, reason: 'a patcher object owns no pins');
+      expect(sub.outputs, 0);
+      expect(p.createObject(Obj.gInt).subpatcherInlets, 0);
+    });
+
+    test('container reads back, nests, and returns to the top level', () {
+      final p = newPatcher();
+      final outer = p.createObject(Obj.patcher);
+      final inner = p.createObject(Obj.patcher);
+      final obj = p.createObject(Obj.gInt);
+      expect(obj.container, isNull);
+
+      p.setContainer(inner, outer);
+      p.setContainer(obj, inner);
+      expect(obj.container, inner);
+      expect(inner.container, outer);
+      expect(outer.container, isNull);
+
+      p.setContainer(obj, null);
+      expect(obj.container, isNull);
+    });
+
+    test('a cycle is refused and changes nothing', () {
+      final p = newPatcher();
+      final a = p.createObject(Obj.patcher);
+      final b = p.createObject(Obj.patcher);
+      p.setContainer(a, b);
+      expect(() => p.setContainer(b, a), throwsA(isA<YseException>()));
+      expect(() => p.setContainer(a, a), throwsA(isA<YseException>()));
+      expect(a.container, b);
+      expect(b.container, isNull);
+    });
+
+    test('a non-patcher container is refused', () {
+      final p = newPatcher();
+      final notASub = p.createObject(Obj.gInt);
+      final obj = p.createObject(Obj.gInt);
+      expect(() => p.setContainer(obj, notASub), throwsA(isA<YseException>()));
+      expect(obj.container, isNull);
+    });
+
+    test('a handle from another patcher is an ArgumentError', () {
+      final p = newPatcher();
+      final other = newPatcher();
+      final sub = p.createObject(Obj.patcher);
+      final foreign = other.createObject(Obj.gInt);
+      final foreignSub = other.createObject(Obj.patcher);
+      expect(() => p.setContainer(foreign, sub), throwsArgumentError);
+      expect(
+        () => p.setContainer(p.createObject(Obj.gInt), foreignSub),
+        throwsArgumentError,
+      );
+      expect(foreign.container, isNull);
+    });
+
+    test('deleting a subpatcher deletes its contents transitively', () {
+      final p = newPatcher();
+      final outer = halfGain(p).sub;
+      final inner = halfGain(p).sub;
+      p.setContainer(inner, outer);
+      final kept = p.createObject(Obj.gInt);
+      expect(p.objects, 9);
+
+      p.deleteObject(outer);
+      expect(p.objects, 1);
+      expect(p.getHandleAt(0), kept);
+    });
+
+    test('dumpJson -> clear -> parseJson round-trips containment', () {
+      final p = newPatcher();
+      final outer = p.createObject(Obj.patcher);
+      final parts = halfGain(p);
+      p.setContainer(parts.sub, outer);
+      final json = p.dumpJson();
+
+      p.clear();
+      expect(p.objects, 0);
+      p.parseJson(json);
+      expect(p.dumpJson(), json);
+
+      // Find the reloaded objects by type and check the nesting.
+      final byType = <String, PHandle>{
+        for (var i = 0; i < p.objects; i++)
+          p.getHandleAt(i).type: p.getHandleAt(i),
+      };
+      final subs = [
+        for (var i = 0; i < p.objects; i++)
+          if (p.getHandleAt(i).type == Obj.patcher) p.getHandleAt(i),
+      ];
+      expect(subs, hasLength(2));
+      final reInner = byType[Obj.dInlet]!.container!;
+      expect(byType[Obj.dMultiply]!.container, reInner);
+      expect(byType[Obj.dOutlet]!.container, reInner);
+      expect(reInner.container, isNotNull);
+      expect(reInner.container!.container, isNull);
+      expect(reInner.subpatcherInlets, 1);
+      expect(reInner.subpatcherOutlets, 1);
+    });
+  });
+
   group('PCategory', () {
     test('every registered type maps to a category without throwing', () {
       final cats = {for (final t in PatcherRegistry.types()) t.category};

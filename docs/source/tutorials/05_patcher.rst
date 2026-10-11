@@ -205,8 +205,9 @@ place:
    final p2 = Patcher(mainOutputs: 1);
    p2.parseJson(File('mypatch.yap').readAsStringSync());
 
-:py:meth:`Patcher.parseJson` replaces the current graph wholesale —
-any objects already in the patcher are discarded. After loading,
+:py:meth:`Patcher.parseJson` **adds to** the current graph — objects
+already in the patcher are kept, so call :py:meth:`Patcher.clear`
+first to replace the patch. After loading,
 re-send the initial control values so the receives have something to
 forward.
 
@@ -215,6 +216,89 @@ rebuilt from that string with no code-side knowledge of its internal
 structure — is what makes external editors possible. Build the patch
 in a desktop tool, ship the resulting JSON as an asset, deserialise
 it at runtime.
+
+Subpatchers
+-----------
+
+A subpatcher groups part of a graph into one object. The parent
+connects to the group by pin number, like any other object, and does
+not need to know what is inside. It is an object of type
+:py:attr:`Obj.patcher` — **not** a separate :class:`Patcher`. Create
+its contents with :py:meth:`Patcher.createObject` on the same patcher,
+then move them inside with :py:meth:`Patcher.setContainer`.
+
+The pins of a subpatcher are the **boundary objects** among its direct
+contents. Each takes one argument, its index (default 0):
+
+- ``.inlet`` / ``.outlet`` (:py:attr:`Obj.gInlet` /
+  :py:attr:`Obj.gOutlet`) carry messages.
+- ``~inlet`` / ``~outlet`` (:py:attr:`Obj.dInlet` /
+  :py:attr:`Obj.dOutlet`) carry audio.
+
+Messages and signals share **one** index space per side, so a
+``.inlet 0`` next to a ``~inlet 1`` gives the subpatcher two inlets.
+Give every boundary object its own number.
+
+This builds a half-gain stage and plays a sine through it:
+
+.. code-block:: dart
+
+   //  ~sine -> [ ~inlet 0 -> ~* 0.5 -> ~outlet 0 ] -> ~dac
+   final p = Patcher();
+   final sub    = p.createObject(Obj.patcher);
+   final inlet  = p.createObject(Obj.dInlet, args: '0');
+   final gain   = p.createObject(Obj.dMultiply, args: '0.5');
+   final outlet = p.createObject(Obj.dOutlet, args: '0');
+   for (final h in [inlet, gain, outlet]) {
+     p.setContainer(h, sub);
+   }
+   p.connect(inlet, outlet: 0, to: gain, inlet: 0);
+   p.connect(gain, outlet: 0, to: outlet, inlet: 0);
+
+   // The parent wires the group by pin number only.
+   final sine = p.createObject(Obj.dSine, args: '440');
+   final dac  = p.createObject(Obj.dDac);
+   p.connect(sine, outlet: 0, to: sub, inlet: 0);
+   p.connect(sub, outlet: 0, to: dac, inlet: 0);
+
+Things to know:
+
+- **Place objects before you connect.** Moving an object changes no
+  connection. :py:meth:`Patcher.connect` and
+  :py:meth:`Patcher.disconnect` on a subpatcher look up the boundary
+  object that claims the pin and record the edge straight to it, so
+  walking the graph (or :py:meth:`Patcher.dumpJson`) reports the
+  boundary object's ID, not the subpatcher's.
+- **Ask the subpatcher for its shape.** A subpatcher owns no pins of
+  its own, so :py:attr:`PHandle.inputs` / :py:attr:`PHandle.outputs`
+  answer 0. :py:attr:`PHandle.subpatcherInlets` /
+  :py:attr:`PHandle.subpatcherOutlets` report one past the highest
+  index claimed on that side.
+- **Containment reads back.** :py:attr:`PHandle.container` is the
+  subpatcher an object is directly inside, or ``null`` at the top
+  level. ``p.setContainer(obj, null)`` moves it back out. Subpatchers
+  nest.
+- **Illegal moves throw.** A container that is not a ``patcher``
+  object, or a move that would put a subpatcher inside itself or one
+  of its descendants, throws :class:`YseException` and changes
+  nothing. A handle from another :class:`Patcher` throws
+  ``ArgumentError``.
+- **Deleting is transitive.** :py:meth:`Patcher.deleteObject` on a
+  subpatcher deletes everything inside it, nested subpatchers
+  included. Any :class:`PHandle` you held that pointed inside is
+  dangling afterwards.
+- **It costs nothing to nest.** Every object stays in the patcher's
+  one flat graph, so the audio thread's work does not grow with
+  nesting depth.
+- **Names are not local.** ``.s`` / ``.r`` inside a subpatcher use the
+  whole patcher's :py:attr:`Patcher.name`, like everything else.
+- **Saving works unchanged.** :py:meth:`Patcher.dumpJson` writes each
+  object's container, and :py:meth:`Patcher.parseJson` restores the
+  same nesting.
+
+Upstream's `patcher subpatchers guide
+<https://github.com/yvanvds/yse-soundengine/blob/main/documentation/source/patcher/subpatchers.rst>`_
+covers the same model from the C++ side.
 
 Lifetime and cleanup
 --------------------

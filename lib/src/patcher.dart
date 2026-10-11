@@ -111,17 +111,77 @@ class Patcher implements Finalizable {
     if (h.address == 0) {
       throw StateError('createObject("$type", "$args") returned null');
     }
-    return PHandle._(h);
+    return PHandle._(this, h);
   });
 
   /// Remove [obj] from the patcher.
+  ///
+  /// Deleting a subpatcher (an [Obj.patcher] object) also deletes
+  /// everything inside it, transitively — nested subpatchers and their
+  /// contents included. Any [PHandle] you still hold that pointed inside
+  /// the deleted group is **dangling** afterwards: do not use it.
   void deleteObject(PHandle obj) =>
       _b.patcher_delete_object(_handle, obj._handle);
 
   /// Remove every object from the patcher.
   void clear() => _b.patcher_clear(_handle);
 
+  // ─── subpatchers ───────────────────────────────────────────────────────
+
+  /// Put [obj] inside the subpatcher [container], or move it back to the
+  /// top level when [container] is `null`.
+  ///
+  /// A subpatcher is an object of type [Obj.patcher]. It is not a separate
+  /// [Patcher]: create its contents with [createObject] on this patcher,
+  /// then move them inside with this call. Its pins are the boundary
+  /// objects among its direct contents — `.inlet` / `~inlet`
+  /// ([Obj.gInlet] / [Obj.dInlet]) and `.outlet` / `~outlet`
+  /// ([Obj.gOutlet] / [Obj.dOutlet]), whose one creation argument is the
+  /// pin index. Message and signal boundaries share one index space per
+  /// side. Subpatchers nest.
+  ///
+  /// Containment is addressing, not storage: nested objects stay in this
+  /// patcher's one flat graph, so nesting costs the audio thread nothing.
+  /// Moving an object changes no connection, so place objects before you
+  /// [connect] to the subpatcher's pins.
+  ///
+  /// Throws [ArgumentError] when [obj] or [container] belongs to another
+  /// patcher. Throws [YseException] when the engine refuses the move —
+  /// [container] is not an [Obj.patcher] object, or the move would put a
+  /// subpatcher inside itself or one of its own descendants. A refused
+  /// move changes nothing.
+  void setContainer(PHandle obj, PHandle? container) {
+    _checkOwned(obj, 'obj');
+    if (container != null) _checkOwned(container, 'container');
+    _b.patcher_set_container(
+      _handle,
+      obj._handle,
+      container?._handle ?? nullptr,
+    );
+    // The engine refuses an illegal move with a log line and no status, so
+    // read the containment back to report the refusal.
+    if (obj.container != container) {
+      throw YseException(
+        'setContainer refused: cannot move ${obj.type} into '
+        '${container?.type ?? 'the top level'} (container must be a '
+        '"${Obj.patcher}" object and the move must not create a cycle)',
+      );
+    }
+  }
+
+  void _checkOwned(PHandle h, String name) {
+    if (!identical(h._patcher, this)) {
+      throw ArgumentError.value(h, name, 'belongs to another patcher');
+    }
+  }
+
   /// Connect [from]'s [outlet] to [to]'s [inlet].
+  ///
+  /// Either end may be a subpatcher ([Obj.patcher] object): the pin number
+  /// is resolved to the boundary object inside it that claims that index,
+  /// and the connection is recorded straight to that boundary object (so
+  /// walking the graph or [dumpJson] reports the boundary object's ID).
+  /// Connecting to a pin no boundary object claims is refused.
   void connect(
     PHandle from, {
     required int outlet,
@@ -130,6 +190,9 @@ class Patcher implements Finalizable {
   }) => _b.patcher_connect(_handle, from._handle, outlet, to._handle, inlet);
 
   /// Remove the connection from [from]'s [outlet] to [to]'s [inlet].
+  ///
+  /// A subpatcher end resolves through its boundary objects as in
+  /// [connect].
   void disconnect(
     PHandle from, {
     required int outlet,
@@ -166,11 +229,11 @@ class Patcher implements Finalizable {
 
   /// Object at position [index] in the list (0-indexed).
   PHandle getHandleAt(int index) =>
-      PHandle._(_b.patcher_get_handle_from_list(_handle, index));
+      PHandle._(this, _b.patcher_get_handle_from_list(_handle, index));
 
   /// Object whose ID is [id].
   PHandle getHandleById(int id) =>
-      PHandle._(_b.patcher_get_handle_from_id(_handle, id));
+      PHandle._(this, _b.patcher_get_handle_from_id(_handle, id));
 
   // ─── message I/O ───────────────────────────────────────────────────────
 
@@ -213,9 +276,47 @@ class Patcher implements Finalizable {
 ///
 /// Owned by the patcher — destruction is via [Patcher.deleteObject], not
 /// by the [PHandle] going out of scope.
+///
+/// Two [PHandle]s are equal when they refer to the same engine object, so a
+/// handle read back from [container] compares equal to the one returned by
+/// [Patcher.createObject].
 class PHandle {
+  final Patcher _patcher;
   final Pointer<YsePHandle> _handle;
-  PHandle._(this._handle);
+  PHandle._(this._patcher, this._handle);
+
+  @override
+  bool operator ==(Object other) =>
+      other is PHandle && other._handle.address == _handle.address;
+
+  @override
+  int get hashCode => _handle.address.hashCode;
+
+  // ─── subpatchers ───────────────────────────────────────────────────────
+
+  /// The subpatcher this object is directly inside, or `null` at the top
+  /// level. Change it with [Patcher.setContainer].
+  PHandle? get container {
+    final c = _patcher._b.patcher_get_container(_patcher._handle, _handle);
+    return c.address == 0 ? null : PHandle._(_patcher, c);
+  }
+
+  /// How many inlets this subpatcher presents to its parent: one past the
+  /// highest index claimed by a `.inlet` or `~inlet` among its direct
+  /// contents (messages and signals share one numbering). A subpatcher
+  /// whose only `.inlet` has index 2 reports 3. `0` when this object is
+  /// not an [Obj.patcher].
+  ///
+  /// Ask this, not [inputs]: a subpatcher owns no pins of its own, so
+  /// [inputs] answers 0 for it.
+  int get subpatcherInlets =>
+      _patcher._b.patcher_subpatcher_inlets(_patcher._handle, _handle);
+
+  /// How many outlets this subpatcher presents to its parent; the
+  /// `.outlet` / `~outlet` counterpart of [subpatcherInlets]. Ask this, not
+  /// [outputs], which answers 0 for a subpatcher.
+  int get subpatcherOutlets =>
+      _patcher._b.patcher_subpatcher_outlets(_patcher._handle, _handle);
 
   /// Type identifier of the underlying object (matches one of [Obj]).
   String get type =>
@@ -246,9 +347,14 @@ class PHandle {
   int? get id => _idOrNull(bindings.phandle_get_id(_handle));
 
   /// Number of inlets on this object.
+  ///
+  /// `0` for a subpatcher ([Obj.patcher]): its pins belong to the boundary
+  /// objects inside it. Use [subpatcherInlets] instead.
   int get inputs => bindings.phandle_get_inputs(_handle);
 
   /// Number of outlets on this object.
+  ///
+  /// `0` for a subpatcher ([Obj.patcher]); use [subpatcherOutlets].
   int get outputs => bindings.phandle_get_outputs(_handle);
 
   /// Whether [inlet] accepts an audio signal.

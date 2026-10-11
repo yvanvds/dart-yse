@@ -111,6 +111,21 @@
     because it is the patcher's own engine-side name (read back from the
     engine, saved with the patch), not only a bus address.
 
+- **Subpatchers** (#61, upstream yse-soundengine#545 / #764):
+  - New `Patcher.setContainer(obj, container)` puts an object inside an
+    `Obj.patcher` object (or back at the top level with `null`); read it
+    back with `PHandle.container`. The engine refuses an illegal move (not
+    a `patcher` container, or a cycle) without a status, so the wrapper
+    reads the containment back and throws `YseException`; a handle from
+    another `Patcher` throws `ArgumentError`.
+  - New `PHandle.subpatcherInlets` / `subpatcherOutlets`: the pin range a
+    subpatcher presents (`.inlet` / `~inlet` share one index space).
+    `PHandle.inputs` / `outputs` answer 0 for a subpatcher.
+  - `connect` / `disconnect` to a subpatcher resolve to its boundary
+    object; deleting a subpatcher deletes its contents transitively.
+  - `PHandle` now has value equality: two handles to the same engine
+    object compare equal.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

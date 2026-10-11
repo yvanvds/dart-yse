@@ -8,6 +8,13 @@ Upstream: :yse-cpp:`api/core.html <YSE::system>`.
 
 .. include:: _generated/system.rst
 
+Occlusion
+---------
+
+:py:attr:`System.occlusion` takes an :class:`OcclusionFn` callback.
+
+.. include:: _generated/occlusion_fn.rst
+
 Domain clocks
 -------------
 

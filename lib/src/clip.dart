@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/yse_bindings.g.dart';
 import 'exception.dart';
+import 'ffi_helpers.dart';
 import 'library.dart';
 import 'midi.dart';
 import 'synth.dart';
@@ -75,6 +76,11 @@ class ClipTransport implements Finalizable {
   final YseBindings _b;
   Pointer<YseClip> _handle;
 
+  /// The connected sinks ([Synth]s and [MidiOut]s) the engine borrows, held
+  /// until they are disconnected or this clip's native destroy has run, so
+  /// garbage collection never frees a sink under a live clip (#84).
+  late final Borrows _sinks = Borrows(this);
+
   ClipTransport._(this._b, this._handle) {
     _finalizer.attach(this, _handle.cast(), detach: this);
   }
@@ -119,22 +125,37 @@ class ClipTransport implements Finalizable {
 
   /// Route this clip's playback to an external MIDI output port. [out] must
   /// already have opened a port. May be called for several ports.
-  void connectMidiOut(MidiOut out) =>
-      _b.clip_connect_midi_out(_handle, out.handle);
+  ///
+  /// The clip holds a Dart reference to [out] until [disconnectMidiOut] or
+  /// [dispose], so garbage collection never frees the port under it.
+  void connectMidiOut(MidiOut out) {
+    _b.clip_connect_midi_out(_handle, out.handle);
+    _sinks.add(out);
+  }
 
   /// Stop routing this clip to [out].
-  void disconnectMidiOut(MidiOut out) =>
-      _b.clip_disconnect_midi_out(_handle, out.handle);
+  void disconnectMidiOut(MidiOut out) {
+    _b.clip_disconnect_midi_out(_handle, out.handle);
+    _sinks.remove(out);
+  }
 
   /// Route this clip's playback to an internal [synth]. The engine drives the
   /// synth's note events from the audio thread. [synth] must outlive the clip
   /// (or be disconnected first). May be called for several synths.
-  void connectSynth(Synth synth) =>
-      _b.clip_connect_synth(_handle, synth.handle);
+  ///
+  /// The clip holds a Dart reference to [synth] until [disconnectSynth] or
+  /// [dispose], so garbage collection never frees the synth under it; don't
+  /// `.dispose()` the synth while it is connected.
+  void connectSynth(Synth synth) {
+    _b.clip_connect_synth(_handle, synth.handle);
+    _sinks.add(synth);
+  }
 
   /// Stop routing this clip to [synth].
-  void disconnectSynth(Synth synth) =>
-      _b.clip_disconnect_synth(_handle, synth.handle);
+  void disconnectSynth(Synth synth) {
+    _b.clip_disconnect_synth(_handle, synth.handle);
+    _sinks.remove(synth);
+  }
 
   /// Replace the note-event list and set the loop length in one call.
   ///
@@ -199,5 +220,6 @@ class ClipTransport implements Finalizable {
     _finalizer.detach(this);
     _b.clip_destroy(_handle);
     _handle = nullptr;
+    _sinks.release();
   }
 }

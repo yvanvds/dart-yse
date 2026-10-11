@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'bindings/yse_bindings.g.dart';
 import 'exception.dart';
+import 'ffi_helpers.dart';
 import 'library.dart';
 
 /// A single musical event — pitch, volume, length, MIDI channel.
@@ -208,6 +209,11 @@ class Motif implements Finalizable {
   final YseBindings _b;
   Pointer<YseMotif> _handle;
 
+  /// The [Scale] set through [setFirstPitch], which the engine borrows; held
+  /// until replaced or until this motif's native destroy has run (#84).
+  late final Borrows _borrows = Borrows(this);
+  static const _firstPitch = #firstPitch;
+
   Motif._(this._b, this._handle) {
     _finalizer.attach(this, _handle.cast(), detach: this);
   }
@@ -245,8 +251,15 @@ class Motif implements Finalizable {
   ///
   /// When the [Player] picks a transposition for this motif it picks one
   /// whose starting note belongs to [validPitches].
-  void setFirstPitch(Scale validPitches) =>
-      _b.motif_set_first_pitch(_handle, validPitches.handle);
+  ///
+  /// The engine *borrows* [validPitches] (it keeps a pointer, not a copy), so
+  /// later changes to the scale apply. The motif holds a Dart reference to it
+  /// until the next call or [dispose], so garbage collection never frees it
+  /// under the motif; don't `.dispose()` the scale first.
+  void setFirstPitch(Scale validPitches) {
+    _b.motif_set_first_pitch(_handle, validPitches.handle);
+    _borrows[_firstPitch] = validPitches;
+  }
 
   /// Whether the motif contains any notes.
   bool get isEmpty => _b.motif_empty(_handle) != 0;
@@ -260,6 +273,7 @@ class Motif implements Finalizable {
     _finalizer.detach(this);
     _b.motif_destroy(_handle);
     _handle = nullptr;
+    _borrows.release();
   }
 }
 
@@ -359,12 +373,15 @@ class Player implements Finalizable {
 
   /// Constrain generated pitches to [scale].
   ///
-  /// The player keeps its own copy — modifying [scale] after this
-  /// call has no effect on the player.
+  /// The engine *borrows* [scale] (it keeps a pointer, not a copy), so
+  /// [scale] must outlive the player.
   void setScale(Scale scale, {Duration fade = Duration.zero}) =>
       _b.player_set_scale(_handle, scale.handle, fade.inMilliseconds / 1000.0);
 
   /// Add a [motif] to the player's pool. Picked weighted by [weight].
+  ///
+  /// The engine *borrows* [motif], so it must outlive the player (or be
+  /// removed first).
   void addMotif(Motif motif, {int weight = 1}) =>
       _b.player_add_motif(_handle, motif.handle, weight);
 

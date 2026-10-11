@@ -6,6 +6,7 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/yse_bindings.g.dart';
 import 'exception.dart';
+import 'ffi_helpers.dart';
 import 'library.dart';
 import 'synth.dart';
 
@@ -20,6 +21,10 @@ class MidiFile implements Finalizable {
 
   final YseBindings _b;
   Pointer<YseMidiFile> _handle;
+
+  /// The connected [Synth]s the engine borrows, held until they are
+  /// disconnected or this file's native destroy has run (#84).
+  late final Borrows _synths = Borrows(this);
 
   MidiFile._(this._b, this._handle) {
     _finalizer.attach(this, _handle.cast(), detach: this);
@@ -62,14 +67,19 @@ class MidiFile implements Finalizable {
   /// May be called for several synths (up to a small fixed cap) to drive them
   /// together; re-connecting an already-connected synth is a no-op. [synth]
   /// must outlive the connection — [disconnectSynth] it (or dispose this file)
-  /// before disposing the synth.
-  void connectSynth(Synth synth) =>
-      _b.midi_file_connect_synth(_handle, synth.handle);
+  /// before disposing the synth. The file holds a Dart reference to [synth]
+  /// until then, so garbage collection never frees it under the connection.
+  void connectSynth(Synth synth) {
+    _b.midi_file_connect_synth(_handle, synth.handle);
+    _synths.add(synth);
+  }
 
   /// Stop routing this file's playback into [synth]. Safe to call for a synth
   /// that was never connected.
-  void disconnectSynth(Synth synth) =>
-      _b.midi_file_disconnect_synth(_handle, synth.handle);
+  void disconnectSynth(Synth synth) {
+    _b.midi_file_disconnect_synth(_handle, synth.handle);
+    _synths.remove(synth);
+  }
 
   /// Destroy the underlying native file and detach the finalizer.
   void dispose() {
@@ -77,6 +87,7 @@ class MidiFile implements Finalizable {
     _finalizer.detach(this);
     _b.midi_file_destroy(_handle);
     _handle = nullptr;
+    _synths.release();
   }
 }
 
@@ -418,6 +429,10 @@ class MidiIn implements Finalizable {
   StreamController<MidiInParsedMessage>? _parsedController;
   NativeCallable<YseMidiInParsedCallbackFunction>? _parsedCallable;
 
+  /// The connected [Synth]s the engine borrows, held until they are
+  /// disconnected or this port's native destroy has run (#84).
+  late final Borrows _synths = Borrows(this);
+
   MidiIn._(this._b, this._handle) {
     _finalizer.attach(this, _handle.cast(), detach: this);
   }
@@ -452,14 +467,19 @@ class MidiIn implements Finalizable {
   /// small fixed cap); re-connecting an already-connected synth just updates
   /// its channel filter. [synth] must outlive the connection —
   /// [disconnectSynth] it (or close/dispose this port) before disposing the
-  /// synth.
-  void connectSynth(Synth synth, {int channelFilter = 0}) =>
-      _b.midi_in_connect_synth(_handle, synth.handle, channelFilter);
+  /// synth. The port holds a Dart reference to [synth] until [disconnectSynth]
+  /// or [dispose], so garbage collection never frees it under the connection.
+  void connectSynth(Synth synth, {int channelFilter = 0}) {
+    _b.midi_in_connect_synth(_handle, synth.handle, channelFilter);
+    _synths.add(synth);
+  }
 
   /// Stop routing incoming device MIDI into [synth]. Safe to call for a synth
   /// that was never connected.
-  void disconnectSynth(Synth synth) =>
-      _b.midi_in_disconnect_synth(_handle, synth.handle);
+  void disconnectSynth(Synth synth) {
+    _b.midi_in_disconnect_synth(_handle, synth.handle);
+    _synths.remove(synth);
+  }
 
   /// Broadcast stream of raw MIDI messages. Lazily installs the native
   /// callback on first subscription and uninstalls when the last
@@ -537,6 +557,7 @@ class MidiIn implements Finalizable {
     // call can still be on its way into either callable.
     _b.midi_in_destroy(_handle);
     _handle = nullptr;
+    _synths.release();
     _rawBridge?.retire();
     _rawBridge = null;
     _parsedCallable?.close();

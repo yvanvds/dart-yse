@@ -232,8 +232,10 @@ class System {
   /// Also removes the [occlusion] callback, releases every `Bus`
   /// subscription and tap, closing their streams (re-subscribe after the
   /// next init), clears the send callback of every `Patcher` with a
-  /// `Patcher.messages` listener (closing that stream), and forgets every `Channel.busName` (the engine drops the
-  /// channel's bus subscription with the session).
+  /// `Patcher.messages` listener (closing that stream), forgets every
+  /// `Channel.busName` (the engine drops the channel's bus subscription with
+  /// the session), and drops the Dart references that kept `Channel.dsp`
+  /// inserts alive.
   void close() {
     stopUpdateTimer();
     occlusion = null;
@@ -241,6 +243,7 @@ class System {
     closePatcherMessageStreams();
     clearChannelBusNames();
     _b.system_close(_handle);
+    releaseChannelInserts();
   }
 
   // ─── occlusion ──────────────────────────────────────────────────────────

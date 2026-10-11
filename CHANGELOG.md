@@ -305,6 +305,31 @@
   keep them reachable. Explicitly disposing a source before its sound is
   still unsupported; the docs now say so for every loader.
 
+- **Every borrowed object stays alive under its consumer** (#84, following
+  #80):
+  - `DspObject.link` chains: each effect now holds the one linked after
+    it, following the engine's own rewiring (`link` inserts between,
+    `unlink` detaches, `dispose` splices the successor onto the
+    predecessor). A chain whose head is held — by a `Sound`, a `Channel` or
+    your own variable — keeps every link alive.
+  - `Channel.dsp` holds its insert per native channel, so
+    `Channel.master.dsp = fx` (and the other singleton getters, which return
+    a fresh wrapper each time) keeps `fx` alive, and `Channel.master.dsp`
+    reads it back. Released on reassignment, `Channel.dispose` and
+    `System.close`.
+  - `ClipTransport.connectSynth` / `connectMidiOut`, `MidiFile.connectSynth`
+    and `MidiIn.connectSynth` hold each sink until it is disconnected or the
+    owner is disposed. `Motif.setFirstPitch` holds its `Scale`.
+  - Finalizer order: when an owner and what it borrows become unreachable
+    in the same collection, their native finalizers used to run in
+    unspecified order, so a sound's buffer or synth could be freed before
+    the sound. Borrowed objects are now released only after the owner's
+    native destroy has run (they are the token of a Dart `Finalizer` on the
+    owner, released when its callback is delivered).
+  - `Player.setScale` / `addMotif` docs no longer claim the player copies
+    its scale: the engine borrows both. `Player` cannot be constructed
+    yet, so it does not hold them (#85).
+
 - **Late voice groups throw instead of vanishing** (#81, upstream
   yse-soundengine#1177). `Synth.addSineVoices` / `addVaVoices` /
   `addFmVoices` / `addSamplerVoices` and `Synth.setPositionHandler` throw

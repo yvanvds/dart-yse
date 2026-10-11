@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -565,9 +567,13 @@ returns — poll [voiceCount] for the cloned count, exactly as a file-backed
 [Sound] is not playable until its buffer finishes loading. Voices must be
 added before the synth is attached/played; adding a group afterwards is
 rejected.</p>
-<p>Channels follow the engine convention: <cite>0</cite> = omni (all channels), <cite>1..16</cite>
-address a specific MIDI channel. Velocity, controller and aftertouch
-values are normalised to <cite>[0, 1]</cite>; the pitch wheel to <cite>[-1, 1]</cite>.</p>
+<p>Channels use the musical layer’s <strong>1-based</strong> numbering: <cite>1..16</cite> address a
+specific MIDI channel and <cite>0</cite> means <em>omni</em> (all channels) — <cite>0</cite> is never
+channel 1. This is the same base as [ClipEvent.channel], [Note.channel]
+and the <cite>MidiIn.connectSynth</cite> filter, but <strong>not</strong> the wire-level <cite>0..15</cite>
+used by <cite>MidiOut</cite> and the parsed <cite>MidiIn</cite> messages; add one when routing a
+raw MIDI channel into a synth. Velocity, controller and aftertouch values
+are normalised to <cite>[0, 1]</cite>; the pitch wheel to <cite>[-1, 1]</cite>.</p>
 <p>Threading (CLAUDE.md): construct and drive this from the [System] isolate.
 The engine’s audio-thread note-rewrite hook (<cite>yse_synth_set_note_callback</cite>)
 is intentionally not surfaced — it fires on the audio thread, which cannot
@@ -670,6 +676,21 @@ once per synth. Throws [YseException] on failure.</p>
 </div>
 <p>Release a note. [velocity] is the release velocity, normalised to
 <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">playNote</span><span class="p">(</span><span class="n">Note</span><span class="w"> </span><span class="n">note</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Start the note described by [note] (issue #67).</p>
+<p>The note’s [Note.channel] is the channel (1-based, <cite>0</cite> = omni), its
+[Note.pitch] rounded to the nearest integer is the note number, and its
+[Note.volume] is the velocity. [Note.length] is ignored — release the
+note with [releaseNote]. The note is read, not retained.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">releaseNote</span><span class="p">(</span><span class="n">Note</span><span class="w"> </span><span class="n">note</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Release the note described by [note] (issue #67) — the counterpart of
+[playNote], mapped the same way (so [Note.volume] becomes the release
+velocity). Pass the same note, or one with the same channel and rounded
+pitch, that started it.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">allNotesOff</span><span class="p">({</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">})</span>
 </pre></div>
 </div>

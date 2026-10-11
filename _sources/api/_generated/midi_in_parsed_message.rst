@@ -40,7 +40,8 @@ Status nibble (`0x80`..`0xF0`) — Note-On, CC, etc.
 
    final int channel
 
-MIDI channel (`0`..`15`).
+Wire-level MIDI channel, 0-based (`0`..`15`). Add one to address the
+same channel on a [Synth] or [ClipEvent], which count `1..16`.
 
 .. code-block:: dart
 

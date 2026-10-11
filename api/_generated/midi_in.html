@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -557,6 +559,11 @@ with [System.midiInDeviceName], then open one with [MidiIn.open].</p>
 </ul>
 </dd>
 </dl>
+<p>Channel numbering has two bases. The parsed stream reports the
+<strong>wire-level, 0-based</strong> channel (<cite>0..15</cite>, see
+[MidiInParsedMessage.channel]), while [connectSynth]’s <cite>channelFilter</cite>
+uses the musical layer’s <strong>1-based</strong> numbering (<cite>1..16</cite>, <cite>0</cite> = every
+channel) shared with [Synth] and [ClipEvent].</p>
 <p>Native callbacks fire on RtMidi’s internal input thread.
 <cite>NativeCallable.listener</cite> posts each event back to the isolate that
 created this <cite>MidiIn</cite>, so Dart code only ever sees messages
@@ -580,6 +587,9 @@ serialised in the isolate’s event queue.</p>
 <p>Broadcast stream of raw MIDI messages. Lazily installs the native
 callback on first subscription and uninstalls when the last
 subscriber cancels.</p>
+<p>Messages still queued when the last subscriber cancels (or the port
+is [dispose]d) are not delivered, but their native buffers are still
+released.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Stream</span><span class="o">&lt;</span><span class="n">MidiInParsedMessage</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">parsedMessages</span>
 </pre></div>
 </div>
@@ -600,8 +610,9 @@ messages until re-created.</p>
 <p>Route incoming device MIDI into an internal [synth] (upstream #371).</p>
 <p>Every channel-voice message received on the open port is mapped to the
 synth’s normalized note API and pushed onto its inbox on RtMidi’s input
-thread. [channelFilter] is a <cite>1..16</cite> MIDI channel to accept, or <cite>0</cite> (the
-default) for every channel. May be called for several synths (up to a
+thread. [channelFilter] is a 1-based <cite>1..16</cite> MIDI channel to accept, or
+<cite>0</cite> (the default) for every channel — note the parsed stream reports the
+same channel 0-based, so channel 1 there is filter <cite>1</cite> here. May be called for several synths (up to a
 small fixed cap); re-connecting an already-connected synth just updates
 its channel filter. [synth] must outlive the connection —
 [disconnectSynth] it (or close/dispose this port) before disposing the
@@ -615,6 +626,8 @@ that was never connected.</p>
 </pre></div>
 </div>
 <p>Destroy the underlying native port and detach the finalizer.</p>
+<p>Also clears both callbacks and closes [rawMessages] and
+[parsedMessages] (listeners get <cite>onDone</cite>).</p>
 </section>
 </section>
 

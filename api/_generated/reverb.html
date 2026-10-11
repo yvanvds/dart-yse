@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -662,6 +664,21 @@ reverberated mix. Sums above 1.0 can clip.</p>
 </pre></div>
 </div>
 <p>Gain of the early reflection at [reflection] (0..3).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">applyValues</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Apply a complete parameter set — room size, damping, dry/wet balance,
+modulation and the four early reflections — exactly as [preset] applies
+a named one. Each reflection time is truncated to whole samples.</p>
+<p>Pair with [ReverbPresetValues.lerp] to place a zone part-way between two
+presets:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">zone</span><span class="p">.</span><span class="n">applyValues</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="p">.</span><span class="n">lerp</span><span class="p">(</span>
+<span class="w">  </span><span class="n">ReverbPresetValues</span><span class="p">.</span><span class="n">fromPreset</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="p">.</span><span class="n">room</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ReverbPresetValues</span><span class="p">.</span><span class="n">fromPreset</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="p">.</span><span class="n">hall</span><span class="p">),</span>
+<span class="w">  </span><span class="m">0.3</span><span class="p">,</span>
+<span class="p">));</span>
+</pre></div>
+</div>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>

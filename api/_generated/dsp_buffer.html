@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -638,6 +640,46 @@ rate.</p>
 </pre></div>
 </div>
 <p>Multiply every sample by [value].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">addBuffer</span><span class="p">(</span><span class="n">DspBuffer</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Add [other] sample by sample: <cite>this[i] += other[i]</cite>.</p>
+<p>Works over the first <cite>min(length, other.length)</cite> samples; samples past
+the shorter length are left untouched. [other] may be this buffer.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">subBuffer</span><span class="p">(</span><span class="n">DspBuffer</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Subtract [other] sample by sample: <cite>this[i] -= other[i]</cite>.</p>
+<p>Same span rules as [addBuffer].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">mulBuffer</span><span class="p">(</span><span class="n">DspBuffer</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Multiply by [other] sample by sample: <cite>this[i] *= other[i]</cite>.</p>
+<p>Same span rules as [addBuffer].</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">divBuffer</span><span class="p">(</span><span class="n">DspBuffer</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Divide by [other] sample by sample: <cite>this[i] /= other[i]</cite>.</p>
+<p>Same span rules as [addBuffer]. Dividing by a zero sample gives 0,
+not infinity.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">copyFrom</span><span class="p">(</span><span class="n">DspBuffer</span><span class="w"> </span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">srcPos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dstPos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Copy [count] samples from <cite>src[srcPos …]</cite> into <cite>this[dstPos …]</cite>.</p>
+<p>Both ranges must lie inside their buffer’s [length]. A range that runs
+past the end copies nothing and throws [YseException]; a negative
+argument throws [RangeError]. [src] may be this buffer only when the
+two ranges do not overlap ([ArgumentError] otherwise). The overflow
+tail (see [DspBuffer.plain]) is refreshed after the copy, so copying
+into the head of a [Wavetable] keeps its wrap-around samples in sync.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">swap</span><span class="p">(</span><span class="n">DspBuffer</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Exchange the samples of this buffer and [other].</p>
+<p>Both buffers must have the same [length]; otherwise nothing moves and
+[YseException] is thrown. Only the sample values move: each buffer
+keeps its own storage, Dart class and [sampleRateAdjustment].
+Swapping a buffer with itself does nothing.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Float32List</span><span class="w"> </span><span class="n">read</span><span class="p">({</span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">count</span><span class="p">})</span>
 </pre></div>
 </div>

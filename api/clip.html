@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
 
 
@@ -560,6 +562,9 @@ from the audio thread — so the Dart side never has to time a <code class="docu
 <code class="docutils literal notranslate"><span class="pre">noteOff</span></code> itself. The event list is replaceable while playing (the engine
 swaps it at the next audio-block boundary), and playback routes to one or
 more <code class="xref py py-class docutils literal notranslate"><span class="pre">MidiOut</span></code> sinks.</p>
+<p>A clip and its clock may be disposed in either order: a clip whose clock is
+gone simply stops firing. Stopping or disposing a clip releases every note it
+still has sounding.</p>
 <p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::clip">api/clip.html</a>.</p>
 </section>
 <section id="cliptransport">
@@ -605,9 +610,12 @@ clock owns <cite>clock.name</cite>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">bind</span><span class="p">(</span><span class="n">DomainClock</span><span class="w"> </span><span class="n">clock</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Bind (or re-bind) the clip to a live domain [clock] by name. The bound
-clock must outlive the clip.</p>
-<p>Throws [YseException] if no live clock owns <cite>clock.name</cite>.</p>
+<p>Bind (or re-bind) the clip to a live domain [clock] by name.</p>
+<p>Binding shares the clock’s lifetime, so the clip and its clock may be
+disposed in either order: disposing the bound clock first stops it
+advancing, and the clip simply stops firing.</p>
+<p>Throws [YseException] if no live clock owns <cite>clock.name</cite> — which also
+unbinds the clip from any clock it was bound to.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">connectMidiOut</span><span class="p">(</span><span class="n">MidiOut</span><span class="w"> </span><span class="n">out</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -658,6 +666,11 @@ does not need its own <cite>allNotesOff</cite> safety net on stop.</p>
 </pre></div>
 </div>
 <p>Destroy the underlying native clip and detach the finalizer.</p>
+<p>Releases every note the clip still has sounding, exactly as [stop] does,
+so disposing a playing clip leaves no hanging notes on its sinks. Safe
+in any order relative to the bound [DomainClock], and a clip handle
+stays valid across <cite>System.close()</cite> — it may be disposed after the
+engine closes.</p>
 </section>
 </section>
 <section id="clipevent">
@@ -689,7 +702,9 @@ later, all from the audio thread — the Dart side never dispatches a note.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span>
 </pre></div>
 </div>
-<p>MIDI channel, <cite>1..16</cite>.</p>
+<p>MIDI channel in the musical layer’s 1-based numbering, <cite>1..16</cite> — the
+same base as [Synth]. A [MidiOut] sink receives it on the wire as
+<cite>channel - 1</cite>, so this is not the 0-based channel <cite>MidiOut.noteOn</cite> takes.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">pitch</span>
 </pre></div>
 </div>

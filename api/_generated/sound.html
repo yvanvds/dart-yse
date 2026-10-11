@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -574,9 +576,26 @@ output on every audio callback.</p>
 </div>
 <p>Construct a sound backed by an in-memory [DspBuffer].</p>
 <p><strong>Lifetime contract:</strong> [buffer] must outlive this sound — the audio
-thread reads from it on every callback. Keep a Dart reference to the
-buffer for as long as the sound exists; don’t <cite>.dispose()</cite> the
-buffer before disposing the sound.</p>
+thread reads from it on every callback. The sound holds a Dart
+reference to it, so garbage collection never frees the buffer under a
+live sound; don’t <cite>.dispose()</cite> the buffer before disposing the sound.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromMultiBuffer</span><span class="p">(</span><span class="n">DspMultiBuffer</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Channel</span><span class="o">?</span><span class="w"> </span><span class="n">channel</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Construct a sound backed by an in-memory [DspMultiBuffer] — a stereo
+or surround source with one buffer per channel.</p>
+<p>The sound plays the length of the shortest channel. Set [spread] to
+fan the source channels out around the sound’s position (at 1, a
+stereo source straight ahead plays channel 0 left and channel 1
+right); at the default spread of 0 every channel pans to the same
+point. [channel] routes it through that mixer node; pass <cite>null</cite> for
+the master mix.</p>
+<p><strong>Lifetime contract:</strong> [buffer] must outlive this sound — the audio
+thread reads from it on every callback. The sound holds a Dart
+reference to it, so garbage collection never frees it under a live
+sound; don’t <cite>.dispose()</cite> it before disposing the sound.</p>
+<p>Throws [YseException] if the sound cannot be created or loaded (for
+example from a disposed [buffer]).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Channel</span><span class="o">?</span><span class="w"> </span><span class="n">channel</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">})</span>
 </pre></div>
 </div>

@@ -68,6 +68,16 @@ Velocity in `[0, 1]`.
 
 Duration in seconds.
 
+.. code-block:: dart
+
+   int get channel
+
+.. code-block:: dart
+
+   set channel(int value)
+
+MIDI channel, 1-based like [Note.channel] (issue #67).
+
 Methods
 -------
 

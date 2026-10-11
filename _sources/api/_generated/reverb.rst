@@ -172,6 +172,25 @@ Gain of the early reflection at [reflection] (0..3).
 
 .. code-block:: dart
 
+   void applyValues(ReverbPresetValues values)
+
+Apply a complete parameter set — room size, damping, dry/wet balance,
+modulation and the four early reflections — exactly as [preset] applies
+a named one. Each reflection time is truncated to whole samples.
+
+Pair with [ReverbPresetValues.lerp] to place a zone part-way between two
+presets:
+
+.. code-block:: dart
+
+   zone.applyValues(ReverbPresetValues.lerp(
+     ReverbPresetValues.fromPreset(ReverbPreset.room),
+     ReverbPresetValues.fromPreset(ReverbPreset.hall),
+     0.3,
+   ));
+
+.. code-block:: dart
+
    void dispose()
 
 Destroy the underlying native reverb and detach the finalizer.

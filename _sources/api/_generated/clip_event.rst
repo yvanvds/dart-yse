@@ -39,7 +39,9 @@ Note length in beats.
 
    final int channel
 
-MIDI channel, `1..16`.
+MIDI channel in the musical layer's 1-based numbering, `1..16` — the
+same base as [Synth]. A [MidiOut] sink receives it on the wire as
+`channel - 1`, so this is not the 0-based channel `MidiOut.noteOn` takes.
 
 .. code-block:: dart
 

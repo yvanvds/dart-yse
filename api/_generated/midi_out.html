@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -550,12 +552,24 @@
 <p>MIDI output port (Windows / Linux only; backed by RtMidi upstream).</p>
 <p>Enumerate device counts with [System.midiOutDeviceCount] and names
 with [System.midiOutDeviceName], then open one with [MidiOut.open].</p>
+<p>Channels here are <strong>wire-level, 0-based</strong> (<cite>0..15</cite>) — the low nibble of
+the status byte. The musical layer ([Synth], [ClipEvent], <cite>Note</cite>) counts
+<cite>1..16</cite> instead, so MIDI channel 1 is <cite>0</cite> here and <cite>1</cite> there. A channel
+outside <cite>0..15</cite> is clamped into that range by the engine (libYSE 3.0.1)
+rather than spilling into the status nibble, so <cite>-1</cite> sends on channel 0
+and <cite>16</cite> on channel 15.</p>
+<p>To send a message the typed helpers don’t cover — a SysEx dump, or any
+other complete message — use [raw].</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">MidiOut</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">port</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Open the MIDI device at [port].</p>
+<p>When [port] does not exist or the MIDI backend cannot start, the engine
+reports the RtMidi error through [Log] and the port stays unopened:
+every send on it is then a silent no-op. Check [port] against
+[System.midiOutDeviceCount] first.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
@@ -606,7 +620,8 @@ with [System.midiOutDeviceName], then open one with [MidiOut.open].</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">allNotesOff</span><span class="p">({</span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">channel</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>Send All-Notes-Off on a specific [channel].</p>
+<p>Send All-Notes-Off on a specific [channel] (<cite>0..15</cite>), or on every
+channel when null.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">reset</span><span class="p">({</span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">channel</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -615,6 +630,44 @@ with [System.midiOutDeviceName], then open one with [MidiOut.open].</p>
 </pre></div>
 </div>
 <p>Send three raw MIDI bytes.</p>
+<p>Always sends exactly three bytes, so it only suits three-byte messages
+(note on/off, poly pressure, control change, pitch bend). For anything
+else — a two-byte program change or channel pressure, a one-byte
+realtime message, SysEx — use [raw], which sends the message as given.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">raw</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Send one complete MIDI message, byte for byte — no padding and no
+truncation (libYSE #748 / #903).</p>
+<p>This is the way to send two-byte messages (program change, channel
+pressure), single-byte system realtime messages, and System Exclusive
+dumps of any length:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">out</span><span class="p">.</span><span class="n">raw</span><span class="p">([</span><span class="mh">0xC0</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">]);</span><span class="w">                               </span><span class="c1">// program change</span>
+<span class="n">out</span><span class="p">.</span><span class="n">raw</span><span class="p">([</span><span class="mh">0xF0</span><span class="p">,</span><span class="w"> </span><span class="mh">0x7E</span><span class="p">,</span><span class="w"> </span><span class="mh">0x7F</span><span class="p">,</span><span class="w"> </span><span class="mh">0x09</span><span class="p">,</span><span class="w"> </span><span class="mh">0x01</span><span class="p">,</span><span class="w"> </span><span class="mh">0xF7</span><span class="p">]);</span><span class="w">    </span><span class="c1">// GM System On</span>
+</pre></div>
+</div>
+<p>[bytes] is copied into native memory for the call, so it may be
+reused or modified straight afterwards. An empty list is a no-op.</p>
+<p>The message is checked before anything reaches the engine, and an
+[ArgumentError] is thrown when:</p>
+<ul class="simple">
+<li><p>a value is outside <cite>0..255</cite>;</p></li>
+<li><p>the first byte is not a status byte (<cite>&gt;= 0x80</cite>) — running status
+is not supported, every message carries its own status;</p></li>
+<li><p>a data byte has its high bit set (<cite>&gt;= 0x80</cite>);</p></li>
+<li><p>the length doesn’t match the status: 3 bytes for note off/on, poly
+pressure, control change, pitch bend and song position; 2 for
+program change, channel pressure, MTC quarter frame and song
+select; 1 for tune request and system realtime (<cite>0xF8..0xFF</cite>);</p></li>
+<li><p>a SysEx message (<cite>0xF0</cite>) doesn’t end with <cite>0xF7</cite>;</p></li>
+<li><p>the status is <cite>0xF4</cite> / <cite>0xF5</cite> (undefined) or a stray <cite>0xF7</cite>.</p></li>
+</ul>
+<p>Unlike the typed helpers, the channel nibble of a raw status byte is
+sent as given — there is nothing to clamp.</p>
+<p>On a port that isn’t open (see [MidiOut.open]) or after [dispose] this
+is a silent no-op, like every other send. A send RtMidi refuses is
+reported through [Log] and dropped; it never throws across the FFI
+boundary.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>

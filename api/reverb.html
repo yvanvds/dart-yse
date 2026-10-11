@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
 
 
@@ -537,6 +539,7 @@
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#reverbpresetvalues">ReverbPresetValues</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Methods</a></li>
 </ul>
@@ -558,6 +561,12 @@
 <p>Positioned reverb zones. The engine blends every reverb whose roll-off
 radius overlaps the listener into a single shared reverb processor.</p>
 <p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::reverb">api/core.html</a>.</p>
+<p>The named presets are also available as plain values:
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">ReverbPresetValues.fromPreset()</span></code> returns the exact parameter set
+<code class="docutils literal notranslate"><span class="pre">Reverb.preset</span></code> applies, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ReverbPresetValues.lerp()</span></code> blends two sets
+with the engine’s own morph core, and <code class="xref py py-meth docutils literal notranslate"><span class="pre">Reverb.applyValues()</span></code> applies
+any set to a zone. <code class="docutils literal notranslate"><span class="pre">fromPreset</span></code> and <code class="docutils literal notranslate"><span class="pre">lerp</span></code> need the library but no engine
+session.</p>
 </section>
 <section id="id1">
 <h1>Reverb<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
@@ -679,6 +688,21 @@ reverberated mix. Sums above 1.0 can clip.</p>
 </pre></div>
 </div>
 <p>Gain of the early reflection at [reflection] (0..3).</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">applyValues</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Apply a complete parameter set — room size, damping, dry/wet balance,
+modulation and the four early reflections — exactly as [preset] applies
+a named one. Each reflection time is truncated to whole samples.</p>
+<p>Pair with [ReverbPresetValues.lerp] to place a zone part-way between two
+presets:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">zone</span><span class="p">.</span><span class="n">applyValues</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="p">.</span><span class="n">lerp</span><span class="p">(</span>
+<span class="w">  </span><span class="n">ReverbPresetValues</span><span class="p">.</span><span class="n">fromPreset</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="p">.</span><span class="n">room</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ReverbPresetValues</span><span class="p">.</span><span class="n">fromPreset</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="p">.</span><span class="n">hall</span><span class="p">),</span>
+<span class="w">  </span><span class="m">0.3</span><span class="p">,</span>
+<span class="p">));</span>
+</pre></div>
+</div>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -708,6 +732,22 @@ must each have exactly four elements; both default to all-zero.</p>
 </pre></div>
 </div>
 <p>Read a native <cite>YseReverbPresetValues</cite> struct into a Dart value.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">ReverbPresetValues</span><span class="p">.</span><span class="n">fromPreset</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="w"> </span><span class="n">preset</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The exact parameter set that <cite>Reverb.preset = preset</cite> applies, read from
+the engine’s preset table. Needs the library but no engine session.</p>
+</section>
+<section id="static-methods">
+<h2>Static methods<a class="headerlink" href="#static-methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">lerp</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Linear blend of [a] and [b]: every field is interpolated with [t]
+clamped to <cite>[0, 1]</cite>, so <cite>t == 0</cite> returns [a] and <cite>t == 1</cite> returns [b]
+exactly. Delegates to the engine’s own morph core, so the result is
+bit-identical to what a [MorphingReverb] computes. Needs the library but
+no engine session.</p>
 </section>
 <section id="id3">
 <h2>Properties<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
@@ -814,6 +854,7 @@ must each have exactly four elements; both default to all-zero.</p>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#reverbpresetvalues">ReverbPresetValues</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Methods</a></li>
 </ul>

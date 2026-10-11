@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -560,6 +562,17 @@ bank may be [dispose]d afterwards.</p>
 <p>Load and parse a DX7 <cite>.syx</cite> file into a bank.</p>
 <p>Throws [YseException] if the file is missing, unreadable, has a bad
 header, the wrong length, or a checksum mismatch.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Dx7Bank</span><span class="p">.</span><span class="n">fromBytes</span><span class="p">(</span><span class="n">Uint8List</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Parse a DX7 SysEx image already in memory (issue #67) — for hosts that
+ship banks as bundled assets (Flutter assets, Android APKs) where there
+is no filesystem path.</p>
+<p>Accepts the same formats as [Dx7Bank.load]. [data] is copied into a
+native buffer for the duration of the call only; neither the copy nor
+[data] is retained, so a transient buffer is fine.</p>
+<p>Throws [YseException] on empty input, a bad header, the wrong length, or
+a checksum mismatch.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
@@ -580,6 +593,15 @@ header, the wrong length, or a checksum mismatch.</p>
 </div>
 <p>The space-trimmed name of patch [index], or an empty string for an
 out-of-range index.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">indexOf</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Index of the first patch whose space-trimmed name equals [name] exactly,
+or <cite>null</cite> when no patch matches (issue #67). The match is
+case-sensitive and compares against [patchName]’s trimmed form, so pass
+the name without the DX7’s trailing space padding.</p>
+<p>Pairs with [Synth.setFmPatch]:
+<cite>synth.setFmPatch(bank, bank.indexOf(‘E.PIANO 1’)!)</cite>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>

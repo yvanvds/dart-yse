@@ -128,6 +128,64 @@ Multiply every sample by [value].
 
 .. code-block:: dart
 
+   void addBuffer(DspBuffer other)
+
+Add [other] sample by sample: `this[i] += other[i]`.
+
+Works over the first `min(length, other.length)` samples; samples past
+the shorter length are left untouched. [other] may be this buffer.
+
+.. code-block:: dart
+
+   void subBuffer(DspBuffer other)
+
+Subtract [other] sample by sample: `this[i] -= other[i]`.
+
+Same span rules as [addBuffer].
+
+.. code-block:: dart
+
+   void mulBuffer(DspBuffer other)
+
+Multiply by [other] sample by sample: `this[i] *= other[i]`.
+
+Same span rules as [addBuffer].
+
+.. code-block:: dart
+
+   void divBuffer(DspBuffer other)
+
+Divide by [other] sample by sample: `this[i] /= other[i]`.
+
+Same span rules as [addBuffer]. Dividing by a zero sample gives 0,
+not infinity.
+
+.. code-block:: dart
+
+   void copyFrom(DspBuffer src, {int srcPos = 0, int dstPos = 0, required int count})
+
+Copy [count] samples from `src[srcPos ...]` into `this[dstPos ...]`.
+
+Both ranges must lie inside their buffer's [length]. A range that runs
+past the end copies nothing and throws [YseException]; a negative
+argument throws [RangeError]. [src] may be this buffer only when the
+two ranges do not overlap ([ArgumentError] otherwise). The overflow
+tail (see [DspBuffer.plain]) is refreshed after the copy, so copying
+into the head of a [Wavetable] keeps its wrap-around samples in sync.
+
+.. code-block:: dart
+
+   void swap(DspBuffer other)
+
+Exchange the samples of this buffer and [other].
+
+Both buffers must have the same [length]; otherwise nothing moves and
+[YseException] is thrown. Only the sample values move: each buffer
+keeps its own storage, Dart class and [sampleRateAdjustment].
+Swapping a buffer with itself does nothing.
+
+.. code-block:: dart
+
    Float32List read({int offset = 0, int? count})
 
 Copy [count] samples starting at [offset] into a new [Float32List].

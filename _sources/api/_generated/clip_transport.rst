@@ -55,10 +55,14 @@ Methods
 
    void bind(DomainClock clock)
 
-Bind (or re-bind) the clip to a live domain [clock] by name. The bound
-clock must outlive the clip.
+Bind (or re-bind) the clip to a live domain [clock] by name.
 
-Throws [YseException] if no live clock owns `clock.name`.
+Binding shares the clock's lifetime, so the clip and its clock may be
+disposed in either order: disposing the bound clock first stops it
+advancing, and the clip simply stops firing.
+
+Throws [YseException] if no live clock owns `clock.name` — which also
+unbinds the clip from any clock it was bound to.
 
 .. code-block:: dart
 
@@ -128,4 +132,10 @@ does not need its own `allNotesOff` safety net on stop.
    void dispose()
 
 Destroy the underlying native clip and detach the finalizer.
+
+Releases every note the clip still has sounding, exactly as [stop] does,
+so disposing a playing clip leaves no hanging notes on its sinks. Safe
+in any order relative to the bound [DomainClock], and a clip handle
+stays valid across `System.close()` — it may be disposed after the
+engine closes.
 

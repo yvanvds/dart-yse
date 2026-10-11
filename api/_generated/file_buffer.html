@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -529,6 +531,7 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
             </nav>
@@ -556,6 +559,20 @@
 <p>File buffer of [length] samples (plus [overflow] tail samples). Size
 it large enough for the file you intend to [loadFile].</p>
 </section>
+<section id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">fileSampleRate</span>
+</pre></div>
+</div>
+<p>Native sample rate, in Hz, of the file this buffer was last loaded
+from with [loadFile]; 0 before a successful load.</p>
+<p>Unlike [sampleRateAdjustment] (a ratio against the engine rate in
+effect at load time), this does not change when the engine is
+re-initialised at another rate. To re-derive the playback speed
+against the live session, use
+<cite>fileSampleRate / System.instance.sessionSampleRate</cite> and assign it to
+[sampleRateAdjustment].</p>
+</section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">loadFile</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">})</span>
@@ -566,7 +583,14 @@ it large enough for the file you intend to [loadFile].</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">saveFile</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Save the contents to a mono WAV file.</p>
+<p>Save the contents to a mono 32-bit float WAV file.</p>
+<p>[filename] is used verbatim (no extension is appended). The file is
+written at [fileSampleRate] when this buffer was loaded from a file,
+or at the engine sample rate otherwise.</p>
+<p>Throws [YseException] when the file cannot be created, the buffer is
+empty, or a custom [BufferIO] backend is active: that backend is
+read-only, so saving refuses rather than bypass it. File I/O — don’t
+call it from a time-critical path.</p>
 </section>
 </section>
 
@@ -600,6 +624,7 @@ it large enough for the file you intend to [loadFile].</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
   </nav></div>

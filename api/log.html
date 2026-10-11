@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
 
 
@@ -603,11 +605,13 @@ been subscribed.</p>
 callback that forwards every message into the stream. The first
 subscription installs the bridge; subsequent subscribers share
 the same stream.</p>
-<p>Cancel the last subscription (or close the engine) to release the
-callback. Callbacks run on whichever thread emitted the log
-message — <cite>NativeCallable.listener</cite> posts them back to this
-isolate via a port, so Dart code only ever sees them serialised
-in the isolate’s event queue.</p>
+<p>Cancel the last subscription to release the callback. Callbacks
+run on whichever thread emitted the log message —
+<cite>NativeCallable.listener</cite> posts them back to this isolate via a
+port, so Dart code only ever sees them serialised in the isolate’s
+event queue. Messages still queued when the last subscription is
+cancelled are not delivered, but their native strings are still
+released.</p>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>

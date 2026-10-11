@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
 
 
@@ -553,8 +555,20 @@
   <section id="sound">
 <h1>Sound<a class="headerlink" href="#sound" title="Link to this heading">#</a></h1>
 <p>Sound playback. Construct one <code class="xref py py-class docutils literal notranslate"><span class="pre">Sound</span></code> per voice in the scene
-via <code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromFile()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromBuffer()</span></code>, or
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromPatcher()</span></code>.</p>
+via one of its loaders:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromFile()</span></code> — an audio file, in memory or streamed.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromBuffer()</span></code> — a mono in-memory <code class="xref py py-class docutils literal notranslate"><span class="pre">DspBuffer</span></code>.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromMultiBuffer()</span></code> — a stereo or surround in-memory
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DspMultiBuffer</span></code>, one buffer per channel. With a non-zero
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Sound.spread</span></code> the source channels fan out around the sound’s
+position; at the default spread of 0 they all pan to the same point.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromPatcher()</span></code> — the <code class="docutils literal notranslate"><span class="pre">~dac</span></code> output of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Patcher</span></code>.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Sound.fromSynth()</span></code> — a <code class="xref py py-class docutils literal notranslate"><span class="pre">Synth</span></code> voice pool.</p></li>
+</ul>
+<p>A buffer or multi-buffer source must outlive the sound. The sound holds a
+Dart reference to it, so garbage collection never frees it under a live
+sound; call the source’s <code class="docutils literal notranslate"><span class="pre">dispose()</span></code> only after disposing the sound.</p>
 <p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::sound">api/sounds.html</a>.</p>
 <section id="occlusion">
 <h2>Occlusion<a class="headerlink" href="#occlusion" title="Link to this heading">#</a></h2>
@@ -608,9 +622,26 @@ output on every audio callback.</p>
 </div>
 <p>Construct a sound backed by an in-memory [DspBuffer].</p>
 <p><strong>Lifetime contract:</strong> [buffer] must outlive this sound — the audio
-thread reads from it on every callback. Keep a Dart reference to the
-buffer for as long as the sound exists; don’t <cite>.dispose()</cite> the
-buffer before disposing the sound.</p>
+thread reads from it on every callback. The sound holds a Dart
+reference to it, so garbage collection never frees the buffer under a
+live sound; don’t <cite>.dispose()</cite> the buffer before disposing the sound.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromMultiBuffer</span><span class="p">(</span><span class="n">DspMultiBuffer</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Channel</span><span class="o">?</span><span class="w"> </span><span class="n">channel</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Construct a sound backed by an in-memory [DspMultiBuffer] — a stereo
+or surround source with one buffer per channel.</p>
+<p>The sound plays the length of the shortest channel. Set [spread] to
+fan the source channels out around the sound’s position (at 1, a
+stereo source straight ahead plays channel 0 left and channel 1
+right); at the default spread of 0 every channel pans to the same
+point. [channel] routes it through that mixer node; pass <cite>null</cite> for
+the master mix.</p>
+<p><strong>Lifetime contract:</strong> [buffer] must outlive this sound — the audio
+thread reads from it on every callback. The sound holds a Dart
+reference to it, so garbage collection never frees it under a live
+sound; don’t <cite>.dispose()</cite> it before disposing the sound.</p>
+<p>Throws [YseException] if the sound cannot be created or loaded (for
+example from a disposed [buffer]).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Sound</span><span class="p">.</span><span class="n">fromSynth</span><span class="p">(</span><span class="n">Synth</span><span class="w"> </span><span class="n">synth</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">Channel</span><span class="o">?</span><span class="w"> </span><span class="n">channel</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.0</span><span class="p">})</span>
 </pre></div>
 </div>

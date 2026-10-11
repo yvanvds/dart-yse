@@ -61,11 +61,13 @@ callback that forwards every message into the stream. The first
 subscription installs the bridge; subsequent subscribers share
 the same stream.
 
-Cancel the last subscription (or close the engine) to release the
-callback. Callbacks run on whichever thread emitted the log
-message — `NativeCallable.listener` posts them back to this
-isolate via a port, so Dart code only ever sees them serialised
-in the isolate's event queue.
+Cancel the last subscription to release the callback. Callbacks
+run on whichever thread emitted the log message —
+`NativeCallable.listener` posts them back to this isolate via a
+port, so Dart code only ever sees them serialised in the isolate's
+event queue. Messages still queued when the last subscription is
+cancelled are not delivered, but their native strings are still
+released.
 
 Methods
 -------

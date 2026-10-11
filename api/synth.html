@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="midi.html">MIDI</a></li>
 
 
@@ -570,9 +572,12 @@
 keyboard/pedal state; you build its voice pool from a built-in voice type
 (sine, virtual-analog, FM/DX7, or SFZ sampler), attach it behind a positioned
 sound, then drive it with <code class="docutils literal notranslate"><span class="pre">noteOn</span></code> / <code class="docutils literal notranslate"><span class="pre">noteOff</span></code> and controller / pedal
-events.</p>
+events — or with <code class="docutils literal notranslate"><span class="pre">playNote</span></code> / <code class="docutils literal notranslate"><span class="pre">releaseNote</span></code> from a <code class="xref py py-class docutils literal notranslate"><span class="pre">Note</span></code>. Synth
+channels are 1-based (<code class="docutils literal notranslate"><span class="pre">1..16</span></code>, <code class="docutils literal notranslate"><span class="pre">0</span></code> = omni); see the channel-numbering
+table on the MIDI page.</p>
 <p>The FM voice is patched from a <code class="xref py py-class docutils literal notranslate"><span class="pre">Dx7Bank</span></code> imported from a DX7 <code class="docutils literal notranslate"><span class="pre">.syx</span></code>
-file; the sampler voice renders an <code class="xref py py-class docutils literal notranslate"><span class="pre">SfzInstrument</span></code>. Per-note 3D
+file (<code class="docutils literal notranslate"><span class="pre">Dx7Bank.load</span></code>) or from bytes already in memory such as a bundled
+asset (<code class="docutils literal notranslate"><span class="pre">Dx7Bank.fromBytes</span></code>); <code class="docutils literal notranslate"><span class="pre">indexOf</span></code> finds a patch by name. The sampler voice renders an <code class="xref py py-class docutils literal notranslate"><span class="pre">SfzInstrument</span></code>. Per-note 3D
 positioning — “the swarm” — is configured with a <code class="xref py py-class docutils literal notranslate"><span class="pre">PositionHandler</span></code>.</p>
 <p>Upstream: <a class="extlink-yse-cpp reference external" href="https://yvanvds.github.io/yse-soundengine/YSE::synth">api/synth.html</a>.</p>
 </section>
@@ -599,9 +604,13 @@ returns — poll [voiceCount] for the cloned count, exactly as a file-backed
 [Sound] is not playable until its buffer finishes loading. Voices must be
 added before the synth is attached/played; adding a group afterwards is
 rejected.</p>
-<p>Channels follow the engine convention: <cite>0</cite> = omni (all channels), <cite>1..16</cite>
-address a specific MIDI channel. Velocity, controller and aftertouch
-values are normalised to <cite>[0, 1]</cite>; the pitch wheel to <cite>[-1, 1]</cite>.</p>
+<p>Channels use the musical layer’s <strong>1-based</strong> numbering: <cite>1..16</cite> address a
+specific MIDI channel and <cite>0</cite> means <em>omni</em> (all channels) — <cite>0</cite> is never
+channel 1. This is the same base as [ClipEvent.channel], [Note.channel]
+and the <cite>MidiIn.connectSynth</cite> filter, but <strong>not</strong> the wire-level <cite>0..15</cite>
+used by <cite>MidiOut</cite> and the parsed <cite>MidiIn</cite> messages; add one when routing a
+raw MIDI channel into a synth. Velocity, controller and aftertouch values
+are normalised to <cite>[0, 1]</cite>; the pitch wheel to <cite>[-1, 1]</cite>.</p>
 <p>Threading (CLAUDE.md): construct and drive this from the [System] isolate.
 The engine’s audio-thread note-rewrite hook (<cite>yse_synth_set_note_callback</cite>)
 is intentionally not surfaced — it fires on the audio thread, which cannot
@@ -704,6 +713,21 @@ once per synth. Throws [YseException] on failure.</p>
 </div>
 <p>Release a note. [velocity] is the release velocity, normalised to
 <cite>[0, 1]</cite>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">playNote</span><span class="p">(</span><span class="n">Note</span><span class="w"> </span><span class="n">note</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Start the note described by [note] (issue #67).</p>
+<p>The note’s [Note.channel] is the channel (1-based, <cite>0</cite> = omni), its
+[Note.pitch] rounded to the nearest integer is the note number, and its
+[Note.volume] is the velocity. [Note.length] is ignored — release the
+note with [releaseNote]. The note is read, not retained.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">releaseNote</span><span class="p">(</span><span class="n">Note</span><span class="w"> </span><span class="n">note</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Release the note described by [note] (issue #67) — the counterpart of
+[playNote], mapped the same way (so [Note.volume] becomes the release
+velocity). Pass the same note, or one with the same channel and rounded
+pitch, that started it.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">allNotesOff</span><span class="p">({</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -1020,6 +1044,17 @@ bank may be [dispose]d afterwards.</p>
 <p>Load and parse a DX7 <cite>.syx</cite> file into a bank.</p>
 <p>Throws [YseException] if the file is missing, unreadable, has a bad
 header, the wrong length, or a checksum mismatch.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">Dx7Bank</span><span class="p">.</span><span class="n">fromBytes</span><span class="p">(</span><span class="n">Uint8List</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Parse a DX7 SysEx image already in memory (issue #67) — for hosts that
+ship banks as bundled assets (Flutter assets, Android APKs) where there
+is no filesystem path.</p>
+<p>Accepts the same formats as [Dx7Bank.load]. [data] is copied into a
+native buffer for the duration of the call only; neither the copy nor
+[data] is retained, so a transient buffer is fine.</p>
+<p>Throws [YseException] on empty input, a bad header, the wrong length, or
+a checksum mismatch.</p>
 </section>
 <section id="id6">
 <h2>Properties<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
@@ -1040,6 +1075,15 @@ header, the wrong length, or a checksum mismatch.</p>
 </div>
 <p>The space-trimmed name of patch [index], or an empty string for an
 out-of-range index.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">indexOf</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Index of the first patch whose space-trimmed name equals [name] exactly,
+or <cite>null</cite> when no patch matches (issue #67). The match is
+case-sensitive and compares against [patchName]’s trimmed form, so pass
+the name without the DX7’s trailing space padding.</p>
+<p>Pairs with [Synth.setFmPatch]:
+<cite>synth.setFmPatch(bank, bank.indexOf(‘E.PIANO 1’)!)</cite>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>

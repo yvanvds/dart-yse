@@ -71,7 +71,8 @@ Duration in seconds.
 
    set channel(int value)
 
-MIDI channel.
+MIDI channel, in the musical layer's 1-based numbering (`1..16`), as
+used by `Synth.playNote`. Not the wire-level `0..15` of `MidiOut`.
 
 Methods
 -------

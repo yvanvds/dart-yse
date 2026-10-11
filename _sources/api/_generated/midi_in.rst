@@ -14,6 +14,12 @@ Two modes of consumption — subscribe to either or both:
   * [rawMessages] — full message bytes as a [Uint8List].
   * [parsedMessages] — pre-decoded channel-voice scalars.
 
+Channel numbering has two bases. The parsed stream reports the
+**wire-level, 0-based** channel (`0..15`, see
+[MidiInParsedMessage.channel]), while [connectSynth]'s `channelFilter`
+uses the musical layer's **1-based** numbering (`1..16`, `0` = every
+channel) shared with [Synth] and [ClipEvent].
+
 Native callbacks fire on RtMidi's internal input thread.
 `NativeCallable.listener` posts each event back to the isolate that
 created this `MidiIn`, so Dart code only ever sees messages
@@ -45,6 +51,10 @@ Broadcast stream of raw MIDI messages. Lazily installs the native
 callback on first subscription and uninstalls when the last
 subscriber cancels.
 
+Messages still queued when the last subscriber cancels (or the port
+is [dispose]d) are not delivered, but their native buffers are still
+released.
+
 .. code-block:: dart
 
    Stream<MidiInParsedMessage> get parsedMessages
@@ -71,8 +81,9 @@ Route incoming device MIDI into an internal [synth] (upstream #371).
 
 Every channel-voice message received on the open port is mapped to the
 synth's normalized note API and pushed onto its inbox on RtMidi's input
-thread. [channelFilter] is a `1..16` MIDI channel to accept, or `0` (the
-default) for every channel. May be called for several synths (up to a
+thread. [channelFilter] is a 1-based `1..16` MIDI channel to accept, or
+`0` (the default) for every channel — note the parsed stream reports the
+same channel 0-based, so channel 1 there is filter `1` here. May be called for several synths (up to a
 small fixed cap); re-connecting an already-connected synth just updates
 its channel filter. [synth] must outlive the connection —
 [disconnectSynth] it (or close/dispose this port) before disposing the
@@ -90,4 +101,7 @@ that was never connected.
    void dispose()
 
 Destroy the underlying native port and detach the finalizer.
+
+Also clears both callbacks and closes [rawMessages] and
+[parsedMessages] (listeners get `onDone`).
 

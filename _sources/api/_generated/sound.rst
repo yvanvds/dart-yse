@@ -44,9 +44,31 @@ output on every audio callback.
 Construct a sound backed by an in-memory [DspBuffer].
 
 **Lifetime contract:** [buffer] must outlive this sound — the audio
-thread reads from it on every callback. Keep a Dart reference to the
-buffer for as long as the sound exists; don't `.dispose()` the
-buffer before disposing the sound.
+thread reads from it on every callback. The sound holds a Dart
+reference to it, so garbage collection never frees the buffer under a
+live sound; don't `.dispose()` the buffer before disposing the sound.
+
+.. code-block:: dart
+
+   factory Sound.fromMultiBuffer(DspMultiBuffer buffer, {Channel? channel, bool loop = false, double volume = 1.0})
+
+Construct a sound backed by an in-memory [DspMultiBuffer] — a stereo
+or surround source with one buffer per channel.
+
+The sound plays the length of the shortest channel. Set [spread] to
+fan the source channels out around the sound's position (at 1, a
+stereo source straight ahead plays channel 0 left and channel 1
+right); at the default spread of 0 every channel pans to the same
+point. [channel] routes it through that mixer node; pass `null` for
+the master mix.
+
+**Lifetime contract:** [buffer] must outlive this sound — the audio
+thread reads from it on every callback. The sound holds a Dart
+reference to it, so garbage collection never frees it under a live
+sound; don't `.dispose()` it before disposing the sound.
+
+Throws [YseException] if the sound cannot be created or loaded (for
+example from a disposed [buffer]).
 
 .. code-block:: dart
 

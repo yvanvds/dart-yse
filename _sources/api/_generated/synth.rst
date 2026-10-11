@@ -25,9 +25,13 @@ returns — poll [voiceCount] for the cloned count, exactly as a file-backed
 added before the synth is attached/played; adding a group afterwards is
 rejected.
 
-Channels follow the engine convention: `0` = omni (all channels), `1..16`
-address a specific MIDI channel. Velocity, controller and aftertouch
-values are normalised to `[0, 1]`; the pitch wheel to `[-1, 1]`.
+Channels use the musical layer's **1-based** numbering: `1..16` address a
+specific MIDI channel and `0` means *omni* (all channels) — `0` is never
+channel 1. This is the same base as [ClipEvent.channel], [Note.channel]
+and the `MidiIn.connectSynth` filter, but **not** the wire-level `0..15`
+used by `MidiOut` and the parsed `MidiIn` messages; add one when routing a
+raw MIDI channel into a synth. Velocity, controller and aftertouch values
+are normalised to `[0, 1]`; the pitch wheel to `[-1, 1]`.
 
 Threading (CLAUDE.md): construct and drive this from the [System] isolate.
 The engine's audio-thread note-rewrite hook (`yse_synth_set_note_callback`)
@@ -162,6 +166,26 @@ Start a note. [velocity] is normalised to `[0, 1]`.
 
 Release a note. [velocity] is the release velocity, normalised to
 `[0, 1]`.
+
+.. code-block:: dart
+
+   void playNote(Note note)
+
+Start the note described by [note] (issue #67).
+
+The note's [Note.channel] is the channel (1-based, `0` = omni), its
+[Note.pitch] rounded to the nearest integer is the note number, and its
+[Note.volume] is the velocity. [Note.length] is ignored — release the
+note with [releaseNote]. The note is read, not retained.
+
+.. code-block:: dart
+
+   void releaseNote(Note note)
+
+Release the note described by [note] (issue #67) — the counterpart of
+[playNote], mapped the same way (so [Note.volume] becomes the release
+velocity). Pass the same note, or one with the same channel and rounded
+pitch, that started it.
 
 .. code-block:: dart
 

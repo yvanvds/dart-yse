@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -570,7 +572,9 @@ later, all from the audio thread — the Dart side never dispatches a note.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span>
 </pre></div>
 </div>
-<p>MIDI channel, <cite>1..16</cite>.</p>
+<p>MIDI channel in the musical layer’s 1-based numbering, <cite>1..16</cite> — the
+same base as [Synth]. A [MidiOut] sink receives it on the wire as
+<cite>channel - 1</cite>, so this is not the 0-based channel <cite>MidiOut.noteOn</cite> takes.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">pitch</span>
 </pre></div>
 </div>

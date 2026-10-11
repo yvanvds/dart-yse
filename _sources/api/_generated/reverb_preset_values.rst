@@ -29,6 +29,26 @@ must each have exactly four elements; both default to all-zero.
 
 Read a native `YseReverbPresetValues` struct into a Dart value.
 
+.. code-block:: dart
+
+   factory ReverbPresetValues.fromPreset(ReverbPreset preset)
+
+The exact parameter set that `Reverb.preset = preset` applies, read from
+the engine's preset table. Needs the library but no engine session.
+
+Static methods
+--------------
+
+.. code-block:: dart
+
+   static ReverbPresetValues lerp(ReverbPresetValues a, ReverbPresetValues b, double t)
+
+Linear blend of [a] and [b]: every field is interpolated with [t]
+clamped to `[0, 1]`, so `t == 0` returns [a] and `t == 1` returns [b]
+exactly. Delegates to the engine's own morph core, so the result is
+bit-identical to what a [MorphingReverb] computes. Needs the library but
+no engine session.
+
 Properties
 ----------
 

@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -529,6 +531,7 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>
@@ -564,6 +567,22 @@ must each have exactly four elements; both default to all-zero.</p>
 </pre></div>
 </div>
 <p>Read a native <cite>YseReverbPresetValues</cite> struct into a Dart value.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">ReverbPresetValues</span><span class="p">.</span><span class="n">fromPreset</span><span class="p">(</span><span class="n">ReverbPreset</span><span class="w"> </span><span class="n">preset</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The exact parameter set that <cite>Reverb.preset = preset</cite> applies, read from
+the engine’s preset table. Needs the library but no engine session.</p>
+</section>
+<section id="static-methods">
+<h2>Static methods<a class="headerlink" href="#static-methods" title="Link to this heading">#</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">lerp</span><span class="p">(</span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">ReverbPresetValues</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Linear blend of [a] and [b]: every field is interpolated with [t]
+clamped to <cite>[0, 1]</cite>, so <cite>t == 0</cite> returns [a] and <cite>t == 1</cite> returns [b]
+exactly. Delegates to the engine’s own morph core, so the result is
+bit-identical to what a [MorphingReverb] computes. Needs the library but
+no engine session.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
@@ -644,6 +663,7 @@ must each have exactly four elements; both default to all-zero.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructors">Constructors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-methods">Static methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a></li>
 </ul>

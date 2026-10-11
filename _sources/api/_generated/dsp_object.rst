@@ -20,9 +20,12 @@ reference — the effect must outlive the sound (and per the YSE
 lifetime contract, also outlive the slow-pool delete tick that
 follows the sound's destruction).
 
-Subclass-specific setters are unsafe to call on the wrong subclass:
-just like the C++ API, the underlying type is `static_cast`-ed
-without an RTTI check.
+Kind-specific accessors (e.g. [q], [sweepSpeed], [setDelayTap],
+[grainGain]) throw [YseException] when called on the wrong kind of
+effect. The underlying C entry points `static_cast` the handle without an
+RTTI check, so the wrapper checks the kind before calling into native
+code. Mix-grade modules ([Compressor], [ParametricEq], ...) are typed
+subclasses, so their own accessors exist only on the right type.
 
 Constructors
 ------------
@@ -163,6 +166,28 @@ Built-in modulation LFO frequency in Hz.
 
 .. code-block:: dart
 
+   DspObject? get next
+
+The object linked after this one in its processing chain, or `null` at
+the end of the chain — so a chain can be walked:
+
+.. code-block:: dart
+
+   for (DspObject? fx = head; fx != null; fx = fx.next) { ... }
+
+
+The result is the *same* Dart object that was passed to [link]
+(`identical(a.next, b)` after `a.link(b)`), with its subclass intact —
+never a new wrapper. It is read from the engine, so it reflects the
+engine's own relinking: [link] inserts *between* this object and its
+old successor, and disposing a chained object splices it out.
+
+Throws [StateError] if the engine reports a successor that no live
+[DspObject] wraps (only possible if that successor's wrapper is being
+garbage-collected concurrently — keep chained effects reachable).
+
+.. code-block:: dart
+
    double get frequency
 
 .. code-block:: dart
@@ -181,6 +206,8 @@ Cutoff (lowpass/highpass) or centre (bandpass/sweep) frequency in Hz.
 
 Bandpass-only: filter resonance (Q factor).
 
+Throws [YseException] on any other kind.
+
 .. code-block:: dart
 
    double get sweepSpeed
@@ -189,7 +216,7 @@ Bandpass-only: filter resonance (Q factor).
 
    set sweepSpeed(double value)
 
-Sweep-only: LFO speed in Hz.
+Sweep-only: LFO speed in Hz. Throws [YseException] on any other kind.
 
 .. code-block:: dart
 
@@ -199,7 +226,7 @@ Sweep-only: LFO speed in Hz.
 
    set sweepDepth(int value)
 
-Sweep-only: depth as 0..100.
+Sweep-only: depth as 0..100. Throws [YseException] on any other kind.
 
 .. code-block:: dart
 
@@ -209,7 +236,8 @@ Sweep-only: depth as 0..100.
 
    set sweepCentre(int value)
 
-Sweep-only: centre frequency as 0..100.
+Sweep-only: centre frequency as 0..100. Throws [YseException] on any
+other kind.
 
 .. code-block:: dart
 
@@ -219,7 +247,8 @@ Sweep-only: centre frequency as 0..100.
 
    set phaserRange(double value)
 
-Phaser-only: sweep range coefficient.
+Phaser-only: sweep range coefficient. Throws [YseException] on any
+other kind.
 
 .. code-block:: dart
 
@@ -229,7 +258,8 @@ Phaser-only: sweep range coefficient.
 
    set differenceAmplitude(double value)
 
-Difference-only: carrier amplitude.
+Difference-only: carrier amplitude. Throws [YseException] on any other
+kind.
 
 .. code-block:: dart
 
@@ -294,17 +324,19 @@ Convenience for `link(null)` — see [link].
 
 basicDelay / lowpassDelay / highpassDelay: configure one of three taps.
 
+Throws [YseException] on any other kind.
+
 .. code-block:: dart
 
    double delayTime(DelayTap tap)
 
-Current delay time of [tap] in milliseconds.
+Current delay time of [tap] in milliseconds (delay kinds only).
 
 .. code-block:: dart
 
    double delayGain(DelayTap tap)
 
-Current gain of [tap].
+Current gain of [tap] (delay kinds only).
 
 .. code-block:: dart
 

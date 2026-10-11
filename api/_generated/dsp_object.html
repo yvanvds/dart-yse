@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2"><a class="reference internal" href="../midi.html">MIDI</a></li>
 
 
@@ -558,9 +560,12 @@ then call the matching <cite>set*</cite> methods to configure parameters.</p>
 reference — the effect must outlive the sound (and per the YSE
 lifetime contract, also outlive the slow-pool delete tick that
 follows the sound’s destruction).</p>
-<p>Subclass-specific setters are unsafe to call on the wrong subclass:
-just like the C++ API, the underlying type is <cite>static_cast</cite>-ed
-without an RTTI check.</p>
+<p>Kind-specific accessors (e.g. [q], [sweepSpeed], [setDelayTap],
+[grainGain]) throw [YseException] when called on the wrong kind of
+effect. The underlying C entry points <cite>static_cast</cite> the handle without an
+RTTI check, so the wrapper checks the kind before calling into native
+code. Mix-grade modules ([Compressor], [ParametricEq], …) are typed
+subclasses, so their own accessors exist only on the right type.</p>
 <section id="constructors">
 <h2>Constructors<a class="headerlink" href="#constructors" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">DspObject</span><span class="p">.</span><span class="n">lowpass</span><span class="p">()</span>
@@ -657,6 +662,22 @@ unchanged.</p>
 </pre></div>
 </div>
 <p>Built-in modulation LFO frequency in Hz.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">DspObject</span><span class="o">?</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">next</span>
+</pre></div>
+</div>
+<p>The object linked after this one in its processing chain, or <cite>null</cite> at
+the end of the chain — so a chain can be walked:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">DspObject</span><span class="o">?</span><span class="w"> </span><span class="n">fx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">head</span><span class="p">;</span><span class="w"> </span><span class="n">fx</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w"> </span><span class="n">fx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fx</span><span class="p">.</span><span class="n">next</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The result is the <em>same</em> Dart object that was passed to [link]
+(<cite>identical(a.next, b)</cite> after <cite>a.link(b)</cite>), with its subclass intact —
+never a new wrapper. It is read from the engine, so it reflects the
+engine’s own relinking: [link] inserts <em>between</em> this object and its
+old successor, and disposing a chained object splices it out.</p>
+<p>Throws [StateError] if the engine reports a successor that no live
+[DspObject] wraps (only possible if that successor’s wrapper is being
+garbage-collected concurrently — keep chained effects reachable).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">frequency</span>
 </pre></div>
 </div>
@@ -671,41 +692,45 @@ unchanged.</p>
 </pre></div>
 </div>
 <p>Bandpass-only: filter resonance (Q factor).</p>
+<p>Throws [YseException] on any other kind.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">sweepSpeed</span>
 </pre></div>
 </div>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">sweepSpeed</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Sweep-only: LFO speed in Hz.</p>
+<p>Sweep-only: LFO speed in Hz. Throws [YseException] on any other kind.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">sweepDepth</span>
 </pre></div>
 </div>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">sweepDepth</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Sweep-only: depth as 0..100.</p>
+<p>Sweep-only: depth as 0..100. Throws [YseException] on any other kind.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">sweepCentre</span>
 </pre></div>
 </div>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">sweepCentre</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Sweep-only: centre frequency as 0..100.</p>
+<p>Sweep-only: centre frequency as 0..100. Throws [YseException] on any
+other kind.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">phaserRange</span>
 </pre></div>
 </div>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">phaserRange</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Phaser-only: sweep range coefficient.</p>
+<p>Phaser-only: sweep range coefficient. Throws [YseException] on any
+other kind.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">differenceAmplitude</span>
 </pre></div>
 </div>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">set</span><span class="w"> </span><span class="n">differenceAmplitude</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Difference-only: carrier amplitude.</p>
+<p>Difference-only: carrier amplitude. Throws [YseException] on any other
+kind.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">grainFrequency</span>
 </pre></div>
 </div>
@@ -751,14 +776,15 @@ yvanvds/yse-soundengine#391).</p>
 </pre></div>
 </div>
 <p>basicDelay / lowpassDelay / highpassDelay: configure one of three taps.</p>
+<p>Throws [YseException] on any other kind.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">delayTime</span><span class="p">(</span><span class="n">DelayTap</span><span class="w"> </span><span class="n">tap</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Current delay time of [tap] in milliseconds.</p>
+<p>Current delay time of [tap] in milliseconds (delay kinds only).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">delayGain</span><span class="p">(</span><span class="n">DelayTap</span><span class="w"> </span><span class="n">tap</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Current gain of [tap].</p>
+<p>Current gain of [tap] (delay kinds only).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setGrainLength</span><span class="p">({</span><span class="kd">required</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">samples</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">random</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">})</span>
 </pre></div>
 </div>

@@ -243,6 +243,8 @@
 
 
 
+
+
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">MIDI</a></li>
 
 
@@ -555,6 +557,7 @@
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#midiinparsedmessage">MidiInParsedMessage</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#channel-numbering">Channel numbering</a></li>
 </ul>
 </li>
 </ul>
@@ -634,12 +637,24 @@ that was never connected.</p>
 <p>MIDI output port (Windows / Linux only; backed by RtMidi upstream).</p>
 <p>Enumerate device counts with [System.midiOutDeviceCount] and names
 with [System.midiOutDeviceName], then open one with [MidiOut.open].</p>
+<p>Channels here are <strong>wire-level, 0-based</strong> (<cite>0..15</cite>) — the low nibble of
+the status byte. The musical layer ([Synth], [ClipEvent], <cite>Note</cite>) counts
+<cite>1..16</cite> instead, so MIDI channel 1 is <cite>0</cite> here and <cite>1</cite> there. A channel
+outside <cite>0..15</cite> is clamped into that range by the engine (libYSE 3.0.1)
+rather than spilling into the status nibble, so <cite>-1</cite> sends on channel 0
+and <cite>16</cite> on channel 15.</p>
+<p>To send a message the typed helpers don’t cover — a SysEx dump, or any
+other complete message — use [raw].</p>
 <section id="id1">
 <h2>Constructors<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">factory</span><span class="w"> </span><span class="n">MidiOut</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">port</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Open the MIDI device at [port].</p>
+<p>When [port] does not exist or the MIDI backend cannot start, the engine
+reports the RtMidi error through [Log] and the port stays unopened:
+every send on it is then a silent no-op. Check [port] against
+[System.midiOutDeviceCount] first.</p>
 </section>
 <section id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h2>
@@ -690,7 +705,8 @@ with [System.midiOutDeviceName], then open one with [MidiOut.open].</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">allNotesOff</span><span class="p">({</span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">channel</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>Send All-Notes-Off on a specific [channel].</p>
+<p>Send All-Notes-Off on a specific [channel] (<cite>0..15</cite>), or on every
+channel when null.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">reset</span><span class="p">({</span><span class="kt">int</span><span class="o">?</span><span class="w"> </span><span class="n">channel</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -699,6 +715,44 @@ with [System.midiOutDeviceName], then open one with [MidiOut.open].</p>
 </pre></div>
 </div>
 <p>Send three raw MIDI bytes.</p>
+<p>Always sends exactly three bytes, so it only suits three-byte messages
+(note on/off, poly pressure, control change, pitch bend). For anything
+else — a two-byte program change or channel pressure, a one-byte
+realtime message, SysEx — use [raw], which sends the message as given.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">raw</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Send one complete MIDI message, byte for byte — no padding and no
+truncation (libYSE #748 / #903).</p>
+<p>This is the way to send two-byte messages (program change, channel
+pressure), single-byte system realtime messages, and System Exclusive
+dumps of any length:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">out</span><span class="p">.</span><span class="n">raw</span><span class="p">([</span><span class="mh">0xC0</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">]);</span><span class="w">                               </span><span class="c1">// program change</span>
+<span class="n">out</span><span class="p">.</span><span class="n">raw</span><span class="p">([</span><span class="mh">0xF0</span><span class="p">,</span><span class="w"> </span><span class="mh">0x7E</span><span class="p">,</span><span class="w"> </span><span class="mh">0x7F</span><span class="p">,</span><span class="w"> </span><span class="mh">0x09</span><span class="p">,</span><span class="w"> </span><span class="mh">0x01</span><span class="p">,</span><span class="w"> </span><span class="mh">0xF7</span><span class="p">]);</span><span class="w">    </span><span class="c1">// GM System On</span>
+</pre></div>
+</div>
+<p>[bytes] is copied into native memory for the call, so it may be
+reused or modified straight afterwards. An empty list is a no-op.</p>
+<p>The message is checked before anything reaches the engine, and an
+[ArgumentError] is thrown when:</p>
+<ul class="simple">
+<li><p>a value is outside <cite>0..255</cite>;</p></li>
+<li><p>the first byte is not a status byte (<cite>&gt;= 0x80</cite>) — running status
+is not supported, every message carries its own status;</p></li>
+<li><p>a data byte has its high bit set (<cite>&gt;= 0x80</cite>);</p></li>
+<li><p>the length doesn’t match the status: 3 bytes for note off/on, poly
+pressure, control change, pitch bend and song position; 2 for
+program change, channel pressure, MTC quarter frame and song
+select; 1 for tune request and system realtime (<cite>0xF8..0xFF</cite>);</p></li>
+<li><p>a SysEx message (<cite>0xF0</cite>) doesn’t end with <cite>0xF7</cite>;</p></li>
+<li><p>the status is <cite>0xF4</cite> / <cite>0xF5</cite> (undefined) or a stray <cite>0xF7</cite>.</p></li>
+</ul>
+<p>Unlike the typed helpers, the channel nibble of a raw status byte is
+sent as given — there is nothing to clamp.</p>
+<p>On a port that isn’t open (see [MidiOut.open]) or after [dispose] this
+is a silent no-op, like every other send. A send RtMidi refuses is
+reported through [Log] and dropped; it never throws across the FFI
+boundary.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">dispose</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -720,6 +774,11 @@ with [System.midiInDeviceName], then open one with [MidiIn.open].</p>
 </ul>
 </dd>
 </dl>
+<p>Channel numbering has two bases. The parsed stream reports the
+<strong>wire-level, 0-based</strong> channel (<cite>0..15</cite>, see
+[MidiInParsedMessage.channel]), while [connectSynth]’s <cite>channelFilter</cite>
+uses the musical layer’s <strong>1-based</strong> numbering (<cite>1..16</cite>, <cite>0</cite> = every
+channel) shared with [Synth] and [ClipEvent].</p>
 <p>Native callbacks fire on RtMidi’s internal input thread.
 <cite>NativeCallable.listener</cite> posts each event back to the isolate that
 created this <cite>MidiIn</cite>, so Dart code only ever sees messages
@@ -743,6 +802,9 @@ serialised in the isolate’s event queue.</p>
 <p>Broadcast stream of raw MIDI messages. Lazily installs the native
 callback on first subscription and uninstalls when the last
 subscriber cancels.</p>
+<p>Messages still queued when the last subscriber cancels (or the port
+is [dispose]d) are not delivered, but their native buffers are still
+released.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Stream</span><span class="o">&lt;</span><span class="n">MidiInParsedMessage</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">parsedMessages</span>
 </pre></div>
 </div>
@@ -763,8 +825,9 @@ messages until re-created.</p>
 <p>Route incoming device MIDI into an internal [synth] (upstream #371).</p>
 <p>Every channel-voice message received on the open port is mapped to the
 synth’s normalized note API and pushed onto its inbox on RtMidi’s input
-thread. [channelFilter] is a <cite>1..16</cite> MIDI channel to accept, or <cite>0</cite> (the
-default) for every channel. May be called for several synths (up to a
+thread. [channelFilter] is a 1-based <cite>1..16</cite> MIDI channel to accept, or
+<cite>0</cite> (the default) for every channel — note the parsed stream reports the
+same channel 0-based, so channel 1 there is filter <cite>1</cite> here. May be called for several synths (up to a
 small fixed cap); re-connecting an already-connected synth just updates
 its channel filter. [synth] must outlive the connection —
 [disconnectSynth] it (or close/dispose this port) before disposing the
@@ -778,6 +841,8 @@ that was never connected.</p>
 </pre></div>
 </div>
 <p>Destroy the underlying native port and detach the finalizer.</p>
+<p>Also clears both callbacks and closes [rawMessages] and
+[parsedMessages] (listeners get <cite>onDone</cite>).</p>
 </section>
 <section id="message-types">
 <h2>Message types<a class="headerlink" href="#message-types" title="Link to this heading">#</a></h2>
@@ -841,7 +906,8 @@ a single port session).</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span>
 </pre></div>
 </div>
-<p>MIDI channel (<cite>0</cite>..`15`).</p>
+<p>Wire-level MIDI channel, 0-based (<cite>0</cite>..`15`). Add one to address the
+same channel on a [Synth] or [ClipEvent], which count <cite>1..16</cite>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">data1</span>
 </pre></div>
 </div>
@@ -851,6 +917,35 @@ a single port session).</p>
 </div>
 <p>Second data byte (e.g. velocity for Note-On, value for CC).
 <cite>0</cite> for 1- or 2-byte messages.</p>
+</section>
+<section id="channel-numbering">
+<h2>Channel numbering<a class="headerlink" href="#channel-numbering" title="Link to this heading">#</a></h2>
+<p>MIDI channels are counted from two different bases, depending on the layer:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Used by</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Wire level (status-byte low nibble)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0..15</span></code></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MidiOut</span></code> sends, <code class="xref py py-class docutils literal notranslate"><span class="pre">MidiInParsedMessage</span></code> <code class="docutils literal notranslate"><span class="pre">channel</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Musical layer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1..16</span></code>; <code class="docutils literal notranslate"><span class="pre">0</span></code> = omni on a synth call</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Synth</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ClipEvent</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Note</span></code> / <code class="xref py py-class docutils literal notranslate"><span class="pre">PNote</span></code>,
+the <code class="docutils literal notranslate"><span class="pre">MidiIn.connectSynth</span></code> <code class="docutils literal notranslate"><span class="pre">channelFilter</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>So MIDI channel 1 is <code class="docutils literal notranslate"><span class="pre">0</span></code> on a <code class="xref py py-class docutils literal notranslate"><span class="pre">MidiOut</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code> on a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Synth</span></code>. On a synth call <code class="docutils literal notranslate"><span class="pre">0</span></code> means <em>every channel</em>, never channel 1.
+A <code class="xref py py-class docutils literal notranslate"><span class="pre">ClipTransport</span></code> routed to a <code class="xref py py-class docutils literal notranslate"><span class="pre">MidiOut</span></code> converts for you
+(<code class="docutils literal notranslate"><span class="pre">channel</span> <span class="pre">-</span> <span class="pre">1</span></code> on the wire); add one yourself when feeding a parsed
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MidiIn</span></code> message into a synth by hand.</p>
 </section>
 </section>
 
@@ -928,6 +1023,7 @@ a single port session).</p>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#midiinparsedmessage">MidiInParsedMessage</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Constructors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Properties</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#channel-numbering">Channel numbering</a></li>
 </ul>
 </li>
 </ul>

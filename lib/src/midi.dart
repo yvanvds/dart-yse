@@ -87,7 +87,13 @@ class MidiFile implements Finalizable {
 ///
 /// Channels here are **wire-level, 0-based** (`0..15`) — the low nibble of
 /// the status byte. The musical layer ([Synth], [ClipEvent], `Note`) counts
-/// `1..16` instead, so MIDI channel 1 is `0` here and `1` there.
+/// `1..16` instead, so MIDI channel 1 is `0` here and `1` there. A channel
+/// outside `0..15` is clamped into that range by the engine (libYSE 3.0.1)
+/// rather than spilling into the status nibble, so `-1` sends on channel 0
+/// and `16` on channel 15.
+///
+/// To send a message the typed helpers don't cover — a SysEx dump, or any
+/// other complete message — use [raw].
 class MidiOut implements Finalizable {
   static final _finalizer = NativeFinalizer(
     bindings.addresses.midi_out_destroy.cast(),
@@ -101,6 +107,11 @@ class MidiOut implements Finalizable {
   }
 
   /// Open the MIDI device at [port].
+  ///
+  /// When [port] does not exist or the MIDI backend cannot start, the engine
+  /// reports the RtMidi error through [Log] and the port stays unopened:
+  /// every send on it is then a silent no-op. Check [port] against
+  /// [System.midiOutDeviceCount] first.
   factory MidiOut.open(int port) {
     final b = bindings;
     final h = b.midi_out_create();
@@ -175,7 +186,58 @@ class MidiOut implements Finalizable {
   set poly(bool on) => _b.midi_out_poly(_handle, on ? 1 : 0);
 
   /// Send three raw MIDI bytes.
+  ///
+  /// Always sends exactly three bytes, so it only suits three-byte messages
+  /// (note on/off, poly pressure, control change, pitch bend). For anything
+  /// else — a two-byte program change or channel pressure, a one-byte
+  /// realtime message, SysEx — use [raw], which sends the message as given.
   void raw3(int a, int b, int c) => _b.midi_out_raw3(_handle, a, b, c);
+
+  /// Send one complete MIDI message, byte for byte — no padding and no
+  /// truncation (libYSE #748 / #903).
+  ///
+  /// This is the way to send two-byte messages (program change, channel
+  /// pressure), single-byte system realtime messages, and System Exclusive
+  /// dumps of any length:
+  ///
+  /// ```dart
+  /// out.raw([0xC0, 5]);                               // program change
+  /// out.raw([0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7]);    // GM System On
+  /// ```
+  ///
+  /// [bytes] is copied into native memory for the call, so it may be
+  /// reused or modified straight afterwards. An empty list is a no-op.
+  ///
+  /// The message is checked before anything reaches the engine, and an
+  /// [ArgumentError] is thrown when:
+  ///
+  /// * a value is outside `0..255`;
+  /// * the first byte is not a status byte (`>= 0x80`) — running status
+  ///   is not supported, every message carries its own status;
+  /// * a data byte has its high bit set (`>= 0x80`);
+  /// * the length doesn't match the status: 3 bytes for note off/on, poly
+  ///   pressure, control change, pitch bend and song position; 2 for
+  ///   program change, channel pressure, MTC quarter frame and song
+  ///   select; 1 for tune request and system realtime (`0xF8..0xFF`);
+  /// * a SysEx message (`0xF0`) doesn't end with `0xF7`;
+  /// * the status is `0xF4` / `0xF5` (undefined) or a stray `0xF7`.
+  ///
+  /// Unlike the typed helpers, the channel nibble of a raw status byte is
+  /// sent as given — there is nothing to clamp.
+  ///
+  /// On a port that isn't open (see [MidiOut.open]) or after [dispose] this
+  /// is a silent no-op, like every other send. A send RtMidi refuses is
+  /// reported through [Log] and dropped; it never throws across the FFI
+  /// boundary.
+  void raw(List<int> bytes) {
+    if (bytes.isEmpty) return;
+    validateMidiRaw(bytes);
+    using((arena) {
+      final native = arena.allocate<UnsignedChar>(bytes.length);
+      native.cast<Uint8>().asTypedList(bytes.length).setAll(0, bytes);
+      _b.midi_out_raw(_handle, native, bytes.length);
+    });
+  }
 
   /// Internal: the raw native handle, for wiring this port as a
   /// [ClipTransport] sink. Not part of the public surface.
@@ -187,6 +249,90 @@ class MidiOut implements Finalizable {
     _finalizer.detach(this);
     _b.midi_out_destroy(_handle);
     _handle = nullptr;
+  }
+}
+
+/// Check that [bytes] is one complete, well-formed MIDI message for
+/// [MidiOut.raw]; throws [ArgumentError] otherwise. [bytes] must not be
+/// empty.
+///
+/// Internal (not exported): the engine sends whatever it is handed, so this
+/// is the only line of defence against a malformed message, and the tests
+/// exercise it without a MIDI device.
+void validateMidiRaw(List<int> bytes) {
+  for (var i = 0; i < bytes.length; i++) {
+    final v = bytes[i];
+    if (v < 0 || v > 0xFF) {
+      throw ArgumentError.value(v, 'bytes[$i]', 'not a byte (0..255)');
+    }
+  }
+  final status = bytes[0];
+  String hex(int v) => '0x${v.toRadixString(16).toUpperCase().padLeft(2, '0')}';
+  if (status < 0x80) {
+    throw ArgumentError.value(
+      bytes,
+      'bytes',
+      'first byte ${hex(status)} is not a status byte (running status is not '
+          'supported)',
+    );
+  }
+
+  if (status == 0xF0) {
+    if (bytes.length < 2 || bytes.last != 0xF7) {
+      throw ArgumentError.value(
+        bytes,
+        'bytes',
+        'SysEx message must end with 0xF7',
+      );
+    }
+    for (var i = 1; i < bytes.length - 1; i++) {
+      if (bytes[i] >= 0x80) {
+        throw ArgumentError.value(
+          bytes,
+          'bytes',
+          'SysEx data byte ${hex(bytes[i])} at index $i has its high bit set',
+        );
+      }
+    }
+    return;
+  }
+
+  final int expected;
+  if (status < 0xF0) {
+    // Channel voice: program change (0xC_) and channel pressure (0xD_) carry
+    // one data byte, everything else two.
+    final kind = status & 0xF0;
+    expected = (kind == 0xC0 || kind == 0xD0) ? 2 : 3;
+  } else {
+    expected = switch (status) {
+      0xF1 || 0xF3 => 2, // MTC quarter frame, song select
+      0xF2 => 3, // song position pointer
+      0xF6 || >= 0xF8 => 1, // tune request, system realtime
+      _ => throw ArgumentError.value(
+        bytes,
+        'bytes',
+        status == 0xF7
+            ? 'stray end-of-SysEx 0xF7 without a 0xF0'
+            : 'undefined status byte ${hex(status)}',
+      ),
+    };
+  }
+  if (bytes.length != expected) {
+    throw ArgumentError.value(
+      bytes,
+      'bytes',
+      'status ${hex(status)} takes a $expected-byte message, got '
+          '${bytes.length} bytes',
+    );
+  }
+  for (var i = 1; i < bytes.length; i++) {
+    if (bytes[i] >= 0x80) {
+      throw ArgumentError.value(
+        bytes,
+        'bytes',
+        'data byte ${hex(bytes[i])} at index $i has its high bit set',
+      );
+    }
   }
 }
 

@@ -231,6 +231,30 @@
     plain pass-through to the engine's own note-off flush, so nothing in
     the wrapper became redundant.
 
+- **`MidiOut.raw` for two-byte messages and SysEx** (#68, upstream
+  yse-soundengine#748 / #903):
+  - New `MidiOut.raw(List<int> bytes)` sends one complete message exactly
+    as given — no padding, no truncation — so program change, channel
+    pressure, single-byte realtime messages and SysEx of any length can be
+    sent. The bytes are copied for the call; an empty list is a no-op. The
+    message is checked in Dart first and an `ArgumentError` names the
+    problem: a value outside `0..255`, a missing status byte (no running
+    status), a data byte with the high bit set, a length that doesn't match
+    the status, a SysEx without its closing `0xF7`, or an undefined status.
+  - `raw3` is unchanged; its docs now point at `raw` for anything that isn't
+    a three-byte message.
+  - Docs: an out-of-range `MidiOut` channel is clamped to `0..15` by the
+    engine (libYSE 3.0.1, upstream #1014) instead of corrupting the status
+    byte, and `MidiOut.open` on a port that doesn't exist leaves the port
+    unopened, so every send is a silent no-op.
+  - `BufferIO` deliberately does not wrap `yse_buffer_io_exists` /
+    `yse_buffer_io_remove` (upstream #909). They look a buffer up by the
+    native address passed at registration, which a Dart caller never holds:
+    `addAsset` registers a copy the wrapper allocates itself, and with
+    `storeCopy = true` the engine registers its own copy, so the address
+    never matches anyway. `exists` / `removeAsset` cover the same need by
+    ID.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

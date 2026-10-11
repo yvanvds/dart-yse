@@ -16,18 +16,18 @@ void main() {
   group('asset naming', () {
     test('matches the v3.1.0 release assets', () {
       expect(
-        assetName('v3.1.0', HostPlatform.windowsX64),
+        assetName('v3.1.0', ReleasePlatform.windowsX64),
         'libyse-v3.1.0-windows-x64.zip',
       );
       expect(
-        assetName('v3.1.0', HostPlatform.linuxX64),
+        assetName('v3.1.0', ReleasePlatform.linuxX64),
         'libyse-v3.1.0-linux-x64.tar.gz',
       );
     });
 
     test('downloads from the public release URL', () {
       expect(
-        assetUrl('v3.1.0', HostPlatform.windowsX64).toString(),
+        assetUrl('v3.1.0', ReleasePlatform.windowsX64).toString(),
         'https://github.com/yvanvds/yse-soundengine/releases/download/'
         'v3.1.0/libyse-v3.1.0-windows-x64.zip',
       );
@@ -39,22 +39,25 @@ void main() {
     });
 
     test('maps only the desktop ABIs the engine releases', () {
-      expect(HostPlatform.fromAbi(Abi.windowsX64), HostPlatform.windowsX64);
-      expect(HostPlatform.fromAbi(Abi.linuxX64), HostPlatform.linuxX64);
-      expect(HostPlatform.fromAbi(Abi.linuxArm64), isNull);
-      expect(HostPlatform.fromAbi(Abi.macosArm64), isNull);
-      expect(HostPlatform.fromAbi(Abi.windowsArm64), isNull);
+      expect(
+        ReleasePlatform.fromAbi(Abi.windowsX64),
+        ReleasePlatform.windowsX64,
+      );
+      expect(ReleasePlatform.fromAbi(Abi.linuxX64), ReleasePlatform.linuxX64);
+      expect(ReleasePlatform.fromAbi(Abi.linuxArm64), isNull);
+      expect(ReleasePlatform.fromAbi(Abi.macosArm64), isNull);
+      expect(ReleasePlatform.fromAbi(Abi.windowsArm64), isNull);
     });
   });
 
   group('layout', () {
     test('YSE_DLL_PATH is bin/ on Windows and lib/ on Linux', () {
       expect(
-        dllPath('root', 'v3.1.0', HostPlatform.windowsX64),
+        dllPath('root', 'v3.1.0', ReleasePlatform.windowsX64),
         _p(['root', '.engine', 'v3.1.0', 'libyse-v3.1.0-windows-x64', 'bin']),
       );
       expect(
-        dllPath('root', 'v3.1.0', HostPlatform.linuxX64),
+        dllPath('root', 'v3.1.0', ReleasePlatform.linuxX64),
         _p(['root', '.engine', 'v3.1.0', 'libyse-v3.1.0-linux-x64', 'lib']),
       );
     });
@@ -62,7 +65,7 @@ void main() {
     test('isInstalled looks for the library under the tag dir', () {
       final root = Directory.systemTemp.createTempSync('fetch_engine_test');
       addTearDown(() => root.deleteSync(recursive: true));
-      const platform = HostPlatform.linuxX64;
+      const platform = ReleasePlatform.linuxX64;
 
       expect(isInstalled(root.path, 'v3.1.0', platform), isFalse);
 
@@ -70,10 +73,83 @@ void main() {
         ..createSync(recursive: true);
       expect(isInstalled(root.path, 'v3.1.0', platform), isFalse);
 
-      File(_p([dir.path, platform.libName])).writeAsStringSync('');
+      File(_p([dir.path, 'libyse.so'])).writeAsStringSync('');
       expect(isInstalled(root.path, 'v3.1.0', platform), isTrue);
       expect(isInstalled(root.path, 'v3.2.0', platform), isFalse);
     });
+
+    test('android unpacks to lib/<abi>/libyse.so for both ABIs', () {
+      expect(
+        dllPath('root', 'v3.1.0', ReleasePlatform.android),
+        _p(['root', '.engine', 'v3.1.0', 'libyse-v3.1.0-android', 'lib']),
+      );
+      expect(ReleasePlatform.android.libFiles, [
+        'arm64-v8a/libyse.so',
+        'x86_64/libyse.so',
+      ]);
+    });
+
+    test('android counts as installed only with every ABI present', () {
+      final root = Directory.systemTemp.createTempSync('fetch_engine_test');
+      addTearDown(() => root.deleteSync(recursive: true));
+      const platform = ReleasePlatform.android;
+      final lib = dllPath(root.path, 'v3.1.0', platform);
+
+      Directory(_p([lib, 'arm64-v8a'])).createSync(recursive: true);
+      File(_p([lib, 'arm64-v8a', 'libyse.so'])).writeAsStringSync('');
+      expect(isInstalled(root.path, 'v3.1.0', platform), isFalse);
+
+      Directory(_p([lib, 'x86_64'])).createSync(recursive: true);
+      File(_p([lib, 'x86_64', 'libyse.so'])).writeAsStringSync('');
+      expect(isInstalled(root.path, 'v3.1.0', platform), isTrue);
+    });
+  });
+
+  group('parseArgs', () {
+    test('defaults to the host platform without --force', () {
+      final o = parseArgs([]);
+      expect(o.force, isFalse);
+      expect(o.platform, isNull);
+    });
+
+    test('reads --force and --platform in both spellings', () {
+      final a = parseArgs(['--platform', 'android', '--force']);
+      expect(a.force, isTrue);
+      expect(a.platform, ReleasePlatform.android);
+      expect(
+        parseArgs(['--platform=linux-x64']).platform,
+        ReleasePlatform.linuxX64,
+      );
+      expect(
+        parseArgs(['--platform', 'windows-x64']).platform,
+        ReleasePlatform.windowsX64,
+      );
+    });
+
+    test('rejects unknown platforms and arguments', () {
+      expect(
+        () => parseArgs(['--platform', 'ios']),
+        throwsA(isA<FetchError>()),
+      );
+      expect(() => parseArgs(['--platform']), throwsA(isA<FetchError>()));
+      expect(() => parseArgs(['--nope']), throwsA(isA<FetchError>()));
+    });
+  });
+
+  group('parseProperties', () {
+    test('reads key=value lines and skips comments and blanks', () {
+      expect(parseProperties('# c\n! c\n\n a = 1 \nb=x=y\r\nnot a pair\n'), {
+        'a': '1',
+        'b': 'x=y',
+      });
+    });
+  });
+
+  test('android asset is named like the v3.1.0 release', () {
+    expect(
+      assetName('v3.1.0', ReleasePlatform.android),
+      'libyse-v3.1.0-android.tar.gz',
+    );
   });
 
   group('parseAssetDigest', () {

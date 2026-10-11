@@ -460,8 +460,21 @@ new Dart code for every change below (#70).
   loader still does not search `.engine/` on its own.
 - `ffigen.yaml` documents `dart run ffigen --config ffigen.yaml` (ffigen
   20 no longer finds the config on its own) (#55).
-- `yse_flutter_libs` is bumped to 0.2.0: it builds the same pinned
+- `yse_flutter_libs` is bumped to 0.2.0: it packages the same pinned
   libYSE v3.1.0.
+- **`yse_flutter_libs` packages the engine's Android release** (#91)
+  instead of compiling libYSE with the NDK per ABI. The plugin's
+  `android/engine.properties` names the tag and the sha256 of
+  `libyse-<tag>-android.tar.gz`; Gradle downloads it once into the Gradle
+  user home, checks the digest and adds `arm64-v8a` / `x86_64` as
+  `jniLibs`, so consumers (including pub.dev and git dependencies) need
+  neither the NDK nor the engine sources. `tool/fetch_engine.dart
+  --platform android` unpacks the same asset into `.engine/<tag>/`,
+  which the plugin uses in a checkout; the Gradle property
+  `yse.engineDir` covers offline builds, and `yse.buildFromSource=true`
+  keeps the NDK source build as an opt-in for unreleased engines.
+  `test/flutter_libs_engine_test.dart` fails when `engine.properties`
+  drifts from the submodule pin.
 
 ### Known upstream issues
 

@@ -139,8 +139,7 @@ Android (via yse_flutter_libs)
 ------------------------------
 
 Android consumers add a second package — the sibling Flutter plugin
-``yse_flutter_libs`` — which cross-compiles ``libyse.so`` with the NDK
-and bundles it into the APK / AAB:
+``yse_flutter_libs`` — which bundles ``libyse.so`` into the APK / AAB:
 
 .. code-block:: yaml
 
@@ -148,9 +147,17 @@ and bundles it into the APK / AAB:
      yse: ^0.2.0
      yse_flutter_libs: ^0.2.0
 
-Requirements: Flutter ≥ 3.22, Android NDK 27.0.12077973 (must match
-the engine's CMake config), AGP ≥ 8.5, ``minSdk`` 26 (so Oboe can
-negotiate AAudio). Default ABIs are ``arm64-v8a`` and ``x86_64``.
+The plugin packages the engine's prebuilt Android release
+(``libyse-<tag>-android.tar.gz``). Gradle downloads it on the first
+build, checks its sha256 and caches it under the Gradle user home, so no
+NDK build of the engine is needed. For offline builds, set the Gradle
+property ``yse.engineDir`` to an unpacked copy of the asset. Compiling
+the engine with the NDK instead is opt-in (``yse.buildFromSource=true``,
+NDK 27.0.12077973); the plugin's README describes both.
+
+Requirements: Flutter ≥ 3.22, AGP ≥ 8.5, ``minSdk`` 26 (so Oboe can
+negotiate AAudio). The ABIs are ``arm64-v8a`` and ``x86_64``, the ones
+the engine's Android release ships.
 
 See the project README for the end-to-end Flutter sample under
 ``example/android_sample/``.

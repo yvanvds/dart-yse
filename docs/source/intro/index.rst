@@ -45,8 +45,9 @@ Supported platforms
   Clang64)
 - **Linux** (x64; prebuilt engine, or built from source with Clang or
   GCC; tested on Ubuntu 24.04)
-- **Android** (NDK 27+, API 26+, ``arm64-v8a`` and ``x86_64`` via the
-  ``yse_flutter_libs`` Flutter plugin)
+- **Android** (API 26+, ``arm64-v8a`` and ``x86_64``; prebuilt engine
+  bundled by the ``yse_flutter_libs`` Flutter plugin, or built from source
+  with NDK 27)
 
 The audio backends are PortAudio on desktop and Oboe (AAudio with
 OpenSL ES fallback) on Android — chosen by the engine, not the wrapper.

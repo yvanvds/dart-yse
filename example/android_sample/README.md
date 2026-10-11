@@ -18,6 +18,19 @@ flutter create --platforms=android --project-name=yse_android_sample .
 
 That writes the missing `android/` Gradle project. The `lib/main.dart`,
 `pubspec.yaml`, and `assets/` already present here are not overwritten.
+It also adds a `.gitignore`, `analysis_options.yaml`, `test/`, `.idea/`
+and `yse_android_sample.iml`, which this sample does not use; delete
+them.
+
+Raise the app's `minSdk` to 26, which `yse_flutter_libs` requires (the
+template uses Flutter's lower default). In
+`android/app/build.gradle.kts`:
+
+```kotlin
+defaultConfig {
+    minSdk = 26
+}
+```
 
 Then copy the engine's test sound into `assets/`:
 
@@ -36,11 +49,25 @@ flutter pub get
 flutter run
 ```
 
-The Gradle build invokes the engine's CMake project under
-`packages/yse_flutter_libs` for each configured ABI (default
-`arm64-v8a` + `x86_64`). First build is slow (~5–10 min — fetches Oboe
-and libsndfile sources, compiles the engine cold); subsequent builds are
-incremental.
+`yse_flutter_libs` packages the engine release named in
+`packages/yse_flutter_libs/android/engine.properties` (the submodule's
+pinned tag) for `arm64-v8a` and `x86_64`. It uses
+`.engine/<tag>/libyse-<tag>-android/` from
+`dart run tool/fetch_engine.dart --platform android` when that exists,
+and otherwise downloads the release asset (~56 MiB) once into the Gradle
+user home. The app shows the loaded `System.version`, which should be
+the pinned tag without its `v`.
+
+To run the sample against an unreleased engine instead, compile it from
+source by adding to `android/gradle.properties`:
+
+```properties
+yse.buildFromSource=true
+yse.engineSourceDir=/path/to/yse-soundengine
+```
+
+That needs NDK 27.0.12077973, and the first build is slow (~5–10 min per
+ABI — fetches Oboe and libsndfile sources, compiles the engine cold).
 
 ## Threading
 
@@ -60,9 +87,14 @@ either way.
 - **`libyse.so not found`** — confirm `yse_flutter_libs` is in
   `pubspec.yaml` *and* `flutter clean` has been run since adding it.
   Gradle caches the merged `lib/<abi>/` set per build configuration.
-- **`CMake error: Could not find a configuration file for package "..."`** —
-  the NDK version in `packages/yse_flutter_libs/android/build.gradle`
-  (`27.0.12077973`) must be installed via the Android SDK Manager.
+- **`yse_flutter_libs: could not download ...`** — the first build needs
+  github.com. Offline, run `dart run tool/fetch_engine.dart --platform
+  android` while you still have a connection, or set `yse.engineDir` to
+  an unpacked `libyse-<tag>-android` folder.
+- **`CMake error: Could not find a configuration file for package "..."`**
+  (source builds only) — the NDK version in
+  `packages/yse_flutter_libs/android/build.gradle` (`27.0.12077973`) must
+  be installed via the Android SDK Manager.
 - **Engine silent on emulator** — the `x86_64` Android emulator routes
   audio through the host. Confirm host audio works first; some emulator
   graphics backends mute audio when the AVD window is unfocused.

@@ -107,6 +107,10 @@ release builds use the default options: MIDI device I/O on, Python
 (`LiveCoding`) off. The C headers `ffigen` reads still come from the
 submodule.
 
+`--platform android` fetches the Android asset instead (one
+`lib/<abi>/libyse.so` per ABI) for the `yse_flutter_libs` plugin; see
+[Android](#android).
+
 The loader does not look in `.engine/` by itself: that folder exists only
 in a dart-yse checkout, never in a published package, so you always say
 which engine you run by setting `YSE_DLL_PATH`. To try an engine that has
@@ -210,6 +214,11 @@ at release time, so a dev build just after a tag still reports that
 tag). It never fails a test. Expect snapshot and drift tests to fail
 when the dev engine has changed what they check; CI always runs the pin.
 
+On Android the same mode is the `yse_flutter_libs` Gradle properties
+`yse.buildFromSource=true` and `yse.engineSourceDir=<dev clone>` in the
+sample or app's `android/gradle.properties` (see [Android](#android)).
+Leave them out of anything you commit.
+
 To try new C API functions you can regenerate the bindings against the
 dev clone's headers (point the `headers.entry-points` path in
 `ffigen.yaml` at the clone's `yse_all.h`), but only locally: committed
@@ -241,9 +250,8 @@ no audio device required).
 
 Android consumers add a second package — the sibling Flutter plugin
 [`yse_flutter_libs`](packages/yse_flutter_libs/) — which is responsible
-for cross-compiling `libyse.so` with the NDK and bundling it into the
-APK / AAB. `package:yse` itself stays pure Dart and works unchanged on
-CLI / server hosts.
+for bundling `libyse.so` into the APK / AAB. `package:yse` itself stays
+pure Dart and works unchanged on CLI / server hosts.
 
 ```yaml
 dependencies:
@@ -251,27 +259,42 @@ dependencies:
   yse_flutter_libs: ^0.2.0
 ```
 
-Keep the two at the same minor version: `yse_flutter_libs` builds the
-engine from this repository's submodule, and `yse` 0.2.0 needs the
-libYSE 3.1 C ABI it ships.
+Keep the two at the same minor version: `yse_flutter_libs` 0.2.x
+packages libYSE v3.1.0, and `yse` 0.2.0 needs the libYSE 3.1 C ABI it
+ships.
+
+The plugin packages the engine's prebuilt Android release (#91). Its
+`android/engine.properties` names the libYSE tag (kept equal to the
+submodule pin by `test/flutter_libs_engine_test.dart`) and the sha256 of
+`libyse-<tag>-android.tar.gz`. On the first build Gradle downloads that
+asset into `<gradle user home>/caches/yse-engine/<tag>/`, checks the
+digest and adds the per-ABI libraries as `jniLibs`. No NDK or CMake
+build of the engine is involved, and a pub.dev or git dependency on the
+plugin works the same way, since it never needs the engine sources.
+Inside a dart-yse checkout, `dart run tool/fetch_engine.dart --platform
+android` unpacks the asset into `.engine/<tag>/libyse-<tag>-android/`,
+which the plugin uses instead of downloading; elsewhere the Gradle
+property `yse.engineDir` points it at an unpacked asset for offline
+builds.
+
+`yse.buildFromSource=true` (in the app's `android/gradle.properties`)
+switches back to compiling the engine with the NDK per ABI — from the
+submodule, or from another clone via `yse.engineSourceDir`. Use it with
+an [unreleased engine](#unreleased-engine-opt-in) or for `armeabi-v7a`
+(`yse.abis`), which the release does not ship. It needs Android NDK
+27.0.12077973, and the first build compiles the engine cold (5–10
+minutes per ABI). The plugin's README has the details.
 
 Requirements:
 
 - Flutter ≥ 3.22
-- Android NDK **27.0.12077973** (matches the engine's CMake config) —
-  install via the Android SDK Manager.
 - Android Gradle Plugin ≥ 8.5
 - `minSdk` 26 so Oboe negotiates the AAudio backend (older devices fall
   back to OpenSL ES, which the engine still supports through Oboe but
-  has fewer guarantees on latency).
-- Default ABIs: `arm64-v8a`, `x86_64`. Add `armeabi-v7a` via
-  `ndk.abiFilters` in your app's `build.gradle` if you target older
-  32-bit devices (the engine builds for it but is not routinely tested
-  there).
-
-The first Gradle build pulls Oboe and libsndfile sources via
-FetchContent and compiles the engine cold — expect 5–10 minutes per
-ABI. Subsequent incremental builds are fast.
+  has fewer guarantees on latency). Flutter's app template defaults
+  lower, so set it in your app's `build.gradle`.
+- ABIs: `arm64-v8a`, `x86_64`, the ones the engine's Android release
+  ships.
 
 A minimal end-to-end Flutter sample lives at
 [`example/android_sample/`](example/android_sample/) — see the README

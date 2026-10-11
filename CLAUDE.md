@@ -63,10 +63,13 @@ needing CMake ≥ 3.20 and:
 - **Windows** — MSYS2 Clang64 (to build `libyse.dll`).
 - **Linux** — GCC or Clang, plus `portaudio19-dev`, `libsndfile1-dev`,
   `librtmidi-dev` (Ubuntu 24.04 is the tested baseline).
-- **Android** — NDK 27 via Flutter / Gradle, driven by the sibling
-  `yse_flutter_libs` plugin under `packages/`. The plugin's Gradle
-  module externalNativeBuild's the engine CMakeLists for each ABI
-  (#91 tracks using the android release tarball instead).
+- **Android** — the sibling `yse_flutter_libs` plugin under `packages/`
+  packages the engine's prebuilt android release for the tag in its
+  `android/engine.properties` (kept equal to the pin by
+  `test/flutter_libs_engine_test.dart`; bump tag and sha256 with the
+  pin). `dart run tool/fetch_engine.dart --platform android` pre-fetches
+  it; otherwise Gradle downloads it. Compiling with NDK 27 is opt-in via
+  the Gradle property `yse.buildFromSource=true` (#91).
 
 See [README.md](README.md) for both recipes.
 

@@ -23,6 +23,8 @@ import 'dart:io';
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/sound_ready.dart';
+
 void main() {
   final sys = System.instance;
 
@@ -331,9 +333,10 @@ void main() {
       offlineSession();
       final ch = Channel.create('lvl', parent: Channel.master);
       addTearDown(ch.dispose);
-      loadedSound(channel: ch)
+      final sound = loadedSound(channel: ch)
         ..position = const Pos(0, 0, 1)
         ..play();
+      pumpUntilReady(sys, sound);
       ch.busName = 'buslvl';
 
       double peak() {

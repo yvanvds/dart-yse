@@ -22,6 +22,8 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:yse/yse.dart';
 
+import 'support/sound_ready.dart';
+
 void main() {
   final sys = System.instance;
 
@@ -36,7 +38,8 @@ void main() {
     });
   }
 
-  /// A looping, audible DC sound at [at] with occlusion enabled.
+  /// A looping, audible DC sound at [at] with occlusion enabled, playing and
+  /// past its asynchronous setup.
   Sound occludedSound(Pos at) {
     final buffer = DspBuffer.plain(length: 1024)..fill(0.5);
     final sound = Sound.fromBuffer(buffer, loop: true);
@@ -48,6 +51,7 @@ void main() {
       ..position = at
       ..occlusion = true
       ..play();
+    pumpUntilReady(sys, sound);
     return sound;
   }
 

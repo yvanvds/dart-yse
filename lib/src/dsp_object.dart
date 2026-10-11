@@ -92,10 +92,12 @@ class DspObject implements Finalizable {
   /// Granular synthesis — pool of recent input, spawn short grains.
   ///
   /// [poolSize] is the size of the circular input buffer in samples
-  /// (default ~5s at 44.1kHz). [maxGrains] is the maximum number of
-  /// grains alive simultaneously.
+  /// (default 5 s at 48 kHz, the libYSE 3 default session rate; size it
+  /// from `System.sessionSampleRate` when the session runs at another
+  /// rate). [maxGrains] is the maximum number of grains alive
+  /// simultaneously.
   factory DspObject.granulator({
-    int poolSize = 44100 * 5,
+    int poolSize = 48000 * 5,
     int maxGrains = 16,
   }) => _wrap(
     bindings.dsp_granulator_create(poolSize, maxGrains),

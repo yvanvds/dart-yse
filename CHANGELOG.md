@@ -25,6 +25,29 @@
   - Engine behaviour changes picked up: `bandPass` has unity gain at its
     centre frequency (upstream #1022).
 
+- **libYSE 3 session and device semantics** (#56, closes #52 and #53):
+  - New `System.requestedSampleRate` (get/set before `init` /
+    `initOffline`; survives `close`, 0 clears it). An offline session runs
+    exactly at the requested rate. The default session rate is now 48 kHz
+    (was 44.1 kHz), so offline renders that assumed 44.1 kHz change length.
+  - New `System.setChannelConfiguration(layout, outputs)` sets the speaker
+    layout of a session with no device (offline, headless CI).
+  - New `DeviceSetup.outputChannels`.
+  - `System.init()` now throws `YseException` when no device opens and
+    leaves the engine closed; fall back to `initOffline()`.
+  - `System.openDevice()` now throws when the engine opened nothing (no
+    output device, a stale device, a stream error, an offline session
+    without a backend) instead of returning normally (#52).
+  - `DeviceSetup.sampleRate` cannot change a running session's rate; use
+    `requestedSampleRate` before init (#53).
+  - `DspObject.granulator`'s default `poolSize` is 5 s at 48 kHz
+    (`48000 * 5`, was `44100 * 5`).
+  - Dartdoc corrected for `setAutoReconnect` (`delayMs` is wall-clock
+    milliseconds), `resume` (no-op on an offline session),
+    `missedCallbacks`, `devices`, `Device.defaultBufferSize`, the MIDI
+    device-name getters and `underwaterDepth` (world units below the
+    surface, not 0..1).
+
 - **API reference site.** New `docs/` tree builds a Sphinx site that
   mirrors the upstream libYSE docs site (sphinx-book-theme, same
   intro / tutorials / API layout) so contributors who already know

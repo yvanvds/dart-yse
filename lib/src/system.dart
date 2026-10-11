@@ -42,14 +42,93 @@ class System {
 
   /// Initialise the engine and open the default audio device.
   ///
-  /// Throws [YseException] when the audio device cannot be opened.
+  /// Succeeds only when a stream on the default output device is running.
+  /// With no default device, or one that refuses to open or start the
+  /// stream, this throws [YseException] (status `YSE_ERR_AUDIO_DEVICE`) and
+  /// leaves the engine closed. A host that must run without audio hardware
+  /// (headless CI, a server, a machine whose only device is unplugged)
+  /// should catch it and fall back to [initOffline]:
+  ///
+  /// ```dart
+  /// try {
+  ///   sys.init();
+  /// } on YseException {
+  ///   sys.initOffline();
+  /// }
+  /// ```
+  ///
+  /// The session runs at [requestedSampleRate] when the device accepts it,
+  /// otherwise at the rate the device negotiates; read the result from
+  /// [sessionSampleRate]. Up to libYSE 2.4 this call succeeded silently
+  /// with nothing open.
   void init() => checkStatus(_b.system_init(_handle), _b);
 
   /// Initialise the engine without opening an audio device.
   ///
   /// For benchmarks, automated tests, and headless tooling. Drive the
-  /// engine via [renderOffline] rather than the audio callback.
+  /// engine via [renderOffline] rather than the audio callback. The session
+  /// runs exactly at [requestedSampleRate]; with no request it keeps the
+  /// engine's current rate — 48 kHz in a fresh process, otherwise the rate
+  /// of the previous session. The speaker layout is stereo; change it with
+  /// [setChannelConfiguration].
   void initOffline() => checkStatus(_b.system_init_offline(_handle), _b);
+
+  /// Sample rate in Hz requested for the next engine session, or 0 when no
+  /// request is set.
+  ///
+  /// The sample rate is an application setting fixed per session: set this
+  /// **before** [init] / [initOffline]. An offline session runs exactly at
+  /// the requested rate. A device session asks the device for it; a device
+  /// that refuses is a log line plus the rate it negotiates instead, never
+  /// an error — [sessionSampleRate] reports what the session actually got.
+  /// Setting 0 clears the request: a device session then opens at the
+  /// device default, and an offline session keeps the engine's current
+  /// rate (48 kHz in a fresh process, otherwise the previous session's
+  /// rate). Request a rate explicitly when an offline render must run at a
+  /// known one.
+  ///
+  /// Setting this on a running session only stores the request for the next
+  /// one; to change a running session's rate, [close] and init again. The
+  /// request survives [close].
+  ///
+  /// Throws [ArgumentError] for a negative rate.
+  int get requestedSampleRate => _b.system_get_requested_sample_rate(_handle);
+  set requestedSampleRate(int hz) {
+    if (hz < 0) {
+      throw ArgumentError.value(
+        hz,
+        'hz',
+        'must be >= 0 (0 clears the request)',
+      );
+    }
+    _b.system_request_sample_rate(_handle, hz);
+  }
+
+  /// Set the speaker [layout] of a session that has no device, with
+  /// [outputs] output channels.
+  ///
+  /// [openDevice] derives the layout from the device it opens, so a session
+  /// without one — [initOffline], headless CI, [renderOffline] benchmarks —
+  /// otherwise stays on the stereo layout init installs. Call this **after**
+  /// [init] / [initOffline] (init installs the stereo default itself and
+  /// overwrites an earlier call). The next audio callback or [renderOffline]
+  /// block that mixes a sound picks the new layout up and resizes the mixer
+  /// (with no sound alive the engine skips the mix, and the resize with
+  /// it), after which [Channel.numOutputs] on [Channel.master] reports
+  /// [outputs].
+  ///
+  /// [ChannelType.auto] derives a layout from [outputs];
+  /// [ChannelType.custom] allocates [outputs] speakers whose positions are
+  /// set afterwards.
+  ///
+  /// Throws [ArgumentError] when [outputs] is below 1 (the engine would
+  /// refuse a zero-output layout with only a log line).
+  void setChannelConfiguration(ChannelType layout, int outputs) {
+    if (outputs < 1) {
+      throw ArgumentError.value(outputs, 'outputs', 'must be >= 1');
+    }
+    _b.system_set_channel_configuration(_handle, layout.native, outputs);
+  }
 
   /// Render N audio blocks synchronously on the calling thread.
   ///
@@ -72,13 +151,23 @@ class System {
   /// Pause audio output. The engine keeps running but the device is silent.
   void pause() => _b.system_pause(_handle);
 
-  /// Resume audio output after [pause].
+  /// Resume audio output after [pause] by restarting the device this
+  /// session already had.
+  ///
+  /// A session brought up with [initOffline] has no device, so this is a
+  /// no-op there rather than an open of the platform default; use
+  /// [openDevice] to give such a session a device.
   void resume() => _b.system_resume(_handle);
 
-  /// Number of audio callbacks that have failed to complete on time.
+  /// Number of consecutive [update] ticks during which the device delivered
+  /// no audio callback; 0 means audio is flowing right now.
   ///
-  /// A non-zero value indicates the audio thread is starved or the device
-  /// has disconnected.
+  /// A stream that has just been started reads non-zero until its first
+  /// callback lands (the backend's start call returns before the device
+  /// runs), so poll this until it reaches 0 to wait for a device to come
+  /// up. A value that keeps climbing means a starved audio thread or a
+  /// disconnected device. A session with no device (e.g. [initOffline])
+  /// only ever climbs. [setAutoReconnect] does not act on this counter.
   int get missedCallbacks => _b.system_missed_callbacks(_handle);
 
   /// CPU load of the audio thread as a fraction of the callback budget.
@@ -97,7 +186,16 @@ class System {
   /// Enable or disable the built-in audio test signal.
   set audioTest(bool on) => _b.system_audio_test(_handle, on ? 1 : 0);
 
-  /// Configure automatic device reconnection.
+  /// Configure automatic re-opening of the output stream when the device
+  /// stops delivering callbacks (headphones unplugged, device removed).
+  ///
+  /// [delayMs] is wall-clock milliseconds: the silence before an attempt,
+  /// and the interval between further attempts while the device stays
+  /// unavailable. Negative values are clamped to 0. A freshly started
+  /// stream that has not delivered its first callback yet is not treated as
+  /// stalled; it gets a 500 ms start-up grace regardless of [delayMs]. Up
+  /// to libYSE 2.4 the value was compared against a count of [update]
+  /// ticks and attempts fired on every tick once past it.
   void setAutoReconnect({required bool on, int delayMs = 1000}) =>
       _b.system_auto_reconnect(_handle, on ? 1 : 0, delayMs);
 
@@ -111,8 +209,11 @@ class System {
 
   /// All audio devices visible to the engine.
   ///
-  /// Available after [init] / [initOffline]. Each [Device] descriptor is
-  /// borrowed from the engine; do not retain references past [close].
+  /// [init] enumerates the devices. [initOffline] enumerates none, so an
+  /// offline session lists nothing until the engine's device list is
+  /// refreshed, and a headless host may list nothing at all. Each [Device]
+  /// descriptor is borrowed from the engine; do not retain references past
+  /// [close] or past a refresh of the list.
   List<Device> get devices {
     final n = _b.system_num_devices(_handle);
     final result = <Device>[];
@@ -129,7 +230,17 @@ class System {
   /// Open the audio device described by [setup] with the requested speaker
   /// [layout] (defaults to stereo-when-possible).
   ///
-  /// Throws [YseException] if the device cannot be opened.
+  /// Throws [YseException] (status `YSE_ERR_AUDIO_DEVICE`) when the engine
+  /// opened no stream for [setup]: no output device set, an output device
+  /// whose [Device.id] is -1 or no longer resolves, a stream open error
+  /// (including a device that refuses the session rate), or an offline
+  /// session with no audio backend running. On failure the running stream
+  /// and the speaker layout are left untouched. Up to libYSE 2.4 these
+  /// failures were only logged and this call returned normally.
+  ///
+  /// The stream opens at the locked [sessionSampleRate];
+  /// [DeviceSetup.sampleRate] cannot change a running session's rate (see
+  /// [requestedSampleRate]).
   void openDevice(DeviceSetup setup, {ChannelType layout = ChannelType.auto}) {
     checkStatus(
       _b.system_open_device(_handle, setup.handle, layout.native),
@@ -154,6 +265,11 @@ class System {
   ///
   /// Use this for sample-count-driven scheduling that must outlive a
   /// pause; use [activeSampleRate] for live device-state UI.
+  ///
+  /// Chosen with [requestedSampleRate] before init. With no request a
+  /// device session runs at the rate the device negotiates, and an offline
+  /// session at 48 kHz in a fresh process (the libYSE 3 default; 2.4 used
+  /// 44.1 kHz) or otherwise at the previous session's rate.
   double get sessionSampleRate => _b.system_get_sample_rate(_handle);
 
   /// Sample rate of the currently open audio device, or 0 when no device
@@ -182,11 +298,19 @@ class System {
   int get midiOutDeviceCount => _b.system_num_midi_out_devices(_handle);
 
   /// Name of the MIDI input device at [id].
+  ///
+  /// Returns `""` when there is no such device: an [id] at or past
+  /// [midiInDeviceCount], or any [id] on a host whose MIDI backend failed to
+  /// initialise. A non-empty name always means a real port.
   String midiInDeviceName(int id) => fetchString(
     (buf, cap) => _b.system_midi_in_device_name(_handle, id, buf, cap),
   );
 
   /// Name of the MIDI output device at [id]. Pair with [MidiOut.open].
+  ///
+  /// Returns `""` when there is no such device: an [id] at or past
+  /// [midiOutDeviceCount], or any [id] on a host whose MIDI backend failed
+  /// to initialise. A non-empty name always means a real port.
   String midiOutDeviceName(int id) => fetchString(
     (buf, cap) => _b.system_midi_out_device_name(_handle, id, buf, cap),
   );
@@ -202,13 +326,19 @@ class System {
 
   // ─── underwater FX ──────────────────────────────────────────────────────
 
-  /// Route [channel] through the built-in underwater filter (low-pass +
-  /// pitch shift).
+  /// Route [channel] through the built-in underwater filter.
+  ///
+  /// Attaches the engine's underwater insert to the channel's insert slot —
+  /// the same slot as [Channel.dsp]; the two replace each other.
   void underwaterFx(Channel channel) =>
       _b.system_underwater_fx(_handle, channel.handle);
 
-  /// Depth of the underwater effect, in [0.0, 1.0]. 0 is dry; 1 is the
-  /// maximum filter strength.
+  /// The listener's distance below the water surface, in world units.
+  ///
+  /// `<= 0` disables the effect. The low-passed, position-neutral treatment
+  /// fades in above 1 and saturates at 5. A positive depth also enables the
+  /// built-in underwater reverb zone. (This is not a normalised 0..1
+  /// strength.)
   set underwaterDepth(double value) =>
       _b.system_set_underwater_depth(_handle, value);
 

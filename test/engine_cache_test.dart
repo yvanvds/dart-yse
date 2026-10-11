@@ -1,5 +1,5 @@
-// The build hook's download cache (hook/engine_cache.dart, #95), against a
-// fake release served from localhost: download, sha256 check, unpack, reuse
+// The build hook's download cache (lib/src/hook/engine_cache.dart, #95,
+// #101), against a fake release served from localhost: download, sha256 check, unpack, reuse
 // without network, and rejection of a tampered archive. Needs the system
 // `tar` (Windows 10+ / Linux) but no engine and no internet.
 
@@ -8,8 +8,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:test/test.dart';
 import 'package:yse/src/engine_release.dart';
-
-import '../hook/engine_cache.dart';
+import 'package:yse/src/hook/engine_cache.dart';
 
 const _tag = 'v9.9.9';
 const _platform = ReleasePlatform.linuxX64;

@@ -5,7 +5,7 @@
 // messages so you can verify the MIDI-out path works.
 //
 // Run:
-//   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo16_midi.dart
+//   YSE_DLL_PATH=third_party\yse-soundengine\build\bin  dart run example/demo16_midi.dart
 
 // ignore_for_file: avoid_print
 

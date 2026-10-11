@@ -7,7 +7,7 @@
 // same error stream.
 //
 // Run:
-//   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo18_live_coding.dart
+//   YSE_DLL_PATH=third_party\yse-soundengine\build\bin  dart run example/demo18_live_coding.dart
 
 // ignore_for_file: avoid_print
 

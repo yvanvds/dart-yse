@@ -60,6 +60,16 @@ Requires Dart SDK ≥ 3.8, CMake ≥ 3.20, and one of:
 
 See [README.md](README.md) for the per-platform build recipe.
 
+`third_party/yse-soundengine` is a normal git submodule pinned to an
+engine release tag. Clone with `--recurse-submodules`, or run
+`git submodule update --init` in an existing clone. `ffigen`, the drift
+tests (`gen_obj_constants_test`, `gen_patcher_snapshot_test`,
+`port_patcher_notes_test`, `patcher_objects_test`) and the docs data all
+read that pinned tree, so `git status` should show it clean. Bump it by
+checking out a new release tag inside the submodule and committing the
+gitlink, then regenerate the bindings. Engine development happens in a
+separate clone of yse-soundengine, never through the submodule.
+
 ```powershell
 # Windows. After building libyse.dll into the submodule's build/ dir:
 $env:YSE_DLL_PATH = "$PWD\third_party\yse-soundengine\build\bin"
@@ -89,6 +99,8 @@ For Windows-only Linux validation without rebooting, see
 - **Don't** skip hooks (`--no-verify`) or bypass signing.
 - **Don't** hand-edit `lib/src/bindings/yse_bindings.g.dart` — regenerate
   via ffigen.
+- **Don't** point the submodule at an untagged engine commit or develop
+  the engine inside it; bump the gitlink only to a release tag.
 - **Don't** import `lib/src/bindings/` outside `lib/src/`. Consumers of
   the package use the public surface in `lib/yse.dart`; internal
   wrappers go through `ffi_helpers.dart` + `library.dart`.

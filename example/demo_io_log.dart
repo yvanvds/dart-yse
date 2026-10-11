@@ -8,7 +8,7 @@
 //    filename. Proves the BufferIO → Sound path works.
 //
 // Run:
-//   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo_io_log.dart
+//   YSE_DLL_PATH=third_party\yse-soundengine\build\bin  dart run example/demo_io_log.dart
 
 // ignore_for_file: avoid_print
 

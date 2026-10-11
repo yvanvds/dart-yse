@@ -4,7 +4,7 @@
 // require the library to be resolvable — set `YSE_DLL_PATH` to the directory
 // holding it (see README / CLAUDE.md):
 //
-//   Windows:  $env:YSE_DLL_PATH = "D:\yse-soundengine\build\bin"; dart test
+//   Windows:  $env:YSE_DLL_PATH = "$PWD\third_party\yse-soundengine\build\bin"; dart test
 //   Linux:    export YSE_DLL_PATH="$PWD/third_party/yse-soundengine/build/bin"
 //             dart test
 //

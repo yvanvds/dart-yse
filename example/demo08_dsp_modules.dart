@@ -5,7 +5,7 @@
 // inherited LFO control surface, and DspObject.link to build a chain.
 //
 // Run:
-//   YSE_DLL_PATH=D:\yse-soundengine\build\bin  dart run example/demo08_dsp_modules.dart
+//   YSE_DLL_PATH=third_party\yse-soundengine\build\bin  dart run example/demo08_dsp_modules.dart
 
 // ignore_for_file: avoid_print
 

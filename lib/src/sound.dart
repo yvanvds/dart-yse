@@ -11,6 +11,7 @@ import 'library.dart';
 import 'patcher.dart';
 import 'pos.dart';
 import 'synth.dart';
+import 'system.dart' show System;
 
 /// A playable instance of an audio source.
 ///
@@ -248,8 +249,12 @@ class Sound implements Finalizable {
   bool get pan2D => _b.sound_get_pan2d(_handle) != 0;
   set pan2D(bool value) => _b.sound_set_pan2d(_handle, value ? 1 : 0);
 
-  /// Whether occlusion is active for this sound. Requires a
-  /// callback installed via the engine's occlusion hook.
+  /// Whether occlusion is active for this sound.
+  ///
+  /// An occlusion-enabled sound is ducked by the value the
+  /// [System.occlusion] callback returns for it on every
+  /// [System.update] (`gain *= 1 - occlusion`). With no callback installed
+  /// the sound keeps the last value it received (0 initially).
   bool get occlusion => _b.sound_get_occlusion(_handle) != 0;
   set occlusion(bool value) => _b.sound_set_occlusion(_handle, value ? 1 : 0);
 

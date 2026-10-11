@@ -10,7 +10,16 @@ import 'enums.dart';
 import 'exception.dart';
 import 'ffi_helpers.dart';
 import 'library.dart';
+import 'pos.dart';
 import 'reverb.dart';
+import 'sound.dart' show Sound;
+
+/// Sound-occlusion callback installed with [System.occlusion].
+///
+/// Returns how much geometry sits between [source] and [listener]: 0 for a
+/// clear line of sight, 1 for fully blocked. Both positions are already
+/// multiplied by the engine's distance factor.
+typedef OcclusionFn = double Function(Pos source, Pos listener);
 
 /// Engine lifecycle, audio device control, global settings.
 ///
@@ -217,9 +226,104 @@ class System {
   void update() => _b.system_update(_handle);
 
   /// Shut down the engine and release the audio device.
+  ///
+  /// Also removes the [occlusion] callback.
   void close() {
     stopUpdateTimer();
+    occlusion = null;
     _b.system_close(_handle);
+  }
+
+  // ─── occlusion ──────────────────────────────────────────────────────────
+
+  static OcclusionFn? _occlusionFn;
+  static NativeCallable<YseOcclusionCallbackFunction>? _occlusionCallable;
+  static Zone? _occlusionZone;
+
+  /// Nesting depth of running occlusion callbacks.
+  static int _occlusionDepth = 0;
+
+  /// The sound-occlusion callback, or `null` when none is installed.
+  ///
+  /// During every [update] the engine calls it once for each sound with
+  /// [Sound.occlusion] enabled, passing the sound's and the listener's
+  /// positions (already multiplied by the distance factor). The result,
+  /// clamped to 0..1, ducks that sound's gain (`gain *= 1 - occlusion`).
+  /// Typical callbacks raycast through the game world:
+  ///
+  /// ```dart
+  /// System.instance.occlusion = (src, lis) => world.raycast(src, lis);
+  /// sound.occlusion = true;
+  /// ```
+  ///
+  /// There is one callback per process: installing replaces the previous
+  /// one and `null` removes it, after which sounds keep the last occlusion
+  /// value they received. [close] removes it too.
+  ///
+  /// Threading: the engine invokes the callback synchronously on the thread
+  /// that calls [update] — never the audio thread — and needs its return
+  /// value, so the bridge is a `NativeCallable.isolateLocal`. That is only
+  /// sound because [update] (and [startUpdateTimer]) must run on the isolate
+  /// that installed the callback; calling [update] from another isolate or
+  /// thread is unsupported. For the same reason the old callable is closed
+  /// right after the swap: no update can be running elsewhere with the old
+  /// pair. Replacing or removing the callback from inside the callback is
+  /// allowed; the old callable is then closed in a microtask, after [update]
+  /// has returned.
+  ///
+  /// An exception thrown by the callback never unwinds into the engine: the
+  /// sound is treated as unoccluded (0) for that update and the error is
+  /// reported to the [Zone] that was current when the callback was
+  /// installed, like an error in a [Timer] callback.
+  OcclusionFn? get occlusion => _occlusionFn;
+  set occlusion(OcclusionFn? fn) {
+    final old = _occlusionCallable;
+    NativeCallable<YseOcclusionCallbackFunction>? next;
+    if (fn != null) {
+      next = NativeCallable<YseOcclusionCallbackFunction>.isolateLocal(
+        _occlusionTrampoline,
+        exceptionalReturn: 0.0,
+      );
+    }
+    _occlusionFn = fn;
+    _occlusionZone = fn == null ? null : Zone.current;
+    _occlusionCallable = next;
+    _b.system_set_occlusion_callback(
+      _handle,
+      next?.nativeFunction ?? nullptr,
+      nullptr,
+    );
+    if (old != null) {
+      if (_occlusionDepth > 0) {
+        // Swapped from inside a running callback, which may be `old`'s own
+        // invocation: close it only after the engine's update has returned.
+        scheduleMicrotask(old.close);
+      } else {
+        old.close();
+      }
+    }
+  }
+
+  static double _occlusionTrampoline(
+    Pointer<yse_pos_t> src,
+    Pointer<yse_pos_t> lis,
+    Pointer<Void> _,
+  ) {
+    // `src` and `lis` are stack copies valid only for this call: convert
+    // them before running user code.
+    final source = Pos.fromNative(src.ref);
+    final listener = Pos.fromNative(lis.ref);
+    final fn = _occlusionFn;
+    if (fn == null) return 0.0;
+    _occlusionDepth++;
+    try {
+      return fn(source, listener);
+    } catch (e, st) {
+      (_occlusionZone ?? Zone.root).handleUncaughtError(e, st);
+      return 0.0;
+    } finally {
+      _occlusionDepth--;
+    }
   }
 
   /// Pause audio output. The engine keeps running but the device is silent.

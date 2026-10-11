@@ -57,12 +57,26 @@ the object; everything is matched exact-string and case-sensitively.
    * - ``patcher.<name>.<slot>``
      - a ``.r`` object in a named patcher
      - any kind
-   * - ``sound.<name>.<prop>``
-     - a named sound (``volume``, ``speed``, ``position``)
-     - float / int; ``position`` takes a list of 3
-   * - ``channel.<name>.<prop>``
-     - a named channel (``volume``)
-     - float / int
+   * - ``sound.<name>.volume``
+     - a :py:class:`Sound` named with ``busName``
+     - ``BusFloat`` or ``BusInt``, as ``Sound.volume``
+   * - ``sound.<name>.speed``
+     - same
+     - ``BusFloat`` or ``BusInt``, as ``Sound.speed``
+   * - ``sound.<name>.position``
+     - same
+     - ``BusList([x, y, z])``, as ``Sound.position``
+   * - ``channel.<name>.volume``
+     - a :py:class:`Channel` named with ``busName`` (not its log ``name``)
+     - ``BusFloat`` or ``BusInt``, as ``Channel.volume``
+
+A sound drops values that arrive before its load has succeeded. Names are
+unique per kind: naming a second synth, sound or channel with a name already
+in use is rejected and logged by the engine, with no error to the host.
+``busName = null`` (or ``''``) clears the name and its subscriptions.
+
+``Channel.name`` and ``Channel.busName`` are independent: ``name`` is the
+*log* name passed to ``Channel.create`` and never puts the channel on the bus.
 
 Any other address is free for host and script use; only subscribers and taps
 hear it. A publish nobody listens to is not an error.

@@ -228,13 +228,15 @@ class System {
 
   /// Shut down the engine and release the audio device.
   ///
-  /// Also removes the [occlusion] callback, and releases every `Bus`
+  /// Also removes the [occlusion] callback, releases every `Bus`
   /// subscription and tap, closing their streams (re-subscribe after the
-  /// next init).
+  /// next init), and forgets every `Channel.busName` (the engine drops the
+  /// channel's bus subscription with the session).
   void close() {
     stopUpdateTimer();
     occlusion = null;
     closeBusBridges();
+    clearChannelBusNames();
     _b.system_close(_handle);
   }
 

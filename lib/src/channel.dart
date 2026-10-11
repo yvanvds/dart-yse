@@ -158,9 +158,61 @@ class Channel {
   /// Whether this channel has a live implementation.
   bool get isValid => _b.channel_is_valid(_handle) != 0;
 
-  /// Channel name (the value passed to [Channel.create]).
+  /// The channel's *log* name: the value passed to [Channel.create] (or
+  /// [Channel.createWithSends] / [Channel.createReturn]), or the engine's
+  /// own name for a pre-built singleton. It labels the channel in engine log
+  /// output and is fixed for the channel's lifetime.
+  ///
+  /// This is **not** the bus address — see [busName]. The engine keeps the
+  /// two independent on purpose: creating a channel named `"drums"` does not
+  /// put it on the bus, and naming it `drums` on the bus does not change this
+  /// value.
   String get name =>
       fetchString((buf, cap) => _b.channel_get_name(_handle, buf, cap));
+
+  /// Bus names set through any [Channel] wrapper, keyed by native handle
+  /// address. Kept per handle rather than per wrapper because the pre-built
+  /// singleton getters ([master], [fx], …) mint a fresh wrapper on every
+  /// access, and `Channel.master.busName` must read back what
+  /// `Channel.master.busName = …` set.
+  static final Map<int, String> _busNames = {};
+
+  /// The name this channel answers to on the global bus, or `null` when it is
+  /// anonymous (the default).
+  ///
+  /// Once named `foo`, the engine subscribes the channel to
+  /// `channel.foo.volume` (a `BusFloat`, or a `BusInt`), so a `Bus.publish`
+  /// (or a script's `yse.send`, or a patcher `.s`) sets its [volume] with no
+  /// host round-trip. The value applies when the engine drains its bus queue
+  /// — on the control thread, so it is visible after the publish (or the next
+  /// `System.update()` for a publish from another thread).
+  ///
+  /// Independent of [name], the log name given at create: setting one never
+  /// touches the other.
+  ///
+  /// Setting `null` or `''` clears the name and its subscription; renaming
+  /// re-subscribes. Names are unique per channel — a duplicate is rejected
+  /// and logged by the engine, with no error here (this getter still reports
+  /// the requested name). Only effective while the engine is between init and
+  /// close; `System.close()` forgets every channel bus name. There is no
+  /// native getter: this returns the last value set through the wrapper API
+  /// for this native channel.
+  String? get busName => _busNames[_handle.address];
+  set busName(String? name) {
+    using((arena) {
+      _b.channel_set_name(
+        _handle,
+        name == null || name.isEmpty
+            ? nullptr
+            : name.toNativeUtf8(allocator: arena).cast(),
+      );
+    });
+    if (name == null || name.isEmpty) {
+      _busNames.remove(_handle.address);
+    } else {
+      _busNames[_handle.address] = name;
+    }
+  }
 
   /// Number of output speakers this channel feeds. Index into [peakLinear]
   /// and [peakDb] with values in `[0, numOutputs)`.
@@ -273,6 +325,12 @@ class Channel {
   /// No-op for the pre-built singletons (those are owned by the engine).
   void dispose() {
     if (!_owned) return;
+    Channel._busNames.remove(_handle.address);
     _b.channel_destroy(_handle);
   }
 }
+
+/// Forgets every remembered [Channel.busName]. Called by `System.close()`:
+/// the engine drops bus subscriptions with the session. Internal to
+/// `lib/src/`.
+void clearChannelBusNames() => Channel._busNames.clear();

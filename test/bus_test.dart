@@ -266,4 +266,113 @@ void main() {
       expect(renderPeak(), lessThan(1e-4));
     });
   });
+
+  group('named sounds and channels', () {
+    /// A looping DC sound whose load has succeeded (the engine drops bus
+    /// values that reach a sound that is not yet valid).
+    Sound loadedSound({Channel? channel}) {
+      final buffer = DspBuffer.plain(length: 1024)..fill(0.5);
+      final sound = Sound.fromBuffer(buffer, loop: true, channel: channel);
+      addTearDown(() {
+        sound.dispose();
+        buffer.dispose();
+      });
+      expect(sound.isValid, isTrue);
+      return sound;
+    }
+
+    test('sound.<name>.volume / .speed / .position drive a named Sound', () {
+      offlineSession();
+      final sound = loadedSound()..busName = 'bussound';
+      expect(sound.busName, 'bussound');
+
+      Bus.publish('sound.bussound.volume', const BusFloat(0.25));
+      Bus.publish('sound.bussound.speed', const BusInt(2));
+      Bus.publish('sound.bussound.position', const BusList([1, 2, 3]));
+      sys.update();
+
+      expect(sound.volume, closeTo(0.25, 1e-6));
+      expect(sound.speed, closeTo(2, 1e-6));
+      expect(sound.position, const Pos(1, 2, 3));
+    });
+
+    test('clearing a sound name stops delivery', () {
+      offlineSession();
+      final sound = loadedSound()
+        ..volume = 1
+        ..busName = 'bussound';
+      sound.busName = null;
+      expect(sound.busName, isNull);
+
+      Bus.publish('sound.bussound.volume', const BusFloat(0.25));
+      sys.update();
+      expect(sound.volume, closeTo(1, 1e-6));
+    });
+
+    test('channel.<name>.volume drives a named Channel', () {
+      offlineSession();
+      final ch = Channel.create('log-name', parent: Channel.master);
+      addTearDown(ch.dispose);
+      ch.busName = 'buschan';
+      expect(ch.busName, 'buschan');
+      // The log name and the bus name are independent.
+      expect(ch.name, 'log-name');
+
+      Bus.publish('channel.buschan.volume', const BusFloat(0.25));
+      sys.update();
+      expect(ch.volume, closeTo(0.25, 1e-6));
+
+      Bus.publish('channel.buschan.volume', const BusInt(1));
+      sys.update();
+      expect(ch.volume, closeTo(1, 1e-6));
+    });
+
+    test('a named channel is audibly attenuated through the bus', () {
+      offlineSession();
+      final ch = Channel.create('lvl', parent: Channel.master);
+      addTearDown(ch.dispose);
+      loadedSound(channel: ch)
+        ..position = const Pos(0, 0, 1)
+        ..play();
+      ch.busName = 'buslvl';
+
+      double peak() {
+        for (var i = 0; i < 20; i++) {
+          sys.update();
+          sys.renderOffline(1);
+        }
+        return ch.peakLinearPost();
+      }
+
+      final full = peak();
+      expect(full, greaterThan(0.01));
+      Bus.publish('channel.buslvl.volume', const BusFloat(0));
+      expect(peak(), lessThan(full * 0.01));
+    });
+
+    test('clearing a channel name stops delivery', () {
+      offlineSession();
+      final ch = Channel.create('log-name', parent: Channel.master)..volume = 1;
+      addTearDown(ch.dispose);
+      ch.busName = 'buschan';
+      ch.busName = '';
+      expect(ch.busName, isNull);
+
+      Bus.publish('channel.buschan.volume', const BusFloat(0.25));
+      sys.update();
+      expect(ch.volume, closeTo(1, 1e-6));
+    });
+
+    test('a singleton channel remembers its bus name across wrappers, and '
+        'close() forgets it', () {
+      offlineSession();
+      Channel.music.busName = 'busmusic';
+      addTearDown(() => Channel.music.busName = null);
+      expect(Channel.music.busName, 'busmusic');
+
+      sys.close();
+      expect(Channel.music.busName, isNull);
+      sys.initOffline();
+    });
+  });
 }

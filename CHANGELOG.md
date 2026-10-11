@@ -67,6 +67,16 @@
     cached, so re-tapping the same prefix after a re-init never fired.
   - New `Synth.busName`, so a synth answers on `synth.<name>.*`.
 
+- **Named sounds and channels on the bus** (#60):
+  - New `Sound.busName`: a named sound answers on `sound.<name>.volume`,
+    `.speed` and `.position`.
+  - New `Channel.busName`: a named channel answers on
+    `channel.<name>.volume`. It is separate from `Channel.name`, the log
+    name given to `Channel.create`. `busName` is the name used for bus
+    addressing on all three kinds. The value is remembered per native
+    channel, so `Channel.master.busName` reads back across wrappers.
+    `System.close()` forgets it.
+
 - **API reference site.** New `docs/` tree builds a Sphinx site that
   mirrors the upstream libYSE docs site (sphinx-book-theme, same
   intro / tutorials / API layout) so contributors who already know

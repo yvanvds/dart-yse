@@ -1,9 +1,4 @@
-// Obj's constants are self-documenting (matched to the YSE::OBJ source of
-// truth in upstream's patcher/pObjectList.hpp); the class-level doc and
-// the upstream docs explain the set. Per-constant docs would just repeat
-// the identifier.
-// ignore_for_file: public_member_api_docs
-
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
@@ -14,85 +9,8 @@ import 'exception.dart';
 import 'ffi_helpers.dart';
 import 'library.dart';
 
-/// Compile-time string identifiers for patcher object types.
-///
-/// Pass any of these to [Patcher.createObject] instead of raw string
-/// literals. The `~` prefix marks DSP / audio-rate objects, `.` marks
-/// control-rate objects. Mirrors `YSE::OBJ` in
-/// `patcher/pObjectList.hpp`.
-class Obj {
-  Obj._();
-
-  static const String patcher = 'patcher';
-
-  // I/O.
-  static const String dDac = '~dac';
-  static const String dAdc = '~adc';
-  static const String dLine = '~line';
-  static const String gReceive = '.r';
-  static const String gSend = '.s';
-
-  // DSP generators.
-  static const String dSine = '~sine';
-  static const String dSaw = '~saw';
-  static const String dNoise = '~noise';
-
-  // Control objects.
-  static const String gInt = '.i';
-  static const String gFloat = '.f';
-  static const String gSlider = '.slider';
-  static const String gButton = '.b';
-  static const String gToggle = '.t';
-  static const String gMessage = '.m';
-  static const String gList = '.l';
-  static const String gText = '.text';
-  static const String gCounter = '.counter';
-  static const String gSwitch = '.switch';
-  static const String gGate = '.gate';
-  static const String gRoute = '.route';
-
-  // Control math.
-  static const String gAdd = '.+';
-  static const String gSubtract = '.-';
-  static const String gMultiply = '.*';
-  static const String gDivide = './';
-
-  // DSP math.
-  static const String dAdd = '~+';
-  static const String dSubtract = '~-';
-  static const String dMultiply = '~*';
-  static const String dDivide = '~/';
-  static const String dClip = '~clip';
-
-  // Conversion.
-  static const String midiToFrequency = '.mtof';
-  static const String frequencyToMidi = '.ftom';
-
-  // Filters.
-  static const String dLowpass = '~lp';
-  static const String dHighpass = '~hp';
-  static const String dBandpass = '~bp';
-  static const String dVcf = '~vcf';
-
-  // Timing / random.
-  static const String gRandom = '.random';
-  static const String gMetro = '.metro';
-
-  // MIDI.
-  static const String mOut = '.midiout';
-  static const String mNoteOn = '.noteon';
-  static const String mNoteOff = '.noteoff';
-  static const String mControl = '.controlchange';
-  static const String mPolyPress = '.polypressure';
-  static const String mChanPress = '.channelpressure';
-  static const String mProgChange = '.programchange';
-
-  /// Whether [type] is a known object type identifier.
-  static bool isValid(String type) => using((arena) {
-    final cstr = type.toNativeUtf8(allocator: arena);
-    return bindings.patcher_is_valid_object(cstr.cast()) != 0;
-  });
-}
+// `Obj`, generated from the engine registry by tool/gen_obj_constants.dart.
+part 'patcher_objects.dart';
 
 /// Modular DSP/event graph (Max/MSP-style patcher).
 ///
@@ -463,6 +381,11 @@ class PatcherRegistry {
 
   /// A fresh JSON snapshot of every registered object's full metadata.
   ///
+  /// The result is one JSON object keyed by type name; each entry holds
+  /// `name`, `category` (e.g. `OSC`, the `YSE_PCAT_` suffix), `is_dsp`,
+  /// `requires_midi_device`, `description`, `inlets`, `outlets` and
+  /// `params`.
+  ///
   /// The engine allocates the buffer per call; this getter releases it
   /// through `yse_free_string` before returning, so no native memory
   /// leaks. Returns the empty string if the engine reports an allocation
@@ -475,6 +398,23 @@ class PatcherRegistry {
     } finally {
       bindings.free_string(ptr);
     }
+  }
+
+  // The registry is fixed for the life of the process, so the decoded
+  // metadata is cached on first use.
+  static Map<String, Map<String, dynamic>>? _metadataCache;
+
+  static Map<String, Map<String, dynamic>> _metadata() {
+    final cached = _metadataCache;
+    if (cached != null) return cached;
+    final json = metadataJson();
+    // An allocation failure is not cached; the next call retries.
+    if (json.isEmpty) return const {};
+    return _metadataCache = {
+      for (final MapEntry(:key, :value)
+          in (jsonDecode(json) as Map<String, dynamic>).entries)
+        key: value as Map<String, dynamic>,
+    };
   }
 }
 
@@ -489,7 +429,11 @@ class PatcherObjectType {
 
   PatcherObjectType._(this.name);
 
-  /// One-line human-readable description of the object.
+  /// Short human-readable summary of the object.
+  ///
+  /// Since libYSE 3.0.1 this is a tooltip-length summary (at most 300
+  /// characters, usually one or two sentences), suited to a palette or a
+  /// hover; the longer notes live in upstream's object reference.
   String get description => using((arena) {
     final namePtr = name.toNativeUtf8(allocator: arena);
     return _ownedString(bindings.patcher_get_type_description(namePtr.cast()));
@@ -508,6 +452,16 @@ class PatcherObjectType {
     final namePtr = name.toNativeUtf8(allocator: arena);
     return bindings.patcher_get_type_is_dsp(namePtr.cast()) != 0;
   });
+
+  /// Whether this object holds a MIDI port (`.midiin`, `.midiout`,
+  /// `.notein`, ...).
+  ///
+  /// Such objects exist only in engine builds with MIDI device support
+  /// (not macOS / Android), so a palette or a saved patch can mark them
+  /// non-portable. Read from the registry's metadata JSON
+  /// (`requires_midi_device`); the engine has no dedicated getter.
+  bool get requiresMidiDevice =>
+      PatcherRegistry._metadata()[name]?['requires_midi_device'] == true;
 
   /// Number of inlets on this object type.
   int get inletCount => using((arena) {

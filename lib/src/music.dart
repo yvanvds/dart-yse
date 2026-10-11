@@ -61,7 +61,8 @@ class Note implements Finalizable {
   double get length => _b.note_get_length(_handle);
   set length(double value) => _b.note_set_length(_handle, value);
 
-  /// MIDI channel.
+  /// MIDI channel, in the musical layer's 1-based numbering (`1..16`), as
+  /// used by `Synth.playNote`. Not the wire-level `0..15` of `MidiOut`.
   int get channel => _b.note_get_channel(_handle);
   set channel(int value) => _b.note_set_channel(_handle, value);
 
@@ -122,6 +123,10 @@ class PNote implements Finalizable {
   /// Duration in seconds.
   double get length => _b.pnote_get_length(_handle);
   set length(double value) => _b.pnote_set_length(_handle, value);
+
+  /// MIDI channel, 1-based like [Note.channel] (issue #67).
+  int get channel => _b.pnote_get_channel(_handle);
+  set channel(int value) => _b.pnote_set_channel(_handle, value);
 
   /// Destroy the underlying native pNote and detach the finalizer.
   void dispose() {

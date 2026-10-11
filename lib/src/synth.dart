@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
@@ -7,6 +8,7 @@ import 'enums.dart';
 import 'exception.dart';
 import 'ffi_helpers.dart';
 import 'library.dart';
+import 'music.dart';
 import 'pos.dart';
 
 /// A loadable SFZ sampler instrument (issue #23 / engine issue #174).
@@ -142,6 +144,40 @@ class Dx7Bank implements Finalizable {
     return Dx7Bank._(b, h);
   }
 
+  /// Parse a DX7 SysEx image already in memory (issue #67) — for hosts that
+  /// ship banks as bundled assets (Flutter assets, Android APKs) where there
+  /// is no filesystem path.
+  ///
+  /// Accepts the same formats as [Dx7Bank.load]. [data] is copied into a
+  /// native buffer for the duration of the call only; neither the copy nor
+  /// [data] is retained, so a transient buffer is fine.
+  ///
+  /// Throws [YseException] on empty input, a bad header, the wrong length, or
+  /// a checksum mismatch.
+  factory Dx7Bank.fromBytes(Uint8List data) {
+    final b = bindings;
+    if (data.isEmpty) {
+      throw YseException('yse_dx7_import_sysex_memory: empty input');
+    }
+    final native = malloc<UnsignedChar>(data.length);
+    final Pointer<YseDx7Bank> h;
+    try {
+      native.cast<Uint8>().asTypedList(data.length).setAll(0, data);
+      h = b.dx7_import_sysex_memory(native, data.length);
+    } finally {
+      malloc.free(native);
+    }
+    if (h.address == 0) {
+      final cstr = b.last_error();
+      final detail = cstr.address == 0
+          ? 'yse_dx7_import_sysex_memory failed'
+          : cstr.cast<Utf8>().toDartString();
+      b.clear_last_error();
+      throw YseException(detail);
+    }
+    return Dx7Bank._(b, h);
+  }
+
   /// Number of patches in the bank (1 or 32).
   int get patchCount => _b.dx7_get_patch_count(_handle);
 
@@ -150,6 +186,21 @@ class Dx7Bank implements Finalizable {
   String patchName(int index) => fetchString(
     (buf, cap) => _b.dx7_get_patch_name(_handle, index, buf, cap),
   );
+
+  /// Index of the first patch whose space-trimmed name equals [name] exactly,
+  /// or `null` when no patch matches (issue #67). The match is
+  /// case-sensitive and compares against [patchName]'s trimmed form, so pass
+  /// the name without the DX7's trailing space padding.
+  ///
+  /// Pairs with [Synth.setFmPatch]:
+  /// `synth.setFmPatch(bank, bank.indexOf('E.PIANO 1')!)`.
+  int? indexOf(String name) {
+    final i = using((arena) {
+      final p = name.toNativeUtf8(allocator: arena);
+      return _b.dx7_find_patch(_handle, p.cast());
+    });
+    return i < 0 ? null : i;
+  }
 
   /// Raw native handle, for sibling wrappers within `lib/src/`
   /// (e.g. [Synth.setFmPatch]). Not part of the public API surface.
@@ -293,9 +344,13 @@ class PositionHandler {
 /// added before the synth is attached/played; adding a group afterwards is
 /// rejected.
 ///
-/// Channels follow the engine convention: `0` = omni (all channels), `1..16`
-/// address a specific MIDI channel. Velocity, controller and aftertouch
-/// values are normalised to `[0, 1]`; the pitch wheel to `[-1, 1]`.
+/// Channels use the musical layer's **1-based** numbering: `1..16` address a
+/// specific MIDI channel and `0` means *omni* (all channels) — `0` is never
+/// channel 1. This is the same base as [ClipEvent.channel], [Note.channel]
+/// and the `MidiIn.connectSynth` filter, but **not** the wire-level `0..15`
+/// used by `MidiOut` and the parsed `MidiIn` messages; add one when routing a
+/// raw MIDI channel into a synth. Velocity, controller and aftertouch values
+/// are normalised to `[0, 1]`; the pitch wheel to `[-1, 1]`.
 ///
 /// Threading (CLAUDE.md): construct and drive this from the [System] isolate.
 /// The engine's audio-thread note-rewrite hook (`yse_synth_set_note_callback`)
@@ -483,6 +538,20 @@ class Synth implements Finalizable {
   /// `[0, 1]`.
   void noteOff(int noteNumber, {int channel = 1, double velocity = 0.0}) =>
       _b.synth_note_off(_handle, channel, noteNumber, velocity);
+
+  /// Start the note described by [note] (issue #67).
+  ///
+  /// The note's [Note.channel] is the channel (1-based, `0` = omni), its
+  /// [Note.pitch] rounded to the nearest integer is the note number, and its
+  /// [Note.volume] is the velocity. [Note.length] is ignored — release the
+  /// note with [releaseNote]. The note is read, not retained.
+  void playNote(Note note) => _b.synth_note_on_note(_handle, note.handle);
+
+  /// Release the note described by [note] (issue #67) — the counterpart of
+  /// [playNote], mapped the same way (so [Note.volume] becomes the release
+  /// velocity). Pass the same note, or one with the same channel and rounded
+  /// pitch, that started it.
+  void releaseNote(Note note) => _b.synth_note_off_note(_handle, note.handle);
 
   /// Release every held note on [channel] (`0` = all channels). Voices enter
   /// their normal release; they are not cut.

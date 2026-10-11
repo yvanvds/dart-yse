@@ -21,7 +21,9 @@ class ClipEvent {
   /// Note length in beats.
   final double durationBeats;
 
-  /// MIDI channel, `1..16`.
+  /// MIDI channel in the musical layer's 1-based numbering, `1..16` — the
+  /// same base as [Synth]. A [MidiOut] sink receives it on the wire as
+  /// `channel - 1`, so this is not the 0-based channel `MidiOut.noteOn` takes.
   final int channel;
 
   /// MIDI note number, `0..127`.
@@ -99,10 +101,14 @@ class ClipTransport implements Finalizable {
     }
   }
 
-  /// Bind (or re-bind) the clip to a live domain [clock] by name. The bound
-  /// clock must outlive the clip.
+  /// Bind (or re-bind) the clip to a live domain [clock] by name.
   ///
-  /// Throws [YseException] if no live clock owns `clock.name`.
+  /// Binding shares the clock's lifetime, so the clip and its clock may be
+  /// disposed in either order: disposing the bound clock first stops it
+  /// advancing, and the clip simply stops firing.
+  ///
+  /// Throws [YseException] if no live clock owns `clock.name` — which also
+  /// unbinds the clip from any clock it was bound to.
   void bind(DomainClock clock) {
     final status = using((arena) {
       final cname = clock.name.toNativeUtf8(allocator: arena);
@@ -182,6 +188,12 @@ class ClipTransport implements Finalizable {
   bool get isPlaying => _b.clip_is_playing(_handle) != 0;
 
   /// Destroy the underlying native clip and detach the finalizer.
+  ///
+  /// Releases every note the clip still has sounding, exactly as [stop] does,
+  /// so disposing a playing clip leaves no hanging notes on its sinks. Safe
+  /// in any order relative to the bound [DomainClock], and a clip handle
+  /// stays valid across `System.close()` — it may be disposed after the
+  /// engine closes.
   void dispose() {
     if (_handle.address == 0) return;
     _finalizer.detach(this);

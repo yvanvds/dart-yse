@@ -84,6 +84,10 @@ class MidiFile implements Finalizable {
 ///
 /// Enumerate device counts with [System.midiOutDeviceCount] and names
 /// with [System.midiOutDeviceName], then open one with [MidiOut.open].
+///
+/// Channels here are **wire-level, 0-based** (`0..15`) — the low nibble of
+/// the status byte. The musical layer ([Synth], [ClipEvent], `Note`) counts
+/// `1..16` instead, so MIDI channel 1 is `0` here and `1` there.
 class MidiOut implements Finalizable {
   static final _finalizer = NativeFinalizer(
     bindings.addresses.midi_out_destroy.cast(),
@@ -142,7 +146,8 @@ class MidiOut implements Finalizable {
     required int value,
   }) => _b.midi_out_control_change(_handle, channel, controller, value);
 
-  /// Send All-Notes-Off on a specific [channel].
+  /// Send All-Notes-Off on a specific [channel] (`0..15`), or on every
+  /// channel when null.
   void allNotesOff({int? channel}) {
     if (channel == null) {
       _b.midi_out_all_notes_off(_handle);
@@ -214,7 +219,8 @@ class MidiInParsedMessage {
   /// Status nibble (`0x80`..`0xF0`) — Note-On, CC, etc.
   final int status;
 
-  /// MIDI channel (`0`..`15`).
+  /// Wire-level MIDI channel, 0-based (`0`..`15`). Add one to address the
+  /// same channel on a [Synth] or [ClipEvent], which count `1..16`.
   final int channel;
 
   /// First data byte (e.g. pitch for Note-On, controller for CC).
@@ -242,6 +248,12 @@ class MidiInParsedMessage {
 /// Two modes of consumption — subscribe to either or both:
 ///   * [rawMessages] — full message bytes as a [Uint8List].
 ///   * [parsedMessages] — pre-decoded channel-voice scalars.
+///
+/// Channel numbering has two bases. The parsed stream reports the
+/// **wire-level, 0-based** channel (`0..15`, see
+/// [MidiInParsedMessage.channel]), while [connectSynth]'s `channelFilter`
+/// uses the musical layer's **1-based** numbering (`1..16`, `0` = every
+/// channel) shared with [Synth] and [ClipEvent].
 ///
 /// Native callbacks fire on RtMidi's internal input thread.
 /// `NativeCallable.listener` posts each event back to the isolate that
@@ -288,8 +300,9 @@ class MidiIn implements Finalizable {
   ///
   /// Every channel-voice message received on the open port is mapped to the
   /// synth's normalized note API and pushed onto its inbox on RtMidi's input
-  /// thread. [channelFilter] is a `1..16` MIDI channel to accept, or `0` (the
-  /// default) for every channel. May be called for several synths (up to a
+  /// thread. [channelFilter] is a 1-based `1..16` MIDI channel to accept, or
+  /// `0` (the default) for every channel — note the parsed stream reports the
+  /// same channel 0-based, so channel 1 there is filter `1` here. May be called for several synths (up to a
   /// small fixed cap); re-connecting an already-connected synth just updates
   /// its channel filter. [synth] must outlive the connection —
   /// [disconnectSynth] it (or close/dispose this port) before disposing the

@@ -208,6 +208,29 @@
   - New `Reverb.applyValues(values)` applies a full parameter set to a
     zone, exactly as `Reverb.preset` does for a named one.
 
+- **DX7 banks from memory, patch lookup, Note-driven synth calls,
+  `PNote.channel`** (#67, upstream yse-soundengine#909):
+  - New `Dx7Bank.fromBytes(Uint8List)` parses a bank already in memory
+    (Flutter assets, Android APKs). The bytes are copied for the call only.
+  - New `Dx7Bank.indexOf(name)`: the index of the first patch whose
+    space-trimmed name matches exactly (case-sensitive), or `null`. Pairs
+    with `Synth.setFmPatch`.
+  - New `Synth.playNote(Note)` / `Synth.releaseNote(Note)`: the note's
+    channel is the channel, its pitch rounded to the nearest integer is the
+    note number, and its volume is the velocity.
+  - New `PNote.channel` get/set.
+  - Docs: MIDI channel numbering has two bases. `MidiOut` and parsed
+    `MidiIn` messages use wire-level `0..15`; `Synth`, `ClipEvent`,
+    `Note` / `PNote` and the `MidiIn.connectSynth` filter use `1..16`, with
+    `0` meaning omni on a synth call. Stated on each class and in a table
+    on the MIDI docs page. The wrapper's defaults already match.
+  - Docs: a `DomainClock` and its `ClipTransport`s may now be disposed in
+    any order (a clip on a destroyed clock stops firing), disposing a clip
+    releases its sounding notes, a clip survives `System.close()`, and
+    clocks advance per rendered block. `ClipTransport.stop()` was already a
+    plain pass-through to the engine's own note-off flush, so nothing in
+    the wrapper became redundant.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

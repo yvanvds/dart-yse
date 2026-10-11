@@ -126,6 +126,22 @@
   - `PHandle` now has value equality: two handles to the same engine
     object compare equal.
 
+- **Patcher send callback** (#62, upstream yse-soundengine#907):
+  - New `Patcher.messages`: a broadcast stream of `PatcherMessage`
+    (`address`, `BusValue`) for every message sent to a name no `.r` in
+    the patcher receives — a `.s` in the patch, or an unreceived `pass*`.
+    Lists arrive as `BusString`. The native callback is installed on the
+    first listen and cleared on the last cancel, by `Patcher.dispose()`
+    and by `System.close()`.
+  - The engine calls it on the emitting thread, which is an engine worker
+    for timer-driven messages, so the bridge is a
+    `NativeCallable.listener` and delivery is asynchronous. Every native
+    message block is freed exactly once, including messages still queued
+    at teardown.
+  - Behaviour change: while `messages` has a listener, `passBang` /
+    `passInt` / `passFloat` / `passString` return `true` for a name
+    nothing receives.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

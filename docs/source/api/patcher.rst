@@ -32,6 +32,38 @@ GUI metadata.
 
 .. include:: _generated/p_handle.rst
 
+Host I/O
+--------
+
+A patcher talks to the host three ways:
+
+- **In, by name** — :py:meth:`Patcher.passBang`, ``passInt``,
+  ``passFloat`` and ``passString`` deliver a value to every ``.r``
+  (``Obj.gReceive``) object with that name in the patcher.
+- **Out, by name** — :py:attr:`Patcher.messages` is a broadcast stream of
+  every message the patcher sends to a name *no* ``.r`` in it receives:
+  a ``.s`` (``Obj.gSend``) in the patch, or a ``pass*`` call with nothing
+  listening. Each :class:`PatcherMessage` carries that name and a
+  :class:`BusValue` (lists arrive as a :class:`BusString`). The native
+  callback is installed on the first listen and cleared on the last
+  cancel; while it is installed, ``pass*`` returns ``true`` even for a
+  name nothing receives.
+- **The bus** — in a patcher named ``foo``, a ``.s x`` also publishes to
+  ``patcher.foo.x`` and a ``.r x`` hears a :py:meth:`Bus.publish` to that
+  address. See :doc:`bus`.
+
+The engine calls the send callback on whichever thread emitted the
+message: the control thread for a ``pass*`` or a ``PHandle.send*``, an
+engine worker thread for a timer-driven one (a millisecond ``.metro``),
+never the audio thread. The wrapper therefore bridges it with a
+``NativeCallable.listener``: messages are queued to the isolate and
+delivered asynchronously from its event loop, so listeners may call back
+into the patcher. Every native message block is freed exactly once,
+including messages still in flight when :py:meth:`Patcher.dispose` or
+``System.close()`` tears the stream down.
+
+.. include:: _generated/patcher_message.rst
+
 OutType
 -------
 

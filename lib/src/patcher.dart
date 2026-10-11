@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
 import 'bindings/yse_bindings.g.dart';
+import 'bus.dart' show BusBang, BusFloat, BusInt, BusString, BusValue;
 import 'enums.dart';
 import 'exception.dart';
 import 'ffi_helpers.dart';
@@ -17,8 +19,9 @@ part 'patcher_objects.dart';
 /// Build a graph programmatically with [createObject] + [connect], or
 /// load one from a JSON dump via [parseJson]. Drive it directly with
 /// [passBang] / [passInt] / [passFloat] / [passString] into named
-/// `.r` (`Obj.gReceive`) objects, or hand it to a [Sound] via
-/// [Sound.fromPatcher] to use it as an audio source.
+/// `.r` (`Obj.gReceive`) objects, listen to what it sends back out on
+/// [messages], or hand it to a [Sound] via [Sound.fromPatcher] to use it
+/// as an audio source.
 class Patcher implements Finalizable {
   static final _finalizer = NativeFinalizer(
     bindings.addresses.patcher_destroy.cast(),
@@ -237,38 +240,279 @@ class Patcher implements Finalizable {
 
   // ─── message I/O ───────────────────────────────────────────────────────
 
-  /// Send a bang to the named `.r` receive object. Returns false if no
-  /// such receiver exists.
+  /// Send a bang to the named `.r` receive object.
+  ///
+  /// Returns `true` when a `.r` named [to] took it. While [messages] has a
+  /// listener, a name nothing receives is handed to [messages] instead and
+  /// this **also returns `true`**; it returns `false` only when neither
+  /// takes it. The same holds for [passInt], [passFloat] and [passString].
   bool passBang(String to) => using((arena) {
     final cstr = to.toNativeUtf8(allocator: arena);
     return _b.patcher_pass_bang(_handle, cstr.cast()) != 0;
   });
 
-  /// Send an integer to a named receiver.
+  /// Send an integer to a named receiver. See [passBang] for the result.
   bool passInt(int value, String to) => using((arena) {
     final cstr = to.toNativeUtf8(allocator: arena);
     return _b.patcher_pass_int(_handle, value, cstr.cast()) != 0;
   });
 
-  /// Send a float to a named receiver.
+  /// Send a float to a named receiver. See [passBang] for the result.
   bool passFloat(double value, String to) => using((arena) {
     final cstr = to.toNativeUtf8(allocator: arena);
     return _b.patcher_pass_float(_handle, value, cstr.cast()) != 0;
   });
 
-  /// Send a string to a named receiver.
+  /// Send a string to a named receiver. See [passBang] for the result.
   bool passString(String value, String to) => using((arena) {
     final valPtr = value.toNativeUtf8(allocator: arena);
     final toPtr = to.toNativeUtf8(allocator: arena);
     return _b.patcher_pass_string(_handle, valPtr.cast(), toPtr.cast()) != 0;
   });
 
+  // ─── outbound messages ─────────────────────────────────────────────────
+
+  StreamController<PatcherMessage>? _messages;
+  _SendBridge? _sendBridge;
+
+  /// Patchers whose send callback is installed. Holding them strongly keeps
+  /// a patcher with a live [messages] listener from being finalized while
+  /// the engine can still call into it, and lets `System.close()` find them.
+  static final Set<Patcher> _sending = {};
+
+  /// Broadcast stream of the messages this patcher sends to the host.
+  ///
+  /// A message arrives here when it is sent to a name that **no `.r`
+  /// (`Obj.gReceive`) in this patcher receives**: a `.s` (`Obj.gSend`)
+  /// inside the patch, or a [passBang] / [passInt] / [passFloat] /
+  /// [passString] call with nothing listening. [PatcherMessage.address] is
+  /// that name — the `.s` argument or the `pass*` target — not the
+  /// `patcher.<name>.<slot>` bus address (a `.s` also publishes there; see
+  /// [name] and `Bus`).
+  ///
+  /// The native send callback is installed when the first listener
+  /// subscribes and cleared when the last one cancels. While it is
+  /// installed, `pass*` returns `true` even for a name nothing receives
+  /// (see [passBang]). Listening before the engine is initialised is fine:
+  /// the callback takes effect at init.
+  ///
+  /// ## Threading
+  ///
+  /// The engine calls the native callback synchronously on whichever thread
+  /// emitted the message — the control thread for a `pass*` or a
+  /// [PHandle] `send*` that drives a `.s`, but an **engine worker thread**
+  /// for a timer-driven one (a millisecond `.metro` feeding a `.s`). Never
+  /// the audio thread. Because it can run off the control thread, the
+  /// bridge is a `NativeCallable.listener`: each call is posted to this
+  /// isolate and delivered from its event loop, so listeners never run
+  /// inside an engine callback and may call back into the patcher freely.
+  /// Even a message from a `pass*` on this isolate is therefore delivered
+  /// **asynchronously**, after the call returns. Each message's native
+  /// strings are copied and released exactly once, including messages
+  /// still in flight when the stream is torn down.
+  ///
+  /// ## Lifecycle
+  ///
+  /// [dispose] and `System.close()` clear the callback and close the stream
+  /// (listeners get `onDone`). After `System.close()`, read [messages]
+  /// again for a fresh stream. Reading it on a disposed patcher throws
+  /// [StateError].
+  Stream<PatcherMessage> get messages {
+    if (_handle.address == 0) {
+      throw StateError('Patcher.messages read after dispose()');
+    }
+    return (_messages ??= StreamController<PatcherMessage>.broadcast(
+      onListen: _installSend,
+      onCancel: _clearSend,
+    )).stream;
+  }
+
+  void _installSend() {
+    if (_sendBridge != null) return;
+    final controller = _messages!;
+    final bridge = _SendBridge(controller.add);
+    final status = _b.patcher_set_send_callback(
+      _handle,
+      bridge.nativeFunction,
+      nullptr,
+    );
+    try {
+      checkStatus(status, _b);
+    } on YseException catch (e, st) {
+      // The engine kept the previous (absent) callback; nothing to clear.
+      bridge.retire();
+      controller.addError(e, st);
+      return;
+    }
+    _sendBridge = bridge;
+    _sending.add(this);
+  }
+
+  void _clearSend() {
+    final bridge = _sendBridge;
+    if (bridge == null) return;
+    _sendBridge = null;
+    _sending.remove(this);
+    // Once this returns no engine thread is still inside the callback, so
+    // every call it will ever make is already queued ahead of the drain
+    // marker that retire() posts.
+    _b.patcher_set_send_callback(_handle, nullptr, nullptr);
+    bridge.retire();
+  }
+
+  /// Clears the send callback and closes the [messages] stream. Used by
+  /// [dispose] and `System.close()`.
+  void _closeMessages() {
+    _clearSend();
+    final controller = _messages;
+    _messages = null;
+    controller?.close();
+  }
+
   /// Destroy the underlying native patcher and detach the finalizer.
+  ///
+  /// Also clears the send callback and closes [messages].
   void dispose() {
     if (_handle.address == 0) return;
+    _closeMessages();
     _finalizer.detach(this);
     _b.patcher_destroy(_handle);
     _handle = nullptr;
+  }
+}
+
+/// Clears the send callback of every patcher with a live
+/// [Patcher.messages] listener and closes those streams. Called by
+/// `System.close()` while the engine is still up. Internal to `lib/src/`.
+void closePatcherMessageStreams() {
+  for (final p in [...Patcher._sending]) {
+    p._closeMessages();
+  }
+}
+
+/// How many outbound patcher messages the bridge has released with
+/// `yse_patcher_free_message` in this isolate, delivered or dropped.
+/// Internal (not exported): lets the tests prove no native block leaks.
+int get patcherMessagesFreed => _SendBridge._freed;
+
+/// One message a [Patcher] sent to the host, delivered by
+/// [Patcher.messages].
+///
+/// [address] is the name the message was sent to (a `.s` argument or a
+/// `pass*` target). [value] reuses the bus value vocabulary: a bang is a
+/// [BusBang], an int a [BusInt], a float a [BusFloat], and a list or
+/// symbol arrives as a [BusString] holding the space-separated atoms.
+final class PatcherMessage {
+  /// The name the message was sent to.
+  final String address;
+
+  /// The typed payload.
+  final BusValue value;
+
+  /// Pair an [address] with its [value].
+  const PatcherMessage(this.address, this.value);
+
+  @override
+  bool operator ==(Object other) =>
+      other is PatcherMessage &&
+      other.address == address &&
+      other.value == value;
+
+  @override
+  int get hashCode => Object.hash(address, value);
+
+  @override
+  String toString() => 'PatcherMessage($address, $value)';
+}
+
+/// The `NativeCallable.listener` behind one installation of a patcher's
+/// send callback.
+///
+/// The engine hands over a malloc'd block (`address`, with the list
+/// payload `s` inside it) that stays valid after the native call returns;
+/// the listener copies both strings and frees the block with
+/// `yse_patcher_free_message(address)`, exactly once, never `s` alone.
+///
+/// Closing a listener drops the calls still queued on its port, which
+/// would leak their blocks. So [retire] does not close it: it detaches the
+/// sink and posts a drain marker (a NULL `address`, which the engine never
+/// sends) through the same port. Port messages arrive in order, so when the
+/// marker arrives every earlier call has been freed, and only then is the
+/// callable closed.
+class _SendBridge {
+  static int _freed = 0;
+
+  void Function(PatcherMessage)? _sink;
+  late final NativeCallable<YsePatcherSendCallbackFunction> _callable;
+
+  _SendBridge(this._sink) {
+    _callable = NativeCallable<YsePatcherSendCallbackFunction>.listener(
+      _onCall,
+    );
+  }
+
+  Pointer<NativeFunction<YsePatcherSendCallbackFunction>> get nativeFunction =>
+      _callable.nativeFunction;
+
+  void _onCall(
+    Pointer<Void> _,
+    Pointer<Char> address,
+    int kind,
+    int i,
+    double f,
+    Pointer<Char> s,
+  ) {
+    if (address.address == 0) {
+      _callable.close(); // drain marker: nothing is queued behind it
+      return;
+    }
+    final PatcherMessage? message;
+    try {
+      message = _decode(address, kind, i, f, s);
+    } finally {
+      bindings.patcher_free_message(address);
+      _freed++;
+    }
+    if (message != null) _sink?.call(message);
+  }
+
+  static PatcherMessage? _decode(
+    Pointer<Char> address,
+    int kind,
+    int i,
+    double f,
+    Pointer<Char> s,
+  ) {
+    final BusValue value;
+    if (kind == YseOutType.YSE_OUT_BANG.value) {
+      value = const BusBang();
+    } else if (kind == YseOutType.YSE_OUT_INT.value) {
+      value = BusInt(i);
+    } else if (kind == YseOutType.YSE_OUT_FLOAT.value) {
+      value = BusFloat(f);
+    } else if (kind == YseOutType.YSE_OUT_LIST.value) {
+      value = BusString(s.address == 0 ? '' : s.cast<Utf8>().toDartString());
+    } else {
+      return null; // the engine documents no other kind
+    }
+    return PatcherMessage(address.cast<Utf8>().toDartString(), value);
+  }
+
+  /// Stop delivering and close the callable once its queue has drained.
+  /// Call only after the engine can no longer invoke it.
+  void retire() {
+    _sink = null;
+    _callable.nativeFunction
+        .asFunction<
+          void Function(
+            Pointer<Void>,
+            Pointer<Char>,
+            int,
+            int,
+            double,
+            Pointer<Char>,
+          )
+        >()(nullptr, nullptr, 0, 0, 0, nullptr);
   }
 }
 

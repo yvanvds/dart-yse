@@ -69,6 +69,7 @@ export 'src/patcher.dart'
         PHandle,
         Patcher,
         PatcherInlet,
+        PatcherMessage,
         PatcherObjectType,
         PatcherOutlet,
         PatcherParam,

@@ -383,6 +383,78 @@ void main() {
     });
   });
 
+  group('GUI value protocol (#63)', () {
+    test('.multislider: cell count, per-cell write and read', () {
+      final p = newPatcher();
+      final ms = p.createObject(Obj.gMultislider, args: '4 0 1');
+      expect(ms.guiValueIsSettable, isTrue);
+      expect(ms.guiValueCount, 4);
+
+      // Cells are engine-formatted strings ('0.' for zero), so compare them
+      // as numbers.
+      double cell(int i) => double.parse(ms.guiValueAt(i));
+
+      ms.setGuiValueAt(2, '0.5');
+      expect(cell(2), 0.5);
+      expect(cell(0), 0);
+      expect(ms.guiValue.split(' ').map(double.parse), [0, 0, 0.5, 0]);
+
+      // The raw message form the convenience wraps.
+      ms.sendList(0, 'set 1 0.25');
+      expect(cell(1), 0.25);
+
+      // Past the end reads empty; a negative index is a caller error.
+      expect(ms.guiValueAt(4), '');
+      expect(() => ms.guiValueAt(-1), throwsRangeError);
+      expect(() => ms.setGuiValueAt(4, '1'), throwsRangeError);
+    });
+
+    test('.multislider: restoring the whole state resizes the bank', () {
+      final p = newPatcher();
+      final ms = p.createObject(Obj.gMultislider, args: '4 0 1');
+      ms.restoreGuiValue('0.1 0.2 0.3 0.4 0.5 0.6');
+      expect(ms.guiValueCount, 6);
+      expect(double.parse(ms.guiValueAt(5)), closeTo(0.6, 1e-6));
+    });
+
+    test('.slider round trip: read, change, restore', () {
+      final p = newPatcher();
+      final slider = p.createObject(Obj.gSlider);
+      expect(slider.guiValueIsSettable, isTrue);
+      expect(slider.guiValueCount, 1);
+
+      slider.sendFloat(0, 0.75);
+      final saved = slider.guiValue;
+      expect(double.parse(saved), 0.75);
+      expect(slider.guiValueAt(0), saved, reason: 'cell 0 is the scalar');
+
+      slider.sendFloat(0, 0.2);
+      expect(slider.guiValue, isNot(saved));
+
+      slider.restoreGuiValue(saved);
+      expect(slider.guiValue, saved);
+
+      slider.setGuiValueAt(0, '0.4');
+      expect(double.parse(slider.guiValue), closeTo(0.4, 1e-6));
+    });
+
+    test('.textedit takes a cell write as the whole state', () {
+      final p = newPatcher();
+      final text = p.createObject(Obj.gTextedit);
+      expect(text.guiValueIsSettable, isTrue);
+      text.setGuiValueAt(0, 'set 0 hello');
+      expect(text.guiValue, 'set 0 hello');
+    });
+
+    test('.b is not settable and the conveniences refuse it', () {
+      final p = newPatcher();
+      final b = p.createObject(Obj.gButton);
+      expect(b.guiValueIsSettable, isFalse);
+      expect(() => b.restoreGuiValue('on'), throwsStateError);
+      expect(() => b.setGuiValueAt(0, 'on'), throwsStateError);
+    });
+  });
+
   group('PCategory', () {
     test('every registered type maps to a category without throwing', () {
       final cats = {for (final t in PatcherRegistry.types()) t.category};

@@ -142,6 +142,19 @@
     `passInt` / `passFloat` / `passString` return `true` for a name
     nothing receives.
 
+- **GUI value protocol** (#63, upstream yse-soundengine#551 / #846):
+  - New `PHandle.guiValueCount`, `PHandle.guiValueAt(index)` (`''` past
+    the count) and `PHandle.guiValueIsSettable`.
+  - New `PHandle.restoreGuiValue(state)` and
+    `PHandle.setGuiValueAt(index, value)`: thin wrappers that send the
+    state back on inlet 0 (`state`, or `set <index> <value>`; `.textedit`
+    takes the value as its whole state). They throw `StateError` on a
+    non-settable object such as `.b`. There is no engine setter by design.
+  - Dartdoc on `guiValue` / `getGuiProperty` / `setGuiProperty` now spells
+    out the contract: polls may be destructive, per-cell reads are not
+    atomic, and GUI properties are persisted decoration, not live state.
+    New "GUI controls" section in the patcher API docs.
+
 - **List audio devices without opening one** (#51, upstream
   yse-soundengine#1026):
   - New `System.refreshDevices()` fills `System.devices` (and

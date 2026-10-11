@@ -158,7 +158,8 @@ this to:
   :py:meth:`PHandle.setParams` re-runs the object's creation parser
   on a new argument string — equivalent to deleting and recreating it
   but with the connections preserved.
-- **Bridge a GUI.** :py:attr:`PHandle.guiValue`,
+- **Bridge a GUI.** :py:attr:`PHandle.guiValue` (see the "GUI controls"
+  section of :doc:`/api/patcher`),
   :py:meth:`PHandle.getGuiProperty`, and
   :py:meth:`PHandle.setGuiProperty` expose the per-object metadata an
   external editor reads and writes back.

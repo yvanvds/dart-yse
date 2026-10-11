@@ -32,6 +32,46 @@ GUI metadata.
 
 .. include:: _generated/p_handle.rst
 
+GUI controls
+------------
+
+An editor draws a control by polling its **GUI value**, a list of string
+cells. Scalar controls (``.slider``, ``.i``, ``.f``, ``.dial``,
+``.incdec``, ``.t``) have one cell; structured ones (``.multislider``,
+``.rslider``, ``.matrixctrl``, ``.kslider``, ``.function``,
+``.xyslider``, ``.umenu``, ...) have several.
+
+- **Read the whole state** with :py:attr:`PHandle.guiValue` — one engine
+  call, one coherent snapshot, cells space separated.
+- **Read one cell** with :py:attr:`PHandle.guiValueCount` and
+  :py:meth:`PHandle.guiValueAt`. These are sampled one call at a time and
+  are **not atomic** across cells (an edit can land between two reads, and
+  the count can change), so use ``guiValue`` when coherence matters. A
+  read past the count answers ``''``.
+- **Write** — there is no setter, by design. State goes back in as an
+  ordinary message on inlet 0, passing the object's own clamps and outlet
+  sends. :py:meth:`PHandle.restoreGuiValue` sends a saved ``guiValue``
+  string back; :py:meth:`PHandle.setGuiValueAt` sends ``set <index>
+  <value>`` (on ``.textedit``, whose one cell is free text, the value is
+  sent as the whole state instead). Both require
+  :py:attr:`PHandle.guiValueIsSettable` and are thin wrappers over
+  ``sendList(0, ...)``.
+
+Polls can be **destructive**: ``.b`` reports a pending press and clears
+it, which is also why ``.b`` is not settable. For a given object, poll
+either the whole-state read *or* the per-cell reads once per frame, never
+both. Cell strings are engine-formatted (zero reads ``0.``); parse them
+rather than comparing text.
+
+GUI *properties* (:py:meth:`PHandle.getGuiProperty` /
+:py:meth:`PHandle.setGuiProperty`) are a different thing: editor
+decoration such as geometry or colour, opaque to the engine and persisted
+with the patch under the ``"gui"`` key of :py:meth:`Patcher.dumpJson`.
+They are not live control state.
+
+All of these are synchronous engine calls on the isolate that called
+``System.init()``; none involves a callback.
+
 Host I/O
 --------
 

@@ -574,11 +574,100 @@ class PHandle {
   String get params =>
       fetchString((buf, cap) => bindings.phandle_get_params(_handle, buf, cap));
 
-  /// Current GUI display value for objects that have one
-  /// (sliders, toggles, ...).
+  /// The object's whole live GUI state as one string — what a host polls to
+  /// draw the control. For a scalar control (`.slider`, `.i`, `.f`, `.dial`,
+  /// `.incdec`, `.t`) that is its value; for a structured one
+  /// (`.multislider`, `.rslider`, `.matrixctrl`, ...) it is every cell,
+  /// space separated, in index order. Empty for an object with no GUI state.
+  ///
+  /// This is the *coherent* read: one engine call, one snapshot. The
+  /// per-cell reads ([guiValueCount], [guiValueAt]) are sampled one call at
+  /// a time and may mix cells from before and after an edit.
+  ///
+  /// A poll may be **destructive**: `.b` reports a pending press and clears
+  /// it. Per object, poll either this getter or the per-cell reads once per
+  /// frame — never both, or a consume-on-read object reports its event to
+  /// one and not the other.
+  ///
+  /// When [guiValueIsSettable] is `true`, [restoreGuiValue] with this
+  /// string puts the state back. Not to be confused with [getGuiProperty],
+  /// which is editor decoration persisted with the patch, not live state.
   String get guiValue => fetchString(
     (buf, cap) => bindings.phandle_get_gui_value(_handle, buf, cap),
   );
+
+  /// How many cells the object's GUI state has: 1 for a scalar control, the
+  /// bank size for a `.multislider`, and so on. Objects without GUI state
+  /// still answer 1 (their single cell is empty).
+  ///
+  /// The count can change between this read and a following [guiValueAt]
+  /// (a list on inlet 0 resizes a `.multislider`); a read past the end
+  /// answers the empty string rather than failing.
+  int get guiValueCount => bindings.phandle_get_gui_value_count(_handle);
+
+  /// One cell of the GUI state, or `''` for an [index] at or past
+  /// [guiValueCount]. Cell 0 of a scalar control equals [guiValue].
+  ///
+  /// The targeted read for repainting one cell without re-parsing the whole
+  /// state. Reads of several cells are **not atomic** across cells; use
+  /// [guiValue] when a coherent snapshot matters. See [guiValue] for the
+  /// destructive-poll rule.
+  ///
+  /// Throws [RangeError] for a negative [index].
+  String guiValueAt(int index) {
+    RangeError.checkNotNegative(index, 'index');
+    return fetchString(
+      (buf, cap) => bindings.phandle_get_gui_value_at(_handle, index, buf, cap),
+    );
+  }
+
+  /// Whether this object accepts its own GUI state back on inlet 0: `true`
+  /// when [restoreGuiValue] restores what [guiValue] read and
+  /// [setGuiValueAt] writes one cell.
+  ///
+  /// `false` for objects that predate the protocol, and deliberately for
+  /// `.b`, whose value is a consume-on-read press — an event a restore could
+  /// only replay.
+  bool get guiValueIsSettable =>
+      bindings.phandle_gui_value_is_settable(_handle) != 0;
+
+  /// Restore a GUI state previously read from [guiValue].
+  ///
+  /// There is no GUI-value setter in the engine by design: this sends
+  /// [state] as an ordinary list on inlet 0 (exactly
+  /// `sendList(0, state)`), so it passes through the object's own clamps
+  /// and may emit on its outlets like any other message.
+  ///
+  /// Throws [StateError] when [guiValueIsSettable] is `false`.
+  void restoreGuiValue(String state) {
+    _requireSettable('restoreGuiValue');
+    sendList(0, state);
+  }
+
+  /// Write one cell of the GUI state: sends `set <index> <value>` on
+  /// inlet 0. On a `.textedit` — a one-cell control whose cell is free text
+  /// and so has no `set` form — [value] is sent as the whole state instead.
+  ///
+  /// The engine drops a cell write whose index is past its live count;
+  /// this wrapper rejects one past the count it reads now.
+  ///
+  /// Throws [StateError] when [guiValueIsSettable] is `false`, and
+  /// [RangeError] when [index] is outside `0 <= index < guiValueCount`.
+  void setGuiValueAt(int index, String value) {
+    _requireSettable('setGuiValueAt');
+    RangeError.checkValidIndex(index, this, 'index', guiValueCount);
+    if (type == Obj.gTextedit) {
+      sendList(0, value);
+    } else {
+      sendList(0, 'set $index $value');
+    }
+  }
+
+  void _requireSettable(String op) {
+    if (!guiValueIsSettable) {
+      throw StateError('$op: a $type object does not accept its GUI value');
+    }
+  }
 
   /// Patcher-assigned ID, or `null` when this handle refers to no object
   /// (the engine's `YSE_PATCHER_ID_NONE`).
@@ -659,6 +748,11 @@ class PHandle {
   });
 
   /// Read a GUI property by [key].
+  ///
+  /// GUI properties are editor decoration — geometry, colour, anything the
+  /// host wants persisted with the patch (serialised under the `"gui"` key
+  /// by [Patcher.dumpJson]). They are opaque to the engine and are **not**
+  /// live control state; that is [guiValue].
   String getGuiProperty(String key) => fetchString(
     (buf, cap) => using((arena) {
       final cstr = key.toNativeUtf8(allocator: arena);
@@ -666,7 +760,9 @@ class PHandle {
     }),
   );
 
-  /// Write a GUI property.
+  /// Write a GUI property: editor decoration stored with the patch, not the
+  /// object's live state. To change what a control holds, use
+  /// [restoreGuiValue] or [setGuiValueAt].
   void setGuiProperty(String key, String value) => using((arena) {
     final keyPtr = key.toNativeUtf8(allocator: arena);
     final valPtr = value.toNativeUtf8(allocator: arena);
